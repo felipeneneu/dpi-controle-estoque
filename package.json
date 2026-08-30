@@ -1,0 +1,16 @@
+{
+  "name": "graficaos",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev:ui": "npm --prefix grafica-app run dev",
+    "dev:backend": "npm --prefix grafica-app/backend run dev",
+    "build:export": "npm --prefix grafica-app run build",
+    "build:backend": "npm --prefix grafica-app/backend run build",
+    "db:push": "npm --prefix grafica-app/backend run db:push",
+    "db:seed": "npm --prefix grafica-app/backend run seed",
+    "lint": "npm --prefix grafica-app run lint && npm --prefix grafica-app/backend run lint",
+    "package:electron": "npm --prefix electron run package"
+  },
+  "devDependencies": {}
+}

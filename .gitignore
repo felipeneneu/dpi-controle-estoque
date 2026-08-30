@@ -1,0 +1,41 @@
+# dependencies
+node_modules/
+**/node_modules/
+
+# build outputs
+.next/
+**/.next/
+out/
+**/out/
+build/
+**/build/
+dist/
+**/dist/
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# env (secrets / local config)
+.env*
+**/.env*
+
+# whatsapp session (baileys) - secrets
+wa_auth/
+**/wa_auth/
+
+# local runtime database (regenerate with `npm run db:seed`)
+local-replica.db
+**/local-replica.db*
+*.db-wal
+*.db-shm
+
+# os / editor
+.DS_Store
+Thumbs.db
+*.pem
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
