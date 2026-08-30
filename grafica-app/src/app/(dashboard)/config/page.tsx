@@ -16,6 +16,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { api, getUser, setUser, type UserRow, type UserPhoto } from "@/lib/api";
+import { useUser } from "@/hooks/use-user";
 import WhatsAppPanel from "@/components/whatsapp-panel";
 import { LoadingState, Spinner } from "@/components/ui/spinner";
 import { RiPencilLine, RiUserAddLine } from "@remixicon/react";
@@ -47,7 +48,7 @@ function AvatarThumb({ user, className }: { user: UserRow; className?: string })
 
 export default function ConfigPage() {
   const router = useRouter();
-  const user = getUser();
+  const user = useUser();
   const [users, setUsers] = useState<UserRow[]>([]);
   const [photos, setPhotos] = useState<UserPhoto[]>([]);
   const [loading, setLoading] = useState(true);

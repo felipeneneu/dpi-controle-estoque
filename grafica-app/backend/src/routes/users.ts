@@ -25,6 +25,18 @@ const userUpdateSchema = z.object({
   avatar: z.string().nullable().optional(),
 });
 
+const userPublicResponseSchema = {
+  type: 'object',
+  required: ['id', 'name', 'email', 'role'],
+  properties: {
+    id: { type: 'string' },
+    name: { type: 'string' },
+    email: { type: 'string' },
+    role: { type: 'string', enum: ['DEV_MASTER', 'ADMIN', 'OPERATOR'] },
+    avatar: { type: 'string', nullable: true },
+  },
+};
+
 const PUBLIC_USERS_DIR = fileURLToPath(new URL('../../../public/users/', import.meta.url));
 
 const IMAGE_EXTS = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.jfif'];
@@ -40,11 +52,41 @@ function publicUser(u: {
 }
 
 export async function userRoutes(app: FastifyInstance) {
-  app.get('/api/users', { preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN'])] }, async () =>
+  app.get('/api/users', {
+    schema: {
+      tags: ['Usuários'],
+      summary: 'Listar usuários',
+      description: 'Lista usuários (sem dados sensíveis) — requer ADMIN/DEV_MASTER.',
+      response: {
+        200: { type: 'array', items: userPublicResponseSchema },
+      },
+    },
+    preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN'])],
+  }, async () =>
     (await db.select({ id: users.id, name: users.name, email: users.email, role: users.role, avatar: users.avatar }).from(users).all()).map(publicUser),
   );
 
-  app.get('/api/user-photos', { preHandler: [authenticate] }, async () => {
+  app.get('/api/user-photos', {
+    schema: {
+      tags: ['Usuários'],
+      summary: 'Listar fotos de avatar',
+      description: 'Lista as imagens de avatar disponíveis no diretório público.',
+      response: {
+        200: {
+          type: 'array',
+          items: {
+            type: 'object',
+            required: ['name', 'url'],
+            properties: {
+              name: { type: 'string' },
+              url: { type: 'string' },
+            },
+          },
+        },
+      },
+    },
+    preHandler: [authenticate],
+  }, async () => {
     try {
       const files = await readdir(PUBLIC_USERS_DIR);
       const photos = files
@@ -56,7 +98,30 @@ export async function userRoutes(app: FastifyInstance) {
     }
   });
 
-  app.post('/api/users', { preHandler: [authenticate, authorize(['DEV_MASTER'])] }, async (request, reply) => {
+  app.post('/api/users', {
+    schema: {
+      tags: ['Usuários'],
+      summary: 'Criar usuário',
+      description: 'Cria um novo usuário (requer DEV_MASTER).',
+      body: {
+        type: 'object',
+        required: ['name', 'email', 'password'],
+        properties: {
+          name: { type: 'string', minLength: 1 },
+          email: { type: 'string', format: 'email' },
+          password: { type: 'string', minLength: 6 },
+          role: { type: 'string', enum: ['DEV_MASTER', 'ADMIN', 'OPERATOR'] },
+          avatar: { type: 'string' },
+        },
+      },
+      response: {
+        201: userPublicResponseSchema,
+        400: { type: 'object', properties: { error: { type: 'string' } } },
+        409: { type: 'object', properties: { error: { type: 'string' } } },
+      },
+    },
+    preHandler: [authenticate, authorize(['DEV_MASTER'])],
+  }, async (request, reply) => {
     const parsed = userCreateSchema.safeParse(request.body);
     if (!parsed.success) return reply.code(400).send({ error: 'Invalid input' });
     const existing = await db.select().from(users).where(eq(users.email, parsed.data.email)).get();
@@ -73,7 +138,36 @@ export async function userRoutes(app: FastifyInstance) {
     return reply.code(201).send(publicUser(user));
   });
 
-  app.patch('/api/users/:id', { preHandler: [authenticate] }, async (request, reply) => {
+  app.patch('/api/users/:id', {
+    schema: {
+      tags: ['Usuários'],
+      summary: 'Atualizar usuário',
+      description: 'Atualiza o próprio usuário ou outro usuário (requer ADMIN/DEV_MASTER para alterar roles ou outros usuários).',
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: { id: { type: 'string' } },
+      },
+      body: {
+        type: 'object',
+        properties: {
+          name: { type: 'string', minLength: 1 },
+          email: { type: 'string', format: 'email' },
+          password: { type: 'string', minLength: 6 },
+          role: { type: 'string', enum: ['DEV_MASTER', 'ADMIN', 'OPERATOR'] },
+          avatar: { type: 'string', nullable: true },
+        },
+      },
+      response: {
+        200: userPublicResponseSchema,
+        400: { type: 'object', properties: { error: { type: 'string' } } },
+        403: { type: 'object', properties: { error: { type: 'string' } } },
+        404: { type: 'object', properties: { error: { type: 'string' } } },
+        409: { type: 'object', properties: { error: { type: 'string' } } },
+      },
+    },
+    preHandler: [authenticate],
+  }, async (request, reply) => {
     const { id } = request.params as { id: string };
     const actorId = request.userId;
     const actorRole = request.userRole;
@@ -110,7 +204,23 @@ export async function userRoutes(app: FastifyInstance) {
     return publicUser(updated!);
   });
 
-  app.delete('/api/users/:id', { preHandler: [authenticate, authorize(['DEV_MASTER'])] }, async (request, reply) => {
+  app.delete('/api/users/:id', {
+    schema: {
+      tags: ['Usuários'],
+      summary: 'Excluir usuário',
+      description: 'Remove um usuário (requer DEV_MASTER; impossível excluir a si mesmo).',
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: { id: { type: 'string' } },
+      },
+      response: {
+        204: { type: 'null' },
+        400: { type: 'object', properties: { error: { type: 'string' } } },
+      },
+    },
+    preHandler: [authenticate, authorize(['DEV_MASTER'])],
+  }, async (request, reply) => {
     const { id } = request.params as { id: string };
     if (id === request.userId) return reply.code(400).send({ error: 'Cannot delete yourself' });
     await db.delete(users).where(eq(users.id, id));

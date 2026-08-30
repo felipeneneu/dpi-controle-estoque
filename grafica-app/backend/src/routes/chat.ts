@@ -12,8 +12,38 @@ const messageSchema = z.object({
   senderId: z.string().min(1),
 });
 
+const messageResponseSchema = {
+  type: 'object',
+  required: ['id', 'room', 'content', 'senderId'],
+  additionalProperties: false,
+  properties: {
+    id: { type: 'string' },
+    room: { type: 'string' },
+    content: { type: 'string' },
+    senderId: { type: 'string' },
+    senderName: { type: 'string', nullable: true },
+    createdAt: { type: 'string', format: 'date-time' },
+  },
+};
+
 export async function chatRoutes(app: FastifyInstance) {
-  app.get('/api/messages', { preHandler: [authenticate] }, async (request) => {
+  app.get('/api/messages', {
+    schema: {
+      tags: ['Chat'],
+      summary: 'Listar mensagens',
+      description: 'Lista até 200 mensagens de uma sala (padrão "geral"). Envio/recebimento em tempo real via Socket.IO.',
+      querystring: {
+        type: 'object',
+        properties: {
+          room: { type: 'string' },
+        },
+      },
+      response: {
+        200: { type: 'array', items: messageResponseSchema },
+      },
+    },
+    preHandler: [authenticate],
+  }, async (request) => {
     const query = request.query as { room?: string };
     const room = query.room || 'geral';
     const rows = await db
@@ -34,7 +64,27 @@ export async function chatRoutes(app: FastifyInstance) {
     return rows.reverse();
   });
 
-  app.post('/api/messages', { preHandler: [authenticate] }, async (request, reply) => {
+  app.post('/api/messages', {
+    schema: {
+      tags: ['Chat'],
+      summary: 'Enviar mensagem',
+      description: 'Publica uma mensagem na sala e a emite em tempo real via Socket.IO.',
+      body: {
+        type: 'object',
+        required: ['content', 'senderId'],
+        properties: {
+          room: { type: 'string' },
+          content: { type: 'string', minLength: 1 },
+          senderId: { type: 'string', minLength: 1 },
+        },
+      },
+      response: {
+        201: messageResponseSchema,
+        400: { type: 'object', properties: { error: { type: 'string' } } },
+      },
+    },
+    preHandler: [authenticate],
+  }, async (request, reply) => {
     const parsed = messageSchema.safeParse(request.body);
     if (!parsed.success) return reply.code(400).send({ error: 'Invalid input' });
     const message = {

@@ -15,8 +15,35 @@ const machineSchema = z.object({
   status: z.enum(['ACTIVE', 'MAINTENANCE', 'INACTIVE']).optional(),
 });
 
+const machineResponseSchema = {
+  type: 'object',
+  required: ['id', 'name', 'brand', 'model', 'technology', 'status'],
+  additionalProperties: false,
+  properties: {
+    id: { type: 'string' },
+    name: { type: 'string' },
+    brand: { type: 'string' },
+    model: { type: 'string' },
+    technology: { type: 'string' },
+    imageUrl: { type: 'string', nullable: true },
+    status: { type: 'string', enum: ['ACTIVE', 'MAINTENANCE', 'INACTIVE'] },
+    itemIds: { type: 'array', items: { type: 'string' } },
+    createdAt: { type: 'string', format: 'date-time' },
+  },
+};
+
 export async function machineRoutes(app: FastifyInstance) {
-  app.get('/api/machines', async () => {
+  app.get('/api/machines', {
+    schema: {
+      tags: ['Máquinas'],
+      summary: 'Listar máquinas',
+      description: 'Lista máquinas com os itens de estoque vinculados.',
+      security: [],
+      response: {
+        200: { type: 'array', items: machineResponseSchema },
+      },
+    },
+  }, async () => {
     const rows = await db.select().from(machines).all();
     const links = await db.select().from(machineItems).all();
     const byMachine = new Map<string, string[]>();
@@ -28,7 +55,30 @@ export async function machineRoutes(app: FastifyInstance) {
     return rows.map((m) => ({ ...m, itemIds: byMachine.get(m.id) ?? [] }));
   });
 
-  app.post('/api/machines', { preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN'])] }, async (request, reply) => {
+  app.post('/api/machines', {
+    schema: {
+      tags: ['Máquinas'],
+      summary: 'Criar máquina',
+      description: 'Cadastra uma nova máquina (requer ADMIN/DEV_MASTER).',
+      body: {
+        type: 'object',
+        required: ['name', 'brand', 'model', 'technology'],
+        properties: {
+          name: { type: 'string', minLength: 1 },
+          brand: { type: 'string', minLength: 1 },
+          model: { type: 'string', minLength: 1 },
+          technology: { type: 'string', minLength: 1 },
+          imageUrl: { type: 'string' },
+          status: { type: 'string', enum: ['ACTIVE', 'MAINTENANCE', 'INACTIVE'] },
+        },
+      },
+      response: {
+        201: machineResponseSchema,
+        400: { type: 'object', properties: { error: { type: 'string' } } },
+      },
+    },
+    preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN'])],
+  }, async (request, reply) => {
     const parsed = machineSchema.safeParse(request.body);
     if (!parsed.success) return reply.code(400).send({ error: 'Invalid input' });
     const machine = { id: newId(), ...parsed.data, status: parsed.data.status ?? 'ACTIVE' };
@@ -36,7 +86,35 @@ export async function machineRoutes(app: FastifyInstance) {
     return reply.code(201).send(machine);
   });
 
-  app.put('/api/machines/:id', { preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN'])] }, async (request, reply) => {
+  app.put('/api/machines/:id', {
+    schema: {
+      tags: ['Máquinas'],
+      summary: 'Atualizar máquina',
+      description: 'Atualiza uma máquina existente (requer ADMIN/DEV_MASTER).',
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: { id: { type: 'string' } },
+      },
+      body: {
+        type: 'object',
+        properties: {
+          name: { type: 'string', minLength: 1 },
+          brand: { type: 'string', minLength: 1 },
+          model: { type: 'string', minLength: 1 },
+          technology: { type: 'string', minLength: 1 },
+          imageUrl: { type: 'string' },
+          status: { type: 'string', enum: ['ACTIVE', 'MAINTENANCE', 'INACTIVE'] },
+        },
+      },
+      response: {
+        200: machineResponseSchema,
+        400: { type: 'object', properties: { error: { type: 'string' } } },
+        404: { type: 'object', properties: { error: { type: 'string' } } },
+      },
+    },
+    preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN'])],
+  }, async (request, reply) => {
     const { id } = request.params as { id: string };
     const parsed = machineSchema.partial().safeParse(request.body);
     if (!parsed.success) return reply.code(400).send({ error: 'Invalid input' });
@@ -47,7 +125,29 @@ export async function machineRoutes(app: FastifyInstance) {
     return next;
   });
 
-  app.patch('/api/machines/:id/materials', { preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN'])] }, async (request, reply) => {
+  app.patch('/api/machines/:id/materials', {
+    schema: {
+      tags: ['Máquinas'],
+      summary: 'Vincular materiais a uma máquina',
+      description: 'Substitui a lista de itens de estoque consumidos por uma máquina (requer ADMIN/DEV_MASTER).',
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: { id: { type: 'string' } },
+      },
+      body: {
+        type: 'object',
+        properties: {
+          stockItemIds: { type: 'array', items: { type: 'string' } },
+        },
+      },
+      response: {
+        200: machineResponseSchema,
+        404: { type: 'object', properties: { error: { type: 'string' } } },
+      },
+    },
+    preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN'])],
+  }, async (request, reply) => {
     const { id } = request.params as { id: string };
     const body = (request.body ?? {}) as { stockItemIds?: string[] };
     const stockItemIds = body.stockItemIds ?? [];
@@ -62,7 +162,22 @@ export async function machineRoutes(app: FastifyInstance) {
     return { ...existing, itemIds: stockItemIds };
   });
 
-  app.delete('/api/machines/:id', { preHandler: [authenticate, authorize(['DEV_MASTER'])] }, async (request, reply) => {
+  app.delete('/api/machines/:id', {
+    schema: {
+      tags: ['Máquinas'],
+      summary: 'Excluir máquina',
+      description: 'Remove uma máquina (requer DEV_MASTER).',
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: { id: { type: 'string' } },
+      },
+      response: {
+        204: { type: 'null' },
+      },
+    },
+    preHandler: [authenticate, authorize(['DEV_MASTER'])],
+  }, async (request, reply) => {
     const { id } = request.params as { id: string };
     await db.delete(machines).where(eq(machines.id, id));
     return reply.code(204).send();

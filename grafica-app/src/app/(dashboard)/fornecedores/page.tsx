@@ -15,12 +15,13 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { api, getUser, type Supplier } from "@/lib/api";
+import { useUser } from "@/hooks/use-user";
 import { LoadingState } from "@/components/ui/spinner";
 import { RiAddLine, RiDeleteBinLine } from "@remixicon/react";
 
 export default function FornecedoresPage() {
   const router = useRouter();
-  const user = getUser();
+  const user = useUser();
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);

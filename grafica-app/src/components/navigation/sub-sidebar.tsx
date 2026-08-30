@@ -1,12 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { RiAddLine, RiHashtag } from '@remixicon/react';
-import { getUser } from '@/lib/api';
+import { useUser } from '@/hooks/use-user';
 
 const ROLE_LABEL: Record<string, string> = {
   DEV_MASTER: 'DEV MASTER',
@@ -19,23 +18,13 @@ export function SubSidebar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const cat = searchParams.get('cat') || 'todos';
-  const [user, setUser] = useState(getUser());
+  const user = useUser();
   const initials = user?.name
     .split(' ')
     .map((p) => p[0])
     .slice(0, 2)
     .join('')
     .toUpperCase() ?? '?';
-
-  useEffect(() => {
-    const sync = () => setUser(getUser());
-    window.addEventListener('grafica:user', sync);
-    window.addEventListener('storage', sync);
-    return () => {
-      window.removeEventListener('grafica:user', sync);
-      window.removeEventListener('storage', sync);
-    };
-  }, []);
 
   const cats = [
     { label: 'Todos os Insumos', href: '/produtos', active: cat === 'todos' },

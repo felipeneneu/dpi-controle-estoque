@@ -11,10 +11,11 @@ import { Message, MessageAvatar, MessageContent, MessageGroup, MessageHeader } f
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import { RiSendPlaneLine } from "@remixicon/react";
 import { api, getUser, backendUrl, type ChatMessage } from "@/lib/api";
+import { useUser } from "@/hooks/use-user";
 
 export default function ChatPage() {
   const router = useRouter();
-  const user = getUser();
+  const user = useUser();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState("");
   const socketRef = useRef<Socket | null>(null);

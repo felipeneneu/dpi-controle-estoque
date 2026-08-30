@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
 import { api, getUser, type StockItem } from "@/lib/api";
+import { useUser } from "@/hooks/use-user";
 import { LoadingState } from "@/components/ui/spinner";
 
 function statusBadge(status: StockItem["status"]) {
@@ -26,7 +27,7 @@ function statusBadge(status: StockItem["status"]) {
 
 export default function TintasPage() {
   const router = useRouter();
-  const user = getUser();
+  const user = useUser();
   const [items, setItems] = useState<StockItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<StockItem | null>(null);

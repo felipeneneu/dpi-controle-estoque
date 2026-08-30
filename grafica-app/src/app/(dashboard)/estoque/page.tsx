@@ -22,6 +22,7 @@ import {
   type StockCategory,
   CATEGORY_LABEL,
 } from "@/lib/api";
+import { useUser } from "@/hooks/use-user";
 import { LoadingState } from "@/components/ui/spinner";
 import { RiSearchLine } from "@remixicon/react";
 
@@ -35,7 +36,7 @@ function statusBadge(status: StockItem["status"]) {
 
 export default function EstoquePage() {
   const router = useRouter();
-  const user = getUser();
+  const user = useUser();
   const [items, setItems] = useState<StockItem[]>([]);
   const [filter, setFilter] = useState<"TODOS" | StockCategory>("TODOS");
   const [search, setSearch] = useState("");

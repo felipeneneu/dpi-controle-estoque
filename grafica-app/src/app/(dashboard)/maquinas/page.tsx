@@ -17,6 +17,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { api, getUser, type Machine, type StockItem } from "@/lib/api";
+import { useUser } from "@/hooks/use-user";
 import { LoadingState } from "@/components/ui/spinner";
 
 const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
@@ -39,7 +40,7 @@ function MachineImage({ imageUrl, name, className }: { imageUrl?: string | null;
 
 export default function MachinesPage() {
   const router = useRouter();
-  const user = getUser();
+  const user = useUser();
   const canManage = user?.role === "DEV_MASTER" || user?.role === "ADMIN";
 
   const [machines, setMachines] = useState<Machine[]>([]);

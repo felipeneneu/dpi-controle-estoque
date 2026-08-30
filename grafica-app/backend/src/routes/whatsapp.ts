@@ -11,10 +11,32 @@ import { authenticate, authorize } from '../middleware/auth.js';
 const WHATSAPP_PHONE_KEY = 'whatsapp.phone';
 const WHATSAPP_ENABLED_KEY = 'whatsapp.enabled';
 
+const whatsappStatusResponseSchema = {
+  type: 'object',
+  required: ['connected', 'state', 'enabled', 'phone'],
+  properties: {
+    connected: { type: 'boolean' },
+    state: { type: 'string' },
+    qr: { type: 'string', nullable: true, description: 'Data URL do QR Code de pareamento.' },
+    enabled: { type: 'boolean' },
+    phone: { type: 'string' },
+  },
+};
+
 export const whatsappRoutes: FastifyPluginAsync = async (app) => {
   app.get(
     '/api/whatsapp/status',
-    { preHandler: [authenticate] },
+    {
+      schema: {
+        tags: ['WhatsApp'],
+        summary: 'Status da integração',
+        description: 'Retorna o estado da conexão, QR Code para pareamento e configuração.',
+        response: {
+          200: whatsappStatusResponseSchema,
+        },
+      },
+      preHandler: [authenticate],
+    },
     async () => {
       return getStatus();
     },
@@ -22,7 +44,31 @@ export const whatsappRoutes: FastifyPluginAsync = async (app) => {
 
   app.post(
     '/api/whatsapp/config',
-    { preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN'])] },
+    {
+      schema: {
+        tags: ['WhatsApp'],
+        summary: 'Configurar WhatsApp',
+        description: 'Define telefone de destino e habilita/desabilita alertas (requer ADMIN/DEV_MASTER).',
+        body: {
+          type: 'object',
+          properties: {
+            phone: { type: 'string' },
+            enabled: { type: 'boolean' },
+          },
+        },
+        response: {
+          200: {
+            type: 'object',
+            required: ['ok', 'status'],
+            properties: {
+              ok: { type: 'boolean' },
+              status: whatsappStatusResponseSchema,
+            },
+          },
+        },
+      },
+      preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN'])],
+    },
     async (request) => {
       const body = (request.body ?? {}) as { phone?: string; enabled?: boolean };
       if (body.phone !== undefined) {
@@ -37,7 +83,21 @@ export const whatsappRoutes: FastifyPluginAsync = async (app) => {
 
   app.post(
     '/api/whatsapp/logout',
-    { preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN'])] },
+    {
+      schema: {
+        tags: ['WhatsApp'],
+        summary: 'Desconectar WhatsApp',
+        description: 'Encerra a sessão do WhatsApp (requer ADMIN/DEV_MASTER).',
+        response: {
+          200: {
+            type: 'object',
+            required: ['ok'],
+            properties: { ok: { type: 'boolean' } },
+          },
+        },
+      },
+      preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN'])],
+    },
     async () => {
       await logoutWhatsApp();
       return { ok: true };
@@ -46,7 +106,25 @@ export const whatsappRoutes: FastifyPluginAsync = async (app) => {
 
   app.post(
     '/api/whatsapp/test',
-    { preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN'])] },
+    {
+      schema: {
+        tags: ['WhatsApp'],
+        summary: 'Enviar mensagem de teste',
+        description: 'Envia uma mensagem de teste para o telefone configurado (requer ADMIN/DEV_MASTER).',
+        response: {
+          200: {
+            type: 'object',
+            required: ['ok', 'phone'],
+            properties: {
+              ok: { type: 'boolean' },
+              queued: { type: 'boolean' },
+              phone: { type: 'string' },
+            },
+          },
+        },
+      },
+      preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN'])],
+    },
     async () => {
       const phone = await getDestinationPhone();
       if (!phone) {

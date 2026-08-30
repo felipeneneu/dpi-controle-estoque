@@ -8,13 +8,14 @@ import {
   type StockItem,
   type StockTransaction,
 } from "@/lib/api";
+import { useUser } from "@/hooks/use-user";
 import { useRouter } from "next/navigation";
 import { RiBox3Line, RiAlertLine, RiSwapLine, RiPrinterLine } from "@remixicon/react";
 import { LoadingState } from "@/components/ui/spinner";
 
 export default function DashboardPage() {
   const router = useRouter();
-  const user = getUser();
+  const user = useUser();
   const [items, setItems] = useState<StockItem[]>([]);
   const [transactions, setTransactions] = useState<StockTransaction[]>([]);
   const [loading, setLoading] = useState(true);

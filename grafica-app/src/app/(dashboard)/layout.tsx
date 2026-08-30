@@ -9,7 +9,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="w-screen h-screen max-w-[1920px] max-h-[1080px] overflow-hidden flex bg-background select-none">
+    <div className="w-screen h-screen max-w-[1920px] max-h-270 overflow-hidden flex bg-background select-none">
       {/* 1. Rail de Ícones Vertical (72px) */}
       <SidebarRail />
 
