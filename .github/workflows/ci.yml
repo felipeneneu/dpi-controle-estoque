@@ -3,8 +3,10 @@ name: CI
 on:
   push:
     branches: [main]
+    tags: ["v*"]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   backend:
@@ -87,3 +89,59 @@ jobs:
           name: playwright-report
           path: test-results/
           retention-days: 7
+
+  installers:
+    name: Build installers (.exe) + GitHub Release
+    runs-on: windows-latest
+    if: github.event_name != 'pull_request'
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install root deps
+        run: npm ci
+
+      - name: Install UI deps
+        run: npm --prefix grafica-app ci
+
+      - name: Install backend deps
+        run: npm --prefix grafica-app/backend ci
+
+      - name: Install electron deps
+        run: npm --prefix electron ci
+
+      - name: Build UI (static export)
+        run: npm run build:export
+
+      - name: Build backend
+        run: npm run build:backend
+
+      - name: Package Server installer
+        run: npm --prefix electron run package:server
+
+      - name: Package Client installer
+        run: npm --prefix electron run package:client
+
+      - name: Upload installers (workflow artifacts)
+        uses: actions/upload-artifact@v4
+        with:
+          name: dpi-installers
+          path: |
+            dist/server/*.exe
+            dist/client/*.exe
+          if-no-files-found: error
+
+      - name: Publish GitHub Release (on tag v*)
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            dist/server/*.exe dist/client/*.exe \
+            --generate-notes --draft=false || true
