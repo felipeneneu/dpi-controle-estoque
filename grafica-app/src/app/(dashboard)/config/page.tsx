@@ -15,7 +15,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { api, getUser, setUser, type UserRow, type UserPhoto } from "@/lib/api";
+import { api, getUser, setUser, setBackendUrl, backendUrl, avatarUrl, type UserRow, type UserPhoto } from "@/lib/api";
 import { useUser } from "@/hooks/use-user";
 import WhatsAppPanel from "@/components/whatsapp-panel";
 import { LoadingState, Spinner } from "@/components/ui/spinner";
@@ -38,7 +38,7 @@ function AvatarThumb({ user, className }: { user: UserRow; className?: string })
     .toUpperCase();
   return user.avatar ? (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={user.avatar} alt={user.name} className={`size-9 rounded-full object-cover ${className ?? ""}`} />
+    <img src={avatarUrl(user.avatar)} alt={user.name} className={`size-9 rounded-full object-cover ${className ?? ""}`} />
   ) : (
     <div className={`size-9 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold ${className ?? ""}`}>
       {initials}
@@ -66,6 +66,68 @@ export default function ConfigPage() {
   const [ePassword, setEPassword] = useState("");
   const [eAvatar, setEAvatar] = useState<string | null>(null);
   const [eBusy, setEBusy] = useState(false);
+
+  const [backendInput, setBackendInput] = useState("");
+  const [backendTest, setBackendTest] = useState<"idle" | "testing" | "ok" | "fail">("idle");
+  const [backendMsg, setBackendMsg] = useState("");
+  const [appMode, setAppMode] = useState<"server" | "client" | null>(null);
+  const [netInfo, setNetInfo] = useState<{ hostname: string; ips: { name: string; address: string }[] } | null>(null);
+
+  useEffect(() => {
+    const t = setTimeout(() => setBackendInput(backendUrl()), 0);
+    return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    if (!window.grafica) return;
+    let cancelled = false;
+    window.grafica.info().then((i) => {
+      if (!cancelled) setAppMode(i.mode);
+    });
+    window.grafica.net().then((n) => {
+      if (!cancelled) setNetInfo(n);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  async function copyText(text: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      setBackendMsg(`Copiado: ${text}`);
+    } catch {
+      setBackendMsg("Não foi possível copiar");
+    }
+  }
+
+  async function testBackend() {
+    const clean = backendInput.trim().replace(/\/+$/, "");
+    if (!clean) return;
+    setBackendTest("testing");
+    setBackendMsg("");
+    try {
+      const res = await fetch(`${clean}/health`);
+      const data = await res.json();
+      if (res.ok && data?.status === "ok") {
+        setBackendTest("ok");
+        setBackendMsg("Backend respondeu: ok");
+      } else {
+        setBackendTest("fail");
+        setBackendMsg(`Resposta inesperada (HTTP ${res.status})`);
+      }
+    } catch {
+      setBackendTest("fail");
+      setBackendMsg("Não foi possível conectar nessa URL");
+    }
+  }
+
+  function saveBackendUrl() {
+    const clean = backendInput.trim().replace(/\/+$/, "");
+    if (!clean) return;
+    setBackendUrl(clean);
+    window.location.reload();
+  }
 
   const load = useCallback(() => {
     Promise.all([api<UserRow[]>("/api/users"), api<UserPhoto[]>("/api/user-photos").catch(() => [])])
@@ -205,6 +267,68 @@ export default function ConfigPage() {
 
       {canConfigure && <WhatsAppPanel />}
 
+      <Card className="rounded-[24px] p-5 shadow-sm border-gray-100 bg-card">
+        <CardContent className="p-0 space-y-3">
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <h3 className="text-sm font-bold text-gray-900">Conexão com o Backend</h3>
+              <p className="text-xs text-muted-foreground">
+                URL em uso: <code className="text-primary">{backendUrl()}</code>
+              </p>
+            </div>
+            {appMode === "server" && (
+              <Badge className="bg-emerald-600">Servidor</Badge>
+            )}
+          </div>
+
+          {appMode === "server" && netInfo && (
+            <div className="space-y-1.5 rounded-xl bg-emerald-50 border border-emerald-200 p-3">
+              <p className="text-xs font-bold text-emerald-800 uppercase tracking-wider">
+                Informe nos outros PCs (instalador Client):
+              </p>
+              {[...(netInfo.ips.length ? netInfo.ips.map((i) => `http://${i.address}:3001`) : []), `http://${netInfo.hostname}:3001`].map((u) => (
+                <div key={u} className="flex items-center justify-between gap-2">
+                  <code className="text-xs font-mono text-emerald-700 truncate">{u}</code>
+                  <Button variant="ghost" size="sm" className="rounded-xl h-7 px-2 text-xs" onClick={() => copyText(u)}>
+                    Copiar
+                  </Button>
+                </div>
+              ))}
+              {netInfo.ips.length === 0 && (
+                <p className="text-xs text-emerald-700">Sem IP de rede local detectado — verifique a conexão.</p>
+              )}
+            </div>
+          )}
+
+          {appMode === "client" && (
+            <p className="text-xs text-muted-foreground">
+              Peça ao administrador a URL do servidor (a barra verde do app Server) e cole abaixo.
+            </p>
+          )}
+
+          <div className="flex gap-2">
+            <Input
+              value={backendInput}
+              onChange={(e) => setBackendInput(e.target.value)}
+              placeholder="http://192.168.0.10:3001"
+              className="h-11 rounded-xl font-mono text-sm"
+            />
+            <Button variant="outline" onClick={testBackend} disabled={backendTest === "testing"} className="h-11 rounded-xl">
+              {backendTest === "testing" ? <Spinner className="size-4" /> : null}
+              Testar conexão
+            </Button>
+          </div>
+          {backendMsg && (
+            <p className={`text-xs font-medium ${backendTest === "ok" ? "text-emerald-600" : backendTest === "fail" ? "text-red-600" : "text-muted-foreground"}`}>
+              {backendMsg}
+            </p>
+          )}
+          <Button onClick={saveBackendUrl} className="h-11 rounded-xl font-semibold">
+            Salvar URL e recarregar
+          </Button>
+        </CardContent>
+      </Card>
+
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
@@ -307,7 +431,7 @@ export default function ConfigPage() {
                       }`}
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={p.url} alt={p.name} className="w-full h-full object-cover" />
+                      <img src={avatarUrl(p.url)} alt={p.name} className="w-full h-full object-cover" />
                     </button>
                   ))}
                 </div>

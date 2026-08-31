@@ -15,12 +15,14 @@ const registerSchema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
   password: z.string().min(6),
-  role: z.enum(['DEV_MASTER', 'ADMIN', 'OPERATOR']).optional(),
   avatar: z.string().optional(),
 });
 
+const TOKEN_TTL = '12h';
+
 export async function authRoutes(app: FastifyInstance) {
   app.post('/api/auth/login', {
+    config: { rateLimit: { max: 5, timeWindow: '1 minute' } },
     schema: {
       tags: ['Autenticação'],
       summary: 'Login',
@@ -73,7 +75,7 @@ export async function authRoutes(app: FastifyInstance) {
     if (!user || !verifyPassword(password, user.passwordHash)) {
       return reply.code(401).send({ error: 'Invalid credentials' });
     }
-    const token = app.jwt.sign({ sub: user.id, role: user.role });
+    const token = app.jwt.sign({ sub: user.id, role: user.role }, { expiresIn: TOKEN_TTL });
     return {
       token,
       user: { id: user.id, name: user.name, email: user.email, role: user.role, avatar: user.avatar },
@@ -81,10 +83,11 @@ export async function authRoutes(app: FastifyInstance) {
   });
 
   app.post('/api/auth/register', {
+    config: { rateLimit: { max: 5, timeWindow: '1 minute' } },
     schema: {
       tags: ['Autenticação'],
       summary: 'Registro de usuário',
-      description: 'Registra um novo usuário (role opcional; padrão OPERATOR) e retorna um token JWT.',
+      description: 'Registra um novo usuário (sempre role OPERATOR) e retorna um token JWT.',
       security: [],
       body: {
         type: 'object',
@@ -93,7 +96,6 @@ export async function authRoutes(app: FastifyInstance) {
           name: { type: 'string', minLength: 1 },
           email: { type: 'string', format: 'email' },
           password: { type: 'string', minLength: 6 },
-          role: { type: 'string', enum: ['DEV_MASTER', 'ADMIN', 'OPERATOR'] },
           avatar: { type: 'string' },
         },
       },
@@ -110,7 +112,7 @@ export async function authRoutes(app: FastifyInstance) {
                 id: { type: 'string' },
                 name: { type: 'string' },
                 email: { type: 'string' },
-                role: { type: 'string', enum: ['DEV_MASTER', 'ADMIN', 'OPERATOR'] },
+                role: { type: 'string', enum: ['OPERATOR'] },
                 avatar: { type: 'string', nullable: true },
               },
             },
@@ -131,7 +133,7 @@ export async function authRoutes(app: FastifyInstance) {
     if (!parsed.success) {
       return reply.code(400).send({ error: 'Invalid input', details: parsed.error.flatten() });
     }
-    const { name, email, password, role, avatar } = parsed.data;
+    const { name, email, password, avatar } = parsed.data;
     const existing = await db.select().from(users).where(eq(users.email, email)).get();
     if (existing) {
       return reply.code(409).send({ error: 'Email already registered' });
@@ -141,11 +143,11 @@ export async function authRoutes(app: FastifyInstance) {
       name,
       email,
       passwordHash: hashPassword(password),
-      role: role ?? 'OPERATOR',
+      role: 'OPERATOR' as const,
       avatar: avatar ?? null,
     };
     await db.insert(users).values(user);
-    const token = app.jwt.sign({ sub: user.id, role: user.role });
+    const token = app.jwt.sign({ sub: user.id, role: user.role }, { expiresIn: TOKEN_TTL });
     return reply.code(201).send({
       token,
       user: { id: user.id, name: user.name, email: user.email, role: user.role, avatar: user.avatar },

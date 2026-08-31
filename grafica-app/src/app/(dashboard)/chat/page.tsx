@@ -10,7 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Message, MessageAvatar, MessageContent, MessageGroup, MessageHeader } from "@/components/ui/message";
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import { RiSendPlaneLine } from "@remixicon/react";
-import { api, getUser, backendUrl, type ChatMessage } from "@/lib/api";
+import { api, getUser, backendUrl, getToken, type ChatMessage } from "@/lib/api";
 import { useUser } from "@/hooks/use-user";
 
 export default function ChatPage() {
@@ -43,6 +43,7 @@ export default function ChatPage() {
 
     const socket = io(backendUrl(), {
       transports: ["websocket", "polling"],
+      auth: { token: getToken() },
     });
     socketRef.current = socket;
     socket.on("connect", () => socket.emit("chat:join", "geral"));
@@ -64,7 +65,7 @@ export default function ChatPage() {
     try {
       await api("/api/messages", {
         method: "POST",
-        body: JSON.stringify({ room: "geral", content, senderId: user.id }),
+        body: JSON.stringify({ room: "geral", content }),
       });
       setTimeout(scrollToBottom, 50);
     } catch {

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { avatarUrl } from '@/lib/api';
 import { RiAddLine, RiHashtag } from '@remixicon/react';
 import { useUser } from '@/hooks/use-user';
 
@@ -75,7 +76,7 @@ export function SubSidebar() {
         <div className="flex items-center gap-2.5 overflow-hidden">
           <div className="relative">
             <Avatar className="w-9 h-9 border border-gray-700">
-              {user?.avatar && <AvatarImage src={user.avatar} alt={user.name} />}
+              {user?.avatar && <AvatarImage src={avatarUrl(user.avatar)} alt={user.name} />}
               <AvatarFallback className="bg-primary text-white font-bold">{initials}</AvatarFallback>
             </Avatar>
             {/* Status Online em Tempo Real (Socket.io) */}

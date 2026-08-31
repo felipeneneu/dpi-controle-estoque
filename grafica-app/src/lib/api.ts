@@ -1,7 +1,25 @@
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const BACKEND_URL_KEY = "grafica_backend_url";
+const DEFAULT_BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 export function backendUrl(): string {
-  return BACKEND_URL;
+  if (typeof window !== "undefined") {
+    const saved = window.localStorage.getItem(BACKEND_URL_KEY);
+    if (saved) return saved.replace(/\/+$/, "");
+  }
+  return DEFAULT_BACKEND_URL;
+}
+
+export function setBackendUrl(url: string) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(BACKEND_URL_KEY, url.replace(/\/+$/, ""));
+  window.dispatchEvent(new CustomEvent("grafica:backend-url"));
+}
+
+export function avatarUrl(path?: string | null): string | undefined {
+  if (!path) return undefined;
+  if (/^https?:\/\//i.test(path)) return path;
+  if (path.startsWith("/")) return `${backendUrl()}${path}`;
+  return path;
 }
 
 const TOKEN_KEY = "grafica_token";
@@ -68,7 +86,7 @@ export class ApiError extends Error {
 
 export async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = getToken();
-  const res = await fetch(`${BACKEND_URL}${path}`, {
+  const res = await fetch(`${backendUrl()}${path}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",

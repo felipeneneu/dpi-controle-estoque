@@ -35,7 +35,7 @@ export const whatsappRoutes: FastifyPluginAsync = async (app) => {
           200: whatsappStatusResponseSchema,
         },
       },
-      preHandler: [authenticate],
+      preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN'])],
     },
     async () => {
       return getStatus();

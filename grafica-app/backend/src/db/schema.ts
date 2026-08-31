@@ -1,4 +1,4 @@
-import { sqliteTable, text, real, integer } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, real, integer, index, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
 export const users = sqliteTable('users', {
   id: text('id').primaryKey(),
@@ -46,7 +46,11 @@ export const machineItems = sqliteTable('machine_items', {
     .notNull()
     .references(() => stockItems.id, { onDelete: 'cascade' }),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
-});
+}, (t) => [
+  index('machine_items_machine_id_idx').on(t.machineId),
+  index('machine_items_stock_item_id_idx').on(t.stockItemId),
+  uniqueIndex('machine_items_pair_idx').on(t.machineId, t.stockItemId),
+]);
 
 export const stockTransactions = sqliteTable('stock_transactions', {
   id: text('id').primaryKey(),
@@ -60,7 +64,10 @@ export const stockTransactions = sqliteTable('stock_transactions', {
     .notNull()
     .references(() => users.id),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
-});
+}, (t) => [
+  index('stock_transactions_item_id_idx').on(t.itemId),
+  index('stock_transactions_item_created_idx').on(t.itemId, t.createdAt),
+]);
 
 export const suppliers = sqliteTable('suppliers', {
   id: text('id').primaryKey(),
@@ -80,7 +87,9 @@ export const chatMessages = sqliteTable('messages', {
     .references(() => users.id),
   content: text('content').notNull(),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
-});
+}, (t) => [
+  index('chat_messages_room_created_idx').on(t.room, t.createdAt),
+]);
 
 export const notifications = sqliteTable('notifications', {
   id: text('id').primaryKey(),
@@ -92,7 +101,9 @@ export const notifications = sqliteTable('notifications', {
   type: text('type').notNull().default('info'),
   read: integer('read', { mode: 'boolean' }).notNull().default(false),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
-});
+}, (t) => [
+  index('notifications_user_id_idx').on(t.userId),
+]);
 
 export const settings = sqliteTable('settings', {
   key: text('key').primaryKey(),

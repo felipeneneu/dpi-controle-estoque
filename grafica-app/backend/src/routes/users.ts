@@ -2,10 +2,10 @@ import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { eq } from 'drizzle-orm';
 import { readdir } from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
 import { users } from '../db/schema.js';
 import { db } from '../db/index.js';
 import { newId } from '../lib/ids.js';
+import { USERS_PUBLIC_DIR } from '../lib/paths.js';
 import { hashPassword } from '../lib/password.js';
 import { authenticate, authorize } from '../middleware/auth.js';
 
@@ -36,8 +36,6 @@ const userPublicResponseSchema = {
     avatar: { type: 'string', nullable: true },
   },
 };
-
-const PUBLIC_USERS_DIR = fileURLToPath(new URL('../../../public/users/', import.meta.url));
 
 const IMAGE_EXTS = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.jfif'];
 
@@ -88,7 +86,7 @@ export async function userRoutes(app: FastifyInstance) {
     preHandler: [authenticate],
   }, async () => {
     try {
-      const files = await readdir(PUBLIC_USERS_DIR);
+      const files = await readdir(USERS_PUBLIC_DIR);
       const photos = files
         .filter((f) => IMAGE_EXTS.some((ext) => f.toLowerCase().endsWith(ext)))
         .map((f) => ({ name: f, url: `/users/${f}` }));
@@ -182,6 +180,13 @@ export async function userRoutes(app: FastifyInstance) {
 
     const existing = await db.select().from(users).where(eq(users.id, id)).get();
     if (!existing) return reply.code(404).send({ error: 'Not found' });
+
+    if (actorRole === 'ADMIN' && parsed.data.role === 'DEV_MASTER') {
+      return reply.code(403).send({ error: 'Only DEV_MASTER can grant DEV_MASTER' });
+    }
+    if (actorRole === 'ADMIN' && existing.role === 'DEV_MASTER') {
+      return reply.code(403).send({ error: 'Only DEV_MASTER can modify a DEV_MASTER' });
+    }
 
     if (parsed.data.email) {
       const dup = await db

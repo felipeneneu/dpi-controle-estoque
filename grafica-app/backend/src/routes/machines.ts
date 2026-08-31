@@ -37,12 +37,13 @@ export async function machineRoutes(app: FastifyInstance) {
     schema: {
       tags: ['Máquinas'],
       summary: 'Listar máquinas',
-      description: 'Lista máquinas com os itens de estoque vinculados.',
-      security: [],
+      description: 'Lista máquinas com os itens de estoque vinculados. Requer autenticação.',
       response: {
         200: { type: 'array', items: machineResponseSchema },
+        401: { type: 'object', properties: { error: { type: 'string' } } },
       },
     },
+    preHandler: [authenticate],
   }, async () => {
     const rows = await db.select().from(machines).all();
     const links = await db.select().from(machineItems).all();

@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { SidebarRail } from '@/components/navigation/sidebar-rail';
 import { SubSidebar } from '@/components/navigation/sub-sidebar';
 import { NotificationsProvider } from '@/components/notifications-provider';
+import { EscapeActionsMenu } from '@/components/escape-actions-menu';
 
 export default function DashboardLayout({
   children,
@@ -25,6 +26,7 @@ export default function DashboardLayout({
       </div>
 
       <NotificationsProvider />
+      <EscapeActionsMenu />
     </div>
   );
 }

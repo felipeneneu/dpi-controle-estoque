@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { notifications } from '../db/schema.js';
 import { db } from '../db/index.js';
 import { authenticate } from '../middleware/auth.js';
@@ -51,7 +51,10 @@ export async function notificationRoutes(app: FastifyInstance) {
     preHandler: [authenticate],
   }, async (request, reply) => {
     const { id } = request.params as { id: string };
-    await db.update(notifications).set({ read: true }).where(eq(notifications.id, id));
+    await db
+      .update(notifications)
+      .set({ read: true })
+      .where(and(eq(notifications.id, id), eq(notifications.userId, request.userId)));
     return reply.code(204).send();
   });
 }

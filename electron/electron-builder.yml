@@ -1,0 +1,28 @@
+appId: com.felipeneneu.dpi-controle-estoque
+productName: Dpi Controle de Estoque
+directories:
+  output: ../dist
+files:
+  - main.js
+  - preload.js
+extraResources:
+  - from: ../grafica-app/out
+    to: graficaos/ui
+  - from: ../grafica-app/backend
+    to: graficaos/backend
+    filter:
+      - "dist/**"
+      - "drizzle/**"
+      - "public/**"
+      - "package.json"
+win:
+  icon: build/icon.ico
+  target:
+    - nsis
+  signAndEditExecutable: false
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  shortcutName: Dpi Controle de Estoque
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico

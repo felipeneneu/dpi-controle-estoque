@@ -39,6 +39,13 @@ netsh advfirewall firewall add rule name="GraficaOS 3001" dir=in action=allow pr
 ```
 Para remover depois: `netsh advfirewall firewall delete rule name="GraficaOS 3001"`.
 
+### 3.1.1 IP na prática (sem decorar nada)
+- No **app Server**, o card "Conexão com o Backend" mostra uma **faixa verde** com as URLs prontas:
+  `http://<IP-y>:3001` e `http://<NOME-DO-PC>:3001` — botão **Copiar** em cada uma.
+- O **nome do PC** (ex.: `http://DESKTOP-ECOHR0E:3001`) funciona na LAN mesmo se o IP mudar (resolução de hostname do Windows) — é o mais prático para a empresa.
+- No **app Client**, o mesmo card mostra "Peça ao administrador a URL do servidor" → cole.
+- Dica para estabilidade: fixar o IP do PC1 no roteador (reserva DHCP), assim a URL nunca muda.
+
 ### 3.3 Gerar os builds
 ```bash
 npm run build:export      # UI estática -> grafica-app/out/
@@ -46,9 +53,17 @@ npm run db:push           # banco (aplica schema)
 npm run db:seed           # dados de exemplo
 ```
 
-## 4. Opção A — Teste rápido em navegador (antes do Electron)
+## 4. Opção A — Teste em dev com o Electron (ver o app rodando)
 
-Sem empacotar, para validar a conexão:
+```bash
+npm run dev:electron
+```
+Sobe **tudo em dev**: builda UI (`out/`) + backend (`dist/`), abre a janela do Electron em modo servidor.
+- Se o backend já estiver na `:3001` (o seu `dev:backend`), ele **não duplica** — só ignora o spawn.
+- Se não estiver, o app **spawna** o backend (`node dist/server.js`) sozinho e já abre a UI conectada.
+- Para ver o comportamento de **cliente** em vez do servidor: `npm --prefix electron run start`.
+
+## 5. Teste rápido em navegador (sem Electron)
 
 1. **PC1**:
    ```bash
@@ -60,16 +75,26 @@ Sem empacotar, para validar a conexão:
    (campo em Configurações → "URL do backend", salvo em `localStorage`). No PC1 deixe `http://localhost:3001`.
 4. Teste login: `felipe@grafica.local` / `admin123` (seed).
 
-## 5. Opção B — App Electron empacotado (roteiro oficial)
+## 6. Opção B — Instaladores (roteiro oficial, 2 pacotes)
 
-1. Gere o instalador: `npm run package:electron` → `dist/*.exe`.
-2. **Instale o `.exe` nos 2 PCs**.
-3. **PC1**: abra o app → o backend local sobe **sozinho** (spawn) em `:3001`.
-4. **PC1** (Configurações): URL do backend = `http://localhost:3001`.
-5. **PC2**: abra o app → em Configurações, URL do backend = `http://<IP-PC1>:3001` → clique em **"Testar conexão"** (deve responder `GET /health` = `{"status":"ok"}`).
-6. Faça login em ambos.
+São **2 instaladores** (`npm run package:electron`):
 
-## 6. Checklist de teste (validação da conexão)
+| Instalador | Onde instalar | O que faz |
+|------------|---------------|-----------|
+| `dist\server\GraficaOS Server Setup 0.1.0.exe` | Somente o **PC1 (servidor)** | UI + backend embutido; ao abrir o app, sobe a API em `:3001` sozinho |
+| `dist\client\GraficaOS Setup 0.1.0.exe` | Os **demais PCs** | Apenas UI; conecta no backend do PC1 |
+
+Roteiro:
+
+1. **PC1**: instalar e abrir o **Server** → o backend sobe sozinho (`:3001`). Verifique no log.
+2. **PC1** (Configurações): URL do backend = `http://localhost:3001`.
+3. **Outros PCs**: instalar o **Client** e abrir.
+4. **Cada cliente** (Configurações): URL do backend = `http://<IP-PC1>:3001` → **"Testar conexão"** (deve responder `ok`).
+5. Faça login em todos (`felipe@grafica.local` / `admin123`).
+
+> **Para o server subir a API é obrigatório que o PC1 tenha Node.js 20+ instalado** (o spawn usa `node dist/server.js`). Client não precisa de nada.
+
+## 7. Checklist de teste (validação da conexão)
 
 | # | Teste | Como | Esperado |
 |---|-------|------|----------|
@@ -82,7 +107,7 @@ Sem empacotar, para validar a conexão:
 | 7 | Chat realtime | PC1 e PC2 no `/chat` | Mensagem de um aparece no outro em tempo real (Socket.io) |
 | 8 | Status WhatsApp | PC2 → Configurações → WhatsApp | `connected: true` refletido dos dois lados |
 
-## 7. Troubleshooting
+## 8. Troubleshooting
 
 | Sintoma | Causa provável | Solução |
 |---------|----------------|---------|
@@ -93,7 +118,7 @@ Sem empacotar, para validar a conexão:
 | CORS bloqueado | Backend com `origin` restrito | Backend já usa `@fastify/cors { origin: true }` — ok |
 | Porta 3001 ocupada | Outro processo | `netstat -ano | findstr 3001` e trocar `PORT` |
 
-## 8. Encerramento
+## 9. Encerramento
 
 - Pare o backend (Ctrl+C) e remova a regra do firewall se desejado.
 - Em casa, apenas **PC1** precisa do backend rodando; PCs 2/3 são sempre "clientes".

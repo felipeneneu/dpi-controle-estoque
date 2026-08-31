@@ -5,7 +5,7 @@ import { ThemeProvider } from "next-themes";
 import { io } from "socket.io-client";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
-import { backendUrl, getUser } from "@/lib/api";
+import { backendUrl, getUser, getToken } from "@/lib/api";
 
 export function NotificationsProvider() {
   useEffect(() => {
@@ -13,6 +13,7 @@ export function NotificationsProvider() {
 
     const socket = io(backendUrl(), {
       transports: ["websocket", "polling"],
+      auth: { token: getToken() },
     });
 
     socket.on("notification:new", (notif: { title: string; body?: string | null; type?: string }) => {

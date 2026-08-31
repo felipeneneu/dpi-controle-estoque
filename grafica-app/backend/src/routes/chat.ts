@@ -8,8 +8,7 @@ import { authenticate } from '../middleware/auth.js';
 
 const messageSchema = z.object({
   room: z.string().min(1).default('geral'),
-  content: z.string().min(1),
-  senderId: z.string().min(1),
+  content: z.string().min(1).max(4000),
 });
 
 const messageResponseSchema = {
@@ -71,11 +70,10 @@ export async function chatRoutes(app: FastifyInstance) {
       description: 'Publica uma mensagem na sala e a emite em tempo real via Socket.IO.',
       body: {
         type: 'object',
-        required: ['content', 'senderId'],
+        required: ['content'],
         properties: {
           room: { type: 'string' },
-          content: { type: 'string', minLength: 1 },
-          senderId: { type: 'string', minLength: 1 },
+          content: { type: 'string', minLength: 1, maxLength: 4000 },
         },
       },
       response: {
@@ -91,7 +89,7 @@ export async function chatRoutes(app: FastifyInstance) {
       id: newId(),
       room: parsed.data.room,
       content: parsed.data.content,
-      senderId: parsed.data.senderId,
+      senderId: request.userId as string,
     };
     await db.insert(chatMessages).values(message);
     const sender = await db

@@ -13,6 +13,7 @@ export async function Seed() {
       email: 'felipe@grafica.local',
       passwordHash: hashPassword('admin123'),
       role: 'DEV_MASTER',
+      avatar: '/users/felipeneneu.jfif',
     });
     await db.insert(users).values({
       id: newId(),
@@ -21,6 +22,8 @@ export async function Seed() {
       passwordHash: hashPassword('operador123'),
       role: 'OPERATOR',
     });
+  } else if (!existing.avatar) {
+    await db.update(users).set({ avatar: '/users/felipeneneu.jfif' }).where(eq(users.id, existing.id));
   }
 
   const items = await db.select().from(stockItems).all();

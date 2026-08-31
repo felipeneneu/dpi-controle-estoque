@@ -18,8 +18,8 @@ const createItemSchema = z.object({
   subType: z.string().optional(),
   unit: z.enum(Units),
   width: z.number().positive().optional(),
-  currentQuantity: z.number().optional(),
-  minQuantity: z.number().optional(),
+  currentQuantity: z.number().nonnegative().optional(),
+  minQuantity: z.number().nonnegative().optional(),
   imageUrl: z.string().optional(),
 });
 
@@ -30,7 +30,6 @@ const transactionSchema = z.object({
   type: z.enum(TransactionTypes),
   quantity: z.number().positive(),
   reason: z.string().optional(),
-  userId: z.string().min(1),
 });
 
 type StockStatus = 'AVAILABLE' | 'LOW_STOCK' | 'OUT_OF_STOCK';
@@ -81,8 +80,7 @@ export async function stockRoutes(app: FastifyInstance) {
     schema: {
       tags: ['Estoque'],
       summary: 'Listar itens de estoque',
-      description: 'Lista itens de estoque, com vínculo opcional de máquinas (parametro category).',
-      security: [],
+      description: 'Lista itens de estoque, com vínculo opcional de máquinas (parametro category). Requer autenticação.',
       querystring: {
         type: 'object',
         properties: {
@@ -91,8 +89,10 @@ export async function stockRoutes(app: FastifyInstance) {
       },
       response: {
         200: { type: 'array', items: stockItemResponseSchema },
+        401: { type: 'object', properties: { error: { type: 'string' } } },
       },
     },
+    preHandler: [authenticate],
   }, async (request) => {
     const query = request.query as { category?: string };
     const rows = query.category
@@ -269,13 +269,12 @@ export async function stockRoutes(app: FastifyInstance) {
       description: 'Registra entrada (IN), saída (OUT) ou ajuste (ADJUSTMENT) de estoque. Gera alertas (notificação + WhatsApp) quando o item fica com estoque baixo ou zerado.',
       body: {
         type: 'object',
-        required: ['itemId', 'type', 'quantity', 'userId'],
+        required: ['itemId', 'type', 'quantity'],
         properties: {
           itemId: { type: 'string', minLength: 1 },
           type: { type: 'string', enum: [...TransactionTypes] },
           quantity: { type: 'number', exclusiveMinimum: 0 },
           reason: { type: 'string' },
-          userId: { type: 'string', minLength: 1 },
         },
       },
       response: {
@@ -289,14 +288,19 @@ export async function stockRoutes(app: FastifyInstance) {
           },
         },
         400: { type: 'object', properties: { error: { type: 'string' } } },
+        403: { type: 'object', properties: { error: { type: 'string' } } },
         404: { type: 'object', properties: { error: { type: 'string' } } },
       },
     },
-    preHandler: [authenticate],
+    preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN', 'OPERATOR'])],
   }, async (request, reply) => {
     const parsed = transactionSchema.safeParse(request.body);
     if (!parsed.success) return reply.code(400).send({ error: 'Invalid input' });
-    const { itemId, type, quantity, reason, userId } = parsed.data;
+    const { itemId, type, quantity, reason } = parsed.data;
+    if (type === 'ADJUSTMENT' && request.userRole !== 'DEV_MASTER' && request.userRole !== 'ADMIN') {
+      return reply.code(403).send({ error: 'Only managers can adjust stock' });
+    }
+    const userId = request.userId as string;
     const item = await db.select().from(stockItems).where(eq(stockItems.id, itemId)).get();
     if (!item) return reply.code(404).send({ error: 'Item not found' });
 
@@ -335,10 +339,10 @@ export async function stockRoutes(app: FastifyInstance) {
       const waPhone = await getDestinationPhone();
       if (waEnabled && waPhone) {
         const widthLabel = item.width ? ` (largura ${item.width} m)` : '';
-        await sendWhatsApp(
+        sendWhatsApp(
           waPhone,
           `⚠️ *ALERTA DE ESTOQUE — GraficaOS*\n\n${item.name}${widthLabel}\nStatus: ${status === 'LOW_STOCK' ? 'ESTOQUE BAIXO' : 'ESTOQUE ZERADO'}\nQuantidade atual: ${newQty} ${item.unit}\nMínimo: ${item.minQuantity} ${item.unit}`,
-        );
+        ).catch(() => {});
       }
     }
 
