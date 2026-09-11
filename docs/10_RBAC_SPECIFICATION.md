@@ -13,6 +13,9 @@
 | **Ajustar Manualmente Estoque** | ✅ | ✅ | ❌ |
 | **Gerenciar Usuários e Permissões**| ✅ | ❌ | ❌ |
 | **Visualizar Audit Logs do Sistema**| ✅ | ✅ | ❌ |
+| **Receber Jobs Mimaki (M2M)** | ✅ (secret) | ❌ | ❌ |
+| **Vincular Material Mimaki** | ✅ | ✅ | ✅ |
+| **Listar Jobs Mimaki** | ✅ | ✅ | ✅ |
 
 ---
 

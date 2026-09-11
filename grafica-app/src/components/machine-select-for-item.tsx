@@ -11,18 +11,19 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { api, type Machine, type StockItem } from "@/lib/api";
+import { type Machine, type StockItem } from "@/lib/api";
+import { useUpdateItemMachines } from "@/lib/queries/machines";
 
 type Props = {
   item: StockItem;
   machines: Machine[];
-  onSaved?: () => void;
 };
 
-export default function MachineSelectForItem({ item, machines, onSaved }: Props) {
+export default function MachineSelectForItem({ item, machines }: Props) {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
-  const [busy, setBusy] = useState(false);
+  const updateItemMachines = useUpdateItemMachines();
+  const busy = updateItemMachines.isPending;
 
   function openDialog() {
     setSelected(item.machineIds ?? []);
@@ -34,19 +35,12 @@ export default function MachineSelectForItem({ item, machines, onSaved }: Props)
   }
 
   async function save() {
-    setBusy(true);
     try {
-      await api(`/api/stock-items/${item.id}/machines`, {
-        method: "PATCH",
-        body: JSON.stringify({ machineIds: selected }),
-      });
+      await updateItemMachines.mutateAsync({ id: item.id, machineIds: selected });
       toast.success("Máquinas atualizadas");
       setOpen(false);
-      onSaved?.();
     } catch {
       toast.error("Falha ao salvar");
-    } finally {
-      setBusy(false);
     }
   }
 

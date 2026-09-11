@@ -15,6 +15,7 @@
    TURSO_AUTH_TOKEN="seu_token_turso_aqui"
    JWT_SECRET="segredo_super_seguro_jwt"
    PORT=3001
+   MIMAKI_INTEGRATION_SECRET="seu_secret_m2m_aqui"
    ```
    > Nunca commite `.env*` no git (é gitignored). O instalador **não embute**
    > mais `.env`.

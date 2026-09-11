@@ -1,6 +1,11 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,22 +29,51 @@ type Panel = "menu" | "confirm-logout" | "confirm-quit" | null;
 const OVERLAY_SELECTOR =
   '[data-slot="dialog-content"], [data-slot="dropdown-menu-content"]';
 
-export function EscapeActionsMenu() {
+type EscapeActionsMenuProps = {
+  /**
+   * "full" mostra "Sair" e "Fechar o app" (dashboard).
+   * "quit-only" mostra apenas "Fechar o app" (tela de login, sem sessão).
+   */
+  mode?: "full" | "quit-only";
+};
+
+export function EscapeActionsMenu({ mode = "full" }: EscapeActionsMenuProps) {
   const router = useRouter();
   const isElectron = useSyncExternalStore(
     () => () => {},
     () => typeof window.grafica?.quit === "function",
     () => false
   );
-  const [panel, setPanel] = useState<Panel>(null);
+  const [panel, setPanelState] = useState<Panel>(null);
+  const panelRef = useRef<Panel>(null);
+
+  function setPanel(next: Panel) {
+    panelRef.current = next;
+    setPanelState(next);
+  }
 
   useEffect(() => {
     if (!isElectron) return;
 
+    // Gerenciamos o ESC manualmente (abrir/fechar). O stopImmediatePropagation
+    // impede que o mesmo keydown chegue ao useDismiss do base-ui, que fecharia
+    // o dialog logo após abrir (era a causa do "piscar").
     function onKeyDown(event: KeyboardEvent) {
       if (event.key !== "Escape") return;
-      if (document.querySelector(OVERLAY_SELECTOR)) return;
+
+      const otherOverlay = document.querySelector(OVERLAY_SELECTOR);
+      const isOwnOpen = panelRef.current !== null;
+
+      if (isOwnOpen) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        setPanel(null);
+        return;
+      }
+
+      if (otherOverlay) return;
       event.preventDefault();
+      event.stopImmediatePropagation();
       setPanel("menu");
     }
 
@@ -122,18 +156,20 @@ export function EscapeActionsMenu() {
               </DialogDescription>
             </DialogHeader>
             <div className="flex flex-col gap-2">
-              <Button
-                variant="outline"
-                size="lg"
-                className="justify-between px-4 font-semibold"
-                onClick={() => setPanel("confirm-logout")}
-              >
-                <span className="flex items-center gap-2">
-                  <RiLogoutBoxRLine className="size-5" />
-                  Sair
-                </span>
-                <RiArrowRightLine data-icon="inline-end" />
-              </Button>
+              {mode === "full" && (
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="justify-between px-4 font-semibold"
+                  onClick={() => setPanel("confirm-logout")}
+                >
+                  <span className="flex items-center gap-2">
+                    <RiLogoutBoxRLine className="size-5" />
+                    Sair
+                  </span>
+                  <RiArrowRightLine data-icon="inline-end" />
+                </Button>
+              )}
               <Button
                 variant="outline"
                 size="lg"

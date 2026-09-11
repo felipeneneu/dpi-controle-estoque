@@ -10,8 +10,10 @@ Sistema de controle de estoque e maquinário para gráfica / comunicação visua
 - **Registro de transações** — entradas (`IN`), saídas (`OUT`) e ajustes (`ADJUSTMENT`).
 - **Maquinário** — cadastro de máquinas e vínculo com os materiais que consomem.
 - **Alertas** — notificação em tempo real (Socket.IO) e disparo de WhatsApp quando um item fica com estoque baixo ou zerado.
-- **Chat interno** — mensagens em tempo real entre equipe.
+- **Chat interno** — mensagens em tempo real entre equipe (respostas de bot em DM privada).
 - **RBAC** — perfis `DEV_MASTER`, `ADMIN` e `OPERATOR` com permissões restritas por endpoint.
+- **Integração Mimaki** — recepção de jobs via M2M com dedução automática de estoque.
+- **Notificações dinâmicas** — badges em tempo real no sidebar.
 - **API documentada** — Swagger/OpenAPI em `http://localhost:3001/documentation`.
 
 ## Arquitetura
@@ -30,7 +32,7 @@ Monorepo com frontend e backend separados:
 |--------|------------|
 | Frontend | Next.js 16, React 19, Tailwind CSS v4, shadcn, Socket.IO client |
 | Backend | Fastify 5, Drizzle ORM, Turso LibSQL (SQLite), Socket.IO |
-| Integrações | WhatsApp via Baileys, alertas de estoque |
+| Integrações | WhatsApp via Baileys, Mimaki M2M, alertas de estoque |
 | Autenticação | JWT (`@fastify/jwt`) com RBAC |
 
 ## Pré-requisitos
@@ -114,6 +116,11 @@ A pasta [docs/](docs/) contém a documentação completa do sistema:
 - [08 — Engineering Guidelines](docs/08_ENGINEERING_GUIDELINES.md)
 - [09 — Ops & Infraestrutura](docs/09_OPS_AND_INFRASTRUCTURE.md)
 - [10 — RBAC Specification](docs/10_RBAC_SPECIFICATION.md)
+- [11 — Teste em 2 PCs na LAN](docs/11_TESTING_TWO_PCS_LAN.md)
+- [12 — Guia de Uso](docs/12_GUIA_DE_USO.md)
+- [13 — Conexão LAN Server/Client](docs/13_LAN_CONEXAO_SERVER_CLIENT.md)
+- [14 — Integração Mimaki](docs/14_MIMAKI_INTEGRATION.md)
+- [15 — Release Notes](docs/15_RELEASE_NOTES.md)
 
 ## Perfis e permissões
 

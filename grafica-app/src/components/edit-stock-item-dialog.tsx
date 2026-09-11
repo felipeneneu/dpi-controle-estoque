@@ -14,45 +14,40 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { api, type StockItem, type StockCategory } from "@/lib/api";
+import { type StockItem, type StockCategory } from "@/lib/api";
+import { useUpdateStockItem } from "@/lib/queries/stock";
 
 type Props = {
   item: StockItem | null;
   onClose: () => void;
-  onSaved: () => void;
 };
 
-export default function EditStockItemDialog({ item, onClose, onSaved }: Props) {
+export default function EditStockItemDialog({ item, onClose }: Props) {
+  const updateStockItem = useUpdateStockItem();
   const [name, setName] = useState(item?.name ?? "");
   const [category, setCategory] = useState<StockCategory>(item?.category ?? "PAPER_MEDIA");
   const [unit, setUnit] = useState(item?.unit ?? "m");
   const [width, setWidth] = useState(item?.width != null ? String(item.width) : "");
   const [currentQuantity, setCurrentQuantity] = useState(item ? String(item.currentQuantity) : "");
   const [minQuantity, setMinQuantity] = useState(item ? String(item.minQuantity) : "");
-  const [busy, setBusy] = useState(false);
+  const busy = updateStockItem.isPending;
 
   async function save() {
     if (!item || !name) return;
-    setBusy(true);
     try {
-      await api(`/api/stock-items/${item.id}`, {
-        method: "PUT",
-        body: JSON.stringify({
-          name,
-          category,
-          unit,
-          width: width ? Number(width) : undefined,
-          currentQuantity: currentQuantity ? Number(currentQuantity) : undefined,
-          minQuantity: minQuantity ? Number(minQuantity) : undefined,
-        }),
+      await updateStockItem.mutateAsync({
+        id: item.id,
+        name,
+        category,
+        unit,
+        width: width ? Number(width) : undefined,
+        currentQuantity: currentQuantity ? Number(currentQuantity) : undefined,
+        minQuantity: minQuantity ? Number(minQuantity) : undefined,
       });
       toast.success("Insumo atualizado");
       onClose();
-      onSaved();
     } catch {
       toast.error("Falha ao atualizar");
-    } finally {
-      setBusy(false);
     }
   }
 

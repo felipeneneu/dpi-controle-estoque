@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,14 +15,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
-import {
-  api,
-  getUser,
-  type StockItem,
-  type StockCategory,
-  CATEGORY_LABEL,
-} from "@/lib/api";
-import { useUser } from "@/hooks/use-user";
+import { toast } from "sonner";
+import { getUser, type StockItem, type StockCategory, CATEGORY_LABEL } from "@/lib/api";
+import { useStockItems, useStockTransaction, useAddRoll } from "@/lib/queries/stock";
 import { LoadingState } from "@/components/ui/spinner";
 import { RiSearchLine } from "@remixicon/react";
 
@@ -36,58 +31,68 @@ function statusBadge(status: StockItem["status"]) {
 
 export default function EstoquePage() {
   const router = useRouter();
-  const user = useUser();
-  const [items, setItems] = useState<StockItem[]>([]);
+  const itemsQuery = useStockItems();
+  const items = itemsQuery.data ?? [];
   const [filter, setFilter] = useState<"TODOS" | StockCategory>("TODOS");
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<StockItem | null>(null);
   const [qty, setQty] = useState("");
   const [reason, setReason] = useState("");
-  const [busy, setBusy] = useState(false);
+  const transaction = useStockTransaction();
 
-  const load = useCallback(() => {
-    api<StockItem[]>("/api/stock-items")
-      .then(setItems)
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
+  const [rollTarget, setRollTarget] = useState<StockItem | null>(null);
+  const [rollLabel, setRollLabel] = useState("");
+  const addRoll = useAddRoll();
 
   useEffect(() => {
     if (!getUser()) {
       router.replace("/auth");
-      return;
     }
-    load();
-  }, [load, router]);
+  }, [router]);
 
   const visible = filter === "TODOS" ? items : items.filter((i) => i.category === filter);
-  const visibleSearch = visible.filter((i) => !search.trim() || i.name.toLowerCase().includes(search.trim().toLowerCase()));
+  const visibleSearch = visible.filter(
+    (i) =>
+      !search.trim() ||
+      i.name.toLowerCase().includes(search.trim().toLowerCase()) ||
+      (i.code ? i.code.toLowerCase().includes(search.trim().toLowerCase()) : false),
+  );
 
   async function submitBaixa() {
-    if (!selected || !user) return;
+    if (!selected) return;
     const quantity = Number(qty);
     if (!quantity || quantity <= 0) return;
-    setBusy(true);
     try {
-      await api("/api/stock-transactions", {
-        method: "POST",
-        body: JSON.stringify({
-          itemId: selected.id,
-          type: "OUT",
-          quantity,
-          reason,
-          userId: user.id,
-        }),
+      await transaction.mutateAsync({
+        itemId: selected.id,
+        type: "OUT",
+        quantity,
+        reason: reason || undefined,
       });
       setSelected(null);
       setQty("");
       setReason("");
-      load();
     } catch {
       // toast handled later
-    } finally {
-      setBusy(false);
+    }
+  }
+
+  const loading = itemsQuery.isLoading;
+
+  function openAddRoll(item: StockItem) {
+    setRollTarget(item);
+    setRollLabel("");
+  }
+
+  async function confirmAddRoll() {
+    if (!rollTarget) return;
+    const label = rollLabel.trim() || `Rolo ${rollTarget.name.split(",")[0].trim()}`;
+    try {
+      await addRoll.mutateAsync({ id: rollTarget.id, label });
+      toast.success("Rolo criado");
+      setRollTarget(null);
+    } catch {
+      toast.error("Falha ao criar rolo");
     }
   }
 
@@ -145,7 +150,19 @@ export default function EstoquePage() {
                     <span className="text-primary font-semibold">{item.width} m</span>
                   </div>
                 ) : null}
-                <div className="mt-auto">
+                {item.code ? (
+                  <div className="flex items-center justify-between text-sm mb-1">
+                    <span className="text-muted-foreground">Código</span>
+                    <span className="text-gray-700 font-semibold">{item.code}</span>
+                  </div>
+                ) : null}
+                {item.label ? (
+                  <div className="flex items-center justify-between text-sm mb-1">
+                    <span className="text-muted-foreground">Rolo</span>
+                    <span className="text-gray-700 font-semibold">{item.label}</span>
+                  </div>
+                ) : null}
+                <div className="mt-auto flex flex-col gap-2">
                   <Button
                     variant="outline"
                     className="w-full h-11 border-primary text-primary hover:bg-brand-pink/10 font-semibold rounded-xl"
@@ -157,6 +174,13 @@ export default function EstoquePage() {
                     disabled={item.currentQuantity <= 0}
                   >
                     Dar Baixa no Estoque
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="w-full h-9 text-muted-foreground font-semibold rounded-xl"
+                    onClick={() => openAddRoll(item)}
+                  >
+                    + Adicionar rolo
                   </Button>
                 </div>
               </CardContent>
@@ -202,8 +226,39 @@ export default function EstoquePage() {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setSelected(null)}>Cancelar</Button>
-            <Button onClick={submitBaixa} disabled={busy || !qty || Number(qty) <= 0}>
-              {busy ? "Registrando…" : "Confirmar Baixa"}
+            <Button onClick={submitBaixa} disabled={transaction.isPending || !qty || Number(qty) <= 0}>
+              {transaction.isPending ? "Registrando…" : "Confirmar Baixa"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!rollTarget} onOpenChange={(open) => !open && setRollTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Adicionar rolo</DialogTitle>
+            <DialogDescription>
+              {rollTarget?.name} — um novo rolo independente será criado com o mesmo material, largura {rollTarget?.width} m.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label className="text-xs font-bold text-muted-foreground tracking-wider uppercase">Identificação do rolo</Label>
+              <Input
+                value={rollLabel}
+                onChange={(e) => setRollLabel(e.target.value)}
+                placeholder="Ex: Rolo B"
+                className="h-11 rounded-xl"
+              />
+              <p className="text-xs text-muted-foreground">Deixe vazio para usar o nome padrão.</p>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRollTarget(null)}>Cancelar</Button>
+            <Button onClick={confirmAddRoll} disabled={addRoll.isPending}>
+              {addRoll.isPending ? "Criando…" : "Criar rolo"}
             </Button>
           </DialogFooter>
         </DialogContent>

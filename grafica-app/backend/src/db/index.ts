@@ -9,4 +9,4 @@ const client = createLibsqlClient({ url, authToken });
 
 export const db: LibSQLDatabase<typeof schema> = drizzle(client, { schema });
 
-export { schema };
+export { schema, client };

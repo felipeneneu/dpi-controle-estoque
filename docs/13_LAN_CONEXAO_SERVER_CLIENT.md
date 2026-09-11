@@ -85,6 +85,8 @@ Deve retornar `{"status":"ok"}`. Se não:
 | Timeout no ping | PCs em redes diferentes | Conectar na mesma rede (Wi-Fi/roteador). |
 | Login não funciona | Backend não está de pé no PC1 | Abrir o app Server no PC1 antes. |
 | Client aponta errado | URL digitada com excesso/classe | Usar exatamente a URL da faixa verde do PC1. |
+| Mimaki M2M não conecta | Secret inválido ou não configurado | Verificar `MIMAKI_INTEGRATION_SECRET` no `.env` ou tabela `settings`. |
+| Material não deduz | Nome do material não encontrado | Verificar se o nome no Mimaki Tracker corresponde ao cadastrado (busca LIKE). |
 
 ---
 

@@ -17,6 +17,7 @@ export async function resetDb() {
     'machine_items',
     'stock_transactions',
     'notifications',
+    'whatsapp_recipients',
     'messages',
     'machine_items',
     'settings',

@@ -3,7 +3,8 @@ const os = require('node:os');
 const { app, BrowserWindow, protocol, net, ipcMain } = require('electron');
 const { pathToFileURL } = require('url');
 const path = require('node:path');
-const { spawn } = require('node:child_process');
+const { spawn, exec } = require('node:child_process');
+const { discover } = require('./discovery.js');
 
 function isPackaged() {
   return app.isPackaged;
@@ -35,6 +36,31 @@ function backendDir() {
 }
 
 let backendProcess = null;
+
+function backendPort() {
+  return Number(process.env.GRAFICA_BACKEND_PORT || process.env.PORT || 3001);
+}
+
+// Tenta liberar a porta do backend no firewall do Windows (best-effort).
+// Falha silenciosamente (apenas log) quando não há permissão de administrador.
+function openFirewallBestEffort() {
+  if (process.platform !== 'win32') return;
+  const port = backendPort();
+  const ruleName = 'GraficaOS Backend (3001)';
+  const command = `netsh advfirewall firewall delete rule name="${ruleName}"`;
+  exec(command, () => {
+    exec(
+      `netsh advfirewall firewall add rule name="${ruleName}" dir=in action=allow protocol=TCP localport=${port}`,
+      (err) => {
+        if (err) {
+          console.error('[graficaos] não foi possível liberar a porta no firewall (é preciso executar como admin).');
+          return;
+        }
+        console.log(`[graficaos] regra de firewall criada para a porta ${port}.`);
+      }
+    );
+  });
+}
 
 function lanAddresses() {
   const addrs = [];
@@ -84,27 +110,98 @@ function startBackend() {
   }
   const args = ['--env-file=.env', entry];
   console.log('[graficaos] spawnando backend:', process.env.GRAFICA_NODE || 'node', args.join(' '), '@', dir);
+
+  // Pipe child output (no flashing console window) and mirror it to a log file + Electron stdout.
+  const logPath = path.join(app.getPath('userData'), 'backend.log');
+  const logStream = fs.createWriteStream(logPath, { flags: 'a' });
+  const tee = (stream, tag) =>
+    stream.on('data', (d) => {
+      logStream.write(`[${tag}] ${d}`);
+      process.stdout.write(`[${tag}] ${d}`);
+    });
+
   backendProcess = spawn(process.env.GRAFICA_NODE || 'node', args, {
     cwd: dir,
-    stdio: 'inherit',
+    stdio: ['ignore', 'pipe', 'pipe'],
     env: {
       ...process.env,
       GRAFICA_ELECTRON: '1',
+      // Backend runtime state (WhatsApp session) must live in a writable per-user dir,
+      // NOT next to the app in C:\Program Files (EPERM on mkdir).
+      GRAFICA_WA_AUTH_DIR: path.join(app.getPath('userData'), 'wa_auth'),
     },
   });
-  backendProcess.on('error', (err) => console.error('[graficaos] falha ao spawnar backend:', err.message));
+  if (backendProcess.stdout) tee(backendProcess.stdout, 'backend:out');
+  if (backendProcess.stderr) tee(backendProcess.stderr, 'backend:err');
+
+  backendProcess.on('error', (err) => {
+    console.error('[graficaos] falha ao spawnar backend:', err.message);
+    logStream.end();
+  });
+  backendProcess.on('exit', (code, signal) => {
+    console.error(`[graficaos] backend encerrou inesperadamente (code=${code}, signal=${signal})`);
+    logStream.end();
+  });
 }
 
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { standard: true, secure: true, supportFetchAPI: true } },
 ]);
 
-function createWindow() {
+const CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline'",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: http: https:",
+  "font-src 'self' data:",
+  "connect-src 'self' http: https: ws: wss:",
+  "media-src 'self' http: https:",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+].join('; ');
+
+const DEV_UI_URL = process.env.ELECTRON_START_URL || process.env.GRAFICA_DEV_UI_URL || 'http://localhost:3000';
+
+function isStaticMode() {
+  return isPackaged() || process.argv.includes('--static') || process.env.GRAFICA_STATIC_PREVIEW === '1';
+}
+
+async function resolveAppUrl() {
+  if (isStaticMode()) {
+    return 'app://./index.html';
+  }
+
+  console.log(`[graficaos] verificando servidor dev da UI em ${DEV_UI_URL}...`);
+  const start = Date.now();
+  // Aguarda até 15 segundos para o Next.js subir caso tenha iniciado concorrentemente
+  while (Date.now() - start < 15000) {
+    try {
+      const res = await net.fetch(DEV_UI_URL);
+      if (res.ok || res.status < 500) {
+        console.log(`[graficaos] servidor dev detectado em ${DEV_UI_URL} — Live Reload ativo.`);
+        return DEV_UI_URL;
+      }
+    } catch {}
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  }
+
+  console.log('[graficaos] servidor dev não detectado a tempo, caindo para arquivos estáticos exportados.');
+  return 'app://./index.html';
+}
+
+function windowIcon() {
+  const icon = path.join(__dirname, 'build', 'icon.png');
+  return fs.existsSync(icon) ? icon : undefined;
+}
+
+async function createWindow() {
   const win = new BrowserWindow({
     width: 1280,
     height: 800,
     fullscreen: true,
-    backgroundColor: '#1e1b4b',
+    icon: windowIcon(),
+    backgroundColor: '#fafaf9',
     show: false,
     autoHideMenuBar: true,
     webPreferences: {
@@ -115,9 +212,23 @@ function createWindow() {
     },
   });
 
-  win.once('ready-to-show', () => win.show());
+  win.once('ready-to-show', () => {
+    win.webContents.executeJavaScript(`
+      localStorage.removeItem('grafica_token');
+      localStorage.removeItem('grafica_user');
+    `);
+    win.show();
+  });
   win.webContents.on('did-fail-load', (_e, code, desc, validatedURL) => {
     console.error('[graficaos] did-fail-load', code, desc, validatedURL);
+    if (!isStaticMode() && validatedURL.startsWith(DEV_UI_URL)) {
+      setTimeout(() => {
+        if (!win.isDestroyed()) {
+          console.log('[graficaos] tentando recarregar servidor dev...');
+          win.loadURL(DEV_UI_URL);
+        }
+      }, 1000);
+    }
   });
   win.webContents.on('console-message', (_e, _level, message) => {
     console.log('[renderer]', message);
@@ -141,7 +252,8 @@ function createWindow() {
       }
     });
   }
-  win.loadURL('app://./index.html');
+  const targetUrl = await resolveAppUrl();
+  win.loadURL(targetUrl);
 }
 
 app.whenReady().then(async () => {
@@ -151,15 +263,47 @@ app.whenReady().then(async () => {
     let rel = decodeURIComponent(url.pathname);
     if (host && host !== '.') rel = '/' + host + rel;
     if (rel === '/' || rel === '') rel = '/index.html';
+    while (rel.length > 1 && rel.endsWith('/')) rel = rel.slice(0, -1);
     if (rel.includes('..')) {
       return new Response('Forbidden', { status: 403 });
     }
     const root = path.resolve(outDir());
-    const filePath = path.resolve(root, '.' + rel);
-    if (filePath !== root && !filePath.startsWith(root + path.sep)) {
+    const resolveInside = (candidate) => {
+      const abs = path.resolve(root, '.' + candidate);
+      if (abs !== root && !abs.startsWith(root + path.sep)) return null;
+      return abs;
+    };
+    let target = resolveInside(rel);
+    if (!target) {
       return new Response('Forbidden', { status: 403 });
     }
-    return net.fetch(pathToFileURL(filePath).toString()).catch(() => new Response('Not found', { status: 404 }));
+    if (path.extname(rel) === '') {
+      const exists = fs.existsSync(target);
+      if (!exists || fs.statSync(target).isDirectory()) {
+        const html = resolveInside(rel + '.html');
+        target = html && fs.existsSync(html) ? html : null;
+      }
+      if (!target) {
+        // Fallback para SPA (Single Page Application): rotas dinâmicas como /machine/[id]/[jobId]
+        const indexHtml = resolveInside('/index.html');
+        target = indexHtml && fs.existsSync(indexHtml) ? indexHtml : null;
+      }
+      if (!target) {
+        return new Response('Not found', { status: 404 });
+      }
+    }
+    return net
+      .fetch(pathToFileURL(target).toString())
+      .then((res) => {
+        const contentType = res.headers.get('content-type') || '';
+        if (contentType.includes('text/html')) {
+          const headers = new Headers(res.headers);
+          headers.set('Content-Security-Policy', CSP);
+          return new Response(res.body, { status: res.status, headers });
+        }
+        return res;
+      })
+      .catch(() => new Response('Not found', { status: 404 }));
   });
 
   if (buildMode() === 'server') {
@@ -169,6 +313,7 @@ app.whenReady().then(async () => {
     } else {
       startBackend();
     }
+    openFirewallBestEffort();
   }
   createWindow();
 
@@ -203,4 +348,8 @@ ipcMain.handle('grafica:net', () => ({
 ipcMain.handle('grafica:quit', () => {
   const win = BrowserWindow.getAllWindows()[0];
   if (win) win.close();
+});
+
+ipcMain.handle('grafica:discover', () => {
+  return discover();
 });

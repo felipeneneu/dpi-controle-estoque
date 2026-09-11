@@ -5,6 +5,9 @@ directories:
 files:
   - main.js
   - preload.js
+  - discovery.js
+  - build/icon.png
+  - build/icon.ico
 extraResources:
   - from: ../grafica-app/out
     to: graficaos/ui

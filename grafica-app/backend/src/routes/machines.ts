@@ -1,10 +1,14 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
-import { eq } from 'drizzle-orm';
-import { machines, machineItems } from '../db/schema.js';
+import { eq, desc } from 'drizzle-orm';
+import { machines, machineItems, machineTelemetry } from '../db/schema.js';
 import { db } from '../db/index.js';
 import { newId } from '../lib/ids.js';
 import { authenticate, authorize } from '../middleware/auth.js';
+import { checkPrinterOnline } from '../agents/hp-latex/downloader.js';
+import { getHpTelemetry } from '../agents/hp-latex/telemetry.js';
+import { checkUrlOnline } from '../agents/konica/fetcher.js';
+import { getKonicaDeviceInfo, tonerByColor } from '../agents/konica/device-info.js';
 
 const machineSchema = z.object({
   name: z.string().min(1),
@@ -12,6 +16,7 @@ const machineSchema = z.object({
   model: z.string().min(1),
   technology: z.string().min(1),
   imageUrl: z.string().optional(),
+  ip: z.string().optional(),
   status: z.enum(['ACTIVE', 'MAINTENANCE', 'INACTIVE']).optional(),
 });
 
@@ -26,6 +31,7 @@ const machineResponseSchema = {
     model: { type: 'string' },
     technology: { type: 'string' },
     imageUrl: { type: 'string', nullable: true },
+    ip: { type: 'string', nullable: true },
     status: { type: 'string', enum: ['ACTIVE', 'MAINTENANCE', 'INACTIVE'] },
     itemIds: { type: 'array', items: { type: 'string' } },
     createdAt: { type: 'string', format: 'date-time' },
@@ -70,6 +76,7 @@ export async function machineRoutes(app: FastifyInstance) {
           model: { type: 'string', minLength: 1 },
           technology: { type: 'string', minLength: 1 },
           imageUrl: { type: 'string' },
+          ip: { type: 'string' },
           status: { type: 'string', enum: ['ACTIVE', 'MAINTENANCE', 'INACTIVE'] },
         },
       },
@@ -105,6 +112,7 @@ export async function machineRoutes(app: FastifyInstance) {
           model: { type: 'string', minLength: 1 },
           technology: { type: 'string', minLength: 1 },
           imageUrl: { type: 'string' },
+          ip: { type: 'string' },
           status: { type: 'string', enum: ['ACTIVE', 'MAINTENANCE', 'INACTIVE'] },
         },
       },
@@ -182,5 +190,117 @@ export async function machineRoutes(app: FastifyInstance) {
     const { id } = request.params as { id: string };
     await db.delete(machines).where(eq(machines.id, id));
     return reply.code(204).send();
+  });
+
+  app.get('/api/machines/check-connection', {
+    schema: {
+      tags: ['Máquinas'],
+      summary: 'Verificar conexão da máquina',
+      description: 'Verifica se uma máquina com IP configurado está acessível na rede. Retorna status de conexão.',
+      querystring: {
+        type: 'object',
+        required: ['ip'],
+        properties: {
+          ip: { type: 'string', description: 'IP da máquina para testar conexão' },
+        },
+      },
+      response: {
+        200: {
+          type: 'object',
+          required: ['connected'],
+          properties: {
+            connected: { type: 'boolean' },
+            ip: { type: 'string' },
+            responseTimeMs: { type: 'number' },
+          },
+        },
+      },
+    },
+    preHandler: [authenticate],
+  }, async (request) => {
+    const { ip } = request.query as { ip: string };
+
+    if (!ip) {
+      return { connected: false, ip: '', responseTimeMs: 0 };
+    }
+
+    const start = Date.now();
+    const hasPort = /:\d+$/.test(ip);
+    const connected = hasPort
+      ? await checkUrlOnline(ip, 3000)
+      : await checkPrinterOnline(ip, 3000);
+    const responseTimeMs = Date.now() - start;
+
+    return { connected, ip, responseTimeMs };
+  });
+
+  app.get('/api/machines/:id/telemetry', {
+    schema: {
+      tags: ['Máquinas'],
+      summary: 'Obter últimas informações da máquina',
+      description: 'Retorna o último snapshot de telemetria registrado para a máquina (tinta, mídia, status). Se houver IP configurado, busca telemetria ao vivo do equipamento (HP EWS ou AccurioPrint conforme o tipo da máquina).',
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: { id: { type: 'string' } },
+      },
+      response: {
+        200: { type: 'object', additionalProperties: true },
+        404: { type: 'object', properties: { error: { type: 'string' } } },
+      },
+    },
+    preHandler: [authenticate],
+  }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const machine = await db.select().from(machines).where(eq(machines.id, id)).get();
+    if (!machine) return reply.code(404).send({ error: 'Not found' });
+
+    const latest = await db
+      .select()
+      .from(machineTelemetry)
+      .where(eq(machineTelemetry.machineId, id))
+      .orderBy(desc(machineTelemetry.createdAt))
+      .limit(1)
+      .get();
+
+    if (machine.ip) {
+      try {
+        const isKonica =
+          /konica|accurio/i.test(machine.brand) || machine.technology === 'Laser';
+        if (isKonica) {
+          // IP pode ser só o endereço (192.168.234.68) ou com porta (:30083);
+          // nesse caso o PrintManager fica no IP (o KONICA_URL default já aponta p/ a porta).
+          const info = await getKonicaDeviceInfo(machine.ip.includes(':') ? machine.ip : undefined);
+          const byColor = tonerByColor(info);
+          return {
+            ...(latest ?? { machineId: id }),
+            live: {
+              online: info.online,
+              statusSeverity: info.statusSeverity,
+              statusMessage: info.statusMessage,
+              mediaName: info.trays[0]?.paperName,
+              tonerCyanPct: byColor.C,
+              tonerMagentaPct: byColor.M,
+              tonerYellowPct: byColor.Y,
+              tonerBlackPct: byColor.K,
+              wasteTonerLevel: info.wasteTonerLevel,
+              trays: info.trays,
+            },
+          };
+        }
+        const resolved = await getHpTelemetry(machine.ip);
+        return { ...(latest ?? { machineId: id }), live: resolved };
+      } catch {
+        // fall through to stored snapshot
+      }
+    }
+
+    if (latest) {
+      return {
+        ...latest,
+        trays: latest.traysJson ? JSON.parse(latest.traysJson) : undefined,
+      };
+    }
+    return { machineId: id, online: false };
   });
 }

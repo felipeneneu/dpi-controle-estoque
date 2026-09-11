@@ -9,12 +9,16 @@
   "scripts": {
     "dev:ui": "npm --prefix grafica-app run dev",
     "dev:backend": "npm --prefix grafica-app/backend run dev",
+    "dev:web": "concurrently --names backend,ui --prefix-colors cyan,magenta \"npm run dev:backend\" \"npm run dev:ui\"",
+    "app": "concurrently --names backend,ui,electron --prefix-colors cyan,magenta,yellow \"npm run dev:backend\" \"npm run dev:ui\" \"npm run start:electron\"",
+    "app:preview": "npm run build:export && concurrently --names backend,electron --prefix-colors cyan,yellow \"npm run dev:backend\" \"npm run start:electron:static\"",
     "build:export": "npm --prefix grafica-app run build",
     "build:backend": "npm --prefix grafica-app/backend run build",
     "db:push": "npm --prefix grafica-app/backend run db:push",
     "db:seed": "npm --prefix grafica-app/backend run seed",
     "lint": "npm --prefix grafica-app run lint && npm --prefix grafica-app/backend run lint",
     "start:electron": "npm --prefix electron run start",
+    "start:electron:static": "npm --prefix electron run start:static",
     "start:electron:server": "npm --prefix electron run start:server",
     "dev:electron": "npm run build:export && npm run build:backend && npm --prefix electron run start:server",
     "e2e:build": "npm run build:export && npm run build:backend",
@@ -25,6 +29,7 @@
     "package:client": "npm run build:export && npm --prefix electron run package:client"
   },
   "devDependencies": {
-    "@playwright/test": "^1.62.1"
+    "@playwright/test": "^1.62.1",
+    "concurrently": "^10.0.5"
   }
 }

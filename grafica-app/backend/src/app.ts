@@ -15,9 +15,20 @@ import { userRoutes } from './routes/users.js';
 import { chatRoutes } from './routes/chat.js';
 import { notificationRoutes } from './routes/notifications.js';
 import { whatsappRoutes } from './routes/whatsapp.js';
+import { reportRoutes } from './routes/reports.js';
+import { jobRoutes } from './routes/jobs.js';
+import { mimakiRoutes } from './routes/mimaki.js';
 import { USERS_PUBLIC_DIR } from './lib/paths.js';
+import { isAllowedOrigin } from './cors.js';
 
 export const ALLOWED_ROOMS = ['geral', 'estoque', 'producao'];
+
+function isAllowedRoom(room: string): boolean {
+  if (ALLOWED_ROOMS.includes(room)) return true;
+  if (room.startsWith('dm:') && /^dm:[^:]+:[^:]+$/.test(room)) return true;
+  if (room.startsWith('user:') && /^user:[^:]+$/.test(room)) return true;
+  return false;
+}
 
 export async function buildApp(opts: { logger?: boolean } = {}) {
   const app = Fastify({ logger: opts.logger ?? false });
@@ -25,9 +36,14 @@ export async function buildApp(opts: { logger?: boolean } = {}) {
   const corsOrigin =
     (process.env.CORS_ORIGINS &&
       process.env.CORS_ORIGINS.split(',').map((o) => o.trim()).filter(Boolean)) ||
-    ['app://', 'http://localhost:3001', 'http://127.0.0.1:3001'];
+    [];
 
-  await app.register(cors, { origin: corsOrigin });
+  await app.register(cors, {
+    origin: (origin, cb) => {
+      if (isAllowedOrigin(origin, corsOrigin)) return cb(null, true);
+      return cb(new Error('CORS not allowed'), false);
+    },
+  });
   await app.register(rateLimit, { max: 100, timeWindow: '1 minute' });
 
   if (!process.env.JWT_SECRET || process.env.JWT_SECRET === 'dev_secret_change_me') {
@@ -60,6 +76,9 @@ export async function buildApp(opts: { logger?: boolean } = {}) {
         { name: 'Chat', description: 'Mensagens em tempo real (Socket.IO)' },
         { name: 'Notificações', description: 'Alertas de estoque' },
         { name: 'WhatsApp', description: 'Integração WhatsApp para alertas' },
+        { name: 'Relatórios', description: 'Consumo e métricas por máquina' },
+        { name: 'Jobs', description: 'Jobs de impressão auto-detectados' },
+        { name: 'Mimaki Integration', description: 'Integração M2M com Mimaki Tracker' },
         { name: 'Sistema', description: 'Health check e status do serviço' },
       ],
       security: [{ bearerAuth: [] }],
@@ -87,12 +106,27 @@ export async function buildApp(opts: { logger?: boolean } = {}) {
     });
   }
 
+  app.addContentTypeParser('application/json', { parseAs: 'string' }, (_req, body, done) => {
+    if (!body || (typeof body === 'string' && body.trim() === '')) {
+      return done(null, undefined);
+    }
+    try {
+      const json = JSON.parse(body as string);
+      done(null, json);
+    } catch (err) {
+      done(err as Error, undefined);
+    }
+  });
+
   app.setErrorHandler((error: FastifyError, request: FastifyRequest, reply: FastifyReply) => {
     if (error.validation) {
       return reply.code(400).send({ error: 'Invalid input', details: error.validation });
     }
+    if (error.statusCode && error.statusCode < 500) {
+      return reply.code(error.statusCode).send({ error: error.message });
+    }
     app.log.error(error);
-    reply.code(500).send({ error: 'Internal Server Error' });
+    reply.code(500).send({ error: error.message || 'Internal Server Error' });
   });
 
   const io = new SocketIOServer(app.server, { cors: { origin: corsOrigin } });
@@ -106,6 +140,9 @@ export async function buildApp(opts: { logger?: boolean } = {}) {
   await app.register(chatRoutes);
   await app.register(notificationRoutes);
   await app.register(whatsappRoutes);
+  await app.register(reportRoutes);
+  await app.register(jobRoutes);
+  await app.register(mimakiRoutes);
 
   app.get('/health', {
     schema: {
@@ -137,13 +174,20 @@ export async function buildApp(opts: { logger?: boolean } = {}) {
   });
 
   io.on('connection', (socket) => {
+    const userId = (socket as unknown as { data: { user: { id: string } } }).data?.user?.id;
+    if (userId) {
+      socket.join(`user:${userId}`);
+    }
+
     socket.on('chat:join', (room: string) => {
-      if (ALLOWED_ROOMS.includes(room)) {
+      if (isAllowedRoom(room)) {
         socket.join(room);
       }
     });
     socket.on('chat:leave', (room: string) => {
-      socket.leave(room);
+      if (isAllowedRoom(room)) {
+        socket.leave(room);
+      }
     });
   });
 

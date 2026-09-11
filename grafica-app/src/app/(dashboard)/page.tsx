@@ -1,37 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  api,
-  getUser,
-  type StockItem,
-  type StockTransaction,
-} from "@/lib/api";
-import { useUser } from "@/hooks/use-user";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/hooks/use-user";
+import { useStockItems, useStockTransactions } from "@/lib/queries/stock";
+import { getUser, type StockTransaction } from "@/lib/api";
 import { RiBox3Line, RiAlertLine, RiSwapLine, RiPrinterLine } from "@remixicon/react";
 import { LoadingState } from "@/components/ui/spinner";
 
 export default function DashboardPage() {
   const router = useRouter();
   const user = useUser();
-  const [items, setItems] = useState<StockItem[]>([]);
-  const [transactions, setTransactions] = useState<StockTransaction[]>([]);
-  const [loading, setLoading] = useState(true);
+  const itemsQuery = useStockItems();
+  const transactionsQuery = useStockTransactions();
+  const items = itemsQuery.data ?? [];
+  const transactions = transactionsQuery.data ?? [];
+  const loading = itemsQuery.isLoading || transactionsQuery.isLoading;
 
   useEffect(() => {
     if (!getUser()) {
       router.replace("/auth");
-      return;
     }
-    Promise.all([api<StockItem[]>("/api/stock-items"), api<StockTransaction[]>("/api/stock-transactions")])
-      .then(([it, tx]) => {
-        setItems(it);
-        setTransactions(tx);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
   }, [router]);
 
   const totalItems = items.length;
@@ -39,7 +29,7 @@ export default function DashboardPage() {
     (i) => i.status === "LOW_STOCK" || i.status === "OUT_OF_STOCK"
   );
   const totalValue = items.reduce((acc, i) => acc + i.currentQuantity, 0);
-  const recentTx = [...transactions].slice(-6).reverse();
+  const recentTx: StockTransaction[] = [...transactions].slice(-6).reverse();
 
   const stats = [
     { label: "Insumos cadastrados", value: totalItems, icon: RiBox3Line, color: "text-primary bg-primary/10" },

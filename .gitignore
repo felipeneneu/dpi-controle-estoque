@@ -29,10 +29,14 @@ wa_auth/
 **/wa_auth/
 
 # local runtime database (regenerate with `npm run db:seed`)
-local-replica.db
-**/local-replica.db*
+*.db
+**/*.db
 *.db-wal
 *.db-shm
+*.sqlite*
+**/*.sqlite*
+local-replica.db
+**/local-replica.db*
 
 # os / editor
 .DS_Store

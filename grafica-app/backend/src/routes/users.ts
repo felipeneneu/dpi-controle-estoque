@@ -1,13 +1,15 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
-import { eq } from 'drizzle-orm';
+import { eq, or, and, like, sql } from 'drizzle-orm';
 import { readdir } from 'node:fs/promises';
-import { users } from '../db/schema.js';
-import { db } from '../db/index.js';
+import { users, chatMessages, notifications, stockTransactions } from '../db/schema.js';
+import { db, client } from '../db/index.js';
 import { newId } from '../lib/ids.js';
 import { USERS_PUBLIC_DIR } from '../lib/paths.js';
 import { hashPassword } from '../lib/password.js';
 import { authenticate, authorize } from '../middleware/auth.js';
+
+export const PROTECTED_SYSTEM_USERS = ['system', 'hp-agent-system', 'konica-agent-system'];
 
 const userCreateSchema = z.object({
   name: z.string().min(1),
@@ -115,13 +117,17 @@ export async function userRoutes(app: FastifyInstance) {
       response: {
         201: userPublicResponseSchema,
         400: { type: 'object', properties: { error: { type: 'string' } } },
+        403: { type: 'object', properties: { error: { type: 'string' } } },
         409: { type: 'object', properties: { error: { type: 'string' } } },
       },
     },
-    preHandler: [authenticate, authorize(['DEV_MASTER'])],
+    preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN'])],
   }, async (request, reply) => {
     const parsed = userCreateSchema.safeParse(request.body);
     if (!parsed.success) return reply.code(400).send({ error: 'Invalid input' });
+    if (parsed.data.role === 'DEV_MASTER' && request.userRole !== 'DEV_MASTER') {
+      return reply.code(403).send({ error: 'Apenas DEV_MASTER pode criar usuários DEV_MASTER' });
+    }
     const existing = await db.select().from(users).where(eq(users.email, parsed.data.email)).get();
     if (existing) return reply.code(409).send({ error: 'Email already registered' });
     const user = {
@@ -213,22 +219,78 @@ export async function userRoutes(app: FastifyInstance) {
     schema: {
       tags: ['Usuários'],
       summary: 'Excluir usuário',
-      description: 'Remove um usuário (requer DEV_MASTER; impossível excluir a si mesmo).',
+      description: 'Remove um usuário (requer DEV_MASTER ou ADMIN; impossível excluir a si mesmo ou bots/agentes do sistema).',
       params: {
         type: 'object',
         required: ['id'],
         properties: { id: { type: 'string' } },
       },
       response: {
-        204: { type: 'null' },
+        200: { type: 'object', properties: { ok: { type: 'boolean' } } },
         400: { type: 'object', properties: { error: { type: 'string' } } },
+        403: { type: 'object', properties: { error: { type: 'string' } } },
+        404: { type: 'object', properties: { error: { type: 'string' } } },
+        500: { type: 'object', properties: { error: { type: 'string' } } },
       },
     },
-    preHandler: [authenticate, authorize(['DEV_MASTER'])],
+    preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN'])],
   }, async (request, reply) => {
     const { id } = request.params as { id: string };
-    if (id === request.userId) return reply.code(400).send({ error: 'Cannot delete yourself' });
-    await db.delete(users).where(eq(users.id, id));
-    return reply.code(204).send();
+
+    if (PROTECTED_SYSTEM_USERS.includes(id)) {
+      return reply.code(400).send({ error: 'Usuários de sistema (bot e agentes) não podem ser excluídos.' });
+    }
+
+    if (id === request.userId) {
+      return reply.code(400).send({ error: 'Não é possível excluir seu próprio usuário.' });
+    }
+
+    const target = await db.select().from(users).where(eq(users.id, id)).get();
+    if (!target) {
+      return reply.code(404).send({ error: 'Usuário não encontrado.' });
+    }
+
+    if (target.role === 'DEV_MASTER' && request.userRole !== 'DEV_MASTER') {
+      return reply.code(403).send({ error: 'Apenas DEV_MASTER pode excluir outro DEV_MASTER.' });
+    }
+
+    try {
+      // 1. Remove notificações associadas a este usuário
+      await db.delete(notifications).where(eq(notifications.userId, id));
+
+      // 2. Preserva o nome do operador nas movimentações de estoque e anula a referência de FK
+      //    COALESCE preserva userName já definido; preenche apenas se for NULL.
+      //    userId é sempre zerado para remover a referência FK (antiga ou nova schema).
+      await db.update(stockTransactions)
+        .set({ userName: sql`COALESCE(user_name, ${target.name})`, userId: null })
+        .where(eq(stockTransactions.userId, id));
+
+      // 3. Remove em cascata todas as mensagens enviadas pelo usuário (canais públicos e privados)
+      // e todas as conversas diretas privadas (DMs) onde o usuário participou
+      await db.delete(chatMessages).where(
+        or(
+          eq(chatMessages.senderId, id),
+          eq(chatMessages.recipientId, id),
+          like(chatMessages.room, `dm:${id}:%`),
+          like(chatMessages.room, `dm:%:${id}`),
+        ),
+      );
+
+      // 4. Exclui o usuário — usa raw SQL com FK desligado para ser seguro em qualquer estado do schema
+      await client.batch([
+        { sql: 'PRAGMA foreign_keys=OFF', args: [] },
+        { sql: 'DELETE FROM users WHERE id = ?', args: [id] },
+        { sql: 'PRAGMA foreign_keys=ON', args: [] },
+      ]);
+
+      // 5. Notifica clientes conectados via Socket.IO
+      app.io?.emit('chat:user_deleted', { userId: id });
+
+      return reply.code(200).send({ ok: true });
+    } catch (err: unknown) {
+      request.log.error(err, `[users] Erro ao excluir usuário ${id}:`);
+      const msg = err instanceof Error ? err.message : 'Erro ao excluir usuário';
+      return reply.code(500).send({ error: msg });
+    }
   });
 }

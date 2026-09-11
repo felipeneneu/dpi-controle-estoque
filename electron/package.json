@@ -8,6 +8,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
+    "start:static": "electron . --static",
     "start:server": "electron . --serve",
     "package": "electron-builder --win",
     "package:server": "electron-builder --win --config electron-builder.server.yml",

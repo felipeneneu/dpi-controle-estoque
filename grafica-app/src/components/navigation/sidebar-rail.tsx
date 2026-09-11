@@ -5,21 +5,33 @@ import { usePathname } from 'next/navigation';
 import { RiPrinterLine, RiStackLine, RiDropLine, RiChat3Line, RiSettings4Line, RiLayoutGridLine } from '@remixicon/react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import Image from 'next/image';
+import { useNotifications } from '@/lib/queries/notifications';
+import { useStockItems } from '@/lib/queries/stock';
+import { useContacts } from '@/lib/queries/messages';
 
 export function SidebarRail() {
   const pathname = usePathname();
+  const { data: notifications } = useNotifications();
+  const { data: stockItems } = useStockItems();
+  const { data: contacts } = useContacts();
+
+  const pendingNotifs = notifications?.filter((n) => !n.acknowledgedAt) ?? [];
+  const lowStockCount = stockItems?.filter((i) => i.status === 'LOW_STOCK' || i.status === 'OUT_OF_STOCK').length ?? 0;
+  const stockBadge = pendingNotifs.length > 0 ? String(pendingNotifs.length) : lowStockCount > 0 ? String(lowStockCount) : null;
+  const chatBadge = contacts?.find((c) => c.id === 'system')?.unreadCount ?? 0;
+  const chatBadgeStr = chatBadge > 0 ? String(chatBadge) : null;
 
   const navItems = [
     { label: 'Máquinas', icon: RiPrinterLine, href: '/maquinas', badge: null },
     { label: 'Produtos', icon: RiLayoutGridLine, href: '/produtos', badge: null },
-    { label: 'Estoque de Mídias', icon: RiStackLine, href: '/estoque', badge: '3' },
+    { label: 'Estoque de Mídias', icon: RiStackLine, href: '/estoque', badge: stockBadge },
     { label: 'Tintas & Química', icon: RiDropLine, href: '/tintas', badge: null },
-    { label: 'Chat Interno', icon: RiChat3Line, href: '/chat', badge: null },
+    { label: 'Chat Interno', icon: RiChat3Line, href: '/chat', badge: chatBadgeStr },
   ];
 
   return (
     <TooltipProvider delay={0}>
-      <aside className="w-[72px] h-screen bg-background flex flex-col items-center py-3 justify-between select-none z-30 shrink-0">
+      <aside className="w-18 h-screen bg-background flex flex-col items-center py-3 justify-between select-none z-30 shrink-0">
         
         {/* Topo - Home & Setores */}
         <div className="flex flex-col items-center gap-3 w-full">
@@ -35,7 +47,7 @@ export function SidebarRail() {
             </TooltipContent>
           </Tooltip>
 
-          <div className="w-8 h-[2px] bg-[#35363c] rounded my-1" />
+          <div className="w-8 h-0.5 bg-gray-100 rounded my-1" />
 
           {/* Ícones dos Setores */}
           {navItems.map((item) => {
@@ -47,10 +59,10 @@ export function SidebarRail() {
               <TooltipTrigger>
                 <Link
                   href={item.href}
-                  className={`relative group w-12 h-12 flex items-center justify-center transition-all duration-200 rounded-[24px] hover:rounded-[16px] ${
+                  className={`relative group w-12 h-12 flex items-center justify-center transition-all duration-200 rounded-md hover:rounded-lg ${
                       isActive
-                        ? 'bg-primary text-white rounded-[16px]'
-                        : 'bg-[#313338] hover:bg-primary text-gray-300 hover:text-white'
+                        ? 'bg-primary text-white rounded-md'
+                        : 'bg-gray-100 hover:bg-gray-400 text-gray-400 hover:text-gray-50'
                     }`}
                   >
                     <Icon className="w-6 h-6" />
@@ -72,7 +84,7 @@ export function SidebarRail() {
         {/* Rodapé - Configurações */}
         <Tooltip>
           <TooltipTrigger>
-            <Link href="/config" className="w-12 h-12 bg-[#313338] hover:bg-gray-700 text-gray-300 hover:text-white rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all">
+            <Link href="/config" className="w-12 h-12 bg-gray-100 hover:bg-gray-400 text-gray-400 hover:text-white rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all">
               <RiSettings4Line className="w-6 h-6" />
             </Link>
           </TooltipTrigger>

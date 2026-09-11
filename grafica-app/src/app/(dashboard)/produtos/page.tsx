@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,7 +11,9 @@ import { Spinner, LoadingState } from "@/components/ui/spinner";
 import { RiAddLine, RiSearchLine, RiPencilLine } from "@remixicon/react";
 import MachineSelectForItem from "@/components/machine-select-for-item";
 import EditStockItemDialog from "@/components/edit-stock-item-dialog";
-import { api, getUser, type StockItem, type Machine, CATEGORY_LABEL } from "@/lib/api";
+import { getUser, type StockItem, CATEGORY_LABEL } from "@/lib/api";
+import { useStockItems } from "@/lib/queries/stock";
+import { useMachines } from "@/lib/queries/machines";
 
 function statusBadge(status: StockItem["status"]) {
   if (status === "AVAILABLE") return <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white">Disponível</Badge>;
@@ -22,41 +24,30 @@ function statusBadge(status: StockItem["status"]) {
 function ProdutosContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [items, setItems] = useState<StockItem[]>([]);
-  const [machines, setMachines] = useState<Machine[]>([]);
-  const [loading, setLoading] = useState(true);
+  const itemsQuery = useStockItems();
+  const machinesQuery = useMachines();
+  const machines = machinesQuery.data ?? [];
+  const loading = itemsQuery.isLoading || machinesQuery.isLoading;
   const [search, setSearch] = useState("");
   const [editItem, setEditItem] = useState<StockItem | null>(null);
 
   const cat = searchParams.get("cat") || "todos";
 
-  const load = useCallback(() => {
-    Promise.all([api<StockItem[]>("/api/stock-items"), api<Machine[]>("/api/machines")])
-      .then(([i, m]) => {
-        setItems(i);
-        setMachines(m);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
-
   useEffect(() => {
     if (!getUser()) {
       router.replace("/auth");
-      return;
     }
-    load();
-  }, [load, router]);
+  }, [router]);
 
   const visible = useMemo(() => {
     const term = search.trim().toLowerCase();
-    return items.filter((i) => {
+    return (itemsQuery.data ?? []).filter((i) => {
       if (cat === "bobinas" && !/bobina|vinil/i.test(`${i.name} ${i.subType ?? ""}`)) return false;
       if (cat === "fotograficos" && !/fotogr|papel/i.test(`${i.name} ${i.subType ?? ""}`)) return false;
       if (term && !i.name.toLowerCase().includes(term)) return false;
       return true;
     });
-  }, [items, search, cat]);
+  }, [itemsQuery.data, search, cat]);
 
   return (
     <div className="space-y-6">
@@ -118,7 +109,7 @@ function ProdutosContent() {
                       ? `Usado em ${item.machineIds.length} máquina${item.machineIds.length === 1 ? "" : "s"}`
                       : "Não requer máquina"}
                   </p>
-                  <MachineSelectForItem item={item} machines={machines} onSaved={load} />
+                  <MachineSelectForItem item={item} machines={machines} />
                   <Button
                     variant="ghost"
                     className="w-full h-9 rounded-xl font-semibold text-sm text-primary hover:bg-primary/10"
@@ -139,7 +130,7 @@ function ProdutosContent() {
         </div>
       )}
 
-      <EditStockItemDialog item={editItem} onClose={() => setEditItem(null)} onSaved={load} />
+      <EditStockItemDialog item={editItem} onClose={() => setEditItem(null)} />
     </div>
   );
 }

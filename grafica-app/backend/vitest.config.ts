@@ -12,6 +12,11 @@ export default defineConfig({
       GRAFICA_DISABLE_WHATSAPP: '1',
     },
     pool: 'forks',
+    server: {
+      deps: {
+        inline: ['@whiskeysockets/baileys'],
+      },
+    },
     coverage: {
       provider: 'v8',
       include: ['src/**/*.ts'],

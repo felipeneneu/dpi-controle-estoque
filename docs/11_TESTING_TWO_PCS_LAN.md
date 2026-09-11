@@ -106,6 +106,11 @@ Roteiro:
 | 6 | Estoque baixo → alerta | Baixa até `current ≤ min` | Notificação/`toast` + tentativa de WhatsApp (se configurado) |
 | 7 | Chat realtime | PC1 e PC2 no `/chat` | Mensagem de um aparece no outro em tempo real (Socket.io) |
 | 8 | Status WhatsApp | PC2 → Configurações → WhatsApp | `connected: true` refletido dos dois lados |
+| 9 | Chat bot DM | Enviar `/estoque` no chat | Resposta aparece como DM privada (não na sala) |
+| 10 | Notificação dinâmica | Baixa estoque até LOW_STOCK | Badge no sidebar atualiza com contagem real |
+| 11 | Mimaki M2M | POST /api/integrations/mimaki/jobs (X-API-Secret) | Job registrado, material deduzido ou PENDING_BIND |
+| 12 | Mimaki bind | POST /api/integrations/mimaki/jobs/:id/bind-material | Material vinculado, estoque deduzido |
+| 13 | Mimaki unmatched | Job com material não identificado | Evento mimaki:unmatched_material emitido na sala estoque |
 
 ## 8. Troubleshooting
 

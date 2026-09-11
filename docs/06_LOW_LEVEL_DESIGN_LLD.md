@@ -53,4 +53,47 @@ export const stockTransactions = sqliteTable('stock_transactions', {
   userId: text('user_id').notNull().references(() => users.id),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
+
+// 5. Tabela de Jobs Mimaki (Integração M2M)
+export const mimakiJobs = sqliteTable('mimaki_jobs', {
+  id: text('id').primaryKey(),
+  machineId: text('machine_id').notNull().references(() => machines.id),
+  folderTimestamp: text('folder_timestamp').notNull(),
+  jobName: text('job_name').notNull(),
+  orderCode: text('order_code'),
+  quantityUnits: integer('quantity_units').notNull().default(1),
+  pages: integer('pages').notNull().default(1),
+  widthMm: real('width_mm').notNull(),
+  heightMm: real('height_mm').notNull(),
+  inkCyanCc: real('ink_cyan_cc').default(0),
+  inkMagentaCc: real('ink_magenta_cc').default(0),
+  inkYellowCc: real('ink_yellow_cc').default(0),
+  inkBlackCc: real('ink_black_cc').default(0),
+  inkWhite1Cc: real('ink_white1_cc').default(0),
+  inkWhite2Cc: real('ink_white2_cc').default(0),
+  inkVarnish1Cc: real('ink_varnish1_cc').default(0),
+  inkVarnish2Cc: real('ink_varnish2_cc').default(0),
+  inkTotalCc: real('ink_total_cc').default(0),
+  rawMaterialName: text('raw_material_name'),
+  lengthMeters: real('length_meters'),
+  materialStatus: text('material_status', { enum: ['BOUND', 'PENDING_BIND'] }).default('PENDING_BIND'),
+  stockItemId: text('stock_item_id').references(() => stockItems.id),
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
 ```
+
+### Endpoints Mimaki
+
+| Método | Endpoint | Auth | Descrição |
+|--------|----------|------|-----------|
+| `POST` | `/api/integrations/mimaki/jobs` | X-API-Secret | Receber job de impressão Mimaki (M2M) |
+| `POST` | `/api/integrations/mimaki/jobs/:id/bind-material` | JWT | Vincular material a um job |
+| `GET` | `/api/integrations/mimaki/jobs` | JWT | Listar jobs Mimaki |
+
+### Socket.IO Events
+
+| Evento | Sala | Descrição |
+|--------|------|-----------|
+| `mimaki:unmatched_material` | `estoque` | Notificação de material não identificado |
+| `notification:new` | `estoque` | Nova notificação em tempo real |
+| `chat:message` | `user:<userId>` | DM do bot (resposta privada) |

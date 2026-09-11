@@ -9,17 +9,19 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { RiArrowLeftLine } from "@remixicon/react";
 import { Spinner } from "@/components/ui/spinner";
-import { api, getUser, type StockCategory } from "@/lib/api";
+import { type StockCategory } from "@/lib/api";
+import { useCreateStockItem } from "@/lib/queries/stock";
+import { getUser } from "@/lib/api";
 
 export default function NovoProdutoPage() {
   const router = useRouter();
+  const createStockItem = useCreateStockItem();
   const [name, setName] = useState("");
   const [category, setCategory] = useState<StockCategory>("PAPER_MEDIA");
   const [unit, setUnit] = useState("m");
   const [currentQuantity, setCurrentQuantity] = useState("");
   const [minQuantity, setMinQuantity] = useState("");
   const [width, setWidth] = useState("");
-  const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function submit(e: React.FormEvent) {
@@ -28,27 +30,23 @@ export default function NovoProdutoPage() {
       router.replace("/auth");
       return;
     }
-    setBusy(true);
     setError(null);
     try {
-      await api("/api/stock-items", {
-        method: "POST",
-        body: JSON.stringify({
-          name,
-          category,
-          unit,
-          width: width ? Number(width) : undefined,
-          currentQuantity: Number(currentQuantity) || 0,
-          minQuantity: Number(minQuantity) || 0,
-        }),
+      await createStockItem.mutateAsync({
+        name,
+        category,
+        unit,
+        width: width ? Number(width) : undefined,
+        currentQuantity: Number(currentQuantity) || 0,
+        minQuantity: Number(minQuantity) || 0,
       });
       router.push("/produtos");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao salvar");
-    } finally {
-      setBusy(false);
     }
   }
+
+  const busy = createStockItem.isPending;
 
   return (
     <div className="max-w-[1200px] mx-auto space-y-6">

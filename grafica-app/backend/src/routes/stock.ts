@@ -4,8 +4,9 @@ import { eq } from 'drizzle-orm';
 import { stockItems, stockTransactions, notifications, users, machineItems } from '../db/schema.js';
 import { db } from '../db/index.js';
 import { newId } from '../lib/ids.js';
-import { sendWhatsApp, getDestinationPhone } from '../lib/whatsapp.js';
+import { sendToRecipients } from '../lib/whatsapp.js';
 import { getSetting } from '../lib/settings.js';
+import { dispatchStockAlert } from '../lib/notification-resend.js';
 import { authenticate, authorize } from '../middleware/auth.js';
 
 const Categories = ['PAPER_MEDIA', 'INK_SUPPLY', 'OTHER'] as const;
@@ -18,9 +19,12 @@ const createItemSchema = z.object({
   subType: z.string().optional(),
   unit: z.enum(Units),
   width: z.number().positive().optional(),
+  code: z.string().optional(),
+  label: z.string().optional(),
   currentQuantity: z.number().nonnegative().optional(),
   minQuantity: z.number().nonnegative().optional(),
   imageUrl: z.string().optional(),
+  machineId: z.string().optional(),
 });
 
 const updateItemSchema = createItemSchema.partial();
@@ -45,6 +49,8 @@ const stockItemResponseSchema = {
     subType: { type: 'string', nullable: true },
     unit: { type: 'string', enum: [...Units] },
     width: { type: 'number', nullable: true },
+    code: { type: 'string', nullable: true },
+    label: { type: 'string', nullable: true },
     currentQuantity: { type: 'number' },
     minQuantity: { type: 'number' },
     imageUrl: { type: 'string', nullable: true },
@@ -56,7 +62,7 @@ const stockItemResponseSchema = {
 
 const transactionResponseSchema = {
   type: 'object',
-  required: ['id', 'itemId', 'type', 'quantity', 'userId'],
+  required: ['id', 'itemId', 'type', 'quantity'],
   additionalProperties: false,
   properties: {
     id: { type: 'string' },
@@ -64,7 +70,8 @@ const transactionResponseSchema = {
     type: { type: 'string', enum: [...TransactionTypes] },
     quantity: { type: 'number' },
     reason: { type: 'string', nullable: true },
-    userId: { type: 'string' },
+    userId: { type: 'string', nullable: true },
+    userName: { type: 'string', nullable: true },
     createdAt: { type: 'string', format: 'date-time' },
   },
 };
@@ -126,9 +133,12 @@ export async function stockRoutes(app: FastifyInstance) {
           subType: { type: 'string' },
           unit: { type: 'string', enum: [...Units] },
           width: { type: 'number', exclusiveMinimum: 0 },
+          code: { type: 'string' },
+          label: { type: 'string' },
           currentQuantity: { type: 'number' },
           minQuantity: { type: 'number' },
           imageUrl: { type: 'string' },
+          machineId: { type: 'string' },
         },
       },
       response: {
@@ -150,13 +160,27 @@ export async function stockRoutes(app: FastifyInstance) {
       subType: data.subType,
       unit: data.unit,
       width: data.width,
+      code: data.code,
+      label: data.label,
       currentQuantity: current,
       minQuantity: min,
       imageUrl: data.imageUrl,
       status: computeStatus(current, min),
     };
     await db.insert(stockItems).values(item);
-    return reply.code(201).send(item);
+
+    if (data.machineId) {
+      await db.insert(machineItems).values({
+        id: newId(),
+        machineId: data.machineId,
+        stockItemId: item.id,
+      });
+    }
+
+    return reply.code(201).send({
+      ...item,
+      machineIds: data.machineId ? [data.machineId] : [],
+    });
   });
 
   app.put('/api/stock-items/:id', {
@@ -262,6 +286,83 @@ export async function stockRoutes(app: FastifyInstance) {
     return { ...existing, machineIds };
   });
 
+  app.post('/api/stock-items/:id/add-roll', {
+    schema: {
+      tags: ['Estoque'],
+      summary: 'Adicionar rolo',
+      description: 'Duplica um item de estoque como um novo rolo independente, mantendo largura, código e características (requer ADMIN/DEV_MASTER).',
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: { id: { type: 'string' } },
+      },
+      body: {
+        type: 'object',
+        properties: {
+          label: { type: 'string', description: 'Identificação do rolo (ex: "Rolo B")' },
+        },
+      },
+      response: {
+        201: stockItemResponseSchema,
+        404: { type: 'object', properties: { error: { type: 'string' } } },
+      },
+    },
+    preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN'])],
+  }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const body = (request.body ?? {}) as { label?: string };
+    const existing = await db.select().from(stockItems).where(eq(stockItems.id, id)).get();
+    if (!existing) return reply.code(404).send({ error: 'Not found' });
+
+    const newItem = {
+      id: newId(),
+      name: existing.name,
+      category: existing.category,
+      subType: existing.subType,
+      unit: existing.unit,
+      width: existing.width,
+      code: existing.code,
+      label: body.label ?? 'Novo rolo',
+      currentQuantity: existing.currentQuantity,
+      minQuantity: existing.minQuantity,
+      imageUrl: existing.imageUrl,
+      status: 'AVAILABLE' as const,
+    };
+    await db.insert(stockItems).values(newItem);
+    return reply.code(201).send(newItem);
+  });
+
+  app.patch('/api/stock-items/:id/label', {
+    schema: {
+      tags: ['Estoque'],
+      summary: 'Atualizar identificação do rolo',
+      description: 'Altera o identificador (label) de um item/rolo de estoque (requer ADMIN/DEV_MASTER).',
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: { id: { type: 'string' } },
+      },
+      body: {
+        type: 'object',
+        required: ['label'],
+        properties: { label: { type: 'string' } },
+      },
+      response: {
+        200: stockItemResponseSchema,
+        404: { type: 'object', properties: { error: { type: 'string' } } },
+      },
+    },
+    preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN'])],
+  }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const { label } = request.body as { label: string };
+    const existing = await db.select().from(stockItems).where(eq(stockItems.id, id)).get();
+    if (!existing) return reply.code(404).send({ error: 'Not found' });
+    const next = { ...existing, label };
+    await db.update(stockItems).set({ label }).where(eq(stockItems.id, id));
+    return next;
+  });
+
   app.post('/api/stock-transactions', {
     schema: {
       tags: ['Estoque'],
@@ -312,6 +413,8 @@ export async function stockRoutes(app: FastifyInstance) {
     const status = computeStatus(newQty, item.minQuantity);
     await db.update(stockItems).set({ currentQuantity: newQty, status }).where(eq(stockItems.id, itemId));
 
+    const actor = await db.select().from(users).where(eq(users.id, userId)).get();
+
     const tx = {
       id: newId(),
       itemId,
@@ -319,31 +422,12 @@ export async function stockRoutes(app: FastifyInstance) {
       quantity,
       reason,
       userId,
+      userName: actor?.name ?? 'Desconhecido',
     };
     await db.insert(stockTransactions).values(tx);
 
-    const actor = await db.select().from(users).where(eq(users.id, userId)).get();
-
     if (status === 'LOW_STOCK' || status === 'OUT_OF_STOCK') {
-      const notif = {
-        id: newId(),
-        userId,
-        title: `Estoque ${status === 'LOW_STOCK' ? 'baixo' : 'zerado'}`,
-        body: `${item.name} está com ${newQty} ${item.unit}`,
-        type: 'stock',
-      };
-      await db.insert(notifications).values(notif);
-      app.io.to('estoque').emit('notification:new', notif);
-
-      const waEnabled = (await getSetting('whatsapp.enabled')) === 'true';
-      const waPhone = await getDestinationPhone();
-      if (waEnabled && waPhone) {
-        const widthLabel = item.width ? ` (largura ${item.width} m)` : '';
-        sendWhatsApp(
-          waPhone,
-          `⚠️ *ALERTA DE ESTOQUE — GraficaOS*\n\n${item.name}${widthLabel}\nStatus: ${status === 'LOW_STOCK' ? 'ESTOQUE BAIXO' : 'ESTOQUE ZERADO'}\nQuantidade atual: ${newQty} ${item.unit}\nMínimo: ${item.minQuantity} ${item.unit}`,
-        ).catch(() => {});
-      }
+      await dispatchStockAlert({ item, newQty, status, actorId: userId, io: app.io });
     }
 
     app.io.to('estoque').emit('stock:updated', { itemId, newQty, status, type, actor: actor?.name });

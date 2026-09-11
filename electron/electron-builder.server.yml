@@ -5,16 +5,22 @@ directories:
 files:
   - main.js
   - preload.js
+  - discovery.js
+  - build/icon.png
+  - build/icon.ico
 extraResources:
   - from: ../grafica-app/out
     to: graficaos/ui
-  - from: ../grafica-app/backend
+  - from: staging/backend
     to: graficaos/backend
     filter:
       - "dist/**"
       - "drizzle/**"
       - "public/**"
+      - "node_modules/**"
       - "package.json"
+      - "package-lock.json"
+      - ".env"
   - from: config/server.json
     to: graficaos/mode.json
 win:

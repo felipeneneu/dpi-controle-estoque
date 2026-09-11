@@ -76,6 +76,27 @@ export function clearSession() {
   window.localStorage.removeItem(USER_KEY);
 }
 
+/**
+ * Valida o token JWT armazenado fazendo uma requisição leve ao backend.
+ * Retorna true se o token for válido, false caso contrário.
+ * Limpa a sessão automaticamente se o token estiver expirado/inválido.
+ */
+export async function validateToken(): Promise<boolean> {
+  const token = getToken();
+  if (!token) return false;
+  try {
+    const res = await fetch(`${backendUrl()}/health`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) return true;
+    clearSession();
+    return false;
+  } catch {
+    clearSession();
+    return false;
+  }
+}
+
 export class ApiError extends Error {
   status: number;
   constructor(status: number, message: string) {
@@ -86,11 +107,18 @@ export class ApiError extends Error {
 
 export async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = getToken();
+  const reqHeaders: Record<string, string> = {};
+  if (options.body) {
+    reqHeaders["Content-Type"] = "application/json";
+  }
+  if (token) {
+    reqHeaders["Authorization"] = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${backendUrl()}${path}`, {
     ...options,
     headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...reqHeaders,
       ...(options.headers || {}),
     },
   });
@@ -119,6 +147,8 @@ export interface StockItem {
   subType: string | null;
   unit: string;
   width: number | null;
+  code: string | null;
+  label: string | null;
   currentQuantity: number;
   minQuantity: number;
   imageUrl: string | null;
@@ -133,17 +163,30 @@ export interface StockTransaction {
   type: "IN" | "OUT" | "ADJUSTMENT";
   quantity: number;
   reason: string | null;
-  userId: string;
+  userId?: string | null;
+  userName?: string | null;
   createdAt: string;
 }
 
 export interface ChatMessage {
   id: string;
   room: string;
+  recipientId?: string | null;
   content: string;
   senderId: string;
   senderName?: string | null;
+  senderAvatar?: string | null;
   createdAt: string;
+  isCommand?: boolean;
+}
+
+export interface ChatContact {
+  id: string;
+  name: string;
+  avatar?: string | null;
+  lastMessage?: string | null;
+  lastMessageAt?: string | null;
+  unreadCount: number;
 }
 
 export interface Notification {
@@ -186,9 +229,80 @@ export interface Machine {
   model: string;
   technology: string;
   imageUrl: string | null;
+  ip: string | null;
   status: "ACTIVE" | "MAINTENANCE" | "INACTIVE";
   createdAt: string;
   itemIds: string[];
+  telemetry?: MachineTelemetry | null;
+}
+
+export interface InkChannel {
+  color: "C" | "LC" | "M" | "LM" | "Y" | "K" | "OP";
+  sku: string;
+  remainingMl: number;
+  capacityMl: number;
+  status: string;
+}
+
+export interface KonicaTray {
+  trayId: string;
+  paperName: string;
+  paperAmount: number;
+  targetPaperSize: string;
+  mediaType: string;
+  mediaWeight: string;
+}
+
+/** Detecta a AccurioPrint (Laser / Konica) para renderizar painéis específicos. */
+export function isKonicaMachine(m: Pick<Machine, "brand" | "technology">): boolean {
+  return /konica|accurio/i.test(m.brand) || m.technology === "Laser";
+}
+
+export interface MachineTelemetry {
+  machineId: string;
+  online: boolean;
+  statusSeverity?: string;
+  statusMessage?: string;
+  mediaName?: string;
+  mediaWidthMm?: number;
+  inkCyanMl?: number;
+  inkLightCyanMl?: number;
+  inkMagentaMl?: number;
+  inkLightMagentaMl?: number;
+  inkYellowMl?: number;
+  inkBlackMl?: number;
+  inkOptimizerMl?: number;
+  inkCapacityMl?: number;
+  maintenanceCartridgePct?: number;
+  kit1Pct?: number;
+  kit2Pct?: number;
+  kit3Pct?: number;
+  tonerCyanPct?: number;
+  tonerMagentaPct?: number;
+  tonerYellowPct?: number;
+  tonerBlackPct?: number;
+  wasteTonerLevel?: string;
+  trays?: KonicaTray[];
+  createdAt?: string;
+  live?: {
+    online: boolean;
+    statusSeverity?: string;
+    statusMessage?: string;
+    mediaName?: string;
+    mediaWidthMm?: number;
+    inks?: InkChannel[];
+    capacityMl?: number;
+    maintenanceCartridgePct?: number;
+    kit1Pct?: number;
+    kit2Pct?: number;
+    kit3Pct?: number;
+    tonerCyanPct?: number;
+    tonerMagentaPct?: number;
+    tonerYellowPct?: number;
+    tonerBlackPct?: number;
+    wasteTonerLevel?: string;
+    trays?: KonicaTray[];
+  };
 }
 
 export const CATEGORY_LABEL: Record<StockCategory, string> = {

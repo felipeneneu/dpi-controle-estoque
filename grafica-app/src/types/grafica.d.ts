@@ -8,5 +8,6 @@ interface Window {
     }>;
     net: () => Promise<{ hostname: string; ips: { name: string; address: string }[] }>;
     quit: () => Promise<void>;
+    discover: () => Promise<{ name: string; ip: string; port: number } | null>;
   };
 }

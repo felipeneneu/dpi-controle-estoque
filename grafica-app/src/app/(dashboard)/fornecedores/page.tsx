@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,62 +14,49 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { api, getUser, type Supplier } from "@/lib/api";
+import { getUser } from "@/lib/api";
 import { useUser } from "@/hooks/use-user";
+import { useSuppliers, useCreateSupplier, useDeleteSupplier } from "@/lib/queries/suppliers";
 import { LoadingState } from "@/components/ui/spinner";
 import { RiAddLine, RiDeleteBinLine } from "@remixicon/react";
 
 export default function FornecedoresPage() {
   const router = useRouter();
   const user = useUser();
-  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
-  const [loading, setLoading] = useState(true);
+  const suppliersQuery = useSuppliers();
+  const suppliers = suppliersQuery.data ?? [];
+  const createSupplier = useCreateSupplier();
+  const deleteSupplier = useDeleteSupplier();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [contact, setContact] = useState("");
-  const [busy, setBusy] = useState(false);
-
-  const load = useCallback(() => {
-    api<Supplier[]>("/api/suppliers")
-      .then(setSuppliers)
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
 
   useEffect(() => {
     if (!getUser()) {
       router.replace("/auth");
-      return;
     }
-    load();
-  }, [load, router]);
+  }, [router]);
 
   async function create() {
     if (!name) return;
-    setBusy(true);
     try {
-      await api("/api/suppliers", {
-        method: "POST",
-        body: JSON.stringify({ name, phone, email, contact }),
-      });
+      await createSupplier.mutateAsync({ name, phone: phone || undefined, email: email || undefined, contact: contact || undefined });
       setName(""); setPhone(""); setEmail(""); setContact("");
       setOpen(false);
-      load();
     } catch {
-    } finally {
-      setBusy(false);
     }
   }
 
   async function remove(id: string) {
-    await api(`/api/suppliers/${id}`, { method: "DELETE" }).catch(() => {});
-    load();
+    await deleteSupplier.mutateAsync(id).catch(() => {});
   }
 
   const canDelete = user?.role === "DEV_MASTER";
   const canCreate = user?.role === "DEV_MASTER" || user?.role === "ADMIN";
+  const loading = suppliersQuery.isLoading;
+  const busy = createSupplier.isPending;
 
   return (
     <div className="space-y-6">

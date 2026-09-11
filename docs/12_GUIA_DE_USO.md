@@ -93,6 +93,46 @@ grafica-app/backend/public/users/
 
 ---
 
-## 8. Suporte
+## 8. Integração Mimaki
+
+O GraficaOS se integra com o **Mimaki Tracker Electron** para recepção automática de
+jobs de impressão.
+
+### 8.1 Como funciona
+
+1. O Mimaki Tracker Electron envia logs de impressão via API M2M.
+2. O sistema calcula automaticamente os metros lineares consumidos.
+3. Se o material for identificado, o estoque é deduzido automaticamente.
+4. Se o material não for identificado, uma notificação é enviada para vinculação manual.
+
+### 8.2 Vincular material a um job
+
+1. Acesse **Estoque → Jobs Mimaki** (ou aguarde a notificação `mimaki:unmatched_material`).
+2. Localize o job com status **PENDING_BIND**.
+3. Clique em **Vincular Material** e selecione o item de estoque correspondente.
+4. O sistema deduzirá a quantidade do estoque automaticamente.
+
+### 8.3 Comandos do Bot no Chat
+
+O chat interno possui comandos de bot que retornam informações privadas (DM):
+
+| Comando | Descrição |
+|---------|-----------|
+| `/help` | Lista todos os comandos disponíveis |
+| `/status` | Status de todas as máquinas |
+| `/estoque` | Resumo do estoque (itens baixos) |
+| `/jobs` | Últimos 5 jobs processados |
+| `/alertas` | Notificações ativas |
+
+> **Nota:** As respostas do bot são enviadas como mensagem privada (DM) para o remetente.
+
+### 8.4 Notificações em Tempo Real
+
+- O badge no sidebar de Estoque exibe a contagem real de notificações não lidas.
+- Notificações são atualizadas em tempo real via Socket.IO.
+
+---
+
+## 9. Suporte
 
 Para dúvidas, contate o desenvolvedor do sistema.

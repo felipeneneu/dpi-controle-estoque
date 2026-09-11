@@ -1,22 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getUser } from "@/lib/api";
+import { useEffect } from "react";
+import { useAuthStore, syncAuthStore } from "@/stores/auth-store";
 
-type AuthUser = ReturnType<typeof getUser>;
-
-export function useUser(): AuthUser {
-  const [user, setUser] = useState<AuthUser>(null);
+export function useUser(): ReturnType<typeof useAuthStore.getState>["user"] {
+  const user = useAuthStore((s) => s.user);
 
   useEffect(() => {
-    const sync = () => setUser(getUser());
-    sync();
-    window.addEventListener("grafica:user", sync);
-    window.addEventListener("storage", sync);
-    return () => {
-      window.removeEventListener("grafica:user", sync);
-      window.removeEventListener("storage", sync);
-    };
+    syncAuthStore();
   }, []);
 
   return user;

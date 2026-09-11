@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,8 +15,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
-import { api, getUser, type StockItem } from "@/lib/api";
-import { useUser } from "@/hooks/use-user";
+import { getUser, type StockItem } from "@/lib/api";
+import { useStockItems, useStockTransaction } from "@/lib/queries/stock";
 import { LoadingState } from "@/components/ui/spinner";
 
 function statusBadge(status: StockItem["status"]) {
@@ -27,54 +27,39 @@ function statusBadge(status: StockItem["status"]) {
 
 export default function TintasPage() {
   const router = useRouter();
-  const user = useUser();
-  const [items, setItems] = useState<StockItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const itemsQuery = useStockItems("INK_SUPPLY");
+  const items = itemsQuery.data ?? [];
   const [selected, setSelected] = useState<StockItem | null>(null);
   const [qty, setQty] = useState("");
   const [reason, setReason] = useState("");
-  const [busy, setBusy] = useState(false);
-
-  const load = useCallback(() => {
-    api<StockItem[]>("/api/stock-items?category=INK_SUPPLY")
-      .then(setItems)
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
+  const transaction = useStockTransaction();
 
   useEffect(() => {
     if (!getUser()) {
       router.replace("/auth");
-      return;
     }
-    load();
-  }, [load, router]);
+  }, [router]);
 
   async function submitRestock() {
-    if (!selected || !user) return;
+    if (!selected) return;
     const quantity = Number(qty);
     if (!quantity || quantity <= 0) return;
-    setBusy(true);
     try {
-      await api("/api/stock-transactions", {
-        method: "POST",
-        body: JSON.stringify({
-          itemId: selected.id,
-          type: "IN",
-          quantity,
-          reason,
-          userId: user.id,
-        }),
+      await transaction.mutateAsync({
+        itemId: selected.id,
+        type: "IN",
+        quantity,
+        reason: reason || undefined,
       });
       setSelected(null);
       setQty("");
       setReason("");
-      load();
     } catch {
-    } finally {
-      setBusy(false);
     }
   }
+
+  const loading = itemsQuery.isLoading;
+  const busy = transaction.isPending;
 
   return (
     <div className="space-y-6">
