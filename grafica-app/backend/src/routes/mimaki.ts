@@ -26,6 +26,8 @@ export interface MimakiJobDeductData {
   jobName: string;
   lengthMeters?: number | null;
   stockItemId?: string | null;
+  bobinaId?: string | null;
+  machineId?: string | null;
   inkCyanCc?: number | null;
   inkMagentaCc?: number | null;
   inkYellowCc?: number | null;
@@ -60,51 +62,83 @@ export async function deductMimakiStockForJob(
       .get();
 
     if (item) {
-      // Idempotência: verifica se já houve transação de saída deste item para este job
-      const existingTx = await db
-        .select({ id: stockTransactions.id })
-        .from(stockTransactions)
-        .where(
+      const { bobinas, machines } = await import('../db/schema.js');
+      
+      let activeBobina = null;
+      if (job.bobinaId) {
+        activeBobina = await db.select().from(bobinas).where(eq(bobinas.id, job.bobinaId)).get();
+      } else if (job.machineId) {
+        activeBobina = await db.select().from(bobinas).where(
           and(
-            eq(stockTransactions.itemId, item.id),
-            like(stockTransactions.reason, `%${job.jobName}%`),
-          ),
-        )
-        .get();
+            eq(bobinas.stockItemId, item.id),
+            eq(bobinas.state, 'IN_USE'),
+            eq(bobinas.location, `machine:${job.machineId}`)
+          )
+        ).get();
+      }
 
-      if (!existingTx) {
-        const lengthMeters = toPrecision(job.lengthMeters, 3);
-        const newQty = Math.max(0, toPrecision(item.currentQuantity - lengthMeters, 3));
-        const status = computeStatus(newQty, item.minQuantity);
+      if (!activeBobina && job.machineId) {
+        // Auto-bind failed due to missing bobina. Mark as pending and abort substrate deduction.
+        // We will still deduct inks (Mimaki reports inks separately), but wait, the job shouldn't be BOUND.
+        // We should throw or return so it remains PENDING_BIND.
+        return { deductedSubstrate: false, deductedInksCount: 0 };
+      }
 
-        await db.update(stockItems)
-          .set({ currentQuantity: newQty, status })
-          .where(eq(stockItems.id, item.id));
+      if (activeBobina) {
+        // Idempotência
+        const existingTx = await db
+          .select({ id: stockTransactions.id })
+          .from(stockTransactions)
+          .where(
+            and(
+              eq(stockTransactions.itemId, item.id),
+              like(stockTransactions.reason, `%${job.jobName}% [Bobina ${activeBobina.serial}]%`),
+            ),
+          )
+          .get();
 
-        await db.insert(stockTransactions).values({
-          id: newId(),
-          itemId: item.id,
-          type: 'OUT',
-          quantity: lengthMeters,
-          reason: `Mimaki consumo mídia: ${job.jobName}`,
-          userId: actorId,
-          userName: 'Mimaki Agent',
-        });
+        if (!existingTx) {
+          let lengthMeters = toPrecision(job.lengthMeters, 3);
+          
+          let machineInfo = null;
+          if (job.machineId) {
+             machineInfo = await db.select().from(machines).where(eq(machines.id, job.machineId)).get();
+             if (machineInfo && machineInfo.bleedAdjustmentM) {
+                lengthMeters += machineInfo.bleedAdjustmentM;
+             }
+          }
 
-        deductedSubstrate = true;
+          const newQty = Math.max(0, toPrecision(activeBobina.metersRemaining! - lengthMeters, 3));
+          const isFinished = newQty <= 0;
 
-        app.io.to('estoque').emit('stock:deducted', {
-          itemName: item.name,
-          quantity: lengthMeters,
-          unit: item.unit,
-          jobName: job.jobName,
-        });
+          await db.update(bobinas).set({ 
+            metersRemaining: newQty,
+            state: isFinished ? 'USED' : activeBobina.state
+          }).where(eq(bobinas.id, activeBobina.id));
 
-        if (status === 'LOW_STOCK' || status === 'OUT_OF_STOCK') {
-          await dispatchStockAlert({ item, newQty, status, actorId, io: app.io });
+          const sangriaDetail = machineInfo?.bleedAdjustmentM ? ` + sangria ${machineInfo.bleedAdjustmentM}m` : '';
+
+          await db.insert(stockTransactions).values({
+            id: newId(),
+            itemId: item.id,
+            type: 'OUT',
+            quantity: lengthMeters,
+            reason: `Mimaki consumo mídia: ${job.jobName} [Bobina ${activeBobina.serial}]${sangriaDetail}`,
+            userId: actorId,
+            userName: 'Mimaki Agent',
+          });
+
+          deductedSubstrate = true;
+
+          app.io.to('estoque').emit('stock:deducted', {
+            itemName: item.name,
+            quantity: lengthMeters,
+            unit: item.unit,
+            jobName: job.jobName,
+          });
+        } else {
+          deductedSubstrate = true;
         }
-      } else {
-        deductedSubstrate = true;
       }
     }
   }
@@ -314,11 +348,12 @@ export async function processMimakiJobRecord(app: FastifyInstance, data: MimakiJ
   });
 
   if (materialStatus === 'BOUND' && stockItemId) {
-    await deductMimakiStockForJob(app, {
+    const deductRes = await deductMimakiStockForJob(app, {
       id: jobId,
       jobName: data.job_name,
       lengthMeters,
       stockItemId,
+      machineId: data.machine_id,
       inkCyanCc: data.ink_cyan_cc,
       inkMagentaCc: data.ink_magenta_cc,
       inkYellowCc: data.ink_yellow_cc,
@@ -328,6 +363,17 @@ export async function processMimakiJobRecord(app: FastifyInstance, data: MimakiJ
       inkVarnish1Cc: data.ink_varnish1_cc,
       inkVarnish2Cc: data.ink_varnish2_cc,
     });
+    if (!deductRes.deductedSubstrate) {
+      materialStatus = 'PENDING_BIND';
+      await db.update(mimakiJobs).set({ materialStatus }).where(eq(mimakiJobs.id, jobId));
+      app.io.to('estoque').emit('mimaki:unmatched_material', {
+        job_id: jobId,
+        order_code: data.order_code ?? null,
+        job_name: data.job_name,
+        raw_material_name: data.raw_material_name ?? null,
+        length_meters: lengthMeters,
+      });
+    }
   } else {
     app.io.to('estoque').emit('mimaki:unmatched_material', {
       job_id: jobId,
@@ -403,7 +449,10 @@ export async function mimakiRoutes(app: FastifyInstance) {
       body: {
         type: 'object',
         required: ['stock_item_id'],
-        properties: { stock_item_id: { type: 'string' } },
+        properties: { 
+          stock_item_id: { type: 'string' },
+          bobina_id: { type: 'string', nullable: true },
+        },
       },
       response: {
         200: { type: 'object', properties: { success: { type: 'boolean' } } },
@@ -414,7 +463,7 @@ export async function mimakiRoutes(app: FastifyInstance) {
     preHandler: [authenticate],
   }, async (request, reply) => {
     const { id } = request.params as { id: string };
-    const { stock_item_id } = request.body as { stock_item_id: string };
+    const { stock_item_id, bobina_id } = request.body as { stock_item_id: string; bobina_id?: string };
 
     const job = await db
       .select()
@@ -435,6 +484,7 @@ export async function mimakiRoutes(app: FastifyInstance) {
     const updatedJob: MimakiJobDeductData = {
       ...job,
       stockItemId: stock_item_id,
+      bobinaId: bobina_id,
     };
 
     await deductMimakiStockForJob(app, updatedJob, request.userId);

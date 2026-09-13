@@ -31,7 +31,7 @@ export function SidebarRail() {
 
   return (
     <TooltipProvider delay={0}>
-      <aside className="w-18 h-screen bg-background flex flex-col items-center py-3 justify-between select-none z-30 shrink-0">
+      <aside className="w-18 h-full bg-background flex flex-col items-center py-3 justify-between select-none z-30 shrink-0">
         
         {/* Topo - Home & Setores */}
         <div className="flex flex-col items-center gap-3 w-full">

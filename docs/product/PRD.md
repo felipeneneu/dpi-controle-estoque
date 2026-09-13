@@ -1,3 +1,9 @@
+﻿> **Versão:** 1.0.0 \
+> **Status:** ATIVO \
+> **Owner:** Felipe \
+> **Última atualização:** 2026-09-12 \
+> **Origem:** migrado de `docs/01_PRD_PRODUCT_REQUIREMENTS.md` (MIGRAÇÃO F5 — ver docs/00_DOCS_INDEX.md).\
+
 # 📄 Product Requirements Document (PRD)
 ## Sistema de Controle de Estoque & Maquinário - Gráfica / Comunicação Visual
 
@@ -29,3 +35,4 @@ O **Sistema de Estoque Gráfico** é uma aplicação desktop de alta performance
 
 ### 6. Notificações Dinâmicas
 - Badge no sidebar de Estoque exibe contagem real de notificações não lidas (não valor fixo).
+

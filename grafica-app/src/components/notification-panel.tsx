@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { cloneElement, useState } from "react";
 import { toast } from "sonner";
 import { RiDeleteBinLine } from "@remixicon/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useNotifications, useAckNotification, useClearNotifications, useDeleteNotification } from "@/lib/queries/notifications";
 
-export function NotificationPanel() {
+export function NotificationPanel({ trigger }: { trigger?: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const notifications = useNotifications();
   const ack = useAckNotification();
@@ -38,16 +38,31 @@ export function NotificationPanel() {
 
   return (
     <div className="relative">
-      <Button
-        variant="outline"
-        onClick={() => setOpen((v) => !v)}
-        className="relative h-9 rounded-xl font-semibold"
-      >
-        Notificações
-        {pending.length > 0 && (
-          <Badge className="ml-2 bg-red-600 text-white rounded-full">{pending.length}</Badge>
-        )}
-      </Button>
+      {trigger
+        ? cloneElement(
+            trigger as React.ReactElement<{
+              onClick?: () => void;
+              "aria-expanded"?: boolean;
+              "aria-haspopup"?: string;
+            }>,
+            {
+              onClick: () => setOpen((v) => !v),
+              "aria-expanded": open,
+              "aria-haspopup": "true",
+            }
+          )
+        : (
+            <Button
+              variant="outline"
+              onClick={() => setOpen((v) => !v)}
+              className="relative h-9 rounded-xl font-semibold"
+            >
+              Notificações
+              {pending.length > 0 && (
+                <Badge className="ml-2 bg-red-600 text-white rounded-full">{pending.length}</Badge>
+              )}
+            </Button>
+          )}
 
       {open && (
         <div className="absolute right-0 z-50 mt-2 w-80 rounded-xl border border-gray-100 bg-card p-3 shadow-lg">

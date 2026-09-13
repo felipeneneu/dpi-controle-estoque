@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { toast } from "sonner"
 import { RiEditLine, RiInformationLine } from "@remixicon/react"
 import { Button } from "@/components/ui/button"
@@ -28,7 +28,10 @@ export function MimakiEditJobDialog({ job, open, onOpenChange }: MimakiEditJobDi
 
   const updateJob = useUpdateMimakiJob()
 
-  useEffect(() => {
+  // Inicializa os campos quando o job editado muda (adjust during render)
+  const [lastJobId, setLastJobId] = useState<string | null>(null)
+  if ((job?.id ?? null) !== lastJobId) {
+    setLastJobId(job?.id ?? null)
     if (job) {
       setOrderCode(job.orderCode ?? "")
       const currentLen = job.lengthMeters != null ? job.lengthMeters.toFixed(3) : "0.000"
@@ -47,7 +50,7 @@ export function MimakiEditJobDialog({ job, open, onOpenChange }: MimakiEditJobDi
         setCopies(1)
       }
     }
-  }, [job])
+  }
 
   function handleCopiesChange(newCopies: number) {
     setCopies(newCopies)

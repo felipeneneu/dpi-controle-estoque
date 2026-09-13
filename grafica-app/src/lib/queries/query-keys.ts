@@ -12,6 +12,7 @@ export const stockKeys = {
   category: (category?: string) => [...stockKeys.lists(), category ?? "all"] as const,
   detail: (id: string) => [...stockKeys.all, "detail", id] as const,
   transactions: () => [...stockKeys.all, "transactions"] as const,
+  bobinas: (stockItemId?: string) => [...stockKeys.all, "bobinas", stockItemId || "all"] as const,
 }
 
 export const machineKeys = {

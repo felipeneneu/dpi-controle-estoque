@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { backendUrl, clearSession } from "@/lib/api";
+import { backendUrl, clearSession, getToken } from "@/lib/api";
 import { checkHealth } from "@/lib/health";
 import { cn } from "@/lib/utils";
 
@@ -25,11 +25,14 @@ export function AppGate({ children }: { children: React.ReactNode }) {
         const ok = await checkHealth(backendUrl(), 3000);
         if (cancelled) return;
         if (ok) {
-          clearSession();
-          if (!cancelled) {
-            router.replace("/auth");
-          }
           setReady(true);
+          if (!cancelled && !getToken()) {
+            clearSession();
+            const path = window.location.pathname.replace(/\/+$/, "") || "/";
+            if (path !== "/auth") {
+              router.replace("/auth");
+            }
+          }
           return;
         }
         if (Date.now() - started > MAX_WAIT) {

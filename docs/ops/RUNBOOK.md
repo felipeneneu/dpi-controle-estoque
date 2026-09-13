@@ -1,3 +1,9 @@
+﻿> **Versão:** 1.0.0 \
+> **Status:** ATIVO \
+> **Owner:** Felipe \
+> **Última atualização:** 2026-09-12 \
+> **Origem:** migrado de `docs/11_TESTING_TWO_PCS_LAN.md` (MIGRAÇÃO F5 — ver docs/00_DOCS_INDEX.md).\
+
 # 11 — Guia de Teste: App em 2 PCs na LAN (teste de conexão)
 
 > Objetivo: validar o GraficaOS rodando como **app desktop (Electron)** em **2 computadores na mesma rede doméstica**, confirmando conexão, sincronização de estoque, chat em tempo real e notificações.

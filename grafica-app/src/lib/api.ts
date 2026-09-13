@@ -140,6 +140,15 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
 export type StockCategory = "PAPER_MEDIA" | "INK_SUPPLY" | "OTHER";
 export type StockStatus = "AVAILABLE" | "LOW_STOCK" | "OUT_OF_STOCK";
 
+export interface Bobina {
+  id: string;
+  stockItemId: string;
+  serial: string;
+  metersRemaining: number;
+  state: "NEW" | "IN_USE" | "USED";
+  location: string;
+}
+
 export interface StockItem {
   id: string;
   name: string;
@@ -234,6 +243,8 @@ export interface Machine {
   createdAt: string;
   itemIds: string[];
   telemetry?: MachineTelemetry | null;
+  activeBobina?: Bobina | null;
+  bleedAdjustmentM?: number;
 }
 
 export interface InkChannel {

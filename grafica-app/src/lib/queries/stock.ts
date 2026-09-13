@@ -1,7 +1,7 @@
 "use client"
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { api, getUser, type StockItem, type StockTransaction } from "@/lib/api"
+import { api, getUser, type StockItem, type StockTransaction, type Bobina } from "@/lib/api"
 import { machineKeys, stockKeys } from "@/lib/queries/query-keys"
 
 export function useStockItems(category?: string) {
@@ -99,6 +99,23 @@ export function useUpdateStockLabel() {
   return useMutation({
     mutationFn: ({ id, label }: { id: string; label: string }) =>
       api(`/api/stock-items/${id}/label`, { method: "PATCH", body: JSON.stringify({ label }) }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: stockKeys.all }),
+  })
+}
+
+export function useBobinas(stockItemId?: string) {
+  return useQuery({
+    queryKey: stockKeys.bobinas(stockItemId),
+    queryFn: () =>
+      api<Bobina[]>(stockItemId ? `/api/bobinas?stockItemId=${stockItemId}` : "/api/bobinas"),
+  })
+}
+
+export function useUpdateBobina() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, ...body }: Partial<Bobina> & { id: string }) =>
+      api(`/api/bobinas/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: stockKeys.all }),
   })
 }

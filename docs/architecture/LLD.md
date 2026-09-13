@@ -1,3 +1,9 @@
+﻿> **Versão:** 1.0.0 \
+> **Status:** ATIVO \
+> **Owner:** Felipe \
+> **Última atualização:** 2026-09-12 \
+> **Origem:** migrado de `docs/06_LOW_LEVEL_DESIGN_LLD.md` (MIGRAÇÃO F5 — ver docs/00_DOCS_INDEX.md).\
+
 # 📐 Low-Level Design (LLD) & Data Model
 
 ---
@@ -97,3 +103,4 @@ export const mimakiJobs = sqliteTable('mimaki_jobs', {
 | `mimaki:unmatched_material` | `estoque` | Notificação de material não identificado |
 | `notification:new` | `estoque` | Nova notificação em tempo real |
 | `chat:message` | `user:<userId>` | DM do bot (resposta privada) |
+

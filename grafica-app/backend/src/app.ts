@@ -44,7 +44,14 @@ export async function buildApp(opts: { logger?: boolean } = {}) {
       return cb(new Error('CORS not allowed'), false);
     },
   });
-  await app.register(rateLimit, { max: 100, timeWindow: '1 minute' });
+  await app.register(rateLimit, {
+    max: Number(process.env.RATE_LIMIT_MAX ?? 100),
+    timeWindow: '1 minute',
+    // Health checks are polled frequently by clients (up to 1/s each) and
+    // must not consume the rate-limit budget, otherwise login/API calls get
+    // 429s in multi-client setups (incl. the E2E suite).
+    allowList: (req) => req.url.startsWith('/health'),
+  });
 
   if (!process.env.JWT_SECRET || process.env.JWT_SECRET === 'dev_secret_change_me') {
     throw new Error('JWT_SECRET must be set to a strong random value before starting the server.');

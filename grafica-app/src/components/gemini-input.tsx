@@ -46,14 +46,17 @@ export const GeminiInput: React.FC<GeminiInputProps> = ({
     ? commands.filter((c) => c.name.toLowerCase().startsWith(text.toLowerCase()))
     : []
 
-  useEffect(() => {
+  // Re-evaluate the command autocomplete whenever the input text changes (adjust during render)
+  const [prevCommandText, setPrevCommandText] = useState(text)
+  if (text !== prevCommandText) {
+    setPrevCommandText(text)
     if (text.startsWith('/') && filteredCommands.length > 0) {
       setShowCommands(true)
       setSelectedCmdIdx(0)
     } else {
       setShowCommands(false)
     }
-  }, [text, filteredCommands.length])
+  }
 
   // Handle file upload
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
@@ -30,8 +30,15 @@ function ProdutosContent() {
   const loading = itemsQuery.isLoading || machinesQuery.isLoading;
   const [search, setSearch] = useState("");
   const [editItem, setEditItem] = useState<StockItem | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const cat = searchParams.get("cat") || "todos";
+
+  useEffect(() => {
+    if (searchParams.get("foco") === "1") {
+      searchInputRef.current?.focus();
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (!getUser()) {
@@ -67,6 +74,7 @@ function ProdutosContent() {
       <div className="relative max-w-sm">
         <RiSearchLine className="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
         <Input
+          ref={searchInputRef}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar insumo…"

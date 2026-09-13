@@ -1,3 +1,9 @@
+﻿> **Versão:** 1.0.0 \
+> **Status:** ATIVO \
+> **Owner:** Felipe \
+> **Última atualização:** 2026-09-12 \
+> **Origem:** migrado de `docs/15_RELEASE_NOTES.md` (MIGRAÇÃO F5 — ver docs/00_DOCS_INDEX.md).\
+
 # 15 — Release Notes — v1.0
 
 Notas de lançamento da versão 1.0 do GraficaOS.
@@ -70,3 +76,4 @@ Notas de lançamento da versão 1.0 do GraficaOS.
 - [Guia de Uso](12_GUIA_DE_USO.md)
 - [Especificações RBAC](10_RBAC_SPECIFICATION.md)
 - [Decisões Técnicas (ADR)](07_TECHNICAL_DECISIONS_ADR_RFC.md)
+

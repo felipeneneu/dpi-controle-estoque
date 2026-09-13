@@ -19,10 +19,11 @@ const registerSchema = z.object({
 });
 
 const TOKEN_TTL = '12h';
+const AUTH_RATE_LIMIT = { max: Number(process.env.AUTH_RATE_LIMIT_MAX ?? 5), timeWindow: '1 minute' };
 
 export async function authRoutes(app: FastifyInstance) {
   app.post('/api/auth/login', {
-    config: { rateLimit: { max: 5, timeWindow: '1 minute' } },
+    config: { rateLimit: AUTH_RATE_LIMIT },
     schema: {
       tags: ['Autenticação'],
       summary: 'Login',
@@ -83,7 +84,7 @@ export async function authRoutes(app: FastifyInstance) {
   });
 
   app.post('/api/auth/register', {
-    config: { rateLimit: { max: 5, timeWindow: '1 minute' } },
+    config: { rateLimit: AUTH_RATE_LIMIT },
     schema: {
       tags: ['Autenticação'],
       summary: 'Registro de usuário',

@@ -37,6 +37,7 @@
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "fastify": "^5.1.0",
+    "node-schedule": "^2.1.1",
     "pino": "^10.3.1",
     "qrcode": "^1.5.4",
     "socket.io": "^4.8.1",
@@ -46,6 +47,7 @@
   "devDependencies": {
     "@types/big.js": "^7.0.0",
     "@types/node": "^20.14.0",
+    "@types/node-schedule": "^2.1.8",
     "@types/qrcode": "^1.5.6",
     "@vitest/coverage-v8": "^4.1.11",
     "cross-env": "^10.1.0",

@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { eq } from 'drizzle-orm';
-import { stockItems, stockTransactions, notifications, users, machineItems } from '../db/schema.js';
+import { stockItems, stockTransactions, notifications, users, machineItems, bobinas } from '../db/schema.js';
 import { db } from '../db/index.js';
 import { newId } from '../lib/ids.js';
 import { sendToRecipients } from '../lib/whatsapp.js';
@@ -110,13 +110,25 @@ export async function stockRoutes(app: FastifyInstance) {
           .all()
       : await db.select().from(stockItems).all();
     const links = await db.select().from(machineItems).all();
+    const allBobinas = await db.select().from(bobinas).all();
+    
     const byItem = new Map<string, string[]>();
     for (const l of links) {
       const arr = byItem.get(l.stockItemId) ?? [];
       arr.push(l.machineId);
       byItem.set(l.stockItemId, arr);
     }
-    return rows.map((r) => ({ ...r, machineIds: byItem.get(r.id) ?? [] }));
+    
+    return rows.map((r) => {
+      const itemBobinas = allBobinas.filter(b => b.stockItemId === r.id && (b.state === 'NEW' || b.state === 'IN_USE'));
+      const derivedQuantity = itemBobinas.reduce((acc, b) => acc + (b.metersRemaining || 0), 0);
+      return { 
+        ...r, 
+        currentQuantity: derivedQuantity,
+        status: computeStatus(derivedQuantity, r.minQuantity),
+        machineIds: byItem.get(r.id) ?? [] 
+      };
+    });
   });
 
   app.post('/api/stock-items', {
@@ -289,8 +301,8 @@ export async function stockRoutes(app: FastifyInstance) {
   app.post('/api/stock-items/:id/add-roll', {
     schema: {
       tags: ['Estoque'],
-      summary: 'Adicionar rolo',
-      description: 'Duplica um item de estoque como um novo rolo independente, mantendo largura, código e características (requer ADMIN/DEV_MASTER).',
+      summary: 'Adicionar rolo (Bobina)',
+      description: 'Cria uma nova Bobina física vinculada ao item de estoque (requer ADMIN/DEV_MASTER).',
       params: {
         type: 'object',
         required: ['id'],
@@ -299,37 +311,50 @@ export async function stockRoutes(app: FastifyInstance) {
       body: {
         type: 'object',
         properties: {
-          label: { type: 'string', description: 'Identificação do rolo (ex: "Rolo B")' },
+          serial: { type: 'string', description: 'ID curto ou serial da bobina (ex: BOB:1042)' },
+          metersInitial: { type: 'number', description: 'Metragem inicial do rolo' },
         },
       },
       response: {
-        201: stockItemResponseSchema,
+        201: { type: 'object' },
         404: { type: 'object', properties: { error: { type: 'string' } } },
       },
     },
     preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN'])],
   }, async (request, reply) => {
     const { id } = request.params as { id: string };
-    const body = (request.body ?? {}) as { label?: string };
+    const body = (request.body ?? {}) as { serial?: string; metersInitial?: number };
     const existing = await db.select().from(stockItems).where(eq(stockItems.id, id)).get();
     if (!existing) return reply.code(404).send({ error: 'Not found' });
 
-    const newItem = {
+    const metersInitial = body.metersInitial ?? 50;
+
+    const novaBobina = {
       id: newId(),
-      name: existing.name,
-      category: existing.category,
-      subType: existing.subType,
-      unit: existing.unit,
-      width: existing.width,
-      code: existing.code,
-      label: body.label ?? 'Novo rolo',
-      currentQuantity: existing.currentQuantity,
-      minQuantity: existing.minQuantity,
-      imageUrl: existing.imageUrl,
-      status: 'AVAILABLE' as const,
+      stockItemId: id,
+      serial: body.serial || `BOB-${Math.floor(Math.random() * 10000)}`,
+      widthMm: existing.width ?? 0,
+      metersInitial,
+      metersRemaining: metersInitial,
+      state: 'NEW' as const,
+      location: 'deposito',
     };
-    await db.insert(stockItems).values(newItem);
-    return reply.code(201).send(newItem);
+    
+    await db.insert(bobinas).values(novaBobina);
+    
+    const ator = await db.select().from(users).where(eq(users.id, request.userId as string)).get();
+    const tx = {
+      id: newId(),
+      itemId: id,
+      type: 'IN' as const,
+      quantity: metersInitial,
+      reason: `Abertura de bobina ${novaBobina.serial}`,
+      userId: request.userId as string,
+      userName: ator?.name ?? 'Sistema',
+    };
+    await db.insert(stockTransactions).values(tx);
+    
+    return reply.code(201).send(novaBobina);
   });
 
   app.patch('/api/stock-items/:id/label', {

@@ -73,12 +73,15 @@ function ChatContent() {
 
   const history = isGeral ? geralHistory : dmHistory
 
-  // Reset pagination state when channel/DM changes
-  useEffect(() => {
+  // Reset session state when channel/DM changes (adjust during render instead of setState-in-effect)
+  const [prevRoom, setPrevRoom] = useState(currentRoom)
+  if (currentRoom !== prevRoom) {
+    setPrevRoom(currentRoom)
     setOlderHistory([])
     setHasMore(true)
     setIsLoadingMore(false)
-  }, [currentRoom])
+    setLive([])
+  }
 
   // Load command list for autocomplete
   useEffect(() => {
@@ -100,7 +103,7 @@ function ChatContent() {
       }, BOT_MESSAGE_TTL)
       botTimersRef.current.set(msg.id, timer)
     }
-  }, [])
+  }, [setEphemeralBotMsgs])
 
   // Clean up bot timers on unmount
   useEffect(() => {
@@ -150,7 +153,6 @@ function ChatContent() {
       }
     }
 
-    setLive([])
     join()
     socket.on("connect", join)
     socket.on("chat:message", onMessage)
@@ -189,7 +191,7 @@ function ChatContent() {
     } finally {
       setIsLoadingMore(false)
     }
-  }, [isLoadingMore, hasMore, messages, currentRoom, selectedContactId])
+  }, [isLoadingMore, hasMore, messages, currentRoom, selectedContactId, setIsLoadingMore, setHasMore, setOlderHistory])
 
   // Send message
   async function handleSend(text: string) {

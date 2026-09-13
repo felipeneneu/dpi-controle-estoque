@@ -41,6 +41,8 @@ export async function startWorld() {
       SEED: 'true',
       GRAFICA_DISABLE_WHATSAPP: '1',
       NODE_ENV: 'test',
+      RATE_LIMIT_MAX: '10000',
+      AUTH_RATE_LIMIT_MAX: '10000',
       CORS_ORIGINS: `http://localhost:${UI_PORT}`,
     };
     backend = spawn('node', ['dist/server.js'], {

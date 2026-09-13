@@ -1,3 +1,9 @@
+﻿> **Versão:** 1.0.0 \
+> **Status:** ATIVO \
+> **Owner:** Felipe \
+> **Última atualização:** 2026-09-12 \
+> **Origem:** migrado de `docs/04_USER_STORIES.md` (MIGRAÇÃO F5 — ver docs/00_DOCS_INDEX.md).\
+
 # 👤 User Stories (Histórias de Usuário)
 
 ---
@@ -49,3 +55,4 @@
 - **Quero**: Ver informações da máquina Mimaki na interface (painel informativo).
 - **Para**: Monitorar o status da Mimaki mesmo sem telemetria de rede.
 - **Critério de Aceite**: Página da máquina Mimaki exibe painel com informações estáticas (modelo, IP, status) sem dados de telemetria em tempo real.
+

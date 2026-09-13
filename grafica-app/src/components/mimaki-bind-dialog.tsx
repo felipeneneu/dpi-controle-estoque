@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { toast } from "sonner"
 import { RiAddLine, RiArrowLeftLine, RiCheckLine, RiSearchLine } from "@remixicon/react"
 import { Button } from "@/components/ui/button"
@@ -14,7 +14,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog"
-import { useStockItems, useCreateStockItem } from "@/lib/queries/stock"
+import { useStockItems, useCreateStockItem, useBobinas } from "@/lib/queries/stock"
 import { useBindMaterial, type MimakiJob } from "@/lib/queries/mimaki"
 
 interface MimakiBindDialogProps {
@@ -35,19 +35,27 @@ export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiB
   const [newQuantity, setNewQuantity] = useState("50")
 
   const { data: stockItems = [], isLoading: isLoadingStock } = useStockItems("PAPER_MEDIA")
+  const { data: bobinas = [] } = useBobinas()
   const bindMaterial = useBindMaterial()
   const createStockItem = useCreateStockItem()
 
-  useEffect(() => {
+  // Inicializa o formulário quando o dialog abre para um novo job (adjust during render)
+  const [lastInitKey, setLastInitKey] = useState("")
+  const [selectedBobinaId, setSelectedBobinaId] = useState<string | null>(null)
+  
+  const initKey = `${job?.id ?? "none"}:${open ? "open" : "closed"}`
+  if (initKey !== lastInitKey) {
+    setLastInitKey(initKey)
     if (job && open) {
       setSearch(job.rawMaterialName ?? "")
       setSelectedItemId(job.stockItemId ?? null)
+      setSelectedBobinaId(null)
       setIsCreating(false)
 
       const defaultW = job.widthMm ? (job.widthMm / 1000).toFixed(2) : "0.75"
       setNewWidth(defaultW)
     }
-  }, [job, open])
+  }
 
   const filtered = stockItems.filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase())
@@ -92,9 +100,14 @@ export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiB
   }
 
   async function handleBind() {
-    if (!job || !selectedItemId) return
+    if (!job) return
+    if (!selectedItemId && !selectedBobinaId) return
     try {
-      await bindMaterial.mutateAsync({ jobId: job.id, stockItemId: selectedItemId })
+      await bindMaterial.mutateAsync({ 
+        jobId: job.id, 
+        stockItemId: selectedItemId || undefined,
+        bobinaId: selectedBobinaId || undefined
+      })
       toast.success("Material vinculado com sucesso")
       onOpenChange(false)
     } catch {
@@ -170,26 +183,51 @@ export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiB
             <div className="max-h-56 overflow-y-auto space-y-1.5 pr-1">
               {filtered.map((item) => {
                 const isSelected = selectedItemId === item.id
+                const itemBobinas = bobinas.filter(b => b.stockItemId === item.id)
                 return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => setSelectedItemId(item.id)}
-                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl border text-sm text-left transition-colors ${
-                      isSelected
-                        ? "border-primary/60 bg-primary/5 text-primary"
-                        : "border-gray-150 hover:bg-gray-50 text-gray-800"
-                    }`}
-                  >
-                    <div>
-                      <p className="font-medium text-gray-900">{item.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {item.currentQuantity} {item.unit}
-                        {item.width ? ` · rolo ${item.width}m` : ""}
-                      </p>
-                    </div>
-                    {isSelected && <RiCheckLine className="size-4 text-primary shrink-0" />}
-                  </button>
+                  <div key={item.id} className="space-y-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedItemId(item.id)
+                        setSelectedBobinaId(null)
+                      }}
+                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl border text-sm text-left transition-colors ${
+                        isSelected
+                          ? "border-primary/60 bg-primary/5 text-primary"
+                          : "border-gray-150 hover:bg-gray-50 text-gray-800"
+                      }`}
+                    >
+                      <div>
+                        <p className="font-medium text-gray-900">{item.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {item.currentQuantity} {item.unit}
+                          {item.width ? ` · rolo ${item.width}m` : ""}
+                        </p>
+                      </div>
+                      {isSelected && !selectedBobinaId && <RiCheckLine className="size-4 text-primary shrink-0" />}
+                    </button>
+                    {isSelected && itemBobinas.length > 0 && (
+                      <div className="pl-4 space-y-1">
+                        <p className="text-xs font-bold text-gray-500 mt-2 mb-1">Selecione uma Bobina específica (opcional)</p>
+                        {itemBobinas.map(b => (
+                          <button
+                            key={b.id}
+                            type="button"
+                            onClick={() => setSelectedBobinaId(b.id)}
+                            className={`w-full flex items-center justify-between px-3 py-2 rounded-lg border text-xs text-left ${
+                              selectedBobinaId === b.id
+                                ? "border-indigo-400 bg-indigo-50 text-indigo-700 font-medium"
+                                : "border-gray-100 bg-gray-50 hover:bg-gray-100 text-gray-600"
+                            }`}
+                          >
+                            <span>Bobina {b.serial} ({b.metersRemaining}m restantes)</span>
+                            {selectedBobinaId === b.id && <RiCheckLine className="size-3 text-indigo-600 shrink-0" />}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 )
               })}
 

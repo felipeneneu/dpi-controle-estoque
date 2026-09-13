@@ -64,10 +64,10 @@ export function useMimakiJob(jobId?: string) {
 export function useBindMaterial() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ jobId, stockItemId }: { jobId: string; stockItemId: string }) =>
+    mutationFn: ({ jobId, stockItemId, bobinaId }: { jobId: string; stockItemId?: string; bobinaId?: string }) =>
       api(`/api/integrations/mimaki/jobs/${jobId}/bind-material`, {
         method: "POST",
-        body: JSON.stringify({ stock_item_id: stockItemId }),
+        body: JSON.stringify({ stock_item_id: stockItemId, bobina_id: bobinaId }),
       }),
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: mimakiKeys.all })

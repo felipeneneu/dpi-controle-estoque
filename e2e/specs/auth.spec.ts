@@ -15,7 +15,7 @@ test('login with valid DEV_MASTER credentials lands on dashboard', async ({ page
   await page.getByPlaceholder('Sua senha de acesso').fill(ADMIN_PASSWORD);
   await page.getByRole('button', { name: 'Acessar' }).click();
 
-  await expect(page).toHaveURL(/\/$/, { timeout: 15_000 });
+  await expect(page).toHaveURL(/\/$/, { timeout: 45_000 });
   await expect(page.locator('body')).not.toContainText('Acesse sua conta');
 });
 

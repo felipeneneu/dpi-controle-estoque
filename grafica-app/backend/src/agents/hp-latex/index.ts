@@ -78,7 +78,7 @@ async function pollOnce(io: SocketIOServer): Promise<void> {
 
     for (const job of newJobs) {
       await insertJob(job, machineId);
-      await deductStockForJob(job, io);
+      await deductStockForJob(job, machineId, io);
     }
 
     console.log(`${TAG} ${newJobs.length} jobs processados`);

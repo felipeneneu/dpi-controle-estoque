@@ -122,6 +122,7 @@ function findMediaItem(
 
 export async function deductStockForJob(
   job: NewJob,
+  machineId: string,
   io: { to: (room: string) => { emit: (event: string, data: unknown) => void } },
 ): Promise<void> {
   const actorId = await ensureSystemUser();
@@ -174,12 +175,17 @@ export async function deductStockForJob(
     }
   }
 
+  // Tratamento de mídia/bobina
+  let stockDeducted = false;
+  let deductedAt: string | null = null;
+  let widthM: number | null = null;
+  let debitQty: number | null = null;
+
   if (job.mediaType && job.mediaAreaM2 > 0) {
     const rows = await db.select().from(stockItems).where(eq(stockItems.category, 'PAPER_MEDIA')).all();
-
-    // Largura real do rolo carregado. Prioridade: nome do arquivo do job (convenção do
-    // operador, ex.: "LONA 280G 1,06m - Pedido X.pdf") → tipo de mídia do perfil HP
-    // (ex.: "starflex 280g - 1,06m") → campo width do item.
+    
+    // IMPORTANTE: Aqui precisamos importar 'bobinas' e 'machines' se não estivessem.
+    // As assumiremos que podemos importá-los, farei replace nos imports também depois.
     const widthFromJobName = parseMediaWidthM(job.jobName);
     const widthFromMedia = parseMediaWidthM(job.mediaType);
     const widthHint = widthFromJobName ?? widthFromMedia;
@@ -187,76 +193,93 @@ export async function deductStockForJob(
     const item = findMediaItem(rows, job.mediaType, widthHint) ?? null;
 
     if (item) {
-      // Idempotência: verifica se já houve transação de mídia para este job
-      const existingMediaTx = await db
-        .select({ id: stockTransactions.id })
-        .from(stockTransactions)
-        .where(
-          and(
-            eq(stockTransactions.itemId, item.id),
-            like(stockTransactions.reason, `%${job.jobName}%`),
-          ),
+      // Procurar bobina IN_USE para esta máquina
+      const { bobinas, machines } = await import('../../db/schema.js');
+      const activeBobina = await db.select().from(bobinas).where(
+        and(
+          eq(bobinas.stockItemId, item.id),
+          eq(bobinas.state, 'IN_USE'),
+          eq(bobinas.location, `machine:${machineId}`)
         )
-        .get();
+      ).get();
 
-      if (!existingMediaTx) {
-        // A HP reporta consumo de substrato em m² (largura do rolo × comprimento avançado).
-        // O estoque é controlado em metros lineares de rolo, então o débito é m² ÷ largura.
-        const widthM = (widthHint ?? (item.width && item.width > 0 ? item.width : null)) ?? null;
-        const debitQty = widthM ? divideAreaToLength(job.mediaAreaM2, widthM) : job.mediaAreaM2;
+      if (!activeBobina) {
+        // Marca o job como PENDENTE_VINCULO na tabela printJobs, será atualizado ao final da função.
+        console.warn(`[HP Agent] Job órfão detectado: Nenhuma bobina IN_USE para o item ${item.name} na máquina ${machineId}`);
+        await db.update(printJobs).set({ materialStatus: 'PENDING_BIND' }).where(eq(printJobs.jobId, job.jobId));
+      } else {
+        // Checar idempotência pela bobina específica e jobName
+        const existingMediaTx = await db
+          .select({ id: stockTransactions.id })
+          .from(stockTransactions)
+          .where(
+            and(
+              eq(stockTransactions.itemId, item.id),
+              like(stockTransactions.reason, `%${job.jobName}% [Bobina ${activeBobina.serial}]%`),
+            ),
+          )
+          .get();
 
-        if (!widthM) {
-          console.warn(
-            `[HP Agent] Mídia "${job.mediaType}" sem largura no job/item "${item.name}"; debitando ${debitQty.toFixed(2)} ${item.unit} diretamente do m². Item sem campo width nem largura no nome do arquivo.`,
-          );
+        if (!existingMediaTx) {
+          widthM = (widthHint ?? (item.width && item.width > 0 ? item.width : null)) ?? null;
+          debitQty = widthM ? divideAreaToLength(job.mediaAreaM2, widthM) : job.mediaAreaM2;
+
+          // Adicionar fator de sangria se existir
+          const machine = await db.select().from(machines).where(eq(machines.id, machineId)).get();
+          if (machine && machine.bleedAdjustmentM) {
+            debitQty += machine.bleedAdjustmentM;
+          }
+
+          const newMeters = Math.max(0, subtractStock(activeBobina.metersRemaining || 0, debitQty));
+          const isFinished = newMeters <= 0;
+
+          await db.update(bobinas).set({ 
+            metersRemaining: newMeters,
+            state: isFinished ? 'USED' : activeBobina.state
+          }).where(eq(bobinas.id, activeBobina.id));
+
+          const detail = widthM ? `${job.mediaAreaM2.toFixed(4)} m² / ${widthM} m` : `${job.mediaAreaM2.toFixed(4)} m²`;
+          const sangriaDetail = (machine?.bleedAdjustmentM) ? ` + sangria ${machine.bleedAdjustmentM}m` : '';
+          
+          await db.insert(stockTransactions).values({
+            id: newId(),
+            itemId: item.id, // Ledger ainda aponta para o stockItem, mas anotamos o serial
+            type: 'OUT',
+            quantity: toPrecision(debitQty, 3),
+            reason: `HP Agent: job ${job.jobName} [Bobina ${activeBobina.serial}] — ${detail}${sangriaDetail}`,
+            userId: actorId,
+            userName: 'HP Latex Agent',
+          });
+
+          stockDeducted = true;
+          deductedAt = new Date().toISOString();
+
+          io.to('estoque').emit('stock:deducted', {
+            itemName: item.name,
+            quantity: debitQty,
+            unit: item.unit,
+            jobName: job.jobName,
+          });
+        } else {
+          // Já processado
+          stockDeducted = true;
         }
-
-        const newQty = subtractStock(item.currentQuantity, debitQty);
-        const status = computeStatus(newQty, item.minQuantity);
-
-        await db.update(stockItems).set({ currentQuantity: newQty, status }).where(eq(stockItems.id, item.id));
-
-        const detail = widthM ? `${job.mediaAreaM2.toFixed(4)} m² / ${widthM} m` : `${job.mediaAreaM2.toFixed(4)} m²`;
-        await db.insert(stockTransactions).values({
-          id: newId(),
-          itemId: item.id,
-          type: 'OUT',
-          quantity: toPrecision(debitQty, 3),
-          reason: `HP Agent: job ${job.jobName} (${job.mediaType}) — ${detail}`,
-          userId: actorId,
-          userName: 'HP Latex Agent',
-        });
-
-        io.to('estoque').emit('stock:deducted', {
-          itemName: item.name,
-          quantity: debitQty,
-          unit: item.unit,
-          jobName: job.jobName,
-        });
-
-      if (status === 'LOW_STOCK' || status === 'OUT_OF_STOCK') {
-        await dispatchStockAlert({ item, newQty, status, actorId, io });
       }
-      }
+    } else {
+      // Item não encontrado
+      await db.update(printJobs).set({ materialStatus: 'PENDING_BIND' }).where(eq(printJobs.jobId, job.jobId));
     }
   }
 
   const jobRow = await db.select().from(printJobs).where(eq(printJobs.jobId, job.jobId)).get();
   if (jobRow) {
-    // Salvar campos de auditoria para rastreabilidade
-    const widthM = (job.mediaType && job.mediaAreaM2 > 0) ? (() => {
-      const widthFromJobName = parseMediaWidthM(job.jobName);
-      const widthFromMedia = parseMediaWidthM(job.mediaType);
-      return widthFromJobName ?? widthFromMedia ?? (jobRow.rollWidthUsed ?? null) ?? 1.52;
-    })() : null;
-    
-    const linearMeters = widthM ? divideAreaToLength(job.mediaAreaM2, widthM) : null;
+    const finalWidthM = widthM ?? (jobRow.rollWidthUsed ?? 1.52);
     
     await db.update(printJobs).set({
-      stockDeducted: true,
-      deductedAt: new Date().toISOString(),
-      rollWidthUsed: widthM,
-      linearMetersDebited: linearMeters ? toPrecision(linearMeters, 3) : null,
+      stockDeducted: stockDeducted || jobRow.stockDeducted,
+      deductedAt: deductedAt ?? jobRow.deductedAt,
+      rollWidthUsed: finalWidthM,
+      linearMetersDebited: debitQty ? toPrecision(debitQty, 3) : jobRow.linearMetersDebited,
     }).where(eq(printJobs.id, jobRow.id));
   }
 

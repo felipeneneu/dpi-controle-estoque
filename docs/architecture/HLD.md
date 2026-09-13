@@ -1,3 +1,9 @@
+﻿> **Versão:** 1.0.0 \
+> **Status:** ATIVO \
+> **Owner:** Felipe \
+> **Última atualização:** 2026-09-12 \
+> **Origem:** migrado de `docs/05_SYSTEM_DESIGN_HLD.md + 02_TRD (digest); 13_LAN arquivado` (MIGRAÇÃO F5 — ver docs/00_DOCS_INDEX.md).\
+
 # 🏗️ High-Level System Design (HLD)
 
 ---
@@ -54,3 +60,4 @@
 ├── Resposta → armazenada em dm:system:<userId>
 └── Emitida via Socket.IO `user:<userId>` (DM privada)
 ```
+

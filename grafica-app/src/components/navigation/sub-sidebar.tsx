@@ -83,7 +83,7 @@ export function SubSidebar() {
   const availableUsers = users.filter((u) => u.id !== user?.id);
 
   return (
-    <aside className="w-60 h-[calc(100vh-1rem)] flex flex-col justify-between text-gray-300 select-none border m-2 border-gray-100 shrink-0 rounded-md bg-card">
+    <aside className="w-60 h-[calc(100%-1rem)] flex flex-col justify-between text-gray-300 select-none border m-2 border-gray-100 shrink-0 rounded-md bg-card">
 
       {/* Topo - Nome do Setor e Ações */}
       <div>

@@ -85,3 +85,26 @@ export function useUpdateItemMachines() {
     },
   })
 }
+
+export function useChangeBobina() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      machineId,
+      newBobinaSerial,
+      oldBobinaAction, // "FINISHED" | "RETURN_TO_STOCK"
+    }: {
+      machineId: string
+      newBobinaSerial: string
+      oldBobinaAction: "FINISHED" | "RETURN_TO_STOCK"
+    }) =>
+      api(`/api/machines/${machineId}/active-bobina`, {
+        method: "POST",
+        body: JSON.stringify({ newBobinaSerial, oldBobinaAction }),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: machineKeys.all })
+      queryClient.invalidateQueries({ queryKey: stockKeys.all })
+    },
+  })
+}

@@ -199,9 +199,9 @@ async function createWindow() {
   const win = new BrowserWindow({
     width: 1280,
     height: 800,
-    fullscreen: true,
     icon: windowIcon(),
     backgroundColor: '#fafaf9',
+    frame: false,
     show: false,
     autoHideMenuBar: true,
     webPreferences: {
@@ -217,6 +217,7 @@ async function createWindow() {
       localStorage.removeItem('grafica_token');
       localStorage.removeItem('grafica_user');
     `);
+    win.maximize();
     win.show();
   });
   win.webContents.on('did-fail-load', (_e, code, desc, validatedURL) => {
@@ -233,6 +234,18 @@ async function createWindow() {
   win.webContents.on('console-message', (_e, _level, message) => {
     console.log('[renderer]', message);
   });
+  const sendWindowState = () => {
+    if (!win.isDestroyed()) {
+      win.webContents.send('grafica:window-state', {
+        isFullScreen: win.isFullScreen(),
+        isMaximized: win.isMaximized(),
+      });
+    }
+  };
+  win.on('enter-full-screen', sendWindowState);
+  win.on('leave-full-screen', sendWindowState);
+  win.on('maximize', sendWindowState);
+  win.on('unmaximize', sendWindowState);
   if (!isPackaged()) {
     win.webContents.on('did-finish-load', () => {
       if (process.env.GRAFICA_DUMP === '1') {
@@ -338,6 +351,9 @@ ipcMain.handle('grafica:info', () => ({
   mode: buildMode(),
   backendDir: backendDir(),
   outDir: outDir(),
+  version: app.getVersion(),
+  electron: process.versions.electron,
+  platform: process.platform,
 }));
 
 ipcMain.handle('grafica:net', () => ({
@@ -350,6 +366,43 @@ ipcMain.handle('grafica:quit', () => {
   if (win) win.close();
 });
 
+ipcMain.handle('grafica:minimize', () => {
+  BrowserWindow.getAllWindows()[0]?.minimize();
+});
+
+ipcMain.handle('grafica:maximize', () => {
+  const win = BrowserWindow.getAllWindows()[0];
+  if (!win) return;
+  if (win.isMaximized()) {
+    win.unmaximize();
+  } else {
+    win.maximize();
+  }
+});
+
 ipcMain.handle('grafica:discover', () => {
   return discover();
+});
+
+ipcMain.handle('grafica:isFullScreen', () => {
+  return BrowserWindow.getAllWindows()[0]?.isFullScreen() ?? false;
+});
+
+ipcMain.handle('grafica:setFullScreen', (_event, flag) => {
+  BrowserWindow.getAllWindows()[0]?.setFullScreen(Boolean(flag));
+});
+
+ipcMain.handle('grafica:isMaximized', () => {
+  return BrowserWindow.getAllWindows()[0]?.isMaximized() ?? false;
+});
+
+ipcMain.handle('grafica:zoom', (_event, payload) => {
+  const win = BrowserWindow.getAllWindows()[0];
+  if (!win) return;
+  const { delta, level } = payload || {};
+  if (typeof level === 'number') {
+    win.webContents.setZoomLevel(level);
+  } else if (typeof delta === 'number') {
+    win.webContents.setZoomLevel(win.webContents.getZoomLevel() + delta);
+  }
 });

@@ -1,3 +1,9 @@
+﻿> **Versão:** 1.0.0 \
+> **Status:** ATIVO \
+> **Owner:** Felipe \
+> **Última atualização:** 2026-09-12 \
+> **Origem:** migrado de `docs/10_RBAC_SPECIFICATION.md` (MIGRAÇÃO F5 — ver docs/00_DOCS_INDEX.md).\
+
 # 🔐 Role-Based Access Control (RBAC) Specification
 
 ---
@@ -49,3 +55,4 @@ app.post('/api/items', { preHandler: [authenticate, authorize(['DEV_MASTER', 'AD
 app.delete('/api/items/:id', { preHandler: [authenticate, authorize(['DEV_MASTER'])] }, deleteItemHandler);
 app.post('/api/items/baixa', { preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN', 'OPERATOR'])] }, baixaEstoqueHandler);
 ```
+

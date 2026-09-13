@@ -1,3 +1,9 @@
+﻿> **Versão:** 1.0.0 \
+> **Status:** ATIVO \
+> **Owner:** Felipe \
+> **Última atualização:** 2026-09-12 \
+> **Origem:** migrado de `docs/12_GUIA_DE_USO.md` (MIGRAÇÃO F5 — ver docs/00_DOCS_INDEX.md).\
+
 # Guia de Uso — Dpi Controle de Estoque
 
 Sistema desktop (Electron) para controle de estoque e maquinário de gráfica /
@@ -36,7 +42,7 @@ Instale **um único installer (depende da máquina)**:
 4. O backend sobe sozinho. No primeiro uso ele cria o banco **local**
    (`local-replica.db`) e uma chave `JWT_SECRET` aleatória — sem precisar de
    credenciais de nuvem. (Se quiser usar o Turso cloud, configure o `.env` no
-   PC1, conforme `docs/13_LAN_CONEXAO_SERVER_CLIENT.md`.) Pronto.
+   PC1, conforme `docs/ops/INFRASTRUCTURE.md`.) Pronto.
 
 ---
 
@@ -136,3 +142,4 @@ O chat interno possui comandos de bot que retornam informações privadas (DM):
 ## 9. Suporte
 
 Para dúvidas, contate o desenvolvedor do sistema.
+

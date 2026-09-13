@@ -283,7 +283,7 @@ export async function jobRoutes(app: FastifyInstance) {
         rawData: {},
       };
 
-      await deductStockForJob(jobToDeduct, app.io);
+      await deductStockForJob(jobToDeduct, job.machineId, app.io);
       processedCount++;
     }
 

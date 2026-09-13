@@ -20,6 +20,7 @@ import { getUser, type StockItem, type StockCategory, CATEGORY_LABEL } from "@/l
 import { useStockItems, useStockTransaction, useAddRoll } from "@/lib/queries/stock";
 import { LoadingState } from "@/components/ui/spinner";
 import { RiSearchLine } from "@remixicon/react";
+import { BobinasListDialog } from "@/components/bobinas-list-dialog";
 
 const FILTERS: Array<"TODOS" | StockCategory> = ["TODOS", "PAPER_MEDIA", "INK_SUPPLY", "OTHER"];
 
@@ -168,12 +169,9 @@ export default function EstoquePage() {
                     className="w-full h-11 border-primary text-primary hover:bg-brand-pink/10 font-semibold rounded-xl"
                     onClick={() => {
                       setSelected(item);
-                      setQty("");
-                      setReason("");
                     }}
-                    disabled={item.currentQuantity <= 0}
                   >
-                    Dar Baixa no Estoque
+                    Ver Bobinas
                   </Button>
                   <Button
                     variant="ghost"
@@ -192,46 +190,7 @@ export default function EstoquePage() {
         </div>
       )}
 
-      <Dialog open={!!selected} onOpenChange={(open) => !open && setSelected(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Baixa no Estoque</DialogTitle>
-            <DialogDescription>
-              {selected?.name} — disponível: {selected?.currentQuantity} {selected?.unit}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label className="text-xs font-bold text-muted-foreground tracking-wider uppercase">Quantidade</Label>
-              <Input
-                type="number"
-                min="0"
-                value={qty}
-                onChange={(e) => setQty(e.target.value)}
-                placeholder={`Ex: 5 (${selected?.unit})`}
-                className="h-11 rounded-xl"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-xs font-bold text-muted-foreground tracking-wider uppercase">Motivo / Observação</Label>
-              <Input
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                placeholder="Ex: Ordem de serviço #123"
-                className="h-11 rounded-xl"
-              />
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setSelected(null)}>Cancelar</Button>
-            <Button onClick={submitBaixa} disabled={transaction.isPending || !qty || Number(qty) <= 0}>
-              {transaction.isPending ? "Registrando…" : "Confirmar Baixa"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <BobinasListDialog item={selected} onClose={() => setSelected(null)} />
 
       <Dialog open={!!rollTarget} onOpenChange={(open) => !open && setRollTarget(null)}>
         <DialogContent>

@@ -1,0 +1,21 @@
+# Índice de ADRs — GraficaOS
+
+> **Regra:** um arquivo por decisão em `governance/adr/`. Admitir ADR = adicionar linha aqui + criar o arquivo. Adicionar ADR = mudar status da linha existente.
+
+| ID | Título | Status | Data | Domínio | BR-* | Substitui / Observação |
+|----|--------|--------|------|---------|------|-------------------------|
+| ADR-001 | Turso (LibSQL) com embedded replicas | Aprovado | — | ops | — | antigo 07 |
+| ADR-002 | Matriz RBAC para proteção de dados | Aprovado | — | rbac | BR-018 | antigo 07 |
+| ADR-003 | Autenticação M2M para integração Mimaki | Aprovado | — | integrations | BR-018 | antigo 07 |
+| ADR-004 | Respostas do bot como DM (privacidade) | Aprovado | — | chat | BR-020 | antigo 07 |
+| ADR-005 | Dedução automática de mídia Mimaki | Aprovado (ressalva idempotência) | — | deduction | BR-012 | antigo 07; ver ADR-007 |
+| ADR-006 | Política de saldo negativo | Proposto | 2026-09-12 | deduction | BR-007 | novo |
+| ADR-007 | Idempotência via `source_ref` | Proposto | 2026-09-12 | deduction/ledger | BR-008, BR-012 | novo |
+| ADR-008 | Débito atômico (transação SQL + saldo antes/depois) | Proposto | 2026-09-12 | ledger | BR-006, BR-007 | novo |
+| ADR-009 | Modelo bobina-ativo + configuração por empresa | Proposto (visão travada) | 2026-09-12 | inventory/company-config | BR-002, BR-018, BR-019, BR-021 | novo — TARGET |
+| ADR-010 | Decisões do data-map Konica (D2..D7) | Proposto | — | integrations | BR-013 | pendente — semente em `integrations/data-maps/KONICA_printmanager_probe.md` |
+| ADR-011 | Decisões do data-map HP Latex | Proposto | — | integrations | BR-011 | pendente — semente em `integrations/data-maps/HP_EWS_accounting_probe.md` |
+| ADR-012 | WhatsApp Business API vs Baileys | Proposto | — | integrations | BR-016 | pendente — ver INT-005/INT-107 no catálogo |
+| ADR-013 | Identificação de bobina ativa em máquina + jobs órfãos (M3) | Proposto | 2026-09-13 | inventory/machines | BR-002 | novo — opera M3 sobre ADR-009 |
+
+> ADR-010..012 são **pendentes**: decisões capturadas nos data-maps e catálogo ainda precisam ser formalizadas. Cada uma vira ADR quando sua RFC for concluída.

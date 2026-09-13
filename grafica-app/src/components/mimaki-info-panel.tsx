@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { type Machine } from "@/lib/api";
 import { useMimakiJobs } from "@/lib/queries/mimaki";
 import { MimakiBindDialog } from "@/components/mimaki-bind-dialog";
+import { ChangeBobinaDialog } from "@/components/change-bobina-dialog";
 import type { MimakiJob } from "@/lib/queries/mimaki";
 
 function isMimakiMachine(m: Machine): boolean {
@@ -23,6 +24,7 @@ export function MimakiInfoPanel({ machine }: { machine: Machine }) {
   const { data: pendingJobs = [] } = useMimakiJobs({ status: "PENDING_BIND", machine_id: machine.id });
   const { data: recentJobs = [] } = useMimakiJobs({ machine_id: machine.id });
   const [bindJob, setBindJob] = useState<MimakiJob | null>(null);
+  const [changeBobinaOpen, setChangeBobinaOpen] = useState(false);
 
   return (
     <>
@@ -64,6 +66,23 @@ export function MimakiInfoPanel({ machine }: { machine: Machine }) {
               </a>
             </div>
           )}
+
+          <div className="rounded-xl border border-indigo-100 bg-indigo-50/50 px-4 py-3 flex items-center justify-between">
+            <div>
+              <p className="text-xs font-bold text-indigo-700 mb-1">Bobina Ativa</p>
+              {machine.activeBobina ? (
+                <div>
+                  <p className="text-sm font-bold text-gray-900">{machine.activeBobina.serial}</p>
+                  <p className="text-xs text-muted-foreground">{machine.activeBobina.metersRemaining.toFixed(2)}m restantes</p>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">Nenhuma bobina carregada</p>
+              )}
+            </div>
+            <Button variant="outline" size="sm" onClick={() => setChangeBobinaOpen(true)} className="bg-white">
+              Trocar Bobina
+            </Button>
+          </div>
 
           <div className="rounded-xl border border-gray-100 px-4 py-3">
             <p className="text-xs text-muted-foreground">Integração</p>
@@ -145,6 +164,13 @@ export function MimakiInfoPanel({ machine }: { machine: Machine }) {
         job={bindJob}
         open={!!bindJob}
         onOpenChange={(o) => { if (!o) setBindJob(null); }}
+      />
+
+      <ChangeBobinaDialog
+        machine={machine}
+        activeBobina={machine.activeBobina}
+        open={changeBobinaOpen}
+        onClose={() => setChangeBobinaOpen(false)}
       />
     </>
   );

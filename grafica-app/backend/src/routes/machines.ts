@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, and, or } from 'drizzle-orm';
 import { machines, machineItems, machineTelemetry } from '../db/schema.js';
 import { db } from '../db/index.js';
 import { newId } from '../lib/ids.js';
@@ -302,5 +302,83 @@ export async function machineRoutes(app: FastifyInstance) {
       };
     }
     return { machineId: id, online: false };
+  });
+
+  app.post('/api/machines/:id/active-bobina', {
+    schema: {
+      tags: ['Máquinas'],
+      summary: 'Trocar bobina ativa da máquina',
+      description: 'Troca a bobina atual da máquina, lidando com a bobina anterior (acabou ou voltou para estoque) e definindo a nova.',
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: { id: { type: 'string' } },
+      },
+      body: {
+        type: 'object',
+        properties: {
+          newBobinaId: { type: 'string' },
+          oldBobinaAction: { type: 'string', enum: ['FINISHED', 'RETURN_TO_STOCK'] },
+        },
+      },
+      response: {
+        200: { type: 'object', properties: { success: { type: 'boolean' }, message: { type: 'string' } } },
+        400: { type: 'object', properties: { error: { type: 'string' } } },
+        404: { type: 'object', properties: { error: { type: 'string' } } },
+      },
+    },
+    preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN', 'OPERATOR'])],
+  }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const { newBobinaId, oldBobinaAction } = request.body as { newBobinaId?: string; oldBobinaAction?: 'FINISHED' | 'RETURN_TO_STOCK' };
+    
+    // Lazy load para evitar problemas de dependência circular/imports missing no topo
+    const { bobinas } = await import('../db/schema.js');
+
+    const machine = await db.select().from(machines).where(eq(machines.id, id)).get();
+    if (!machine) return reply.code(404).send({ error: 'Máquina não encontrada' });
+
+    // 1. Lidar com a bobina atual
+    const currentActive = await db.select().from(bobinas).where(
+      and(
+        eq(bobinas.state, 'IN_USE'),
+        eq(bobinas.location, `machine:${id}`)
+      )
+    ).get();
+
+    if (currentActive && oldBobinaAction) {
+      const newState = oldBobinaAction === 'FINISHED' ? 'USED' : 'NEW'; // NEW = Disponível no estoque
+      const newLoc = oldBobinaAction === 'FINISHED' ? 'discarded' : 'deposito';
+      
+      await db.update(bobinas).set({ 
+        state: newState,
+        location: newLoc,
+        finishedAt: oldBobinaAction === 'FINISHED' ? new Date(Date.now()) : null
+      }).where(eq(bobinas.id, currentActive.id));
+    }
+
+    // 2. Montar a nova bobina
+    if (newBobinaId) {
+      // Pode buscar por serial ou ID
+      const newBobina = await db.select().from(bobinas).where(
+        or(eq(bobinas.id, newBobinaId), eq(bobinas.serial, newBobinaId))
+      ).get();
+
+      if (!newBobina) {
+         return reply.code(404).send({ error: 'Nova bobina não encontrada' });
+      }
+
+      if (newBobina.state === 'USED') {
+         return reply.code(400).send({ error: 'Esta bobina já foi marcada como terminada/descartada.' });
+      }
+
+      await db.update(bobinas).set({
+        state: 'IN_USE',
+        location: `machine:${id}`,
+        bobinaOpenedAt: newBobina.bobinaOpenedAt ?? new Date()
+      }).where(eq(bobinas.id, newBobina.id));
+    }
+
+    return { success: true, message: 'Bobina trocada com sucesso' };
   });
 }

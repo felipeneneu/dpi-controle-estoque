@@ -1,3 +1,9 @@
+﻿> **Versão:** 1.0.0 \
+> **Status:** ATIVO \
+> **Owner:** Felipe \
+> **Última atualização:** 2026-09-12 \
+> **Origem:** migrado de `docs/03_FRD_FUNCTIONAL_REQUIREMENTS.md` (MIGRAÇÃO F5 — ver docs/00_DOCS_INDEX.md).\
+
 # 📌 Functional Requirements Document (FRD)
 
 ---
@@ -16,3 +22,4 @@
 - **`RF-010` Chat Bot DM**: Respostas de comandos do bot (/help, /status, /estoque, /jobs, /alertas) são enviadas como mensagem privada (DM) para o remetente.
 - **`RF-011` Notificações Dinâmicas**: Badge no sidebar de Estoque exibe contagem real de notificações não lidas em tempo real.
 - **`RF-012` Painel Mimaki**: Exibição de informações da máquina Mimaki na interface (sem telemetria de rede exportada).
+

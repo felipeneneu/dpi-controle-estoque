@@ -142,7 +142,7 @@ export function AddMaterialDialog({
                         <input
                           type="checkbox"
                           disabled
-                          className="size-4 accent-[var(--brand-purple)]"
+                          className="size-4 accent-[var(--brand-teal)]"
                         />
                         <span className="flex-1 font-medium text-gray-600">
                           {item.name}
@@ -176,7 +176,7 @@ export function AddMaterialDialog({
                           type="checkbox"
                           checked={selectedIds.includes(item.id)}
                           onChange={() => toggleItem(item.id)}
-                          className="size-4 accent-[var(--brand-purple)]"
+                          className="size-4 accent-[var(--brand-teal)]"
                         />
                         <span className="flex-1 font-medium text-gray-800">
                           {item.name}

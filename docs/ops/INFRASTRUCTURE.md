@@ -1,3 +1,9 @@
+﻿> **Versão:** 1.0.0 \
+> **Status:** ATIVO \
+> **Owner:** Felipe \
+> **Última atualização:** 2026-09-12 \
+> **Origem:** migrado de `docs/09_OPS_AND_INFRASTRUCTURE.md + 13_LAN` (MIGRAÇÃO F5 — ver docs/00_DOCS_INDEX.md).\
+
 # 🚀 Ops & Infrastructure Guide
 
 ---
@@ -40,4 +46,4 @@ Gerará os instaladores `.exe`:
 - `dist/server/*-server-setup.exe` → **PC1 (Server)** (UI + backend embutido)
 - `dist/client/*-setup.exe` → **PC2–PC4 (Client)** (somente UI)
 
-Distribua conforme `docs/13_LAN_CONEXAO_SERVER_CLIENT.md`.
+Distribua conforme `docs/_archive/13_LAN_CONEXAO_SERVER_CLIENT.md` (histórico, absorvido aqui).

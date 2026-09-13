@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { toast } from "sonner"
 import { RiAddLine, RiArrowLeftLine, RiCheckLine, RiSearchLine } from "@remixicon/react"
 import { Button } from "@/components/ui/button"
@@ -40,7 +40,11 @@ export function MediaEditDialog({ job, machine, open, onOpenChange }: MediaEditD
   const updateJob = useUpdateJob()
   const createStockItem = useCreateStockItem()
 
-  useEffect(() => {
+  // Inicializa o formulário quando o dialog abre para um novo job (adjust during render)
+  const [lastInitKey, setLastInitKey] = useState("")
+  const initKey = `${job?.id ?? "none"}:${open ? "open" : "closed"}`
+  if (initKey !== lastInitKey) {
+    setLastInitKey(initKey)
     if (job && open) {
       setSearch(job.mediaType ?? "")
       setIsCreating(false)
@@ -63,7 +67,7 @@ export function MediaEditDialog({ job, machine, open, onOpenChange }: MediaEditD
         setSelectedItem(null)
       }
     }
-  }, [job, open, machine, stockItems])
+  }
 
   const filteredItems = stockItems.filter((item) => {
     if (!search.trim()) return true

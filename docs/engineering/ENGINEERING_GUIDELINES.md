@@ -1,3 +1,9 @@
+﻿> **Versão:** 1.0.0 \
+> **Status:** ATIVO \
+> **Owner:** Felipe \
+> **Última atualização:** 2026-09-12 \
+> **Origem:** migrado de `docs/08_ENGINEERING_GUIDELINES.md + secao DoD/PR (F5)` (MIGRAÇÃO F5 — ver docs/00_DOCS_INDEX.md).\
+
 # 🛠️ Engineering Guidelines
 
 ---
@@ -27,7 +33,7 @@ na sala** (`chat:join`). Regra obrigatória ao mexer no chat:
   quando o socket estiver indisponível.
 - **Dependência:** o chat depende de socket pronto. Sem o `join` ativo o broadcast nunca
   chega, e a única via de atualização viraria o refetch por remontagem (comportamento
-  "sai e volta"). Consultar `docs/PLAN-chat-avatars-msgs.md` para o contexto completo.
+  "sai e volta"). Consultar `docs/_archive/PLAN-chat-avatars-msgs.md` para o contexto completo.
 
 ### 4. Padrões de Integração Mimaki
 - **Endpoint M2M**: `POST /api/integrations/mimaki/jobs` usa middleware `m2mAuth` (X-API-Secret ou Bearer).
@@ -42,3 +48,18 @@ na sala** (`chat:join`). Regra obrigatória ao mexer no chat:
 - Emissão via Socket.IO: `app.io.to('user:<senderId>').emit('chat:message', botMsg)`.
 - Mensagens do bot têm `senderId: 'system'` e `senderName: 'GraficaOS Bot'`.
 - Campo `isCommand: true` identifica respostas de bot no frontend.
+
+### 6. Definition of Done (DoD) — pré-PR (P9)
+- [ ] Roda `npm run build`/typecheck sem erro de tipo.
+- [ ] Altera só o que promete; sem mudança de escopo embutida (revert fácil por PR).
+- [ ] Se toca regra de negócio: regra referida por ID no commit/descrição (`docs/business/BUSINESS_RULES.md`).
+- [ ] Se muda regra: `RULE_CHANGELOG.md` atualizado (append-only) + ADR se decisão arquitetural.
+- [ ] Nomeia teste em `naming convention BR-*` (`docs/engineering/TESTING_STRATEGY.md`).
+- [ ] Sem segredo novo no código (`settings`/env, nada hard-coded — ver `SETTINGS_CATALOG.md`).
+
+### 7. PR checklist (P9)
+- [ ] Descrição cita BR/ADR/INT afetados.
+- [ ] Screenshot para mudança de UI (se aplicável).
+- [ ] Testes rodando: `npm test` (backend) e build do app.
+- [ ] `docs:check` verde (ver `DOC_CONSISTENCY.md`).
+

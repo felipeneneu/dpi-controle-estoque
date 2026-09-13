@@ -21,6 +21,7 @@ export const machines = sqliteTable('machines', {
   imageUrl: text('image_url'),
   ip: text('ip'),
   status: text('status', { enum: ['ACTIVE', 'MAINTENANCE', 'INACTIVE'] }).default('ACTIVE'),
+  bleedAdjustmentM: real('bleed_adjustment_m').default(0),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
 
@@ -39,6 +40,25 @@ export const stockItems = sqliteTable('stock_items', {
   status: text('status', { enum: ['AVAILABLE', 'LOW_STOCK', 'OUT_OF_STOCK'] }).default('AVAILABLE'),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
+
+export const bobinas = sqliteTable('bobinas', {
+  id: text('id').primaryKey(),
+  stockItemId: text('stock_item_id')
+    .notNull()
+    .references(() => stockItems.id, { onDelete: 'cascade' }),
+  serial: text('serial'),
+  widthMm: real('width_mm'),
+  metersInitial: real('meters_initial'),
+  metersRemaining: real('meters_remaining'),
+  state: text('state', { enum: ['NEW', 'IN_USE', 'USED', 'BLOCKED', 'SCRAPPED'] }).notNull().default('NEW'),
+  location: text('location').notNull().default('deposito'),
+  bobinaOpenedAt: integer('bobina_opened_at', { mode: 'timestamp' }),
+  finishedAt: integer('finished_at', { mode: 'timestamp' }),
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+}, (t) => [
+  index('bobinas_stock_item_idx').on(t.stockItemId),
+  index('bobinas_state_idx').on(t.state),
+]);
 
 export const machineItems = sqliteTable('machine_items', {
   id: text('id').primaryKey(),
@@ -202,6 +222,7 @@ export const printJobs = sqliteTable('print_jobs', {
   inkProfile: text('ink_profile'),
 
   status: text('status').default('completed'),
+  materialStatus: text('material_status', { enum: ['BOUND', 'PENDING_BIND'] }).default('PENDING_BIND'),
   printEndDate: text('print_end_date'),
 
   stockDeducted: integer('stock_deducted', { mode: 'boolean' }).default(false),
@@ -222,7 +243,10 @@ export const printJobs = sqliteTable('print_jobs', {
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Machine = typeof machines.$inferSelect;
-export type StockItem = typeof stockItems.$inferSelect;export type StockTransaction = typeof stockTransactions.$inferSelect;
+export type StockItem = typeof stockItems.$inferSelect;
+export type Bobina = typeof bobinas.$inferSelect;
+export type NewBobina = typeof bobinas.$inferInsert;
+export type StockTransaction = typeof stockTransactions.$inferSelect;
 export type Supplier = typeof suppliers.$inferSelect;
 export type ChatMessage = typeof chatMessages.$inferSelect;
 export type MachineItem = typeof machineItems.$inferSelect;

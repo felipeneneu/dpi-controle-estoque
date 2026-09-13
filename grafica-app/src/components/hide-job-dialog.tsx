@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { toast } from "sonner"
 import { RiEyeLine, RiEyeOffLine, RiLockPasswordLine, RiShieldCheckLine } from "@remixicon/react"
 import { Button } from "@/components/ui/button"
@@ -48,12 +48,15 @@ export function HideJobDialog({ job, open, onOpenChange }: HideJobDialogProps) {
   const isHidden = Boolean(job?.hidden)
   const isOperator = user?.role === "OPERATOR"
 
-  useEffect(() => {
+  // Reset sensitive fields each time the dialog opens (adjust during render instead of setState-in-effect)
+  const [prevOpen, setPrevOpen] = useState(open)
+  if (open !== prevOpen) {
+    setPrevOpen(open)
     if (open) {
       setPassword("")
       setAdminEmail("")
     }
-  }, [open])
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

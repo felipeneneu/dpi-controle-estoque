@@ -594,10 +594,12 @@ export default function MachinesPage() {
   const [openEdit, setOpenEdit] = useState(false);
   const [em, setEm] = useState(""); const [eb, setEb] = useState(""); const [emo, setEmo] = useState("");
   const [et, setEt] = useState(""); const [ei, setEi] = useState(""); const [eip, setEip] = useState("");
+  const [ebl, setEbl] = useState("");
 
   const [openNew, setOpenNew] = useState(false);
   const [nm, setNm] = useState(""); const [nb, setNb] = useState(""); const [nmo, setNmo] = useState("");
   const [nt, setNt] = useState(""); const [ni, setNi] = useState(""); const [nip, setNip] = useState("");
+  const [nbl, setNbl] = useState("");
 
   const orphans = useMemo(
     () => (itemsQuery.data ?? []).filter((i) => (i.machineIds?.length ?? 0) === 0),
@@ -643,9 +645,10 @@ export default function MachinesPage() {
         technology: nt,
         imageUrl: ni || undefined,
         ip: nip || undefined,
-      });
+        bleedAdjustmentM: nbl ? parseFloat(nbl) : undefined,
+      } as any);
       toast.success("Máquina cadastrada");
-      setNm(""); setNb(""); setNmo(""); setNt(""); setNi(""); setNip("");
+      setNm(""); setNb(""); setNmo(""); setNt(""); setNi(""); setNip(""); setNbl("");
       setOpenNew(false);
     } catch {
       toast.error("Falha ao cadastrar máquina");
@@ -659,7 +662,7 @@ export default function MachinesPage() {
   function openEditMachine(m: Machine) {
     setEditTarget(m);
     setEm(m.name); setEb(m.brand); setEmo(m.model); setEt(m.technology);
-    setEi(m.imageUrl ?? ""); setEip(m.ip ?? "");
+    setEi(m.imageUrl ?? ""); setEip(m.ip ?? ""); setEbl(m.bleedAdjustmentM?.toString() || "");
     setOpenEdit(true);
   }
 
@@ -668,7 +671,11 @@ export default function MachinesPage() {
     try {
       await updateMachine.mutateAsync({
         id: editTarget.id,
-        body: { name: em, brand: eb, model: emo, technology: et, imageUrl: ei || undefined, ip: eip || undefined },
+        body: { 
+          name: em, brand: eb, model: emo, technology: et, 
+          imageUrl: ei || undefined, ip: eip || undefined,
+          bleedAdjustmentM: ebl ? parseFloat(ebl) : undefined,
+        } as any,
       });
       toast.success("Máquina atualizada");
       setOpenEdit(false);
@@ -808,6 +815,10 @@ export default function MachinesPage() {
               <Label className="text-xs font-bold text-muted-foreground tracking-wider uppercase">IP (para monitorar conexão)</Label>
               <Input value={eip} onChange={(e) => setEip(e.target.value)} className="h-11 rounded-xl" placeholder="Ex: 192.168.234.10" />
             </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold text-muted-foreground tracking-wider uppercase">Fator de Sangria/Avanço (m)</Label>
+              <Input type="number" step="0.01" value={ebl} onChange={(e) => setEbl(e.target.value)} className="h-11 rounded-xl" placeholder="Ex: 0.15" />
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpenEdit(false)}>Cancelar</Button>
@@ -850,6 +861,10 @@ export default function MachinesPage() {
             <div className="space-y-1.5">
               <Label className="text-xs font-bold text-muted-foreground tracking-wider uppercase">IP (opcional)</Label>
               <Input value={nip} onChange={(e) => setNip(e.target.value)} className="h-11 rounded-xl" placeholder="Ex: 192.168.234.10" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold text-muted-foreground tracking-wider uppercase">Fator de Sangria/Avanço (m)</Label>
+              <Input type="number" step="0.01" value={nbl} onChange={(e) => setNbl(e.target.value)} className="h-11 rounded-xl" placeholder="Ex: 0.15" />
             </div>
           </div>
           <DialogFooter>

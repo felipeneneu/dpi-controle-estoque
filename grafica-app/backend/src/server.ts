@@ -12,6 +12,7 @@ import { startDiscovery } from './discovery.js';
 import { startHpAgent } from './agents/hp-latex/index.js';
 import { startKonicaAgent } from './agents/konica/index.js';
 import { startBrain } from './agents/brain/index.js';
+import { setupSchedulers } from './lib/scheduler.js';
 
 const port = Number(process.env.PORT || 3001);
 
@@ -170,6 +171,7 @@ startAlertEscalation();
 const stopDiscovery = startDiscovery(port);
 const stopHpAgent = startHpAgent(app.io);
 const stopKonicaAgent = startKonicaAgent(app.io);
+setupSchedulers(app);
 startBrain(app.io);
 
 process.on('SIGINT', () => {
