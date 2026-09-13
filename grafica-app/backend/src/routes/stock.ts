@@ -298,6 +298,71 @@ export async function stockRoutes(app: FastifyInstance) {
     return { ...existing, machineIds };
   });
 
+  app.get('/api/bobinas', {
+    schema: {
+      tags: ['Bobinas'],
+      summary: 'Listar bobinas',
+      description: 'Retorna a lista de bobinas, opcionalmente filtrada por stockItemId.',
+      querystring: {
+        type: 'object',
+        properties: {
+          stockItemId: { type: 'string' },
+        },
+      },
+      response: {
+        200: { type: 'array', items: { type: 'object', additionalProperties: true } },
+      },
+    },
+    preHandler: [authenticate],
+  }, async (request) => {
+    const query = request.query as { stockItemId?: string };
+    let queryBuilder = db.select().from(bobinas);
+    if (query.stockItemId) {
+      queryBuilder = queryBuilder.where(eq(bobinas.stockItemId, query.stockItemId)) as any;
+    }
+    return await queryBuilder.all();
+  });
+
+  app.patch('/api/bobinas/:id', {
+    schema: {
+      tags: ['Bobinas'],
+      summary: 'Atualizar bobina',
+      description: 'Atualiza o estado ou local da bobina.',
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: { id: { type: 'string' } },
+      },
+      body: {
+        type: 'object',
+        properties: {
+          state: { type: 'string' },
+          location: { type: 'string' },
+          serial: { type: 'string' },
+        },
+      },
+      response: {
+        200: { type: 'object', additionalProperties: true },
+        404: { type: 'object', properties: { error: { type: 'string' } } },
+      },
+    },
+    preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN', 'OPERATOR'])],
+  }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const body = (request.body ?? {}) as { state?: "NEW" | "IN_USE" | "USED" | "BLOCKED" | "SCRAPPED"; location?: string; serial?: string };
+    
+    const existing = await db.select().from(bobinas).where(eq(bobinas.id, id)).get();
+    if (!existing) return reply.code(404).send({ error: 'Not found' });
+    
+    const next = { ...existing, ...body };
+    await db.update(bobinas).set(next).where(eq(bobinas.id, id));
+    
+    // Invalida cache (opcional mas bom para realtime)
+    // app.io.to('estoque').emit('bobinas:updated', next);
+    
+    return next;
+  });
+
   app.post('/api/stock-items/:id/add-roll', {
     schema: {
       tags: ['Estoque'],
@@ -312,6 +377,7 @@ export async function stockRoutes(app: FastifyInstance) {
         type: 'object',
         properties: {
           serial: { type: 'string', description: 'ID curto ou serial da bobina (ex: BOB:1042)' },
+          label: { type: 'string' },
           metersInitial: { type: 'number', description: 'Metragem inicial do rolo' },
         },
       },
@@ -323,16 +389,17 @@ export async function stockRoutes(app: FastifyInstance) {
     preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN'])],
   }, async (request, reply) => {
     const { id } = request.params as { id: string };
-    const body = (request.body ?? {}) as { serial?: string; metersInitial?: number };
+    const body = (request.body ?? {}) as { serial?: string; label?: string; metersInitial?: number };
     const existing = await db.select().from(stockItems).where(eq(stockItems.id, id)).get();
     if (!existing) return reply.code(404).send({ error: 'Not found' });
 
     const metersInitial = body.metersInitial ?? 50;
+    const finalSerial = body.serial || body.label || `BOB-${Math.floor(Math.random() * 10000)}`;
 
     const novaBobina = {
       id: newId(),
       stockItemId: id,
-      serial: body.serial || `BOB-${Math.floor(Math.random() * 10000)}`,
+      serial: finalSerial,
       widthMm: existing.width ?? 0,
       metersInitial,
       metersRemaining: metersInitial,
