@@ -22,6 +22,7 @@ export default function NovoProdutoPage() {
   const [currentQuantity, setCurrentQuantity] = useState("");
   const [minQuantity, setMinQuantity] = useState("");
   const [width, setWidth] = useState("");
+  const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   async function submit(e: React.FormEvent) {
@@ -37,8 +38,9 @@ export default function NovoProdutoPage() {
         category,
         unit,
         width: width ? Number(width) : undefined,
-        currentQuantity: Number(currentQuantity) || 0,
+        currentQuantity: category === "PAPER_MEDIA" && unit === "m" ? 0 : (Number(currentQuantity) || 0),
         minQuantity: Number(minQuantity) || 0,
+        code: code.trim() || undefined,
       });
       router.push("/produtos");
     } catch (err) {
@@ -107,30 +109,52 @@ export default function NovoProdutoPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="qty" className="text-xs font-bold text-muted-foreground tracking-wider uppercase">Qtd. inicial</Label>
-                <Input
-                  id="qty"
-                  type="number"
-                  min="0"
-                  value={currentQuantity}
-                  onChange={(e) => setCurrentQuantity(e.target.value)}
-                  placeholder="Ex: 50"
-                  className="h-12 rounded-xl"
-                />
+                {category === "PAPER_MEDIA" && unit === "m" ? (
+                  <Input
+                    id="qty"
+                    type="text"
+                    disabled
+                    value="Calculado pelas bobinas"
+                    className="h-12 rounded-xl bg-gray-50 text-muted-foreground"
+                  />
+                ) : (
+                  <Input
+                    id="qty"
+                    type="number"
+                    min="0"
+                    value={currentQuantity}
+                    onChange={(e) => setCurrentQuantity(e.target.value)}
+                    placeholder="Ex: 50"
+                    className="h-12 rounded-xl"
+                  />
+                )}
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="width" className="text-xs font-bold text-muted-foreground tracking-wider uppercase">Largura do rolo (m) — opcional</Label>
-              <Input
-                id="width"
-                type="number"
-                min="0"
-                step="0.01"
-                value={width}
-                onChange={(e) => setWidth(e.target.value)}
-                placeholder="Ex: 1.06 / 0.75 / 1.57"
-                className="h-12 rounded-xl"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="code" className="text-xs font-bold text-muted-foreground tracking-wider uppercase">CÓDIGO (ID Curto)</Label>
+                <Input
+                  id="code"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  placeholder="Ex: LONA-137"
+                  className="h-12 rounded-xl"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="width" className="text-xs font-bold text-muted-foreground tracking-wider uppercase">Largura do rolo (m) — opcional</Label>
+                <Input
+                  id="width"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={width}
+                  onChange={(e) => setWidth(e.target.value)}
+                  placeholder="Ex: 1.06 / 0.75 / 1.57"
+                  className="h-12 rounded-xl"
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
