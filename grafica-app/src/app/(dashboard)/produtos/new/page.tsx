@@ -38,7 +38,7 @@ export default function NovoProdutoPage() {
         category,
         unit,
         width: width ? Number(width) : undefined,
-        currentQuantity: category === "PAPER_MEDIA" && unit === "m" ? 0 : (Number(currentQuantity) || 0),
+        currentQuantity: Number(currentQuantity) || 0,
         minQuantity: Number(minQuantity) || 0,
         code: code.trim() || undefined,
       });
@@ -108,26 +108,18 @@ export default function NovoProdutoPage() {
                 </select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="qty" className="text-xs font-bold text-muted-foreground tracking-wider uppercase">Qtd. inicial</Label>
-                {category === "PAPER_MEDIA" && unit === "m" ? (
-                  <Input
-                    id="qty"
-                    type="text"
-                    disabled
-                    value="Calculado pelas bobinas"
-                    className="h-12 rounded-xl bg-gray-50 text-muted-foreground"
-                  />
-                ) : (
-                  <Input
-                    id="qty"
-                    type="number"
-                    min="0"
-                    value={currentQuantity}
-                    onChange={(e) => setCurrentQuantity(e.target.value)}
-                    placeholder="Ex: 50"
-                    className="h-12 rounded-xl"
-                  />
-                )}
+                <Label htmlFor="qty" className="text-xs font-bold text-muted-foreground tracking-wider uppercase">
+                  {category === "PAPER_MEDIA" && unit === "m" ? "Qtd. inicial (Tamanho do 1º rolo)" : "Qtd. inicial"}
+                </Label>
+                <Input
+                  id="qty"
+                  type="number"
+                  min="0"
+                  value={currentQuantity}
+                  onChange={(e) => setCurrentQuantity(e.target.value)}
+                  placeholder="Ex: 50"
+                  className="h-12 rounded-xl"
+                />
               </div>
             </div>
 

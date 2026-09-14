@@ -184,6 +184,43 @@ export async function stockRoutes(app: FastifyInstance) {
     };
     await db.insert(stockItems).values(item);
 
+    if (data.category === 'PAPER_MEDIA' && data.unit === 'm' && current > 0) {
+      const shortIdStr = Math.floor(1000 + Math.random() * 9000).toString();
+      const finalSerial = `BOB-${shortIdStr}`;
+      await db.insert(bobinas).values({
+        id: newId(),
+        stockItemId: item.id,
+        serial: finalSerial,
+        widthMm: data.width ?? 0,
+        metersInitial: current,
+        metersRemaining: current,
+        state: 'NEW',
+        location: 'deposito',
+      });
+
+      const ator = await db.select().from(users).where(eq(users.id, request.userId as string)).get();
+      await db.insert(stockTransactions).values({
+        id: newId(),
+        itemId: item.id,
+        type: 'IN',
+        quantity: current,
+        reason: 'Cadastro Inicial (1º Rolo)',
+        userId: request.userId as string,
+        userName: ator?.name ?? 'Sistema',
+      });
+    } else if (current > 0) {
+      const ator = await db.select().from(users).where(eq(users.id, request.userId as string)).get();
+      await db.insert(stockTransactions).values({
+        id: newId(),
+        itemId: item.id,
+        type: 'IN',
+        quantity: current,
+        reason: 'Cadastro Inicial',
+        userId: request.userId as string,
+        userName: ator?.name ?? 'Sistema',
+      });
+    }
+
     if (data.machineId) {
       await db.insert(machineItems).values({
         id: newId(),
