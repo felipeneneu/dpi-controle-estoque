@@ -119,3 +119,12 @@ export function useUpdateBobina() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: stockKeys.all }),
   })
 }
+
+export function useDischargeBobina() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
+      api(`/api/bobinas/${id}/discharge`, { method: "POST", body: JSON.stringify({ reason }) }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: stockKeys.all }),
+  })
+}

@@ -41,6 +41,13 @@
   indevida a itens não-rolo; status `IMPLEMENTED` marcado anteriormente não tinha
   prova válida | ADR-009 | Felipe
 
+  ## [1.2.2] — 2026-09-13 — Emenda ADR-009: baixa de bobina por venda
+
+- **EMENDA** ADR-009: adicionado caso de uso "venda de bobina inteira a cliente",
+  reaproveitando location=cliente e state=USED (sem criar estado novo) | motivo:
+  necessidade real de dar baixa em rolo vendido inteiro, anotando motivo | ADR-009
+  | Felipe
+
 ## Formato de entrada (a partir daqui)
 
 ```

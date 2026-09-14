@@ -366,6 +366,63 @@ export async function stockRoutes(app: FastifyInstance) {
     return next;
   });
 
+  app.post('/api/bobinas/:id/discharge', {
+    schema: {
+      tags: ['Bobinas'],
+      summary: 'Dar baixa manual em bobina (Venda)',
+      description: 'Dá baixa na bobina inteira, gerando transação OUT e mudando o estado para USED.',
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: { id: { type: 'string' } },
+      },
+      body: {
+        type: 'object',
+        required: ['reason'],
+        properties: {
+          reason: { type: 'string', minLength: 1 },
+        },
+      },
+      response: {
+        200: { type: 'object', additionalProperties: true },
+        400: { type: 'object', properties: { error: { type: 'string' } } },
+        404: { type: 'object', properties: { error: { type: 'string' } } },
+      },
+    },
+    preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN', 'OPERATOR'])],
+  }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const { reason } = request.body as { reason: string };
+
+    const existing = await db.select().from(bobinas).where(eq(bobinas.id, id)).get();
+    if (!existing) return reply.code(404).send({ error: 'Not found' });
+    if (existing.state !== 'NEW' && existing.state !== 'IN_USE') {
+      return reply.code(400).send({ error: 'Apenas bobinas ativas podem ser baixadas manualmente.' });
+    }
+
+    const next = {
+      ...existing,
+      state: 'USED' as const,
+      location: 'cliente',
+      finishedAt: new Date(),
+    };
+
+    await db.update(bobinas).set(next).where(eq(bobinas.id, id));
+
+    const ator = await db.select().from(users).where(eq(users.id, request.userId as string)).get();
+    await db.insert(stockTransactions).values({
+      id: newId(),
+      itemId: existing.stockItemId,
+      type: 'OUT',
+      quantity: existing.metersRemaining ?? 0,
+      reason: reason,
+      userId: request.userId as string,
+      userName: ator?.name ?? 'Sistema',
+    });
+
+    return reply.code(200).send(next);
+  });
+
   app.post('/api/stock-items/:id/add-roll', {
     schema: {
       tags: ['Estoque'],
@@ -386,6 +443,7 @@ export async function stockRoutes(app: FastifyInstance) {
       },
       response: {
         201: { type: 'object' },
+        400: { type: 'object', properties: { error: { type: 'string' } } },
         404: { type: 'object', properties: { error: { type: 'string' } } },
       },
     },
