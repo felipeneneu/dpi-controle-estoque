@@ -90,9 +90,8 @@ export default function EstoquePage() {
 
   async function confirmAddRoll() {
     if (!rollTarget) return;
-    const label = rollLabel.trim() || `Rolo ${rollTarget.name.split(",")[0].trim()}`;
     try {
-      await addRoll.mutateAsync({ id: rollTarget.id, label });
+      await addRoll.mutateAsync({ id: rollTarget.id, label: "" });
       toast.success("Rolo criado");
       setRollTarget(null);
     } catch {
@@ -229,16 +228,9 @@ export default function EstoquePage() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label className="text-xs font-bold text-muted-foreground tracking-wider uppercase">Identificação do rolo</Label>
-              <Input
-                value={rollLabel}
-                onChange={(e) => setRollLabel(e.target.value)}
-                placeholder="Ex: Rolo B"
-                className="h-11 rounded-xl"
-              />
-              <p className="text-xs text-muted-foreground">Deixe vazio para usar o nome padrão.</p>
+          <div className="space-y-4 py-4">
+            <div className="bg-brand-teal/10 border border-brand-teal/20 text-brand-teal p-4 rounded-xl text-sm">
+              <strong>Geração Automática:</strong> O ID Curto (Serial) desta bobina será gerado automaticamente pelo sistema. Isso garante a padronização das futuras etiquetas físicas (QR Code).
             </div>
           </div>
 

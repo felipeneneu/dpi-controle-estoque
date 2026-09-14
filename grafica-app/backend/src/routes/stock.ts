@@ -459,7 +459,9 @@ export async function stockRoutes(app: FastifyInstance) {
     }
 
     const metersInitial = body.metersInitial ?? 50;
-    const finalSerial = body.serial || body.label || `BOB-${Math.floor(Math.random() * 10000)}`;
+    // Geração automática de ID curto para as etiquetas (M2/M3)
+    const shortIdStr = Math.floor(1000 + Math.random() * 9000).toString();
+    const finalSerial = `BOB-${shortIdStr}`;
 
     const novaBobina = {
       id: newId(),
