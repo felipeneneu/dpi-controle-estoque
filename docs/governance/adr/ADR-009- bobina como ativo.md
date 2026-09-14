@@ -81,3 +81,9 @@ CritÃ©rio de aceite de M1 (primeira fase, escopo mÃ­nimo verificÃ¡vel):
 - [ ] `add-roll` passa a criar uma `Bobina` nova (nÃ£o mais sÃ³ somar ao agregado) e gera transaÃ§Ã£o IN de abertura vinculada a ela.
 - [ ] `StockItem.currentQuantity` exibido na UI Ã© a soma calculada das bobinas ativas, nÃ£o mais uma coluna editÃ¡vel diretamente.
 - [ ] Teste que amarra BR-002 (status `TARGET` â†’ `PARTIAL` sÃ³ quando M1 estiver coberto por teste, `IMPLEMENTED` apenas ao final de M3, conforme convenÃ§Ã£o de status deste projeto).
+## Emenda 1: Gestão de Insumos Não-Rolo (Tintas e Folhas)
+- **Data da Emenda:** 2026-09-13
+- **Contexto:** Surgiu a dúvida de como seria a entrada e saída de materiais fora do escopo da bobina (como INK_SUPPLY e folhas), já que a UI adotou as bobinas para o restante e escondeu as opções de "Rolo". Outra dúvida é se rastrearemos cartuchos individuais.
+- **Decisão:** O modelo e algoritmo de bobinas **não se aplica** a cartuchos de tinta nem a resmas de papel. 
+  - **Dedução de Tintas:** Continua operando sobre o agregado \currentQuantity\ do SKU (medido em mililitros), decrescendo frações consumidas via telemetria das máquinas (HP/Mimaki). Não cadastramos cartuchos físicos como entidades (Asset) individuais.
+  - **Carregamento de Estoque (Tintas e Folhas):** A entrada e saída avulsa destes itens ocorre através de transações padrão no ledger (tipo \IN\, \OUT\ e \ADJUSTMENT\), que somam ou subtraem diretamente o campo \currentQuantity\ do \StockItem\. A interface deve prover um formulário genérico de "Lançamento Manual" (Adicionar/Remover quantidade) para itens que não são rastreados como ativos físicos.

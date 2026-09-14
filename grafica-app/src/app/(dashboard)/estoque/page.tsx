@@ -37,6 +37,8 @@ export default function EstoquePage() {
   const [filter, setFilter] = useState<"TODOS" | StockCategory>("TODOS");
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<StockItem | null>(null);
+  const [transactionTarget, setTransactionTarget] = useState<StockItem | null>(null);
+  const [transactionType, setTransactionType] = useState<"IN" | "OUT">("IN");
   const [qty, setQty] = useState("");
   const [reason, setReason] = useState("");
   const transaction = useStockTransaction();
@@ -59,22 +61,23 @@ export default function EstoquePage() {
       (i.code ? i.code.toLowerCase().includes(search.trim().toLowerCase()) : false),
   );
 
-  async function submitBaixa() {
-    if (!selected) return;
+  async function submitTransaction() {
+    if (!transactionTarget) return;
     const quantity = Number(qty);
     if (!quantity || quantity <= 0) return;
     try {
       await transaction.mutateAsync({
-        itemId: selected.id,
-        type: "OUT",
+        itemId: transactionTarget.id,
+        type: transactionType,
         quantity,
         reason: reason || undefined,
       });
-      setSelected(null);
+      toast.success("Lançamento registrado!");
+      setTransactionTarget(null);
       setQty("");
       setReason("");
     } catch {
-      // toast handled later
+      toast.error("Erro ao registrar lançamento");
     }
   }
 
@@ -159,11 +162,13 @@ export default function EstoquePage() {
                 ) : null}
                 {item.label ? (
                   <div className="flex items-center justify-between text-sm mb-1">
-                    <span className="text-muted-foreground">Rolo</span>
+                    <span className="text-muted-foreground">
+                      {item.category === 'PAPER_MEDIA' && item.unit === 'm' ? 'Rolo' : 'Info/Lote'}
+                    </span>
                     <span className="text-gray-700 font-semibold">{item.label}</span>
                   </div>
                 ) : null}
-                {item.category === 'PAPER_MEDIA' && item.unit === 'm' && (
+                {item.category === 'PAPER_MEDIA' && item.unit === 'm' ? (
                   <div className="mt-auto flex flex-col gap-2">
                     <Button
                       variant="outline"
@@ -178,6 +183,29 @@ export default function EstoquePage() {
                       onClick={() => openAddRoll(item)}
                     >
                       + Adicionar rolo
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="mt-auto flex gap-2">
+                    <Button
+                      variant="outline"
+                      className="flex-1 h-10 border-emerald-500 text-emerald-600 hover:bg-emerald-50 font-semibold rounded-xl"
+                      onClick={() => {
+                        setTransactionTarget(item);
+                        setTransactionType("IN");
+                      }}
+                    >
+                      + Entrada
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="flex-1 h-10 border-brand-pink text-brand-pink hover:bg-brand-pink/10 font-semibold rounded-xl"
+                      onClick={() => {
+                        setTransactionTarget(item);
+                        setTransactionType("OUT");
+                      }}
+                    >
+                      - Saída
                     </Button>
                   </div>
                 )}
@@ -218,6 +246,52 @@ export default function EstoquePage() {
             <Button variant="outline" onClick={() => setRollTarget(null)}>Cancelar</Button>
             <Button onClick={confirmAddRoll} disabled={addRoll.isPending}>
               {addRoll.isPending ? "Criando…" : "Criar rolo"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!transactionTarget} onOpenChange={(open) => !open && setTransactionTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {transactionType === "IN" ? "Adicionar Estoque" : "Dar Baixa"}
+            </DialogTitle>
+            <DialogDescription>
+              {transactionTarget?.name} ({transactionTarget?.unit})
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label className="text-xs font-bold text-muted-foreground tracking-wider uppercase">Quantidade</Label>
+              <Input
+                type="number"
+                value={qty}
+                onChange={(e) => setQty(e.target.value)}
+                placeholder="Ex: 5"
+                className="h-11 rounded-xl"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs font-bold text-muted-foreground tracking-wider uppercase">Motivo (Opcional)</Label>
+              <Input
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                placeholder="Ex: Compra NF 1234 / Descarte"
+                className="h-11 rounded-xl"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setTransactionTarget(null)}>Cancelar</Button>
+            <Button 
+              onClick={submitTransaction} 
+              disabled={transaction.isPending || !qty || Number(qty) <= 0}
+              variant={transactionType === "IN" ? "default" : "destructive"}
+            >
+              {transaction.isPending ? "Salvando…" : "Confirmar"}
             </Button>
           </DialogFooter>
         </DialogContent>
