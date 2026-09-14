@@ -28,6 +28,19 @@
   junto de ADR-009, mas ainda não estava redigido no corpo da ADR | motivo: alinhar
   arquivo ao escopo já anunciado no índice/changelog | ADR-009 | Felipe
 
+  ## [1.2.1] — 2026-09-13 — Correção de escopo: Bobina aplicada indevidamente a itens fora do modelo
+
+- **CORREÇÃO** implementação do M1 criou registros de `Bobina` para itens fora do
+  escopo decidido (Tinta UV Cyan em ml tratada como "50m restantes"; risco de outros
+  itens não-rolo também afetados) | causa raiz: ADR-009 não declarava explicitamente
+  exclusões (tinta, papel em folha, materiais rígidos) | correção: emenda na ADR-009
+  com seção "Escopo" explícita + reversão das bobinas criadas indevidamente | ADR-009
+  | Felipe
+- **REBAIXAMENTO** BR-002 de `IMPLEMENTED` para `PARTIAL` — verificação manual (P3)
+  encontrou tanto o bug de "Ver Bobinas" vazio no add-roll quanto a generalização
+  indevida a itens não-rolo; status `IMPLEMENTED` marcado anteriormente não tinha
+  prova válida | ADR-009 | Felipe
+
 ## Formato de entrada (a partir daqui)
 
 ```

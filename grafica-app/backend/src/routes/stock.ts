@@ -120,12 +120,15 @@ export async function stockRoutes(app: FastifyInstance) {
     }
     
     return rows.map((r) => {
-      const itemBobinas = allBobinas.filter(b => b.stockItemId === r.id && (b.state === 'NEW' || b.state === 'IN_USE'));
-      const derivedQuantity = itemBobinas.reduce((acc, b) => acc + (b.metersRemaining || 0), 0);
+      let finalQuantity = r.currentQuantity;
+      if (r.category === 'PAPER_MEDIA' && r.unit === 'm') {
+        const itemBobinas = allBobinas.filter(b => b.stockItemId === r.id && (b.state === 'NEW' || b.state === 'IN_USE'));
+        finalQuantity = itemBobinas.reduce((acc, b) => acc + (b.metersRemaining || 0), 0);
+      }
       return { 
         ...r, 
-        currentQuantity: derivedQuantity,
-        status: computeStatus(derivedQuantity, r.minQuantity),
+        currentQuantity: finalQuantity,
+        status: computeStatus(finalQuantity, r.minQuantity),
         machineIds: byItem.get(r.id) ?? [] 
       };
     });
@@ -392,6 +395,10 @@ export async function stockRoutes(app: FastifyInstance) {
     const body = (request.body ?? {}) as { serial?: string; label?: string; metersInitial?: number };
     const existing = await db.select().from(stockItems).where(eq(stockItems.id, id)).get();
     if (!existing) return reply.code(404).send({ error: 'Not found' });
+    
+    if (existing.category !== 'PAPER_MEDIA' || existing.unit !== 'm') {
+      return reply.code(400).send({ error: 'Bobinas só podem ser criadas para itens de mídia (PAPER_MEDIA) com unidade em metros (m).' });
+    }
 
     const metersInitial = body.metersInitial ?? 50;
     const finalSerial = body.serial || body.label || `BOB-${Math.floor(Math.random() * 10000)}`;

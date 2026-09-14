@@ -163,24 +163,24 @@ export default function EstoquePage() {
                     <span className="text-gray-700 font-semibold">{item.label}</span>
                   </div>
                 ) : null}
-                <div className="mt-auto flex flex-col gap-2">
-                  <Button
-                    variant="outline"
-                    className="w-full h-11 border-primary text-primary hover:bg-brand-pink/10 font-semibold rounded-xl"
-                    onClick={() => {
-                      setSelected(item);
-                    }}
-                  >
-                    Ver Bobinas
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="w-full h-9 text-muted-foreground font-semibold rounded-xl"
-                    onClick={() => openAddRoll(item)}
-                  >
-                    + Adicionar rolo
-                  </Button>
-                </div>
+                {item.category === 'PAPER_MEDIA' && item.unit === 'm' && (
+                  <div className="mt-auto flex flex-col gap-2">
+                    <Button
+                      variant="outline"
+                      className="w-full h-11 border-primary text-primary hover:bg-brand-pink/10 font-semibold rounded-xl"
+                      onClick={() => setSelected(item)}
+                    >
+                      Ver Bobinas
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="w-full h-9 text-muted-foreground font-semibold rounded-xl"
+                      onClick={() => openAddRoll(item)}
+                    >
+                      + Adicionar rolo
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}
