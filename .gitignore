@@ -9,6 +9,10 @@ out/
 **/out/
 build/
 **/build/
+bin/
+**/bin/
+obj/
+**/obj/
 
 # keep electron app icons (needed for installers)
 !electron/build/

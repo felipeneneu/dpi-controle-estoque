@@ -1,6 +1,7 @@
 # Integração Mimaki (M2M) — GraficaOS
 
 > **Status:** ATIVA (INT-001) · **Gap conhecido:** idempotência de tintas UV ausente → ADR-007/BR-008.
+> **Canal piloto:** leitura de CSVs RasterLink via `mimaki-teste` (ADR-016) — seção 9.
 > **Consolida o histórico:** `docs/14_MIMAKI_INTEGRATION.md`, `docs/PLAN-mimaki-integration.md`, `docs/PLAN-mimaki-jobs-fix.md`, `PLAN-MIMAKI-FIX.md` (raiz) — todos arquivados.
 > **Código:** `grafica-app/backend/src/routes/mimaki.ts`, `lib/mimaki-queue.ts`, `middleware/m2m-auth.ts`.
 
@@ -72,3 +73,53 @@ total_prints  = total_print ?? (pages × copies)        // copies = copy_number 
 | `400` | schema inválido | campos obrigatórios (`machine_id`, `folder_timestamp`, `job_name`, `width_mm`, `height_mm`) |
 | job `PENDING_BIND` | `raw_material_name` não casa | vincular manual; revisar convenção de nomes |
 | saldo zerado nos UV no re-sync | idempotência ausente | aplicar ADR-007 |
+
+---
+
+## 9. Canal paralelo de teste — `mimaki-teste` (ADR-016)
+
+> **Status:** piloto (atrás de `MIMAKI_TEST_WATCHER_ENABLED`, padrão ligado). Não deduz estoque e não compete com o fluxo M2M.
+
+Avalia a **leitura direta dos CSVs RasterLink** gravados pela máquina, sem depender do Mimaki Tracker Electron. A pasta de origem é o compartilhamento `J:` do servidor:
+
+```
+J:\DPI Inteligência Gráfica\Gráfica Rápida\Arquivos para Impressão\Mimaki UCJV 300-75\jobs_tracker_print\UCJV300 BE86B073
+```
+
+### 9.1 How it works
+
+```
+Watcher (poll 30s) ─► lê *_print.csv ─► parsePrintCsv() ─► INSERT mimaki_test_jobs
+  J: indisponível → tolera, health.sourceAvailable=false    │  dedupe UNIQUE (source_file, key_filename, print_s_time)
+                                                             └─ print_s_time vazio (NG) → fallback rip_s_time
+```
+
+- **CSV header:** `KEY_FILENAME,KEY_RESULT,KEY_INKUSE,KEY_RIP_S_TIME,KEY_RIP_E_TIME,KEY_PRINT_S_TIME,KEY_PRINT_E_TIME,KEY_ARRANGE_CNT,KEY_RESULT_DETAIL`
+- **Erros reais:** `KEY_RESULT=NG` + `KEY_RESULT_DETAIL=ERROR_PRINT` (print_e vazio) → gravados e destacados na UI.
+- **Tamanho/dimensão não estão no CSV** → extraídos do filename (best-effort): `pedido-cliente-material-350x50mm-40un-3 copias`. O que não reconhece vai para `parse_errors` (visível na UI). Sem unidade explícita → assumido `mm` (avisado).
+
+### 9.2 Tabela `mimaki_test_jobs`
+
+Isolada do `mimaki_jobs`: `channel='mimaki-teste'`, canais de tinta `ink_*_cc` (8) + `ink_total_cc`, `result/result_detail`, timestamps `*_time` (formato `YYYYMMDD_HHMMSS`), campos `parsed_*` e `parse_errors` (JSON array). `created_at` timestamp ms.
+
+### 9.3 Endpoints (JWT)
+
+| Endpoint | Auth | Função |
+|----------|------|--------|
+| `GET /api/mimaki-test/jobs` | JWT | lista registros (filtros `result`, `limit/offset`) |
+| `GET /api/mimaki-test/health` | JWT | status da pasta J: (`sourceAvailable`, `lastScanAt/Error`, `lastInserted`) |
+| `POST /api/mimaki-test/scan` | JWT | scan manual imediato |
+
+UI: **Máquinas → canal da Mimaki → aba "Mimaki Teste"**.
+
+### 9.4 Configuração (env)
+
+| Variável | Padrão | Descrição |
+|----------|--------|-----------|
+| `MIMAKI_TEST_WATCHER_ENABLED` | `true` | liga/desliga o watcher de polling |
+| `MIMAKI_TEST_SOURCE_DIR` | caminho `J:` | pasta dos CSVs (permite override/test) |
+| `MIMAKI_TEST_POLL_INTERVAL_MS` | `30000` | intervalo de leitura |
+
+### 9.5 Critérios de saída da prova
+
+`docs/PLAN-mimaki-test-channel.md` (checklist) e ADR-016: confirmar que fato (2-3 semanas) reproduz os jobs OK/NG com dimensões/tintas corretas antes de promover o canal a oficial e descomissionar o M2M.

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mesa de Imposição SRA3 — Konica</title>
+<style>
+  :root {
+    --bg-app: #121212;
+    --panel-bg: #1e1e1e;
+    --panel-border: #2d2d2d;
+    --text-main: #f0f0f0;
+    --text-muted: #888888;
+    --accent: #d97706; /* Amber */
+    --accent-hover: #b45309;
+    --success: #059669;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace; color: var(--text-main); background: var(--bg-app); overflow: hidden; }
+  #view { position: fixed; inset: 0; z-index: 1; }
+  canvas { display: block; }
+
+  /* Painel Lateral Estilo Software Gráfico */
+  #panel {
+    position: fixed; left: 16px; top: 16px; bottom: 16px; width: 340px; z-index: 10;
+    background: rgba(30, 30, 30, 0.95); border: 1px solid var(--panel-border);
+    backdrop-filter: blur(8px); display: flex; flex-direction: column; box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    border-radius: 6px;
+  }
+  .panel-header { padding: 14px 16px; border-bottom: 1px solid var(--panel-border); }
+  h1 { font-size: 15px; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
+  .sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  /* Abas */
+  .tabs { display: flex; border-bottom: 1px solid var(--panel-border); background: #181818; }
+  .tab-btn {
+    flex: 1; padding: 9px; font-size: 11px; font-weight: 600; background: none; border: none;
+    color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent;
+  }
+  .tab-btn.active { color: var(--accent); border-color: var(--accent); background: #222; }
+
+  /* Fila de Itens */
+  .queue-list { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .item-card {
+    background: #262626; border: 1px solid #383838; border-radius: 4px; padding: 8px 10px;
+    display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.15s;
+  }
+  .item-card:hover { border-color: var(--accent); background: #2d2d2d; }
+  .item-code { font-size: 12px; font-weight: 700; color: var(--accent); }
+  .item-title { font-size: 11px; color: #eee; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 190px; }
+  .item-meta { font-size: 10px; color: var(--text-muted); }
+  .btn-add {
+    width: 24px; height: 24px; background: #333; border: 1px solid #444; color: #fff; border-radius: 4px;
+    font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .btn-add:hover { background: var(--accent); border-color: var(--accent); }
+
+  /* Controles de Configuração */
+  .controls-box { padding: 14px 16px; border-top: 1px solid var(--panel-border); background: #181818; display: flex; flex-direction: column; gap: 10px; }
+  .row { display: flex; gap: 8px; align-items: center; justify-content: space-between; font-size: 12px; }
+  .row input {
+    width: 60px; background: #262626; border: 1px solid #444; color: #fff; text-align: center; padding: 3px 6px; font-size: 11px; border-radius: 4px;
+  }
+  .btn-main {
+    width: 100%; padding: 8px; font-size: 12px; font-weight: 600; border: none; border-radius: 4px; cursor: pointer; transition: 0.2s;
+  }
+  .btn-autogang { background: var(--accent); color: #fff; }
+  .btn-autogang:hover { background: var(--accent-hover); }
+  .btn-print { background: var(--success); color: #fff; font-weight: 700; }
+  .btn-print:hover { background: #047857; }
+
+  /* Barra de Status Topo */
+  #top-bar {
+    position: fixed; right: 16px; top: 16px; z-index: 10;
+    background: rgba(30, 30, 30, 0.95); border: 1px solid var(--panel-border);
+    padding: 8px 14px; border-radius: 6px; display: flex; gap: 16px; font-size: 12px; align-items: center;
+  }
+  .badge { background: #111; padding: 2px 8px; border-radius: 4px; font-family: monospace; border: 1px solid #333; }
+</style>
+</head>
+<body>
+
+<div id="view"></div>
+
+<!-- Topbar com Informações e Atalhos -->
+<div id="top-bar">
+  <div>Folha: <span class="badge">330 × 480 mm (SRA3)</span></div>
+  <div>Ocupação: <span id="count-stat" class="badge" style="color: var(--accent);">0 / 40 (0%)</span></div>
+  <button id="btn-rot" style="background:#2b2b2b; border:1px solid #444; color:#fff; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer;">
+    🔄 Composição: <strong id="rot-label">Vertical (40 un)</strong>
+  </button>
+  <button id="btn-reset" style="background:#2b2b2b; border:1px solid #444; color:#aaa; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer;">
+    Enquadrar
+  </button>
+</div>
+
+<!-- Painel Lateral -->
+<div id="panel">
+  <div class="panel-header">
+    <h1>Imposição Konica</h1>
+    <div class="sub">Etiquetas 90 × 35 mm | Corte individual 1pt</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-all">Todos</button>
+    <button class="tab-btn" id="tab-bob">Bobinas</button>
+    <button class="tab-btn" id="tab-ink">Tintas</button>
+  </div>
+
+  <div class="queue-list" id="queue">
+    <!-- Itens montados via script -->
+  </div>
+
+  <div class="controls-box">
+    <div class="row">
+      <span>Espaçamento (Gap):</span>
+      <input type="number" id="inp-gap" value="3" min="0" max="10"> mm
+    </div>
+    <div class="row">
+      <span>Margem de segurança:</span>
+      <input type="number" id="inp-margin" value="5" min="0" max="15"> mm
+    </div>
+
+    <button class="btn-main btn-autogang" id="btn-autogang">⚡ Preencher Automático (AutoGang)</button>
+    <button class="btn-main" id="btn-clear" style="background:#333; color:#eee;">Limpar Chapa</button>
+    <button class="btn-main btn-print" id="btn-export">Gerar PDF para Konica</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// --- ESPECIFICAÇÃO TÉCNICA (EM MILÍMETROS 1:1) ---
+const SHEET_W = 330; // Boca da Konica
+const SHEET_H = 480; // Comprimento SRA3
+let LABEL_W = 90;
+let LABEL_H = 35;
+let GAP = 3;
+let MARGIN = 5;
+let isVertical = true; // true = 35x90mm (8x5=40 un) | false = 90x35mm (3x12=36 un)
+
+// Dados de Exemplo
+const ITEMS = [
+  { id: '1', code: '#5431', title: 'Vinil Adesivo Brilho', type: 'BOBINA', meta: '1.37m × 50m' },
+  { id: '2', code: '#0374', title: 'Lona 280g Brilho', type: 'BOBINA', meta: '1.60m × 50m' },
+  { id: '3', code: '#9519', title: 'Lona 280g Fosca', type: 'BOBINA', meta: '1.60m × 50m' },
+  { id: '4', code: '#1157', title: 'DP100GTS Brilho', type: 'BOBINA', meta: '1.06m × 50m' },
+  { id: '5', code: '#T-CY', title: 'Tinta UV Cyan Mimaki', type: 'TINTA', meta: 'Garrafa 1000ml' },
+  { id: '6', code: '#T-MG', title: 'Tinta UV Magenta Mimaki', type: 'TINTA', meta: 'Garrafa 1000ml' },
+  { id: '7', code: '#T-YL', title: 'Tinta UV Yellow Mimaki', type: 'TINTA', meta: 'Garrafa 1000ml' },
+  { id: '8', code: '#T-BK', title: 'Tinta UV Black Mimaki', type: 'TINTA', meta: 'Garrafa 1000ml' },
+];
+
+let slotsData = []; // Estado dos slots na chapa
+
+// --- CENA THREE.JS (VISTA ORTOGRÁFICA 2D) ---
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x121212);
+
+const aspect = window.innerWidth / window.innerHeight;
+const frustumSize = 600; // Milímetros visíveis no alto
+const camera = new THREE.OrthographicCamera(
+  frustumSize * aspect / -2, frustumSize * aspect / 2,
+  frustumSize / 2, frustumSize / -2,
+  1, 2000
+);
+camera.position.set(SHEET_W / 2, SHEET_H / 2, 500);
+camera.lookAt(SHEET_W / 2, SHEET_H / 2, 0);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+document.getElementById('view').appendChild(renderer.domElement);
+
+// Luz ambiente suave
+scene.add(new THREE.AmbientLight(0xffffff, 1.0));
+
+// --- MESA DE CORTE E DESENHO DA FOLHA ---
+const sheetGroup = new THREE.Group();
+scene.add(sheetGroup);
+
+// Folha de Papel 330x480mm (Branca)
+const sheetGeo = new THREE.PlaneGeometry(SHEET_W, SHEET_H);
+const sheetMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+const sheetMesh = new THREE.Mesh(sheetGeo, sheetMat);
+sheetMesh.position.set(SHEET_W / 2, SHEET_H / 2, 0);
+sheetGroup.add(sheetMesh);
+
+// Linha de Margem de 5mm (Tracejada / Guia Vermelha)
+const marginPoints = [
+  new THREE.Vector3(MARGIN, MARGIN, 1),
+  new THREE.Vector3(SHEET_W - MARGIN, MARGIN, 1),
+  new THREE.Vector3(SHEET_W - MARGIN, SHEET_H - MARGIN, 1),
+  new THREE.Vector3(MARGIN, SHEET_H - MARGIN, 1),
+  new THREE.Vector3(MARGIN, MARGIN, 1)
+];
+const marginLine = new THREE.Line(
+  new THREE.BufferGeometry().setFromPoints(marginPoints),
+  new THREE.LineBasicMaterial({ color: 0xef4444, linewidth: 1 })
+);
+sheetGroup.add(marginLine);
+
+// Grupo de Slots / Etiquetas
+const labelsGroup = new THREE.Group();
+labelsGroup.position.z = 2;
+sheetGroup.add(labelsGroup);
+
+// --- GERAÇÃO DAS TEXTURAS DAS ETIQUETAS COM CANVAS (QR CODE + DADOS) ---
+function createLabelTexture(item, wMm, hMm) {
+  const canvas = document.createElement('canvas');
+  // Escala para resolução de impressão nítida na viewport (10 pixels por mm)
+  canvas.width = wMm * 10;
+  canvas.height = hMm * 10;
+  const ctx = canvas.getContext('2d');
+
+  // Fundo branco
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Borda de corte preta (1pt = 0.35mm ~ 3.5px)
+  ctx.strokeStyle = '#000000';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(2, 2, canvas.width - 4, canvas.height - 4);
+
+  if (!item) {
+    // Slot vazio (linha fina e número)
+    ctx.strokeStyle = '#cccccc';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(4, 4, canvas.width - 8, canvas.height - 8);
+    return new THREE.CanvasTexture(canvas);
+  }
+
+  const p = 16; // Padding
+  const qrSize = Math.min(canvas.width, canvas.height) - (p * 2);
+
+  // Simulação de QR Code vetorial nítido
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(p, p, qrSize, qrSize);
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(p + 6, p + 6, qrSize - 12, qrSize - 12);
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(p + 16, p + 16, qrSize - 32, qrSize - 32);
+
+  // Textos (Lado Direito ou Lado Superior dependendo da orientação)
+  ctx.fillStyle = '#000000';
+  ctx.font = 'bold 36px monospace';
+  const textX = p + qrSize + 24;
+  ctx.fillText(item.code, textX, p + 42);
+
+  ctx.font = '600 24px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
+  ctx.fillText(item.title, textX, p + 80);
+
+  ctx.fillStyle = '#555555';
+  ctx.font = '20px monospace';
+  ctx.fillText(item.meta, textX, p + 115);
+
+  return new THREE.CanvasTexture(canvas);
+}
+
+// --- CÁLCULO E RENDERIZAÇÃO DA GRADE (SLOTS) ---
+function rebuildGrid() {
+  // Limpa slots anteriores
+  while(labelsGroup.children.length > 0){ 
+    const obj = labelsGroup.children[0];
+    labelsGroup.remove(obj); 
+  }
+
+  const curW = isVertical ? LABEL_H : LABEL_W; // 35mm ou 90mm
+  const curH = isVertical ? LABEL_W : LABEL_H; // 90mm ou 35mm
+
+  const cols = Math.floor((SHEET_W - MARGIN * 2 + GAP) / (curW + GAP));
+  const rows = Math.floor((SHEET_H - MARGIN * 2 + GAP) / (curH + GAP));
+  const total = cols * rows;
+
+  if (slotsData.length !== total) {
+    slotsData = Array(total).fill(null);
+  }
+
+  const geo = new THREE.PlaneGeometry(curW, curH);
+
+  let idx = 0;
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const x = MARGIN + c * (curW + GAP) + curW / 2;
+      // Inverte o eixo Y para preencher de cima para baixo
+      const y = SHEET_H - (MARGIN + r * (curH + GAP) + curH / 2);
+
+      const item = slotsData[idx];
+      const mat = new THREE.MeshBasicMaterial({ map: createLabelTexture(item, curW, curH) });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(x, y, 0);
+      mesh.userData = { slotIndex: idx };
+      labelsGroup.add(mesh);
+
+      idx++;
+    }
+  }
+
+  updateStats(total);
+}
+
+function updateStats(total) {
+  const filled = slotsData.filter(Boolean).length;
+  const pct = Math.round((filled / total) * 100);
+  document.getElementById('count-stat').textContent = `${filled} / ${total} (${pct}%)`;
+  document.getElementById('rot-label').textContent = isVertical ? `Vertical (${total} un)` : `Horizontal (${total} un)`;
+}
+
+// --- NAVEGAÇÃO ESTILO PREPS / CAD (ORBITA 2D, PAN E ZOOM) ---
+let isDragging = false;
+let startX = 0, startY = 0;
+
+window.addEventListener('mousedown', (e) => {
+  if (e.target.closest('#panel') || e.target.closest('#top-bar')) return;
+  isDragging = true;
+  startX = e.clientX;
+  startY = e.clientY;
+});
+
+window.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+  const dx = e.clientX - startX;
+  const dy = e.clientY - startY;
+  startX = e.clientX;
+  startY = e.clientY;
+
+  // Pan proporcional ao nível de zoom da câmera ortográfica
+  const factor = camera.zoom;
+  camera.position.x -= dx / factor;
+  camera.position.y += dy / factor;
+});
+
+window.addEventListener('mouseup', () => isDragging = false);
+
+// Zoom suave no ponteiro do mouse com a rodinha
+window.addEventListener('wheel', (e) => {
+  if (e.target.closest('#panel')) return;
+  e.preventDefault();
+  const zoomFactor = 1.1;
+  if (e.deltaY < 0) {
+    camera.zoom = Math.min(camera.zoom * zoomFactor, 5.0); // Zoom in
+  } else {
+    camera.zoom = Math.max(camera.zoom / zoomFactor, 0.4); // Zoom out
+  }
+  camera.updateProjectionMatrix();
+}, { passive: false });
+
+function resetView() {
+  camera.position.set(SHEET_W / 2, SHEET_H / 2, 500);
+  camera.zoom = 1.0;
+  camera.updateProjectionMatrix();
+}
+document.getElementById('btn-reset').addEventListener('click', resetView);
+
+// --- INTERAÇÃO DA UI DO PAINEL LATERAL ---
+function renderQueue(filter = 'TODOS') {
+  const queueEl = document.getElementById('queue');
+  queueEl.innerHTML = '';
+  const filtered = ITEMS.filter(i => filter === 'TODOS' || i.type === filter);
+
+  filtered.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'item-card';
+    card.innerHTML = `
+      <div>
+        <span class="item-code">${item.code}</span>
+        <div class="item-title">${item.title}</div>
+        <div class="item-meta">${item.meta}</div>
+      </div>
+      <button class="btn-add" title="Adicionar no próximo">+</button>
+    `;
+    card.querySelector('.btn-add').addEventListener('click', () => {
+      const firstEmpty = slotsData.findIndex(s => s === null);
+      if (firstEmpty !== -1) {
+        slotsData[firstEmpty] = item;
+        rebuildGrid();
+      }
+    });
+    queueEl.appendChild(card);
+  });
+}
+
+// Filtros das Abas
+document.getElementById('tab-all').addEventListener('click', (e) => { setTab(e.target, 'TODOS'); });
+document.getElementById('tab-bob').addEventListener('click', (e) => { setTab(e.target, 'BOBINA'); });
+document.getElementById('tab-ink').addEventListener('click', (e) => { setTab(e.target, 'TINTA'); });
+
+function setTab(btn, type) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderQueue(type);
+}
+
+// Alternar Composição (Girar 90°)
+document.getElementById('btn-rot').addEventListener('click', () => {
+  isVertical = !isVertical;
+  slotsData = [];
+  rebuildGrid();
+  resetView();
+});
+
+// AutoGang: Preenche toda a folha instantaneamente
+document.getElementById('btn-autogang').addEventListener('click', () => {
+  for (let i = 0; i < slotsData.length; i++) {
+    if (!slotsData[i]) {
+      slotsData[i] = ITEMS[i % ITEMS.length];
+    }
+  }
+  rebuildGrid();
+});
+
+// Limpar Chapa
+document.getElementById('btn-clear').addEventListener('click', () => {
+  slotsData.fill(null);
+  rebuildGrid();
+});
+
+// Ajustes numéricos em tempo real
+document.getElementById('inp-gap').addEventListener('input', (e) => {
+  GAP = Math.max(0, Number(e.target.value));
+  rebuildGrid();
+});
+document.getElementById('inp-margin').addEventListener('input', (e) => {
+  MARGIN = Math.max(0, Number(e.target.value));
+  marginPoints[0].set(MARGIN, MARGIN, 1);
+  marginPoints[1].set(SHEET_W - MARGIN, MARGIN, 1);
+  marginPoints[2].set(SHEET_W - MARGIN, SHEET_H - MARGIN, 1);
+  marginPoints[3].set(MARGIN, SHEET_H - MARGIN, 1);
+  marginPoints[4].set(MARGIN, MARGIN, 1);
+  marginLine.geometry.setFromPoints(marginPoints);
+  rebuildGrid();
+});
+
+// Exportar PDF
+document.getElementById('btn-export').addEventListener('click', () => {
+  alert(`Gerando PDF SRA3 (${SHEET_W}x${SHEET_H}mm) com ${slotsData.filter(Boolean).length} etiquetas posicionadas...`);
+});
+
+// Resize da janela
+window.addEventListener('resize', () => {
+  const asp = window.innerWidth / window.innerHeight;
+  camera.left = -frustumSize * asp / 2;
+  camera.right = frustumSize * asp / 2;
+  camera.top = frustumSize / 2;
+  camera.bottom = -frustumSize / 2;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// Iniciação
+renderQueue();
+rebuildGrid();
+resetView();
+
+(function animate() {
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+})();
+</script>
+</body>
+</html>

@@ -30,6 +30,7 @@ export function useCreateMachine() {
       technology: string
       imageUrl?: string
       ip?: string
+      bleedAdjustmentM?: number
     }) => api("/api/machines", { method: "POST", body: JSON.stringify(body) }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: machineKeys.all }),
   })
@@ -65,6 +66,7 @@ export function useUpdateMachine() {
         technology?: string
         imageUrl?: string
         ip?: string
+        bleedAdjustmentM?: number
       }
     }) => api(`/api/machines/${id}`, { method: "PUT", body: JSON.stringify(body) }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: machineKeys.all }),
@@ -91,16 +93,39 @@ export function useChangeBobina() {
   return useMutation({
     mutationFn: ({
       machineId,
-      newBobinaSerial,
+      newBobinaId,
       oldBobinaAction, // "FINISHED" | "RETURN_TO_STOCK"
     }: {
       machineId: string
-      newBobinaSerial: string
+      newBobinaId: string
       oldBobinaAction: "FINISHED" | "RETURN_TO_STOCK"
     }) =>
       api(`/api/machines/${machineId}/active-bobina`, {
         method: "POST",
-        body: JSON.stringify({ newBobinaSerial, oldBobinaAction }),
+        body: JSON.stringify({ newBobinaId, oldBobinaAction }),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: machineKeys.all })
+      queryClient.invalidateQueries({ queryKey: stockKeys.all })
+    },
+  })
+}
+
+export function useChangeGarrafa() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      machineId,
+      newGarrafaId,
+      oldGarrafaAction,
+    }: {
+      machineId: string
+      newGarrafaId: string
+      oldGarrafaAction: "FINISHED" | "RETURN_TO_STOCK"
+    }) =>
+      api(`/api/machines/${machineId}/active-garrafa`, {
+        method: "POST",
+        body: JSON.stringify({ newGarrafaId, oldGarrafaAction }),
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: machineKeys.all })

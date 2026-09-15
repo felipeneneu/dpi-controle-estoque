@@ -18,6 +18,7 @@ import { whatsappRoutes } from './routes/whatsapp.js';
 import { reportRoutes } from './routes/reports.js';
 import { jobRoutes } from './routes/jobs.js';
 import { mimakiRoutes } from './routes/mimaki.js';
+import { mimakiTestRoutes } from './routes/mimaki-test.js';
 import { USERS_PUBLIC_DIR } from './lib/paths.js';
 import { isAllowedOrigin } from './cors.js';
 
@@ -86,6 +87,7 @@ export async function buildApp(opts: { logger?: boolean } = {}) {
         { name: 'Relatórios', description: 'Consumo e métricas por máquina' },
         { name: 'Jobs', description: 'Jobs de impressão auto-detectados' },
         { name: 'Mimaki Integration', description: 'Integração M2M com Mimaki Tracker' },
+        { name: 'Mimaki Teste', description: 'Canal paralelo de rastreio Mimaki via CSV RasterLink' },
         { name: 'Sistema', description: 'Health check e status do serviço' },
       ],
       security: [{ bearerAuth: [] }],
@@ -150,6 +152,7 @@ export async function buildApp(opts: { logger?: boolean } = {}) {
   await app.register(reportRoutes);
   await app.register(jobRoutes);
   await app.register(mimakiRoutes);
+  await app.register(mimakiTestRoutes);
 
   app.get('/health', {
     schema: {

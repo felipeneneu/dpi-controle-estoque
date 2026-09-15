@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caixa MDF 9 mm — montagem</title>
+<style>
+  :root{--ink:#2b2622;--paper:#efe9df;--line:#c9beae;--mdf:#c9a678;
+        --c-frente:#d9924a;--c-tras:#6b4fa0;--c-lat:#3f7f6b;--c-fundo:#b8433a;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--paper)}
+  #view{position:fixed;inset:0}
+  canvas{display:block}
+  #panel{position:fixed;left:16px;top:16px;width:300px;max-height:calc(100% - 32px);overflow:auto;
+         background:rgba(255,252,247,.94);border:1px solid var(--line);padding:16px 18px;line-height:1.45}
+  h1{font-size:18px;font-weight:600;margin-bottom:2px}
+  .sub{font-size:12px;color:#6d6459;margin-bottom:14px}
+  label{display:block;font-size:13px;margin:12px 0 4px}
+  input[type=range]{width:100%}
+  .row{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+  button{font:inherit;font-size:12px;padding:5px 10px;border:1px solid var(--line);background:#fff;cursor:pointer}
+  button:hover{border-color:var(--ink)}
+  button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .legend{margin-top:14px;font-size:13px}
+  .legend div{display:flex;align-items:center;gap:8px;padding:3px 0}
+  .sw{width:14px;height:14px;border:1px solid rgba(0,0,0,.25);flex:none}
+  ol{margin:10px 0 0 18px;font-size:13px}
+  ol li{margin:4px 0}
+  .note{font-size:12px;color:#6d6459;margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+  @media (max-width:640px){#panel{left:8px;right:8px;top:auto;bottom:8px;width:auto;max-height:46%}}
+</style>
+</head>
+<body>
+<div id="view"></div>
+<div id="panel">
+  <h1>Expositor BTS</h1>
+  <div class="sub">350 × 630 × 1200 mm · MDF 18 + 6 · cola e parafuso · arraste para girar, roda para zoom, botão direito arrasta</div>
+
+  <label>Explodir peças <span id="expv">0%</span></label>
+  <input type="range" id="explode" min="0" max="100" value="0">
+
+  <label>Mostrar</label>
+  <div class="row">
+    <button data-p="p0" class="on">Lat. esq.</button><button data-p="p1" class="on">Lat. dir.</button>
+    <button data-p="p2" class="on">Tampo</button><button data-p="p3" class="on">Test. sup.</button><button data-p="p4" class="on">Test. inf.</button>
+    <button data-p="p5" class="on">Costas</button><button data-p="p6" class="on">Piso sup.</button><button data-p="p7" class="on">Piso inf.</button><button data-p="p8,p9,p10,p11,p12,p13,p14,p15" class="on">Sarrafos</button>
+  </div>
+  <div class="row">
+    <button id="edges" class="on">Contornos</button>
+    <button id="xray">Transparente</button>
+    <button id="reset">Vista inicial</button>
+  </div>
+
+  <div class="legend">
+    <div><span class="sw" style="background:#3f7f6b"></span>Laterais (2) — MDF 18, 624 × 1182</div>
+    <div><span class="sw" style="background:#d9924a"></span>Tampo 350 × 164 · Testeiras 350 × 100 e 350 × 277,5 — MDF 18</div>
+    <div><span class="sw" style="background:#6b4fa0"></span>Costas 350 × 1182 — MDF 6 (termina sob o tampo)</div>
+    <div><span class="sw" style="background:#b8433a"></span>Pisos 314 × 482 e 314 × 606 a 50 mm da testeira — MDF 3    <div><span class="sw" style="background:#8a8279"></span>Sarrafos MDF 18 × 30 — 2 × 482, 2 × 606, 4 × 278</div>
+  </div>
+
+  <ol>
+    <li><b>Sarrafos laterais</b>: cola + parafuso 4 × 40 pelos furos-guia da lateral (3 por sarrafo), face de cima na altura do piso.</li>
+    <li>Cola + parafuso nas <b>testeiras</b> (inferior, depois superior) — elas travam o esquadro.</li>
+    <li><b>Sarrafos transversais</b> (fundo e frente de cada nicho) colados entre os laterais, rentes às costas e à testeira.</li>
+    <li><b>Costas</b>: cola na borda das laterais, parafuso 3,5 × 25 a cada ~200 mm. Ela termina 18 mm abaixo do topo.</li>
+    <li><b>Tampo</b>: cobre laterais e costas, cola + 2 parafusos por lado.</li>
+    <li><b>Pisos 3 mm</b>: cola sobre os sarrafos, pino ou grampo. Escarear, massa, lixa, pintura.</li>
+  </ol>
+  <div class="note">Furos-guia de 3 mm já saem da router; escarear na montagem.</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const G = {"W": 350.0, "D": 629.9, "H": 1200.0, "parts": [{"name": "Lateral esq.", "key": "lat", "color": "#3f7f6b", "T": 18.0, "poly": {"ext": [[203.61, 1129.5], [324.36, 989.63], [445.11, 849.77], [499.99, 786.21], [482.0, 786.21], [482.0, 686.2], [480.54, 686.2], [437.72, 686.2], [394.91, 686.2], [375.45, 686.2], [371.53, 686.06], [367.73, 685.63], [364.05, 684.94], [360.52, 683.99], [357.11, 682.8], [353.86, 681.38], [350.75, 679.74], [347.8, 677.89], [345.01, 675.85], [342.38, 673.63], [339.93, 671.24], [337.66, 668.7], [335.56, 666.01], [333.66, 663.19], [331.96, 660.26], [330.45, 657.21], [329.15, 654.08], [328.06, 650.86], [327.19, 647.57], [326.54, 644.23], [326.13, 640.84], [325.94, 637.42], [326.0, 633.99], [326.3, 630.54], [326.85, 627.11], [327.66, 623.69], [328.74, 620.3], [330.08, 616.95], [331.69, 613.67], [333.59, 610.44], [335.77, 607.3], [338.24, 604.26], [382.87, 553.2], [481.06, 440.88], [579.25, 328.56], [623.87, 277.51], [605.9, 277.51], [605.9, 0.0], [604.52, 0.0], [561.94, 0.0], [519.36, 0.0], [500.0, 0.0], [421.88, 0.0], [250.0, 0.0], [78.13, 0.0], [0.0, 0.0], [0.0, 43.36], [0.0, 138.75], [0.0, 234.14], [0.0, 277.5], [0.0, 421.64], [0.0, 738.75], [0.0, 1055.86], [0.0, 1182.0], [158.28, 1182.0], [203.61, 1129.5]], "holes": []}, "m": [[0, 0, 1], [0, 1, 0], [1, 0, 0]], "o": [-175.0, 0, -311.95], "ex": [-1, 0, 0]}, {"name": "Lateral dir.", "key": "lat", "color": "#3f7f6b", "T": 18.0, "poly": {"ext": [[203.61, 1129.5], [324.36, 989.63], [445.11, 849.77], [499.99, 786.21], [482.0, 786.21], [482.0, 686.2], [480.54, 686.2], [437.72, 686.2], [394.91, 686.2], [375.45, 686.2], [371.53, 686.06], [367.73, 685.63], [364.05, 684.94], [360.52, 683.99], [357.11, 682.8], [353.86, 681.38], [350.75, 679.74], [347.8, 677.89], [345.01, 675.85], [342.38, 673.63], [339.93, 671.24], [337.66, 668.7], [335.56, 666.01], [333.66, 663.19], [331.96, 660.26], [330.45, 657.21], [329.15, 654.08], [328.06, 650.86], [327.19, 647.57], [326.54, 644.23], [326.13, 640.84], [325.94, 637.42], [326.0, 633.99], [326.3, 630.54], [326.85, 627.11], [327.66, 623.69], [328.74, 620.3], [330.08, 616.95], [331.69, 613.67], [333.59, 610.44], [335.77, 607.3], [338.24, 604.26], [382.87, 553.2], [481.06, 440.88], [579.25, 328.56], [623.87, 277.51], [605.9, 277.51], [605.9, 0.0], [604.52, 0.0], [561.94, 0.0], [519.36, 0.0], [500.0, 0.0], [421.88, 0.0], [250.0, 0.0], [78.13, 0.0], [0.0, 0.0], [0.0, 43.36], [0.0, 138.75], [0.0, 234.14], [0.0, 277.5], [0.0, 421.64], [0.0, 738.75], [0.0, 1055.86], [0.0, 1182.0], [158.28, 1182.0], [203.61, 1129.5]], "holes": []}, "m": [[0, 0, 1], [0, 1, 0], [1, 0, 0]], "o": [157.0, 0, -311.95], "ex": [1, 0, 0]}, {"name": "Tampo", "key": "tampo", "color": "#d9924a", "T": 18.0, "poly": {"ext": [[350.0, 0.0], [350.0, 164.3], [0.0, 164.3], [0.0, 0.0], [350.0, 0.0]], "holes": []}, "m": [[1, 0, 0], [0, 0, 1], [0, 1, 0]], "o": [-175.0, 1182.0, -317.95], "ex": [0, 1, 0]}, {"name": "Testeira sup.", "key": "lipsup", "color": "#d9924a", "T": 18.0, "poly": {"ext": [[350.0, 0.0], [350.0, 100.0], [0.0, 100.0], [0.0, 0.0], [350.0, 0.0]], "holes": []}, "m": [[1, 0, 0], [0, 1, 0], [0, 0, 1]], "o": [-175.0, 686.2, 170.05], "ex": [0, 0, 1]}, {"name": "Testeira inf.", "key": "lipinf", "color": "#d9924a", "T": 18.0, "poly": {"ext": [[350.0, 0.0], [350.0, 277.5], [0.0, 277.5], [0.0, 0.0], [350.0, 0.0]], "holes": []}, "m": [[1, 0, 0], [0, 1, 0], [0, 0, 1]], "o": [-175.0, 0, 293.95], "ex": [0, 0, 1]}, {"name": "Costas", "key": "costas", "color": "#6b4fa0", "T": 6.0, "poly": {"ext": [[350.0, 0.0], [350.0, 1182.0], [0.0, 1182.0], [0.0, 0.0], [350.0, 0.0]], "holes": []}, "m": [[1, 0, 0], [0, 1, 0], [0, 0, 1]], "o": [-175.0, 0, -317.95], "ex": [0, 0, -1]}, {"name": "Piso sup.", "key": "pisosup", "color": "#b8433a", "T": 3.0, "poly": {"ext": [[314.0, 0.0], [314.0, 482.0], [0.0, 482.0], [0.0, 0.0], [314.0, 0.0]], "holes": []}, "m": [[1, 0, 0], [0, 0, 1], [0, 1, 0]], "o": [-157.0, 733.2, -311.95], "ex": [0, 1, 0]}, {"name": "Piso inf.", "key": "pisoinf", "color": "#b8433a", "T": 3.0, "poly": {"ext": [[314.0, 0.0], [314.0, 605.9], [0.0, 605.9], [0.0, 0.0], [314.0, 0.0]], "holes": []}, "m": [[1, 0, 0], [0, 0, 1], [0, 1, 0]], "o": [-157.0, 224.5, -311.95], "ex": [0, 1, 0]}, {"name": "Sarrafo", "key": "sar", "color": "#8a8279", "T": 18.0, "poly": {"ext": [[482.0, 0.0], [482.0, 30.0], [0.0, 30.0], [0.0, 0.0], [482.0, 0.0]], "holes": []}, "m": [[0, 0, 1], [0, 1, 0], [1, 0, 0]], "o": [-157.0, 703.2, -311.95], "ex": [0, -1, 0]}, {"name": "Sarrafo", "key": "sar", "color": "#8a8279", "T": 18.0, "poly": {"ext": [[482.0, 0.0], [482.0, 30.0], [0.0, 30.0], [0.0, 0.0], [482.0, 0.0]], "holes": []}, "m": [[0, 0, 1], [0, 1, 0], [1, 0, 0]], "o": [139.0, 703.2, -311.95], "ex": [0, -1, 0]}, {"name": "Sarrafo", "key": "sar", "color": "#8a8279", "T": 18.0, "poly": {"ext": [[605.9, 0.0], [605.9, 30.0], [0.0, 30.0], [0.0, 0.0], [605.9, 0.0]], "holes": []}, "m": [[0, 0, 1], [0, 1, 0], [1, 0, 0]], "o": [-157.0, 194.5, -311.95], "ex": [0, -1, 0]}, {"name": "Sarrafo", "key": "sar", "color": "#8a8279", "T": 18.0, "poly": {"ext": [[605.9, 0.0], [605.9, 30.0], [0.0, 30.0], [0.0, 0.0], [605.9, 0.0]], "holes": []}, "m": [[0, 0, 1], [0, 1, 0], [1, 0, 0]], "o": [139.0, 194.5, -311.95], "ex": [0, -1, 0]}, {"name": "Sarrafo", "key": "sar", "color": "#8a8279", "T": 18.0, "poly": {"ext": [[278.0, 0.0], [278.0, 30.0], [0.0, 30.0], [0.0, 0.0], [278.0, 0.0]], "holes": []}, "m": [[1, 0, 0], [0, 1, 0], [0, 0, 1]], "o": [-139.0, 703.2, -311.95], "ex": [0, -1, 0]}, {"name": "Sarrafo", "key": "sar", "color": "#8a8279", "T": 18.0, "poly": {"ext": [[278.0, 0.0], [278.0, 30.0], [0.0, 30.0], [0.0, 0.0], [278.0, 0.0]], "holes": []}, "m": [[1, 0, 0], [0, 1, 0], [0, 0, 1]], "o": [-139.0, 703.2, 152.05], "ex": [0, -1, 0]}, {"name": "Sarrafo", "key": "sar", "color": "#8a8279", "T": 18.0, "poly": {"ext": [[278.0, 0.0], [278.0, 30.0], [0.0, 30.0], [0.0, 0.0], [278.0, 0.0]], "holes": []}, "m": [[1, 0, 0], [0, 1, 0], [0, 0, 1]], "o": [-139.0, 194.5, -311.95], "ex": [0, -1, 0]}, {"name": "Sarrafo", "key": "sar", "color": "#8a8279", "T": 18.0, "poly": {"ext": [[278.0, 0.0], [278.0, 30.0], [0.0, 30.0], [0.0, 0.0], [278.0, 0.0]], "holes": []}, "m": [[1, 0, 0], [0, 1, 0], [0, 0, 1]], "o": [-139.0, 194.5, 275.95], "ex": [0, -1, 0]}]};
+const {W,D,H} = G;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xefe9df);
+const camera = new THREE.PerspectiveCamera(38, innerWidth/innerHeight, 10, 20000);
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.shadowMap.enabled = true;
+document.getElementById('view').appendChild(renderer.domElement);
+
+// orbita simples (sem dependencia externa): arrastar gira, roda = zoom, botao direito / dois dedos = pan
+const target = new THREE.Vector3(0, 600, 0);
+let theta = 0.6, phi = 1.15, dist = 2600;
+function applyCam(){
+  camera.position.set(target.x + dist*Math.sin(phi)*Math.sin(theta), target.y + dist*Math.cos(phi), target.z + dist*Math.sin(phi)*Math.cos(theta));
+  camera.lookAt(target);
+}
+function resetView(){ theta = 0.6; phi = 1.15; dist = 2600; target.set(0,600,0); applyCam(); }
+resetView();
+const el = renderer.domElement;
+let drag = null, pinch = null;
+el.addEventListener('pointerdown', e => { drag = {x:e.clientX, y:e.clientY, btn:e.button}; el.setPointerCapture(e.pointerId); });
+el.addEventListener('pointerup', () => drag = null);
+el.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const dx = e.clientX - drag.x, dy = e.clientY - drag.y; drag.x = e.clientX; drag.y = e.clientY;
+  if (drag.btn === 2 || e.shiftKey) {
+    const right = new THREE.Vector3(), up = new THREE.Vector3(0,1,0);
+    right.setFromMatrixColumn(camera.matrix, 0);
+    target.addScaledVector(right, -dx*dist*0.0012).addScaledVector(up, dy*dist*0.0012);
+  } else { theta -= dx*0.006; phi = Math.min(Math.PI-0.05, Math.max(0.05, phi - dy*0.006)); }
+  applyCam();
+});
+el.addEventListener('contextmenu', e => e.preventDefault());
+el.addEventListener('wheel', e => { e.preventDefault(); dist = Math.min(8000, Math.max(300, dist*(1+Math.sign(e.deltaY)*0.1))); applyCam(); }, {passive:false});
+el.addEventListener('touchstart', e => { if (e.touches.length===2){ pinch = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY); drag=null; } }, {passive:true});
+el.addEventListener('touchmove', e => { if (e.touches.length===2 && pinch){ const d = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY); dist = Math.min(8000, Math.max(300, dist*pinch/d)); pinch = d; applyCam(); } }, {passive:true});
+el.style.touchAction = 'none';
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0x8a7a66, 0.9));
+const sun = new THREE.DirectionalLight(0xffffff, 0.8);
+sun.position.set(900, 1500, 700); sun.castShadow = true;
+sun.shadow.mapSize.set(2048,2048);
+const sc = sun.shadow.camera; sc.left=sc.bottom=-1200; sc.right=sc.top=1200; sc.far=5000;
+scene.add(sun);
+
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(6000,6000), new THREE.ShadowMaterial({opacity:0.18}));
+floor.rotation.x = -Math.PI/2; floor.receiveShadow = true; scene.add(floor);
+scene.add(new THREE.GridHelper(3000, 30, 0xc9beae, 0xded5c7));
+
+function shapeOf(p){
+  const s = new THREE.Shape(p.ext.map(([x,y])=>new THREE.Vector2(x,y)));
+  p.holes.forEach(h => s.holes.push(new THREE.Path(h.map(([x,y])=>new THREE.Vector2(x,y)))));
+  return s;
+}
+const parts = {};
+G.parts.forEach((p, i) => {
+  const geo = new THREE.ExtrudeGeometry(shapeOf(p.poly), {depth:p.T, bevelEnabled:false, curveSegments:4});
+  const mat = new THREE.MeshStandardMaterial({color:p.color, roughness:0.85, metalness:0, transparent:true, opacity:1});
+  const mesh = new THREE.Mesh(geo, mat); mesh.castShadow = mesh.receiveShadow = true;
+  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 15), new THREE.LineBasicMaterial({color:0x2b2622}));
+  mesh.add(edges);
+  const m = new THREE.Matrix4(); const r = p.m;
+  m.set(r[0][0], r[0][1], r[0][2], p.o[0],  r[1][0], r[1][1], r[1][2], p.o[1],  r[2][0], r[2][1], r[2][2], p.o[2],  0,0,0,1);
+  mesh.matrixAutoUpdate = false; mesh.matrix.copy(m);
+  mesh.userData = {base:m.clone(), explode:new THREE.Vector3(...p.ex), edges};
+  scene.add(mesh); parts['p'+i] = mesh;
+});
+// --- UI ---
+const slider = document.getElementById('explode'), expv = document.getElementById('expv');
+function applyExplode(){
+  const k = slider.value/100; expv.textContent = slider.value + '%';
+  Object.values(parts).forEach(m => { const tr = new THREE.Matrix4().makeTranslation(m.userData.explode.x*260*k, m.userData.explode.y*260*k, m.userData.explode.z*260*k); m.matrix.copy(tr.multiply(m.userData.base)); });
+}
+slider.addEventListener('input', applyExplode);
+document.querySelectorAll('button[data-p]').forEach(b => b.addEventListener('click', () => {
+  b.classList.toggle('on'); b.dataset.p.split(',').forEach(k => parts[k].visible = b.classList.contains('on'));
+}));
+const bEdges = document.getElementById('edges');
+bEdges.addEventListener('click', () => { bEdges.classList.toggle('on');
+  Object.values(parts).forEach(m => m.userData.edges.visible = bEdges.classList.contains('on')); });
+const bX = document.getElementById('xray');
+bX.addEventListener('click', () => { bX.classList.toggle('on');
+  const on = bX.classList.contains('on');
+  Object.values(parts).forEach(m => { m.material.opacity = on ? 0.45 : 1; m.material.depthWrite = !on; }); });
+document.getElementById('reset').addEventListener('click', resetView);
+
+addEventListener('resize', () => { camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
+(function loop(){ requestAnimationFrame(loop); renderer.render(scene, camera); })();
+</script>
+</body>
+</html>

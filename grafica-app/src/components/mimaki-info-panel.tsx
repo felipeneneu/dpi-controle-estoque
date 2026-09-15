@@ -8,6 +8,8 @@ import { type Machine } from "@/lib/api";
 import { useMimakiJobs } from "@/lib/queries/mimaki";
 import { MimakiBindDialog } from "@/components/mimaki-bind-dialog";
 import { ChangeBobinaDialog } from "@/components/change-bobina-dialog";
+import { ChangeGarrafaDialog } from "@/components/change-garrafa-dialog";
+import { useGarrafas } from "@/lib/queries/stock";
 import type { MimakiJob } from "@/lib/queries/mimaki";
 
 function isMimakiMachine(m: Machine): boolean {
@@ -23,8 +25,14 @@ function formatTime(dateStr: string | null): string {
 export function MimakiInfoPanel({ machine }: { machine: Machine }) {
   const { data: pendingJobs = [] } = useMimakiJobs({ status: "PENDING_BIND", machine_id: machine.id });
   const { data: recentJobs = [] } = useMimakiJobs({ machine_id: machine.id });
+  const { data: garrafas = [] } = useGarrafas();
   const [bindJob, setBindJob] = useState<MimakiJob | null>(null);
   const [changeBobinaOpen, setChangeBobinaOpen] = useState(false);
+  const [changeGarrafaOpen, setChangeGarrafaOpen] = useState(false);
+
+  const machineGarrafas = garrafas.filter(
+    (g) => g.state === "IN_USE" && g.location === `machine:${machine.id}`,
+  );
 
   return (
     <>
@@ -81,6 +89,26 @@ export function MimakiInfoPanel({ machine }: { machine: Machine }) {
             </div>
             <Button variant="outline" size="sm" onClick={() => setChangeBobinaOpen(true)} className="bg-white">
               Trocar Bobina
+            </Button>
+          </div>
+
+          <div className="rounded-xl border border-fuchsia-100 bg-fuchsia-50/50 px-4 py-3 flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-fuchsia-700 mb-1">Garrafas de Tinta em Uso</p>
+              {machineGarrafas.length > 0 ? (
+                <div className="space-y-1">
+                  {machineGarrafas.map((g) => (
+                    <p key={g.id} className="text-sm text-gray-900 truncate">
+                      <strong>{g.serial}</strong> · {g.mlRemaining}ml
+                    </p>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">Nenhuma garrafa definida nesta máquina</p>
+              )}
+            </div>
+            <Button variant="outline" size="sm" onClick={() => setChangeGarrafaOpen(true)} className="bg-white shrink-0">
+              Definir Garrafa
             </Button>
           </div>
 
@@ -171,6 +199,12 @@ export function MimakiInfoPanel({ machine }: { machine: Machine }) {
         activeBobina={machine.activeBobina}
         open={changeBobinaOpen}
         onClose={() => setChangeBobinaOpen(false)}
+      />
+
+      <ChangeGarrafaDialog
+        machine={machine}
+        open={changeGarrafaOpen}
+        onClose={() => setChangeGarrafaOpen(false)}
       />
     </>
   );

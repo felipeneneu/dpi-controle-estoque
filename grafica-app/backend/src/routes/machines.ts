@@ -381,4 +381,76 @@ export async function machineRoutes(app: FastifyInstance) {
 
     return { success: true, message: 'Bobina trocada com sucesso' };
   });
+
+app.post('/api/machines/:id/active-garrafa', {
+    schema: {
+      tags: ['Máquinas'],
+      summary: 'Trocar garrafa de tinta ativa da máquina',
+      description: 'Define uma garrafa de tinta como em uso na máquina. Se houver outra garrafa do MESMO item em uso, trata a anterior (acabou ou voltou para estoque).',
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: { id: { type: 'string' } },
+      },
+      body: {
+        type: 'object',
+        properties: {
+          newGarrafaId: { type: 'string' },
+          oldGarrafaAction: { type: 'string', enum: ['FINISHED', 'RETURN_TO_STOCK'] },
+        },
+      },
+      response: {
+        200: { type: 'object', properties: { success: { type: 'boolean' }, message: { type: 'string' } } },
+        400: { type: 'object', properties: { error: { type: 'string' } } },
+        404: { type: 'object', properties: { error: { type: 'string' } } },
+      },
+    },
+    preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN', 'OPERATOR'])],
+  }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const { newGarrafaId, oldGarrafaAction } = request.body as { newGarrafaId?: string; oldGarrafaAction?: 'FINISHED' | 'RETURN_TO_STOCK' };
+
+    const { garrafas } = await import('../db/schema.js');
+
+    const machine = await db.select().from(machines).where(eq(machines.id, id)).get();
+    if (!machine) return reply.code(404).send({ error: 'Máquina não encontrada' });
+
+    if (!newGarrafaId) return reply.code(400).send({ error: 'Informe o serial/id da nova garrafa.' });
+
+    const newGarrafa = await db.select().from(garrafas).where(
+      or(eq(garrafas.id, newGarrafaId), eq(garrafas.serial, newGarrafaId))
+    ).get();
+    if (!newGarrafa) return reply.code(404).send({ error: 'Nova garrafa não encontrada' });
+    if (newGarrafa.state === 'USED') {
+      return reply.code(400).send({ error: 'Esta garrafa já foi marcada como terminada/descartada.' });
+    }
+
+    // 1. Se já existe uma garrafa do MESMO item em uso nesta máquina, tratar a anterior
+    const currentActive = await db.select().from(garrafas).where(
+      and(
+        eq(garrafas.stockItemId, newGarrafa.stockItemId),
+        eq(garrafas.state, 'IN_USE'),
+        eq(garrafas.location, `machine:${id}`)
+      )
+    ).get();
+
+    if (currentActive && currentActive.id !== newGarrafa.id && oldGarrafaAction) {
+      const newState = oldGarrafaAction === 'FINISHED' ? 'USED' : 'NEW';
+      const newLoc = oldGarrafaAction === 'FINISHED' ? 'discarded' : 'deposito';
+      await db.update(garrafas).set({
+        state: newState,
+        location: newLoc,
+        finishedAt: oldGarrafaAction === 'FINISHED' ? new Date(Date.now()) : null,
+      }).where(eq(garrafas.id, currentActive.id));
+    }
+
+    // 2. Definir a nova garrafa em uso
+    await db.update(garrafas).set({
+      state: 'IN_USE',
+      location: `machine:${id}`,
+      garrafaOpenedAt: newGarrafa.garrafaOpenedAt ?? new Date(),
+    }).where(eq(garrafas.id, newGarrafa.id));
+
+    return { success: true, message: 'Garrafa definida como em uso na máquina' };
+  });
 }

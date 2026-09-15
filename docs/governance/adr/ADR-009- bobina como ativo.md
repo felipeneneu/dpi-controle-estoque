@@ -81,9 +81,30 @@ Critério de aceite de M1 (primeira fase, escopo mínimo verificável):
 - [ ] `add-roll` passa a criar uma `Bobina` nova (não mais só somar ao agregado) e gera transação IN de abertura vinculada a ela.
 - [ ] `StockItem.currentQuantity` exibido na UI é a soma calculada das bobinas ativas, não mais uma coluna editável diretamente.
 - [ ] Teste que amarra BR-002 (status `TARGET` → `PARTIAL` só quando M1 estiver coberto por teste, `IMPLEMENTED` apenas ao final de M3, conforme convenção de status deste projeto).
-## Emenda 1: Gest�o de Insumos N�o-Rolo (Tintas e Folhas)
+## Emenda 1: Gest�o de Insumos N�o-Rolo (Tintas e Folhas)
 - **Data da Emenda:** 2026-09-13
-- **Contexto:** Surgiu a d�vida de como seria a entrada e sa�da de materiais fora do escopo da bobina (como INK_SUPPLY e folhas), j� que a UI adotou as bobinas para o restante e escondeu as op��es de "Rolo". Outra d�vida � se rastrearemos cartuchos individuais.
-- **Decis�o:** O modelo e algoritmo de bobinas **n�o se aplica** a cartuchos de tinta nem a resmas de papel. 
-  - **Dedu��o de Tintas:** Continua operando sobre o agregado \currentQuantity\ do SKU (medido em mililitros), decrescendo fra��es consumidas via telemetria das m�quinas (HP/Mimaki). N�o cadastramos cartuchos f�sicos como entidades (Asset) individuais.
-  - **Carregamento de Estoque (Tintas e Folhas):** A entrada e sa�da avulsa destes itens ocorre atrav�s de transa��es padr�o no ledger (tipo \IN\, \OUT\ e \ADJUSTMENT\), que somam ou subtraem diretamente o campo \currentQuantity\ do \StockItem\. A interface deve prover um formul�rio gen�rico de "Lan�amento Manual" (Adicionar/Remover quantidade) para itens que n�o s�o rastreados como ativos f�sicos.
+- **Contexto:** Surgiu a d�vida de como seria a entrada e sa�da de materiais fora do escopo da bobina (como INK_SUPPLY e folhas), j� que a UI adotou as bobinas para o restante e escondeu as op��es de "Rolo". Outra d�vida � se rastrearemos cartuchos individuais.
+- **Decis�o:** O modelo e algoritmo de bobinas **n�o se aplica** a cartuchos de tinta nem a resmas de papel. 
+  - **Dedu��o de Tintas:** Continua operando sobre o agregado \currentQuantity\ do SKU (medido em mililitros), decrescendo fra��es consumidas via telemetria das m�quinas (HP/Mimaki). N�o cadastramos cartuchos f�sicos como entidades (Asset) individuais.
+  - **Carregamento de Estoque (Tintas e Folhas):** A entrada e sa�da avulsa destes itens ocorre atrav�s de transa��es padr�o no ledger (tipo \IN\, \OUT\ e \ADJUSTMENT\), que somam ou subtraem diretamente o campo \currentQuantity\ do \StockItem\. A interface deve prover um formul�rio gen�rico de "Lan�amento Manual" (Adicionar/Remover quantidade) para itens que n�o s�o rastreados como ativos f�sicos.
+## Emenda 2: Atalho F2 — Seleção Rápida de Mídia na Página da Máquina
+- **Data da Emenda:** 2026-09-14
+- **Contexto:** O operador, ao carregar uma mídia na máquina, precisa selecionar rapidamente o material correto pelo código curto que vê na etiqueta/bobina ou pelo nome. Hoje a troca de bobina exige digitar o serial manualmente em um campo sem retorno visual, e não há uma busca unificada por código ou nome na página do canal da máquina.
+- **Decisão:** Na página do canal da máquina (`/maquinas?id=X`), o atalho **F2** abre um modal de **seleção de mídia** com busca incremental. Conforme o operador digita, a lista filtra em tempo real:
+  - Digitando o **código** curto (`StockItem.code`) → mostra as mídias correspondentes.
+  - Digitando o **nome** da mídia (`StockItem.name`) → mostra as correspondentes.
+  - Caso não haja mídia correspondente, o modal permite cadastrar uma nova e vincular.
+- **Escopo:** Comportamento de UI do canal da máquina. Não altera o modelo de dados nem a lógica de débito. O `onSelect` resolve a mídia escolhida; a integração com o fluxo de check-in de bobina (vincular bobina específica à máquina) é evolução posterior e pode ser coberta por RFC própria.
+- **Status:** Aceita como comportamento padrão do canal da máquina.
+
+## Emenda 3: Garrafas de Tinta como Ativos Físicos (Mimaki 1000ml)
+- **Data da Emenda:** 2026-09-14
+- **Contexto:** A Emenda 1 definiu as tintas como agregado (não rastreável por frasco). Na operação real da Mimaki UV (Core 1000ml por garrafa), o operador confirmou que precisa rastrear cada garrafa individualmente — qual frasco está em uso na máquina, quanto resta, e dar baixa específica por serial (ex.: `TIN-1234`). A mesma mecânica das bobinas se aplica: fonte de verdade passa a ser a garrafa física, não o campo agregado.
+- **Decisão:** Cria-se a entidade `garrafas` (tabela própria), espelhando o modelo das `bobinas`:
+  - Campos: `stockItemId` (FK p/ `stock_items` INK_SUPPLY), `serial` (gerado `TIN-XXXX` na abertura), `mlInitial`/`mlRemaining`, `state` (`NEW | IN_USE | USED | BLOCKED | SCRAPPED`), `location` (`deposito | machine:<id> | cliente | discarded`), `garrafaOpenedAt`, `finishedAt`, `createdAt`.
+  - **Abertura de garrafa** (`add-garrafa`, padrão 1000ml) cria a garrafa e registra a transação IN correspondente — não soma mais direto no agregado.
+  - **Débito de tinta da Mimaki:** decrementa `mlRemaining` da garrafa `IN_USE` na máquina (`location = machine:<id>`). Ao zerar, marca `USED`. Se não houver garrafa ativa, cai no débito agregado (compatibilidade retroativa).
+  - **Tarxeta/estoque:** `currentQuantity` de INK_SUPPLY na UI é a soma calculada das garrafas ativas (`NEW` + `IN_USE`), igual à soma de metros das bobinas. Itens sem garrafa seguem usando o valor agregado da coluna.
+  - **Troca de garrafa na máquina:** rota `POST /api/machines/:id/active-garrafa` (idêntica à `active-bobina`), com ação da garrafa anterior (`FINISHED` descarta/`RETURN_TO_STOCK` volta ao depósito), escopada ao mesmo `stockItemId`.
+- **Escopo:** Aplica-se às tintas da Mimaki (INK_SUPPLY). Não altera o modelo de papel/folhas (resmas seguem como agregado, conforme Emenda 1).
+- **Status:** Aceita — substitui parcialmente a Emenda 1 para tintas INK_SUPPLY.

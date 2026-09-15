@@ -37,13 +37,13 @@ export function ChangeBobinaDialog({
     try {
       await changeBobina.mutateAsync({
         machineId: machine.id,
-        newBobinaSerial,
+        newBobinaId: newBobinaSerial,
         oldBobinaAction: activeBobina ? oldBobinaAction : "FINISHED",
       });
       toast.success("Bobina trocada com sucesso!");
       onClose();
-    } catch (err: any) {
-      toast.error(err.message || "Erro ao trocar bobina.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao trocar bobina.");
     }
   }
 
@@ -57,7 +57,7 @@ export function ChangeBobinaDialog({
           {activeBobina && (
             <div className="space-y-2">
               <Label>O que fazer com a bobina atual ({activeBobina.serial})?</Label>
-              <Select value={oldBobinaAction} onValueChange={(v: any) => setOldBobinaAction(v)}>
+              <Select value={oldBobinaAction} onValueChange={(v) => v && setOldBobinaAction(v)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>

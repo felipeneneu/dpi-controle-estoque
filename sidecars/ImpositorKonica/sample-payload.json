@@ -1,0 +1,42 @@
+{
+  "sheetWidthMm": 330.0,
+  "sheetHeightMm": 480.0,
+  "marginMm": 5.0,
+  "gapMm": 3.0,
+  "defaultRotation": 90,
+  "operatorName": "Operador Konica",
+  "machineTarget": "Konica Minolta bizhub PRO",
+  "createdAt": "2026-09-15T17:00:00Z",
+  "items": [
+    {
+      "id": "bob-1042",
+      "code": "#1042",
+      "title": "Bobina Vinil Adesivo 1.37m",
+      "subtitle": "1.37m · Brilho",
+      "details": "50m · Estoque Central",
+      "type": "bobina",
+      "qrPayload": "BOB:1042",
+      "initialQuantity": 15
+    },
+    {
+      "id": "bob-0374",
+      "code": "#0374",
+      "title": "Lona 280g Brilho 1.60m",
+      "subtitle": "1.60m · Frontlit",
+      "details": "50m · Depósito A",
+      "type": "bobina",
+      "qrPayload": "BOB:0374",
+      "initialQuantity": 15
+    },
+    {
+      "id": "tnk-tcy",
+      "code": "#T-CY",
+      "title": "Tinta Cyan UV Mimaki",
+      "subtitle": "Cyan UV Original",
+      "details": "1000ml · Gaveta Tintas",
+      "type": "tinta",
+      "qrPayload": "TNK:TCY",
+      "initialQuantity": 10
+    }
+  ]
+}

@@ -61,6 +61,16 @@ export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiB
     item.name.toLowerCase().includes(search.toLowerCase())
   )
 
+  // Bobinas cujo serial casa com a busca (para digitar BOB-XXXX direto)
+  const q = search.trim().toLowerCase()
+  const serialMatchBobinas = q
+    ? bobinas.filter(
+        (b) =>
+          b.serial.toLowerCase().includes(q) &&
+          stockItems.some((i) => i.id === b.stockItemId),
+      )
+    : []
+
   function handleStartCreate() {
     setNewName(search.trim() || job?.rawMaterialName || "")
     setIsCreating(true)
@@ -231,7 +241,43 @@ export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiB
                 )
               })}
 
-              {filtered.length === 0 && !isLoadingStock && (
+              {serialMatchBobinas.length > 0 && (
+                <div className="space-y-1.5">
+                  <p className="text-xs font-bold text-indigo-600 px-1 pt-1">
+                    Bobinas pelo serial:
+                  </p>
+                  {serialMatchBobinas.map((b) => {
+                    const item = stockItems.find((i) => i.id === b.stockItemId)
+                    if (!item) return null
+                    const isSelected = selectedBobinaId === b.id
+                    return (
+                      <button
+                        key={b.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedItemId(item.id)
+                          setSelectedBobinaId(b.id)
+                        }}
+                        className={`w-full flex items-center justify-between px-3 py-2 rounded-lg border text-xs text-left ${
+                          isSelected
+                            ? "border-indigo-400 bg-indigo-50 text-indigo-700 font-medium"
+                            : "border-gray-100 bg-gray-50 hover:bg-gray-100 text-gray-600"
+                        }`}
+                      >
+                        <span className="truncate">
+                          <span className="font-mono font-bold">{b.serial}</span> · {item.name} ·{" "}
+                          {b.metersRemaining}m restantes
+                        </span>
+                        {isSelected && (
+                          <RiCheckLine className="size-3 text-indigo-600 shrink-0" />
+                        )}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+
+              {filtered.length === 0 && serialMatchBobinas.length === 0 && !isLoadingStock && (
                 <div className="py-4 text-center space-y-2">
                   <p className="text-xs text-muted-foreground">
                     Nenhum material encontrado com o nome &ldquo;{search}&rdquo;.

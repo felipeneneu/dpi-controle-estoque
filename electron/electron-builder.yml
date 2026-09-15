@@ -17,6 +17,8 @@ extraResources:
       - "public/**"
       - "package.json"
       - ".env"
+  - from: ../sidecars/ImpositorKonica/bin/Release/net8.0-windows/win-x64/publish/ImpositorKonica.exe
+    to: bin/ImpositorKonica.exe
 win:
   icon: build/icon.ico
   target:

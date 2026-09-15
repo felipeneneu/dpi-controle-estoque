@@ -1,7 +1,7 @@
 "use client"
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { api, getUser, type StockItem, type StockTransaction, type Bobina } from "@/lib/api"
+import { api, getUser, type StockItem, type StockTransaction, type Bobina, type Garrafa } from "@/lib/api"
 import { machineKeys, stockKeys } from "@/lib/queries/query-keys"
 
 export function useStockItems(category?: string) {
@@ -125,6 +125,44 @@ export function useDischargeBobina() {
   return useMutation({
     mutationFn: ({ id, reason }: { id: string; reason: string }) =>
       api(`/api/bobinas/${id}/discharge`, { method: "POST", body: JSON.stringify({ reason }) }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: stockKeys.all }),
+  })
+}
+
+export function useGarrafas(stockItemId?: string) {
+  return useQuery({
+    queryKey: stockKeys.garrafas(stockItemId),
+    queryFn: () =>
+      api<Garrafa[]>(stockItemId ? `/api/garrafas?stockItemId=${stockItemId}` : "/api/garrafas"),
+  })
+}
+
+export function useAddGarrafa() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ stockItemId, mlInitial }: { stockItemId: string; mlInitial: number }) =>
+      api(`/api/stock-items/${stockItemId}/add-garrafa`, {
+        method: "POST",
+        body: JSON.stringify({ mlInitial }),
+      }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: stockKeys.all }),
+  })
+}
+
+export function useUpdateGarrafa() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, ...body }: Partial<Garrafa> & { id: string }) =>
+      api(`/api/garrafas/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: stockKeys.all }),
+  })
+}
+
+export function useDischargeGarrafa() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
+      api(`/api/garrafas/${id}/discharge`, { method: "POST", body: JSON.stringify({ reason }) }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: stockKeys.all }),
   })
 }

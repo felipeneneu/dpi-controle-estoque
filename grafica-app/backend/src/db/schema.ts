@@ -60,6 +60,24 @@ export const bobinas = sqliteTable('bobinas', {
   index('bobinas_state_idx').on(t.state),
 ]);
 
+export const garrafas = sqliteTable('garrafas', {
+  id: text('id').primaryKey(),
+  stockItemId: text('stock_item_id')
+    .notNull()
+    .references(() => stockItems.id, { onDelete: 'cascade' }),
+  serial: text('serial'),
+  mlInitial: real('ml_initial'),
+  mlRemaining: real('ml_remaining'),
+  state: text('state', { enum: ['NEW', 'IN_USE', 'USED', 'BLOCKED', 'SCRAPPED'] }).notNull().default('NEW'),
+  location: text('location').notNull().default('deposito'),
+  garrafaOpenedAt: integer('garrafa_opened_at', { mode: 'timestamp' }),
+  finishedAt: integer('finished_at', { mode: 'timestamp' }),
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+}, (t) => [
+  index('garrafas_stock_item_idx').on(t.stockItemId),
+  index('garrafas_state_idx').on(t.state),
+]);
+
 export const machineItems = sqliteTable('machine_items', {
   id: text('id').primaryKey(),
   machineId: text('machine_id')
@@ -246,6 +264,8 @@ export type Machine = typeof machines.$inferSelect;
 export type StockItem = typeof stockItems.$inferSelect;
 export type Bobina = typeof bobinas.$inferSelect;
 export type NewBobina = typeof bobinas.$inferInsert;
+export type Garrafa = typeof garrafas.$inferSelect;
+export type NewGarrafa = typeof garrafas.$inferInsert;
 export type StockTransaction = typeof stockTransactions.$inferSelect;
 export type Supplier = typeof suppliers.$inferSelect;
 export type ChatMessage = typeof chatMessages.$inferSelect;
@@ -289,9 +309,50 @@ export const mimakiJobs = sqliteTable('mimaki_jobs', {
   uniqueIndex('mimaki_jobs_folder_ts_idx').on(t.folderTimestamp),
 ]);
 
+export const mimakiTestJobs = sqliteTable(
+  'mimaki_test_jobs',
+  {
+    id: text('id').primaryKey(),
+    channel: text('channel').notNull().default('mimaki-teste'),
+    sourceFile: text('source_file').notNull(),
+    keyFilename: text('key_filename').notNull(),
+    result: text('result', { enum: ['OK', 'NG'] }).notNull(),
+    resultDetail: text('result_detail'),
+    arrangeCnt: integer('arrange_cnt'),
+    inkCyanCc: real('ink_cyan_cc').default(0),
+    inkMagentaCc: real('ink_magenta_cc').default(0),
+    inkYellowCc: real('ink_yellow_cc').default(0),
+    inkBlackCc: real('ink_black_cc').default(0),
+    inkWhite1Cc: real('ink_white1_cc').default(0),
+    inkWhite2Cc: real('ink_white2_cc').default(0),
+    inkVarnish1Cc: real('ink_varnish1_cc').default(0),
+    inkVarnish2Cc: real('ink_varnish2_cc').default(0),
+    inkTotalCc: real('ink_total_cc').default(0),
+    ripSTime: text('rip_s_time'),
+    ripETime: text('rip_e_time'),
+    printSTime: text('print_s_time'),
+    printETime: text('print_e_time'),
+    parsedOrderCode: text('parsed_order_code'),
+    parsedClient: text('parsed_client'),
+    parsedMaterial: text('parsed_material'),
+    parsedWidthMm: real('parsed_width_mm'),
+    parsedHeightMm: real('parsed_height_mm'),
+    parsedUnits: integer('parsed_units'),
+    parsedCopies: integer('parsed_copies'),
+    parseErrors: text('parse_errors'),
+    createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+  },
+  (t) => [
+    index('mimaki_test_channel_idx').on(t.channel),
+    uniqueIndex('mimaki_test_dedupe_idx').on(t.sourceFile, t.keyFilename, t.printSTime),
+  ],
+);
+
 export type PrintJob = typeof printJobs.$inferSelect;
 export type NewPrintJob = typeof printJobs.$inferInsert;
 export type MachineTelemetry = typeof machineTelemetry.$inferSelect;
 export type NewMachineTelemetry = typeof machineTelemetry.$inferInsert;
 export type MimakiJob = typeof mimakiJobs.$inferSelect;
 export type NewMimakiJob = typeof mimakiJobs.$inferInsert;
+export type MimakiTestJob = typeof mimakiTestJobs.$inferSelect;
+export type NewMimakiTestJob = typeof mimakiTestJobs.$inferInsert;

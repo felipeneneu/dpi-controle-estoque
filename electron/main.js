@@ -406,3 +406,11 @@ ipcMain.handle('grafica:zoom', (_event, payload) => {
     win.webContents.setZoomLevel(win.webContents.getZoomLevel() + delta);
   }
 });
+
+// Registra o sidecar nativo de imposição Konica (C# WPF / ADR-015)
+try {
+  const { registerImpositionSidecar } = require('./sidecars/imposer-sidecar.js');
+  registerImpositionSidecar();
+} catch (err) {
+  console.warn('[main.js] Aviso ao carregar imposer-sidecar:', err.message);
+}

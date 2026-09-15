@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { eq } from 'drizzle-orm';
-import { stockItems, stockTransactions, notifications, users, machineItems, bobinas } from '../db/schema.js';
+import { stockItems, stockTransactions, notifications, users, machineItems, bobinas, garrafas } from '../db/schema.js';
 import { db } from '../db/index.js';
 import { newId } from '../lib/ids.js';
 import { sendToRecipients } from '../lib/whatsapp.js';
@@ -111,6 +111,7 @@ export async function stockRoutes(app: FastifyInstance) {
       : await db.select().from(stockItems).all();
     const links = await db.select().from(machineItems).all();
     const allBobinas = await db.select().from(bobinas).all();
+    const allGarrafas = await db.select().from(garrafas).all();
     
     const byItem = new Map<string, string[]>();
     for (const l of links) {
@@ -124,6 +125,11 @@ export async function stockRoutes(app: FastifyInstance) {
       if (r.category === 'PAPER_MEDIA' && r.unit === 'm') {
         const itemBobinas = allBobinas.filter(b => b.stockItemId === r.id && (b.state === 'NEW' || b.state === 'IN_USE'));
         finalQuantity = itemBobinas.reduce((acc, b) => acc + (b.metersRemaining || 0), 0);
+      } else if (r.category === 'INK_SUPPLY') {
+        const itemGarrafas = allGarrafas.filter(g => g.stockItemId === r.id && (g.state === 'NEW' || g.state === 'IN_USE'));
+        if (itemGarrafas.length > 0) {
+          finalQuantity = itemGarrafas.reduce((acc, g) => acc + (g.mlRemaining || 0), 0);
+        }
       }
       return { 
         ...r, 
@@ -205,6 +211,28 @@ export async function stockRoutes(app: FastifyInstance) {
         type: 'IN',
         quantity: current,
         reason: 'Cadastro Inicial (1º Rolo)',
+        userId: request.userId as string,
+        userName: ator?.name ?? 'Sistema',
+      });
+    } else if (data.category === 'INK_SUPPLY' && current > 0) {
+      const shortIdStr = Math.floor(1000 + Math.random() * 9000).toString();
+      const finalSerial = `TIN-${shortIdStr}`;
+      await db.insert(garrafas).values({
+        id: newId(),
+        stockItemId: item.id,
+        serial: finalSerial,
+        mlInitial: current,
+        mlRemaining: current,
+        state: 'NEW',
+        location: 'deposito',
+      });
+      const ator = await db.select().from(users).where(eq(users.id, request.userId as string)).get();
+      await db.insert(stockTransactions).values({
+        id: newId(),
+        itemId: item.id,
+        type: 'IN',
+        quantity: current,
+        reason: `Cadastro Inicial (Garrafa ${finalSerial})`,
         userId: request.userId as string,
         userName: ator?.name ?? 'Sistema',
       });
@@ -356,11 +384,10 @@ export async function stockRoutes(app: FastifyInstance) {
     preHandler: [authenticate],
   }, async (request) => {
     const query = request.query as { stockItemId?: string };
-    let queryBuilder = db.select().from(bobinas);
-    if (query.stockItemId) {
-      queryBuilder = queryBuilder.where(eq(bobinas.stockItemId, query.stockItemId)) as any;
-    }
-    return await queryBuilder.all();
+    const items = query.stockItemId
+      ? await db.select().from(bobinas).where(eq(bobinas.stockItemId, query.stockItemId)).all()
+      : await db.select().from(bobinas).all();
+    return items;
   });
 
   app.patch('/api/bobinas/:id', {
@@ -526,6 +553,187 @@ export async function stockRoutes(app: FastifyInstance) {
     await db.insert(stockTransactions).values(tx);
     
     return reply.code(201).send(novaBobina);
+  });
+
+  app.get('/api/garrafas', {
+    schema: {
+      tags: ['Garrafas'],
+      summary: 'Listar garrafas de tinta',
+      description: 'Retorna a lista de garrafas (frascos) de tinta, opcionalmente filtrada por stockItemId.',
+      querystring: {
+        type: 'object',
+        properties: {
+          stockItemId: { type: 'string' },
+        },
+      },
+      response: {
+        200: { type: 'array', items: { type: 'object', additionalProperties: true } },
+      },
+    },
+    preHandler: [authenticate],
+  }, async (request) => {
+    const query = request.query as { stockItemId?: string };
+    const items = query.stockItemId
+      ? await db.select().from(garrafas).where(eq(garrafas.stockItemId, query.stockItemId)).all()
+      : await db.select().from(garrafas).all();
+    return items;
+  });
+
+  app.patch('/api/garrafas/:id', {
+    schema: {
+      tags: ['Garrafas'],
+      summary: 'Atualizar garrafa',
+      description: 'Atualiza o estado ou local da garrafa de tinta.',
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: { id: { type: 'string' } },
+      },
+      body: {
+        type: 'object',
+        properties: {
+          state: { type: 'string' },
+          location: { type: 'string' },
+          serial: { type: 'string' },
+        },
+      },
+      response: {
+        200: { type: 'object', additionalProperties: true },
+        404: { type: 'object', properties: { error: { type: 'string' } } },
+      },
+    },
+    preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN', 'OPERATOR'])],
+  }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const body = (request.body ?? {}) as { state?: "NEW" | "IN_USE" | "USED" | "BLOCKED" | "SCRAPPED"; location?: string; serial?: string };
+
+    const existing = await db.select().from(garrafas).where(eq(garrafas.id, id)).get();
+    if (!existing) return reply.code(404).send({ error: 'Not found' });
+
+    const next = { ...existing, ...body };
+    await db.update(garrafas).set(next).where(eq(garrafas.id, id));
+    return next;
+  });
+
+  app.post('/api/garrafas/:id/discharge', {
+    schema: {
+      tags: ['Garrafas'],
+      summary: 'Dar baixa manual em garrafa (Venda/Descarte)',
+      description: 'Dá baixa na garrafa inteira, gerando transação OUT e mudando o estado para USED.',
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: { id: { type: 'string' } },
+      },
+      body: {
+        type: 'object',
+        required: ['reason'],
+        properties: {
+          reason: { type: 'string', minLength: 1 },
+        },
+      },
+      response: {
+        200: { type: 'object', additionalProperties: true },
+        400: { type: 'object', properties: { error: { type: 'string' } } },
+        404: { type: 'object', properties: { error: { type: 'string' } } },
+      },
+    },
+    preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN', 'OPERATOR'])],
+  }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const { reason } = request.body as { reason: string };
+
+    const existing = await db.select().from(garrafas).where(eq(garrafas.id, id)).get();
+    if (!existing) return reply.code(404).send({ error: 'Not found' });
+    if (existing.state !== 'NEW' && existing.state !== 'IN_USE') {
+      return reply.code(400).send({ error: 'Apenas garrafas ativas podem ser baixadas manualmente.' });
+    }
+
+    const next = {
+      ...existing,
+      state: 'USED' as const,
+      location: 'cliente',
+      finishedAt: new Date(),
+    };
+
+    await db.update(garrafas).set(next).where(eq(garrafas.id, id));
+
+    const ator = await db.select().from(users).where(eq(users.id, request.userId as string)).get();
+    await db.insert(stockTransactions).values({
+      id: newId(),
+      itemId: existing.stockItemId,
+      type: 'OUT',
+      quantity: existing.mlRemaining ?? 0,
+      reason: reason,
+      userId: request.userId as string,
+      userName: ator?.name ?? 'Sistema',
+    });
+
+    return reply.code(200).send(next);
+  });
+
+  app.post('/api/stock-items/:id/add-garrafa', {
+    schema: {
+      tags: ['Garrafas'],
+      summary: 'Adicionar garrafa de tinta',
+      description: 'Cria uma nova garrafa (frasco) de tinta vinculada ao item de estoque (requer ADMIN/DEV_MASTER).',
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: { id: { type: 'string' } },
+      },
+      body: {
+        type: 'object',
+        properties: {
+          mlInitial: { type: 'number', description: 'Volume inicial da garrafa em ml (padrão: 1000)' },
+        },
+      },
+      response: {
+        201: { type: 'object' },
+        400: { type: 'object', properties: { error: { type: 'string' } } },
+        404: { type: 'object', properties: { error: { type: 'string' } } },
+      },
+    },
+    preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN'])],
+  }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const body = (request.body ?? {}) as { mlInitial?: number };
+    const existing = await db.select().from(stockItems).where(eq(stockItems.id, id)).get();
+    if (!existing) return reply.code(404).send({ error: 'Not found' });
+
+    if (existing.category !== 'INK_SUPPLY') {
+      return reply.code(400).send({ error: 'Garrafas só podem ser criadas para itens de tinta (INK_SUPPLY).' });
+    }
+
+    const mlInitial = body.mlInitial ?? 1000;
+    const shortIdStr = Math.floor(1000 + Math.random() * 9000).toString();
+    const finalSerial = `TIN-${shortIdStr}`;
+
+    const novaGarrafa = {
+      id: newId(),
+      stockItemId: id,
+      serial: finalSerial,
+      mlInitial,
+      mlRemaining: mlInitial,
+      state: 'NEW' as const,
+      location: 'deposito',
+    };
+
+    await db.insert(garrafas).values(novaGarrafa);
+
+    const ator = await db.select().from(users).where(eq(users.id, request.userId as string)).get();
+    const tx = {
+      id: newId(),
+      itemId: id,
+      type: 'IN' as const,
+      quantity: mlInitial,
+      reason: `Abertura de garrafa ${novaGarrafa.serial}`,
+      userId: request.userId as string,
+      userName: ator?.name ?? 'Sistema',
+    };
+    await db.insert(stockTransactions).values(tx);
+
+    return reply.code(201).send(novaGarrafa);
   });
 
   app.patch('/api/stock-items/:id/label', {

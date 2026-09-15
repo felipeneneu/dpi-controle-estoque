@@ -37,8 +37,10 @@ import { KonicaConsumoTab } from "@/components/konica-consumo-tab";
 import { MimakiInfoPanel, isMimakiMachine } from "@/components/mimaki-info-panel";
 import { MimakiConsumoTab } from "@/components/mimaki-consumo-tab";
 import { MimakiJobsTab } from "@/components/mimaki-jobs-tab";
+import { MimakiTestPanel } from "@/components/mimaki-test-panel";
 import { JobsTab } from "@/components/machine-jobs-tab";
 import { AddMaterialDialog } from "@/components/add-material-dialog";
+import { MediaSelectDialog } from "@/components/media-select-dialog";
 
 const isKonica = (m: Machine) => isKonicaMachine(m);
 const isMimaki = (m: Machine) => isMimakiMachine(m);
@@ -491,6 +493,19 @@ function MachineChannelView({
   loading: boolean;
   defaultTab?: string;
 }) {
+  const [mediaSelectOpen, setMediaSelectOpen] = useState(false);
+
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "F2") {
+        e.preventDefault();
+        setMediaSelectOpen(true);
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
   if (loading) return <LoadingState label="Carregando canal…" />;
 
   if (!machine) {
@@ -522,11 +537,20 @@ function MachineChannelView({
             Telemetria, consumo e materiais do equipamento
           </p>
         </div>
-        <Link href="/maquinas">
-          <Button variant="outline" className="h-11 rounded-xl font-semibold">
-            Voltar
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setMediaSelectOpen(true)}
+            className="h-11 rounded-xl font-semibold gap-2 border-primary/20 hover:bg-primary/5 text-primary"
+          >
+            Trocar Bobina <kbd className="px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded font-mono text-xs text-gray-700">F2</kbd>
           </Button>
-        </Link>
+          <Link href="/maquinas">
+            <Button variant="outline" className="h-11 rounded-xl font-semibold">
+              Voltar
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <Tabs defaultValue={defaultTab}>
@@ -535,6 +559,7 @@ function MachineChannelView({
           <TabsTrigger value="status">Status</TabsTrigger>
           <TabsTrigger value="jobs">Jobs</TabsTrigger>
           <TabsTrigger value="consumo">Consumo</TabsTrigger>
+          {isMimaki(machine) && <TabsTrigger value="mimaki-teste">Mimaki Teste</TabsTrigger>}
           <TabsTrigger value="materiais">Materiais</TabsTrigger>
         </TabsList>
         <TabsContent value="status">
@@ -556,10 +581,20 @@ function MachineChannelView({
             <ConsumoTab machine={machine} />
           )}
         </TabsContent>
+        <TabsContent value="mimaki-teste">
+          <MimakiTestPanel />
+        </TabsContent>
         <TabsContent value="materiais">
           <MateriaisTab machine={machine} items={items} canManage={canManage} />
         </TabsContent>
       </Tabs>
+
+      <MediaSelectDialog
+        open={mediaSelectOpen}
+        onOpenChange={setMediaSelectOpen}
+        machine={machine}
+        activeBobina={machine.activeBobina}
+      />
     </div>
   );
 }
@@ -646,7 +681,7 @@ export default function MachinesPage() {
         imageUrl: ni || undefined,
         ip: nip || undefined,
         bleedAdjustmentM: nbl ? parseFloat(nbl) : undefined,
-      } as any);
+      });
       toast.success("Máquina cadastrada");
       setNm(""); setNb(""); setNmo(""); setNt(""); setNi(""); setNip(""); setNbl("");
       setOpenNew(false);
@@ -675,7 +710,7 @@ export default function MachinesPage() {
           name: em, brand: eb, model: emo, technology: et, 
           imageUrl: ei || undefined, ip: eip || undefined,
           bleedAdjustmentM: ebl ? parseFloat(ebl) : undefined,
-        } as any,
+        },
       });
       toast.success("Máquina atualizada");
       setOpenEdit(false);

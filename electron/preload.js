@@ -17,4 +17,7 @@ contextBridge.exposeInMainWorld('grafica', {
     ipcRenderer.on('grafica:window-state', listener);
     return () => ipcRenderer.removeListener('grafica:window-state', listener);
   },
+  imposition: {
+    open: (payload) => ipcRenderer.invoke('imposition:open', payload),
+  },
 });

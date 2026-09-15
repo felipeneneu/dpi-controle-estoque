@@ -13,6 +13,7 @@ export const stockKeys = {
   detail: (id: string) => [...stockKeys.all, "detail", id] as const,
   transactions: () => [...stockKeys.all, "transactions"] as const,
   bobinas: (stockItemId?: string) => [...stockKeys.all, "bobinas", stockItemId || "all"] as const,
+  garrafas: (stockItemId?: string) => [...stockKeys.all, "garrafas", stockItemId || "all"] as const,
 }
 
 export const machineKeys = {
@@ -68,4 +69,10 @@ export const mimakiKeys = {
   jobList: (filters?: { status?: string; machine_id?: string }) =>
     [...mimakiKeys.jobs(), filters] as const,
   jobDetail: (id?: string) => [...mimakiKeys.jobs(), "detail", id ?? ""] as const,
+}
+
+export const mimakiTestKeys = {
+  all: ["mimaki-test"] as const,
+  list: () => [...mimakiTestKeys.all, "list"] as const,
+  health: () => [...mimakiTestKeys.all, "health"] as const,
 }

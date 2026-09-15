@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { eq, and, or, like, sql } from 'drizzle-orm';
-import { mimakiJobs, stockItems, stockTransactions, notifications, users } from '../db/schema.js';
+import { mimakiJobs, stockItems, stockTransactions, notifications, users, garrafas } from '../db/schema.js';
 import { db } from '../db/index.js';
 import { newId } from '../lib/ids.js';
 import { m2mAuth } from '../middleware/m2m-auth.js';
@@ -172,34 +172,83 @@ export async function deductMimakiStockForJob(
       );
 
       if (inkItem) {
-        const newQty = Math.max(0, toPrecision(inkItem.currentQuantity - consumedCc, 4));
-        const status = computeStatus(newQty, inkItem.minQuantity);
+        // Busca garrafa ativa deste item na máquina (se existir)
+        let activeGarrafa = null;
+        if (job.machineId) {
+          activeGarrafa = await db.select().from(garrafas).where(
+            and(
+              eq(garrafas.stockItemId, inkItem.id),
+              eq(garrafas.state, 'IN_USE'),
+              eq(garrafas.location, `machine:${job.machineId}`)
+            )
+          ).get();
+        }
 
-        await db.update(stockItems)
-          .set({ currentQuantity: newQty, status })
-          .where(eq(stockItems.id, inkItem.id));
+        if (activeGarrafa) {
+          const newMl = Math.max(0, toPrecision((activeGarrafa.mlRemaining ?? 0) - consumedCc, 4));
+          const isFinished = newMl <= 0;
+          await db.update(garrafas).set({
+            mlRemaining: newMl,
+            state: isFinished ? 'USED' : activeGarrafa.state,
+            finishedAt: isFinished ? new Date(Date.now()) : null,
+          }).where(eq(garrafas.id, activeGarrafa.id));
 
-        await db.insert(stockTransactions).values({
-          id: newId(),
-          itemId: inkItem.id,
-          type: 'OUT',
-          quantity: consumedCc,
-          reason: `Mimaki tinta UV ${color}: ${job.jobName}`,
-          userId: actorId,
-          userName: 'Mimaki Agent',
-        });
+          const newQty = newMl;
+          const status = computeStatus(newQty, inkItem.minQuantity);
 
-        deductedInksCount++;
+          await db.insert(stockTransactions).values({
+            id: newId(),
+            itemId: inkItem.id,
+            type: 'OUT',
+            quantity: consumedCc,
+            reason: `Mimaki tinta UV ${color}: ${job.jobName} (garrafa ${activeGarrafa.serial ?? activeGarrafa.id.slice(0,8)})`,
+            userId: actorId,
+            userName: 'Mimaki Agent',
+          });
 
-        app.io.to('estoque').emit('stock:deducted', {
-          itemName: inkItem.name,
-          quantity: consumedCc,
-          unit: inkItem.unit,
-          jobName: job.jobName,
-        });
+          deductedInksCount++;
 
-        if (status === 'LOW_STOCK' || status === 'OUT_OF_STOCK') {
-          await dispatchStockAlert({ item: inkItem, newQty, status, actorId, io: app.io });
+          app.io.to('estoque').emit('stock:deducted', {
+            itemName: inkItem.name,
+            quantity: consumedCc,
+            unit: inkItem.unit,
+            jobName: job.jobName,
+          });
+
+          if (status === 'LOW_STOCK' || status === 'OUT_OF_STOCK') {
+            await dispatchStockAlert({ item: inkItem, newQty, status, actorId, io: app.io });
+          }
+        } else {
+          // Sem garrafa ativa: débito agregado (compatibilidade retroativa)
+          const newQty = Math.max(0, toPrecision(inkItem.currentQuantity - consumedCc, 4));
+          const status = computeStatus(newQty, inkItem.minQuantity);
+
+          await db.update(stockItems)
+            .set({ currentQuantity: newQty, status })
+            .where(eq(stockItems.id, inkItem.id));
+
+          await db.insert(stockTransactions).values({
+            id: newId(),
+            itemId: inkItem.id,
+            type: 'OUT',
+            quantity: consumedCc,
+            reason: `Mimaki tinta UV ${color}: ${job.jobName}`,
+            userId: actorId,
+            userName: 'Mimaki Agent',
+          });
+
+          deductedInksCount++;
+
+          app.io.to('estoque').emit('stock:deducted', {
+            itemName: inkItem.name,
+            quantity: consumedCc,
+            unit: inkItem.unit,
+            jobName: job.jobName,
+          });
+
+          if (status === 'LOW_STOCK' || status === 'OUT_OF_STOCK') {
+            await dispatchStockAlert({ item: inkItem, newQty, status, actorId, io: app.io });
+          }
         }
       }
     }

@@ -17,10 +17,12 @@ import {
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { getUser, type StockItem, type StockCategory, CATEGORY_LABEL } from "@/lib/api";
-import { useStockItems, useStockTransaction, useAddRoll } from "@/lib/queries/stock";
+import { useStockItems, useStockTransaction, useAddRoll, useBobinas, useGarrafas } from "@/lib/queries/stock";
 import { LoadingState } from "@/components/ui/spinner";
-import { RiSearchLine } from "@remixicon/react";
+import { RiSearchLine, RiPrinterLine } from "@remixicon/react";
 import { BobinasListDialog } from "@/components/bobinas-list-dialog";
+import { GarrafasListDialog, AddGarrafaDialog } from "@/components/garrafas-list-dialog";
+import { LabelImpositionDialog } from "@/components/label-imposition-dialog";
 
 const FILTERS: Array<"TODOS" | StockCategory> = ["TODOS", "PAPER_MEDIA", "INK_SUPPLY", "OTHER"];
 
@@ -44,8 +46,11 @@ export default function EstoquePage() {
   const transaction = useStockTransaction();
 
   const [rollTarget, setRollTarget] = useState<StockItem | null>(null);
-  const [rollLabel, setRollLabel] = useState("");
   const addRoll = useAddRoll();
+
+  const [garrafasItem, setGarrafasItem] = useState<StockItem | null>(null);
+  const [addGarrafaItem, setAddGarrafaItem] = useState<StockItem | null>(null);
+  const [labelImpositionOpen, setLabelImpositionOpen] = useState(false);
 
   useEffect(() => {
     if (!getUser()) {
@@ -54,11 +59,23 @@ export default function EstoquePage() {
   }, [router]);
 
   const visible = filter === "TODOS" ? items : items.filter((i) => i.category === filter);
+  const bobinas = useBobinas().data ?? [];
+  const garrafasData = useGarrafas().data ?? [];
+  const serialItemIds = new Set(
+    ((): string[] => {
+      const q = search.trim().toLowerCase();
+      if (!q) return [];
+      const fromBobinas = bobinas.filter((b) => b.serial.toLowerCase().includes(q)).map((b) => b.stockItemId);
+      const fromGarrafas = garrafasData.filter((g) => g.serial.toLowerCase().includes(q)).map((g) => g.stockItemId);
+      return [...fromBobinas, ...fromGarrafas];
+    })(),
+  );
   const visibleSearch = visible.filter(
     (i) =>
       !search.trim() ||
       i.name.toLowerCase().includes(search.trim().toLowerCase()) ||
-      (i.code ? i.code.toLowerCase().includes(search.trim().toLowerCase()) : false),
+      (i.code ? i.code.toLowerCase().includes(search.trim().toLowerCase()) : false) ||
+      serialItemIds.has(i.id),
   );
 
   async function submitTransaction() {
@@ -85,7 +102,6 @@ export default function EstoquePage() {
 
   function openAddRoll(item: StockItem) {
     setRollTarget(item);
-    setRollLabel("");
   }
 
   async function confirmAddRoll() {
@@ -101,9 +117,18 @@ export default function EstoquePage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900">Estoque de Mídias</h2>
-        <p className="text-sm text-muted-foreground">Papéis, bobinas de vinil e materiais de impressão</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Estoque de Mídias</h2>
+          <p className="text-sm text-muted-foreground">Papéis, bobinas de vinil e materiais de impressão</p>
+        </div>
+        <Button
+          onClick={() => setLabelImpositionOpen(true)}
+          className="rounded-xl h-10 gap-2 font-semibold shadow-sm shrink-0"
+        >
+          <RiPrinterLine className="size-4" />
+          Imprimir Etiquetas Konica
+        </Button>
       </div>
 
       <div className="flex gap-2 flex-wrap">
@@ -184,6 +209,23 @@ export default function EstoquePage() {
                       + Adicionar rolo
                     </Button>
                   </div>
+                ) : item.category === 'INK_SUPPLY' ? (
+                  <div className="mt-auto flex flex-col gap-2">
+                    <Button
+                      variant="outline"
+                      className="w-full h-11 border-primary text-primary hover:bg-brand-pink/10 font-semibold rounded-xl"
+                      onClick={() => setGarrafasItem(item)}
+                    >
+                      Ver Garrafas
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="w-full h-9 text-muted-foreground font-semibold rounded-xl"
+                      onClick={() => setAddGarrafaItem(item)}
+                    >
+                      + Adicionar garrafa
+                    </Button>
+                  </div>
                 ) : (
                   <div className="mt-auto flex gap-2">
                     <Button
@@ -218,6 +260,13 @@ export default function EstoquePage() {
       )}
 
       <BobinasListDialog item={selected} onClose={() => setSelected(null)} />
+
+      <GarrafasListDialog item={garrafasItem} onClose={() => setGarrafasItem(null)} />
+
+      <AddGarrafaDialog
+        item={addGarrafaItem}
+        onClose={() => setAddGarrafaItem(null)}
+      />
 
       <Dialog open={!!rollTarget} onOpenChange={(open) => !open && setRollTarget(null)}>
         <DialogContent>
@@ -288,6 +337,11 @@ export default function EstoquePage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <LabelImpositionDialog
+        open={labelImpositionOpen}
+        onOpenChange={setLabelImpositionOpen}
+      />
     </div>
   );
 }

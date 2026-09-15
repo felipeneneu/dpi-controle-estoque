@@ -17,5 +17,8 @@
 | ADR-011 | Decisões do data-map HP Latex | Proposto | — | integrations | BR-011 | pendente — semente em `integrations/data-maps/HP_EWS_accounting_probe.md` |
 | ADR-012 | WhatsApp Business API vs Baileys | Proposto | — | integrations | BR-016 | pendente — ver INT-005/INT-107 no catálogo |
 | ADR-013 | Identificação de bobina ativa em máquina + jobs órfãos (M3) | Proposto | 2026-09-13 | inventory/machines | BR-002 | novo — opera M3 sobre ADR-009 |
+| ADR-014 | Padronização de Etiquetas Físicas (90x35mm), Imposição Konica e Quick-Switch | Aprovado | 2026-09-14 | inventory/machines | BR-002, BR-010, BR-021 | novo — complementa ADR-009 e ADR-013 |
+| ADR-015 | Arquitetura Sidecar e Ferramentas Nativas (ImpositorKonica WPF) | Aprovado | 2026-09-15 | desktop/imposition | BR-010, BR-021 | novo — complementa ADR-014 |
+| ADR-016 | Canal de rastreio Mimaki teste (CSV RasterLink) | Proposto | 2026-09-15 | integrations | BR-012 | novo — paralelo ao M2M (INT-001); sem dedução |
 
 > ADR-010..012 são **pendentes**: decisões capturadas nos data-maps e catálogo ainda precisam ser formalizadas. Cada uma vira ADR quando sua RFC for concluída.

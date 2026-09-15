@@ -71,6 +71,20 @@
       "when": 1789307349201,
       "tag": "0009_slow_bloodscream",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1789412173200,
+      "tag": "0010_cuddly_starfox",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1789502683270,
+      "tag": "0011_glorious_changeling",
+      "breakpoints": true
     }
   ]
 }

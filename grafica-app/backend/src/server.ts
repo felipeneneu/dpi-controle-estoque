@@ -13,6 +13,7 @@ import { startHpAgent } from './agents/hp-latex/index.js';
 import { startKonicaAgent } from './agents/konica/index.js';
 import { startBrain } from './agents/brain/index.js';
 import { setupSchedulers } from './lib/scheduler.js';
+import { startMimakiTestWatcher } from './lib/mimaki-test-watcher.js';
 
 const port = Number(process.env.PORT || 3001);
 
@@ -173,6 +174,7 @@ const stopHpAgent = startHpAgent(app.io);
 const stopKonicaAgent = startKonicaAgent(app.io);
 setupSchedulers(app);
 startBrain(app.io);
+const stopMimakiTestWatcher = startMimakiTestWatcher(app);
 
 process.on('SIGINT', () => {
   stopHpAgent();
@@ -180,6 +182,7 @@ process.on('SIGINT', () => {
   stopDiscovery();
   stopWhatsApp();
   stopAlertEscalation();
+  stopMimakiTestWatcher();
   process.exit(0);
 });
 process.on('SIGTERM', () => {
@@ -188,5 +191,6 @@ process.on('SIGTERM', () => {
   stopDiscovery();
   stopWhatsApp();
   stopAlertEscalation();
+  stopMimakiTestWatcher();
   process.exit(0);
 });

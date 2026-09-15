@@ -149,6 +149,19 @@ export interface Bobina {
   location: string;
 }
 
+export interface Garrafa {
+  id: string;
+  stockItemId: string;
+  serial: string;
+  mlInitial: number;
+  mlRemaining: number;
+  state: "NEW" | "IN_USE" | "USED";
+  location: string;
+  garrafaOpenedAt: string | null;
+  finishedAt: string | null;
+  createdAt: string | null;
+}
+
 export interface StockItem {
   id: string;
   name: string;
