@@ -43,7 +43,24 @@ namespace ImpositorKonica
 
                 try
                 {
-                    string json = File.ReadAllText(dataFilePath);
+                    byte[] raw = File.ReadAllBytes(dataFilePath);
+                    if (raw.Length >= 3 && raw[0] == 0xEF && raw[1] == 0xBB && raw[2] == 0xBF)
+                    {
+                        Array.Copy(raw, 3, raw, 0, raw.Length - 3);
+                        Array.Resize(ref raw, raw.Length - 3);
+                    }
+
+                    string json;
+                    try
+                    {
+                        json = new System.Text.UTF8Encoding(false, true).GetString(raw);
+                    }
+                    catch (System.Text.DecoderFallbackException)
+                    {
+                        json = System.Text.Encoding.GetEncoding(1252).GetString(raw);
+                        Console.Error.WriteLine("[ImpositorKonica] Aviso: payload JSON não é UTF-8 puro; interpretado como Windows-1252.");
+                    }
+
                     var parsed = JsonSerializer.Deserialize<ImpositionPayload>(json, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true

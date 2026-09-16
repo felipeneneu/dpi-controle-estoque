@@ -47,3 +47,4 @@ A mecânica de verificação (script `docs:check`, snapshot OpenAPI, convenção
 
 ## P11 — Escopo de execução
 Este ciclo de governança não altera código, schema, rotas, migrações nem UI (decisão D2 em `PLAN-enterprise-governance.md`). Nenhuma política aqui autoriza mudança de código fora do fluxo normal de PR.
+

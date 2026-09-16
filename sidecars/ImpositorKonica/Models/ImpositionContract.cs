@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
 using System.Windows;
 
@@ -7,6 +8,9 @@ namespace ImpositorKonica.Models
 {
     public class ImpositionPayload
     {
+        [JsonPropertyName("sheetName")]
+        public string SheetName { get; set; } = "FOLHA SRA3";
+
         [JsonPropertyName("sheetWidthMm")]
         public double SheetWidthMm { get; set; } = 330.0;
 
@@ -137,6 +141,8 @@ namespace ImpositorKonica.Models
         public int Rotation { get; set; } // 0 ou 90 graus
         public ImpositionItemDto Item { get; set; }
         public bool IsSelected { get; set; }
+        public Guid? GroupId { get; set; }
+        public List<CropMarkItem> CropMarks { get; set; } = new();
 
         public PlacedLabel(ImpositionItemDto item, double x, double y, double width, double height, int rotation)
         {
@@ -146,8 +152,44 @@ namespace ImpositorKonica.Models
             Width = width;
             Height = height;
             Rotation = rotation;
+
+            GenerateCropMarks();
+        }
+
+        private void GenerateCropMarks()
+        {
+            double arm = 2.0;
+            // A etiqueta sempre tem suas marcas geradas considerando seu tamanho nativo (90x35)
+            // A rotação será aplicada no Canvas e no PDF Exporter
+            double w = 90.0;
+            double h = 35.0;
+            var b = new Rect(0, 0, w, h);
+
+            CropMarks.Add(new CropMarkItem { StartPointMm = new Point(b.Left - arm, b.Top), EndPointMm = new Point(b.Left, b.Top), AssociatedSlotRect = b });
+            CropMarks.Add(new CropMarkItem { StartPointMm = new Point(b.Left, b.Top - arm), EndPointMm = new Point(b.Left, b.Top), AssociatedSlotRect = b });
+
+            CropMarks.Add(new CropMarkItem { StartPointMm = new Point(b.Right + arm, b.Top), EndPointMm = new Point(b.Right, b.Top), AssociatedSlotRect = b });
+            CropMarks.Add(new CropMarkItem { StartPointMm = new Point(b.Right, b.Top - arm), EndPointMm = new Point(b.Right, b.Top), AssociatedSlotRect = b });
+
+            CropMarks.Add(new CropMarkItem { StartPointMm = new Point(b.Left - arm, b.Bottom), EndPointMm = new Point(b.Left, b.Bottom), AssociatedSlotRect = b });
+            CropMarks.Add(new CropMarkItem { StartPointMm = new Point(b.Left, b.Bottom + arm), EndPointMm = new Point(b.Left, b.Bottom), AssociatedSlotRect = b });
+
+            CropMarks.Add(new CropMarkItem { StartPointMm = new Point(b.Right + arm, b.Bottom), EndPointMm = new Point(b.Right, b.Bottom), AssociatedSlotRect = b });
+            CropMarks.Add(new CropMarkItem { StartPointMm = new Point(b.Right, b.Bottom + arm), EndPointMm = new Point(b.Right, b.Bottom), AssociatedSlotRect = b });
         }
 
         public Rect GetBounds() => new Rect(X, Y, Width, Height);
+
+        public PlacedLabel Clone()
+        {
+            var clone = new PlacedLabel(this.Item, this.X, this.Y, this.Width, this.Height, this.Rotation)
+            {
+                Id = this.Id,
+                IsSelected = this.IsSelected,
+                GroupId = this.GroupId,
+                CropMarks = this.CropMarks.Select(c => c.Clone()).ToList()
+            };
+            return clone;
+        }
     }
 }

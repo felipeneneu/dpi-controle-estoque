@@ -1,10 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using ImpositorKonica.Dialogs;
+using ImpositorKonica.Export;
 using ImpositorKonica.Models;
+using Microsoft.Win32;
 
 namespace ImpositorKonica
 {
@@ -48,13 +53,28 @@ namespace ImpositorKonica
 
             TxtOccupancyStatus.Text = $"Ocupação: {currentCount} de {totalCapacity} posições ({percent}%)";
             BtnOrientation.Content = isVertical ? "Vertical (8x5 = 40 un)" : "Horizontal (3x12 = 36 un)";
-            TxtSheetMetrics.Text = $"Folha SRA3: {CanvasImpositor.SheetWidthMm}x{CanvasImpositor.SheetHeightMm} mm | Útil: {CanvasImpositor.SheetWidthMm - 2 * CanvasImpositor.MarginMm}x{CanvasImpositor.SheetHeightMm - 2 * CanvasImpositor.MarginMm} mm | Margem: {CanvasImpositor.MarginMm}mm | Gap: {CanvasImpositor.GapMm}mm";
+            TxtSheetMetrics.Text = $"{CanvasImpositor.SheetName}: {CanvasImpositor.SheetWidthMm}x{CanvasImpositor.SheetHeightMm} mm | Útil: {CanvasImpositor.SheetWidthMm - 2 * CanvasImpositor.MarginMm}x{CanvasImpositor.SheetHeightMm - 2 * CanvasImpositor.MarginMm} mm | Margem: {CanvasImpositor.MarginMm}mm | Gap: {CanvasImpositor.GapMm}mm";
+            UpdateSelectionCoordinates();
+        }
+
+        private void UpdateSelectionCoordinates()
+        {
+            var na = CultureInfo.InvariantCulture;
+            var bounds = CanvasImpositor.GetSelectionBounds();
+
+            TxtCoordX.Text = bounds.HasValue ? bounds.Value.X.ToString("0.00", na) + " mm" : "0,00 mm";
+            TxtCoordY.Text = bounds.HasValue ? bounds.Value.Y.ToString("0.00", na) + " mm" : "0,00 mm";
+            TxtCoordL.Text = bounds.HasValue ? bounds.Value.Width.ToString("0.00", na) + " mm" : "0,00 mm";
+            TxtCoordA.Text = bounds.HasValue ? bounds.Value.Height.ToString("0.00", na) + " mm" : "0,00 mm";
         }
 
         #region Memória Muscular Gráfica (Teclas de Atalho)
 
         private void OnWindowKeyDown(object sender, KeyEventArgs e)
         {
+            if (e.OriginalSource is System.Windows.Controls.TextBox || e.OriginalSource is System.Windows.Controls.PasswordBox)
+                return; // Allow native TextBox shortcuts (like Ctrl+Z for text undo)
+
             // Ignorar se o foco estiver digitando no campo de busca
             if (TxtSearch.IsFocused) return;
 
@@ -66,10 +86,64 @@ namespace ImpositorKonica
                 return;
             }
 
+            // Ctrl + N: Configurar chapa (Novo documento)
+            if (e.Key == Key.N && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+            {
+                OpenSheetConfigDialog();
+                e.Handled = true;
+                return;
+            }
+
+            // Ctrl + S: Salvar PDF de pré-impressão
+            if (e.Key == Key.S && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+            {
+                SavePdfToFile();
+                e.Handled = true;
+                return;
+            }
+
             // Ctrl + D: Duplicar
             if (e.Key == Key.D && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
             {
                 CanvasImpositor.DuplicateSelected();
+                e.Handled = true;
+                return;
+            }
+
+            // Ctrl + Z: Desfazer | Ctrl + Y: Refazer | Ctrl + Shift + Z: Refazer
+            if (e.Key == Key.Z)
+            {
+                if (Keyboard.Modifiers == ModifierKeys.Control)
+                {
+                    CanvasImpositor.Undo();
+                    e.Handled = true;
+                    return;
+                }
+                else if (Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift))
+                {
+                    CanvasImpositor.Redo();
+                    e.Handled = true;
+                    return;
+                }
+            }
+            if (e.Key == Key.Y && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                CanvasImpositor.Redo();
+                e.Handled = true;
+                return;
+            }
+
+            // Ctrl + G: Agrupar | Ctrl + Shift + G: Desagrupar
+            if (e.Key == Key.G && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+            {
+                if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
+                {
+                    CanvasImpositor.UngroupSelected();
+                }
+                else
+                {
+                    CanvasImpositor.GroupSelected();
+                }
                 e.Handled = true;
                 return;
             }
@@ -156,14 +230,35 @@ namespace ImpositorKonica
             UpdateStatus();
         }
 
-        private void OnAutoGangClick(object sender, RoutedEventArgs e)
+        private void OnToggleAutoGang(object sender, RoutedEventArgs e)
         {
-            if (_allItems.Count == 0)
+            if (BtnAutoGang.IsChecked == true)
             {
-                MessageBox.Show("Nenhum item disponível para imposição automática.", "AutoGang", MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
+                if (_allItems.Count == 0)
+                {
+                    BtnAutoGang.IsChecked = false;
+                    MessageBox.Show("Nenhum item disponível para imposição automática.", "AutoGang", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+                CanvasImpositor.ExecuteAutoGang(_allItems);
             }
-            CanvasImpositor.ExecuteAutoGang(_allItems);
+            UpdateStatus();
+        }
+
+        private void OnToggleCropMarks(object sender, RoutedEventArgs e)
+        {
+            CanvasImpositor.ShowCropMarks = BtnCropMarks.IsChecked == true;
+        }
+
+        private void OnGroupClick(object sender, RoutedEventArgs e)
+        {
+            CanvasImpositor.GroupSelected();
+            UpdateStatus();
+        }
+
+        private void OnUngroupClick(object sender, RoutedEventArgs e)
+        {
+            CanvasImpositor.UngroupSelected();
             UpdateStatus();
         }
 
@@ -207,32 +302,128 @@ namespace ImpositorKonica
             }
         }
 
-        private void OnPrintToKonicaClick(object sender, RoutedEventArgs e)
+        private void OnMenuSavePdfClick(object sender, RoutedEventArgs e) => SavePdfToFile();
+
+        private void SavePdfToFile()
         {
             if (CanvasImpositor.PlacedLabels.Count == 0)
             {
-                MessageBox.Show("A folha está vazia. Adicione ao menos uma etiqueta antes de enviar para impressão.", "Folha Vazia", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("A folha está vazia. Adicione ao menos uma etiqueta antes de gerar o PDF.", "Folha Vazia", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
+            var dialog = new SaveFileDialog
+            {
+                Title = "Salvar PDF de pré-impressão SRA3",
+                Filter = "Arquivos PDF (*.pdf)|*.pdf",
+                DefaultExt = ".pdf",
+                AddExtension = true,
+                FileName = $"Imposicao_Konica_SRA3_{DateTime.Now:yyyyMMdd_HHmm}.pdf",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)
+            };
+
+            if (dialog.ShowDialog() != true) return;
+
             try
             {
-                var printDialog = new PrintDialog();
-                if (printDialog.ShowDialog() == true)
+                var config = new SheetConfig
                 {
-                    // Envia o Canvas para impressão direta via spooler do Windows
-                    printDialog.PrintVisual(CanvasImpositor, "Imposicao Konica SRA3 - GraficaOS");
-                    App.ExitCodeResult = 0; // Código 0: Impressão realizada com sucesso
-                    Close();
-                }
+                    Name = CanvasImpositor.SheetName,
+                    WidthMm = CanvasImpositor.SheetWidthMm,
+                    HeightMm = CanvasImpositor.SheetHeightMm,
+                    MarginMm = CanvasImpositor.MarginMm,
+                    GapMm = CanvasImpositor.GapMm,
+                    IsLandscape = CanvasImpositor.ActiveRotation == 0
+                };
+
+                Export.SkiaPdfExporter.ExportarParaPdf(
+                    dialog.FileName,
+                    CanvasImpositor.PlacedLabels,
+                    config,
+                    CanvasImpositor.ActiveRotation == 90,
+                    CanvasImpositor.ShowCropMarks
+                );
+
+                // Revela o arquivo no Explorer com seleção
+                Process.Start("explorer.exe", $"/select,\"{dialog.FileName}\"");
+
+                App.ExitCodeResult = 0; // Código 0: PDF gerado com sucesso
+                Close();
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"[ImpositorKonica] Falha no spooler de impressão: {ex.Message}");
-                App.ExitCodeResult = 3; // Código 3: Erro de impressão
-                MessageBox.Show($"Erro na comunicação com a fila de impressão do Windows:\n{ex.Message}", "Erro de Impressão", MessageBoxButton.OK, MessageBoxImage.Error);
-                Environment.Exit(3);
+                Console.Error.WriteLine($"[ImpositorKonica] Falha ao gerar PDF: {ex.Message}");
+                App.ExitCodeResult = 3; // Código 3: Erro de exportação
+                MessageBox.Show($"Erro ao gerar o PDF com SkiaSharp:\n{ex.Message}", "Erro na Exportação", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        // Window Controls
+        private void OnMinClick(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+        private void OnMaxClick(object sender, RoutedEventArgs e) => WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+        private void OnCloseClick(object sender, RoutedEventArgs e)
+        {
+            App.ExitCodeResult = 1;
+            Close();
+        }
+
+        // Menu Handlers
+        private void OnMenuConfigSheetClick(object sender, RoutedEventArgs e) => OpenSheetConfigDialog();
+
+        private void OpenSheetConfigDialog()
+        {
+            var dialog = new ConfigurarFolhaDialog(new SheetConfig
+            {
+                Name = "Imposicao_Konica_01",
+                WidthMm = CanvasImpositor.SheetWidthMm,
+                HeightMm = CanvasImpositor.SheetHeightMm,
+                MarginMm = CanvasImpositor.MarginMm,
+                GapMm = CanvasImpositor.GapMm,
+                IsLandscape = CanvasImpositor.ActiveRotation == 0
+            })
+            {
+                Owner = this
+            };
+
+            if (dialog.ShowDialog() == true && dialog.Result != null)
+            {
+                var cfg = dialog.Result;
+                CanvasImpositor.SheetWidthMm = cfg.WidthMm;
+                CanvasImpositor.SheetHeightMm = cfg.HeightMm;
+                CanvasImpositor.MarginMm = cfg.MarginMm;
+                CanvasImpositor.GapMm = cfg.GapMm;
+                CanvasImpositor.ActiveRotation = cfg.IsLandscape ? 0 : 90;
+                CanvasImpositor.ExecuteAutoGang(_allItems);
+                CanvasImpositor.ZoomExtents();
+                UpdateStatus();
+            }
+        }
+        private void OnMenuCloseClick(object sender, RoutedEventArgs e) => OnCloseClick(sender, e);
+        private void OnMenuUndoClick(object sender, RoutedEventArgs e)
+        {
+            CanvasImpositor.Undo();
+        }
+
+        private void OnMenuRedoClick(object sender, RoutedEventArgs e)
+        {
+            CanvasImpositor.Redo();
+        }
+        private void OnMenuClearSheetClick(object sender, RoutedEventArgs e) => OnClearSheetClick(sender, e);
+        private void OnMenuRotateClick(object sender, RoutedEventArgs e)
+        {
+            // Simula o atalho 'R' se implementado
+        }
+        private void OnMenuSelectAllClick(object sender, RoutedEventArgs e) { /* Em breve */ }
+        private void OnMenuDeselectAllClick(object sender, RoutedEventArgs e) { /* Em breve */ }
+        private void OnMenuInvertSelectionClick(object sender, RoutedEventArgs e) { /* Em breve */ }
+        private void OnMenuToggleCropMarks(object sender, RoutedEventArgs e) => OnToggleCropMarks(sender, e);
+        private void OnMenuShortcutsClick(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("F4: Enquadrar\nP: Centralizar\nC/E: Alinhar\nT/B/L/R: Bordas\nCtrl+G: Agrupar\nCtrl+Shift+G: Desagrupar\nCtrl+S: Salvar PDF\nDel: Remover", "Atalhos", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        private void OnMenuAboutClick(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Impositor Konica SRA3\nGraficaOS Native Pre-press", "Sobre", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         #endregion

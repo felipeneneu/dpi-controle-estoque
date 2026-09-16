@@ -18,15 +18,17 @@ namespace ImpositorKonica.Views
     public class CanvasImposicao : FrameworkElement
     {
         // Configurações físicas da chapa (mm)
+        public string SheetName { get; set; } = "FOLHA SRA3";
         public double SheetWidthMm { get; set; } = 330.0;
         public double SheetHeightMm { get; set; } = 480.0;
         public double MarginMm { get; set; } = 5.0;
         public double GapMm { get; set; } = 3.0;
-        public int ActiveRotation { get; set; } = 90; // 90 = 35x90mm (8x5 = 40), 0 = 90x35mm (3x12 = 36)
+        public int ActiveRotation { get; set; } = 90; // 90 = etiquetas verticais 35x90, 0 = horizontais 90x35
 
         // Itens montados na chapa
         private readonly List<PlacedLabel> _labels = new();
         public IReadOnlyList<PlacedLabel> PlacedLabels => _labels;
+        public IReadOnlyList<PlacedLabel> SelectedItems => _labels.Where(l => l.IsSelected).ToList();
 
         // Cache de Geometrias de QR Code para performance 60 FPS
         private readonly Dictionary<string, Geometry> _qrCache = new();
@@ -39,8 +41,34 @@ namespace ImpositorKonica.Views
 
         // Interação e Drag & Drop
         private PlacedLabel? _draggedLabel;
+        private readonly Dictionary<PlacedLabel, Point> _dragOrigins = new();
         private Point _dragStartWorldPos;
         private Point _labelOriginalPos;
+        private bool _snapshotPendingForDrag;
+
+        // Seleção elástica (Marquee)
+        private bool _isMarquee;
+        private bool _marqueeAdditive;
+        private Point _marqueeStartScreen;
+        private Point _marqueeCurrentScreen;
+
+        // Estado de pré-impressão
+        private bool _showCropMarks = true;
+        public bool ShowCropMarks
+        {
+            get => _showCropMarks;
+            set
+            {
+                if (_showCropMarks == value) return;
+                _showCropMarks = value;
+                InvalidateVisual();
+            }
+        }
+
+        // Histórico (Undo/Redo)
+        private readonly Stack<List<PlacedLabel>> _undoStack = new();
+        private readonly Stack<List<PlacedLabel>> _redoStack = new();
+        private bool _isRestoringSnapshot = false;
 
         // Eventos
         public event EventHandler? SelectionChanged;
@@ -60,6 +88,13 @@ namespace ImpositorKonica.Views
         private static readonly Brush CanvasBackgroundBrush = new SolidColorBrush(Color.FromRgb(24, 24, 27)); // Studio Dark (#18181b)
         private static readonly Brush TextBrush = Brushes.Black;
         private static readonly Brush SubTextBrush = new SolidColorBrush(Color.FromRgb(80, 80, 80));
+
+        // Marquee (seleção elástica estilo Illustrator)
+        private static readonly Brush MarqueeFillBrush = new SolidColorBrush(Color.FromArgb(0x22, 0x00, 0x7A, 0xCC));
+        private static readonly Pen MarqueePen = new(new SolidColorBrush(Color.FromRgb(0x00, 0x7A, 0xCC)), 1)
+        {
+            DashStyle = new DashStyle(new double[] { 3, 2 }, 0)
+        };
 
         static CanvasImposicao()
         {
@@ -97,11 +132,31 @@ namespace ImpositorKonica.Views
             var shadowRect = new Rect(2, 2, SheetWidthMm, SheetHeightMm);
             dc.DrawRectangle(new SolidColorBrush(Color.FromArgb(90, 0, 0, 0)), null, shadowRect);
 
-            // 3. Folha física branca (330 x 480 mm)
+            // 3–6. Folha física, margem de segurança, slug e etiquetas
+            DrawSheet(dc);
+
+            dc.Pop(); // Restaura transformações
+
+            // 7. Overlay da seleção elástica (em espaço de tela)
+            if (_isMarquee)
+            {
+                var marqueeRect = new Rect(
+                    Math.Min(_marqueeStartScreen.X, _marqueeCurrentScreen.X),
+                    Math.Min(_marqueeStartScreen.Y, _marqueeCurrentScreen.Y),
+                    Math.Abs(_marqueeCurrentScreen.X - _marqueeStartScreen.X),
+                    Math.Abs(_marqueeCurrentScreen.Y - _marqueeStartScreen.Y)
+                );
+                dc.DrawRectangle(MarqueeFillBrush, MarqueePen, marqueeRect);
+            }
+        }
+
+        private void DrawSheet(DrawingContext dc)
+        {
+            // Folha física branca (330 x 480 mm)
             var sheetRect = new Rect(0, 0, SheetWidthMm, SheetHeightMm);
             dc.DrawRectangle(SheetBackgroundBrush, SheetBorderPen, sheetRect);
 
-            // 4. Margem de segurança de 5 mm da Konica (linha tracejada vermelha)
+            // Margem de segurança de 5 mm da Konica (linha tracejada vermelha)
             var marginRect = new Rect(
                 MarginMm,
                 MarginMm,
@@ -110,202 +165,142 @@ namespace ImpositorKonica.Views
             );
             dc.DrawRectangle(null, MarginPen, marginRect);
 
-            // 5. Slug line industrial no topo externo
+            // Slug line industrial no topo externo
             DrawSlugLine(dc);
 
-            // 6. Renderizar etiquetas posicionadas
+            // Renderizar etiquetas posicionadas
             foreach (var label in _labels)
             {
                 DrawLabel(dc, label);
             }
-
-            dc.Pop(); // Restaura transformações
         }
 
         private void DrawSlugLine(DrawingContext dc)
         {
             var dpi = VisualTreeHelper.GetDpi(this).PixelsPerDip;
-            var text = $"FOLHA SRA3: {SheetWidthMm}x{SheetHeightMm}mm | ÁREA ÚTIL: {SheetWidthMm - 2 * MarginMm}x{SheetHeightMm - 2 * MarginMm}mm | GAP: {GapMm}mm | ETIQUETAS: {_labels.Count} UN";
+            var text = $"{SheetName}: {SheetWidthMm}x{SheetHeightMm}mm | ÁREA ÚTIL: {SheetWidthMm - 2 * MarginMm}x{SheetHeightMm - 2 * MarginMm}mm | GAP: {GapMm}mm | ETIQUETAS: {_labels.Count} UN";
             var ft = new FormattedText(
                 text,
                 CultureInfo.InvariantCulture,
                 FlowDirection.LeftToRight,
                 new Typeface(new FontFamily("Segoe UI, Arial"), FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal),
-                2.2, // ~6pt em mm
-                new SolidColorBrush(Color.FromRgb(120, 120, 120)),
+                2.8, // ~10px em mm
+                new SolidColorBrush(Color.FromRgb(136, 136, 136)), // #888888
                 dpi
             );
-            dc.DrawText(ft, new Point(MarginMm, MarginMm - 3.2));
+            dc.DrawText(ft, new Point(MarginMm, -8.0));
         }
 
         private void DrawLabel(DrawingContext dc, PlacedLabel label)
         {
-            var bounds = label.GetBounds();
-            var isVertical = label.Rotation == 90 || label.Width < label.Height;
+            var slotRect = label.GetBounds();
+            var isVertical = label.Rotation == 90 || slotRect.Width < slotRect.Height;
 
-            // Retângulo base com contorno de corte de 1pt (ou destaque âmbar se selecionado)
-            var borderPen = label.IsSelected ? SelectedCutPen : CutGuidePen;
-            dc.DrawRectangle(LabelBackgroundBrush, borderPen, bounds);
-
-            // Fios de corte externos (Crop marks de 0.25pt = 0.088 mm)
-            DrawCropMarks(dc, bounds);
-
-            var dpi = VisualTreeHelper.GetDpi(this).PixelsPerDip;
-            var qrSizeMm = 24.0;
-
-            if (!isVertical)
+            if (isVertical)
             {
-                // Modo Horizontal (90 x 35 mm)
-                // QR Code à esquerda
-                var qrRect = new Rect(bounds.X + 4.0, bounds.Y + 5.5, qrSizeMm, qrSizeMm);
-                DrawQrCode(dc, label.Item.QrPayload, qrRect);
-
-                // Linha 1: Código Curto em destaque (#1042)
-                var ftCode = new FormattedText(
-                    label.Item.Code,
-                    CultureInfo.InvariantCulture,
-                    FlowDirection.LeftToRight,
-                    new Typeface(new FontFamily("Segoe UI, Arial"), FontStyles.Normal, FontWeights.Bold, FontStretches.Normal),
-                    4.8, // ~14pt
-                    TextBrush,
-                    dpi
-                );
-                dc.DrawText(ftCode, new Point(bounds.X + 31.0, bounds.Y + 6.0));
-
-                // Linha 2: Título do insumo
-                var cleanTitle = Truncate(label.Item.Title, 24);
-                var ftTitle = new FormattedText(
-                    cleanTitle,
-                    CultureInfo.InvariantCulture,
-                    FlowDirection.LeftToRight,
-                    new Typeface(new FontFamily("Segoe UI, Arial"), FontStyles.Normal, FontWeights.Bold, FontStretches.Normal),
-                    2.8, // ~8pt
-                    TextBrush,
-                    dpi
-                );
-                dc.DrawText(ftTitle, new Point(bounds.X + 31.0, bounds.Y + 12.5));
-
-                // Linha 3: Subtítulo
-                if (!string.IsNullOrWhiteSpace(label.Item.Subtitle))
-                {
-                    var ftSub = new FormattedText(
-                        label.Item.Subtitle,
-                        CultureInfo.InvariantCulture,
-                        FlowDirection.LeftToRight,
-                        new Typeface(new FontFamily("Segoe UI, Arial"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal),
-                        2.2, // ~6.5pt
-                        SubTextBrush,
-                        dpi
-                    );
-                    dc.DrawText(ftSub, new Point(bounds.X + 31.0, bounds.Y + 17.0));
-                }
-
-                // Linha 4: Detalhes / Lote
-                if (!string.IsNullOrWhiteSpace(label.Item.Details))
-                {
-                    var ftDet = new FormattedText(
-                        label.Item.Details,
-                        CultureInfo.InvariantCulture,
-                        FlowDirection.LeftToRight,
-                        new Typeface(new FontFamily("Segoe UI, Arial"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal),
-                        2.0, // ~6pt
-                        SubTextBrush,
-                        dpi
-                    );
-                    dc.DrawText(ftDet, new Point(bounds.X + 31.0, bounds.Y + 21.0));
-                }
+                // Calcule o centro do slot:
+                double cx = slotRect.X + (slotRect.Width / 2.0);
+                double cy = slotRect.Y + (slotRect.Height / 2.0);
+                
+                // Empilhe a transformação de rotação no DrawingContext:
+                dc.PushTransform(new RotateTransform(90, cx, cy));
+                
+                // Desenhe a etiqueta nativa de 90x35 centralizada nesse mesmo ponto:
+                Rect rectCentralizado = new Rect(cx - 45.0, cy - 17.5, 90.0, 35.0);
+                DrawNativeLabel(dc, label, rectCentralizado);
+                
+                // Remova a transformação imediatamente:
+                dc.Pop();
             }
             else
             {
-                // Modo Vertical (35 x 90 mm)
-                // QR Code centralizado na parte superior
-                var qrX = bounds.X + (bounds.Width - qrSizeMm) / 2.0;
-                var qrRect = new Rect(qrX, bounds.Y + 4.5, qrSizeMm, qrSizeMm);
-                DrawQrCode(dc, label.Item.QrPayload, qrRect);
-
-                // Linha 1: Código Curto (#1042)
-                var ftCode = new FormattedText(
-                    label.Item.Code,
-                    CultureInfo.InvariantCulture,
-                    FlowDirection.LeftToRight,
-                    new Typeface(new FontFamily("Segoe UI, Arial"), FontStyles.Normal, FontWeights.Bold, FontStretches.Normal),
-                    4.6,
-                    TextBrush,
-                    dpi
-                );
-                dc.DrawText(ftCode, new Point(bounds.X + 3.0, bounds.Y + 31.0));
-
-                // Linha 2: Título
-                var cleanTitle = Truncate(label.Item.Title, 18);
-                var ftTitle = new FormattedText(
-                    cleanTitle,
-                    CultureInfo.InvariantCulture,
-                    FlowDirection.LeftToRight,
-                    new Typeface(new FontFamily("Segoe UI, Arial"), FontStyles.Normal, FontWeights.Bold, FontStretches.Normal),
-                    2.6,
-                    TextBrush,
-                    dpi
-                );
-                dc.DrawText(ftTitle, new Point(bounds.X + 3.0, bounds.Y + 37.5));
-
-                // Linha 3: Subtítulo
-                if (!string.IsNullOrWhiteSpace(label.Item.Subtitle))
-                {
-                    var ftSub = new FormattedText(
-                        label.Item.Subtitle,
-                        CultureInfo.InvariantCulture,
-                        FlowDirection.LeftToRight,
-                        new Typeface(new FontFamily("Segoe UI, Arial"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal),
-                        2.1,
-                        SubTextBrush,
-                        dpi
-                    );
-                    dc.DrawText(ftSub, new Point(bounds.X + 3.0, bounds.Y + 42.0));
-                }
-
-                // Linha 4: Detalhes
-                if (!string.IsNullOrWhiteSpace(label.Item.Details))
-                {
-                    var ftDet = new FormattedText(
-                        label.Item.Details,
-                        CultureInfo.InvariantCulture,
-                        FlowDirection.LeftToRight,
-                        new Typeface(new FontFamily("Segoe UI, Arial"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal),
-                        1.9,
-                        SubTextBrush,
-                        dpi
-                    );
-                    dc.DrawText(ftDet, new Point(bounds.X + 3.0, bounds.Y + 46.0));
-                }
+                // Desenhe a etiqueta diretamente nas coordenadas X, Y do slot.
+                DrawNativeLabel(dc, label, slotRect);
             }
         }
 
-        private void DrawCropMarks(DrawingContext dc, Rect b)
+        private void DrawNativeLabel(DrawingContext dc, PlacedLabel label, Rect r)
         {
-            double arm = 2.0; // 2mm de braço de corte
-            // Cantos
-            dc.DrawLine(CropMarkPen, new Point(b.Left - arm, b.Top), new Point(b.Left, b.Top));
-            dc.DrawLine(CropMarkPen, new Point(b.Left, b.Top - arm), new Point(b.Left, b.Top));
+            // Contorno: preto 1pt de corte, âmbar se selecionado, ou ausente quando as marcas estão ocultas
+            Pen? borderPen = label.IsSelected ? SelectedCutPen : CutGuidePen;
+            if (!ShowCropMarks && !label.IsSelected) borderPen = null;
 
-            dc.DrawLine(CropMarkPen, new Point(b.Right + arm, b.Top), new Point(b.Right, b.Top));
-            dc.DrawLine(CropMarkPen, new Point(b.Right, b.Top - arm), new Point(b.Right, b.Top));
+            dc.DrawRectangle(LabelBackgroundBrush, borderPen, r);
 
-            dc.DrawLine(CropMarkPen, new Point(b.Left - arm, b.Bottom), new Point(b.Left, b.Bottom));
-            dc.DrawLine(CropMarkPen, new Point(b.Left, b.Bottom + arm), new Point(b.Left, b.Bottom));
+            // Fios de corte externos (0.25 pt) — omitidos quando o toggle de marcas está desativado
+            if (ShowCropMarks) DrawCropMarks(dc, label, r);
 
-            dc.DrawLine(CropMarkPen, new Point(b.Right + arm, b.Bottom), new Point(b.Right, b.Bottom));
-            dc.DrawLine(CropMarkPen, new Point(b.Right, b.Bottom + arm), new Point(b.Right, b.Bottom));
+            DrawLabelContent(dc, label, r);
+        }
+
+        private void DrawLabelContent(DrawingContext dc, PlacedLabel label, Rect r)
+        {
+            // QR Code à esquerda, centralizado no eixo Y
+            var qrRect = new Rect(
+                r.X + LabelLayout.QrOffsetX,
+                r.Y + LabelLayout.QrOffsetY,
+                LabelLayout.QrSize,
+                LabelLayout.QrSize
+            );
+            DrawQrCode(dc, label.Item.QrPayload, qrRect);
+
+            double textX = r.X + LabelLayout.TextStartX;
+
+            // Linha 1: Código em destaque (11pt)
+            var ftCode = MakeText(label.Item.Code, FontWeights.Bold, LabelLayout.CodeFontSize, TextBrush);
+            dc.DrawText(ftCode, new Point(textX, r.Y + LabelLayout.CodeY));
+
+            // Linha 2: Descrição do material (8pt)
+            var ftTitle = MakeText(LabelLayout.Truncate(label.Item.Title, LabelLayout.TitleMaxChars), FontWeights.Bold, LabelLayout.TitleFontSize, TextBrush);
+            dc.DrawText(ftTitle, new Point(textX, r.Y + LabelLayout.TitleY));
+
+            // Linha 3: Subtítulo (7pt)
+            double metaY = LabelLayout.SubtitleY;
+            if (!string.IsNullOrWhiteSpace(label.Item.Subtitle))
+            {
+                var ftSub = MakeText(label.Item.Subtitle, FontWeights.Normal, LabelLayout.MetaFontSize, SubTextBrush);
+                dc.DrawText(ftSub, new Point(textX, r.Y + metaY));
+                metaY += LabelLayout.MetaLineStep;
+            }
+
+            // Linha 4: Metragem / Lote (7pt)
+            if (!string.IsNullOrWhiteSpace(label.Item.Details))
+            {
+                var ftDet = MakeText(label.Item.Details, FontWeights.Normal, LabelLayout.MetaFontSize, SubTextBrush);
+                dc.DrawText(ftDet, new Point(textX, r.Y + metaY));
+            }
+        }
+
+        private FormattedText MakeText(string? text, FontWeight weight, double sizeMm, Brush brush)
+        {
+            var dpi = VisualTreeHelper.GetDpi(this).PixelsPerDip;
+            return new FormattedText(
+                text ?? string.Empty,
+                CultureInfo.InvariantCulture,
+                FlowDirection.LeftToRight,
+                new Typeface(new FontFamily("Segoe UI, Arial"), FontStyles.Normal, weight, FontStretches.Normal),
+                sizeMm,
+                brush,
+                dpi
+            );
+        }
+
+        private void DrawCropMarks(DrawingContext dc, PlacedLabel label, Rect r)
+        {
+            foreach (var cm in label.CropMarks)
+            {
+                if (cm.IsDeleted) continue;
+                Pen pen = cm.IsSelected ? SelectedCutPen : CropMarkPen;
+                dc.DrawLine(pen, 
+                    new Point(cm.StartPointMm.X + r.X, cm.StartPointMm.Y + r.Y), 
+                    new Point(cm.EndPointMm.X + r.X, cm.EndPointMm.Y + r.Y));
+            }
         }
 
         private void DrawQrCode(DrawingContext dc, string payload, Rect targetRect)
         {
-            if (string.IsNullOrEmpty(payload)) return;
-
-            if (!_qrCache.TryGetValue(payload, out var geometry))
-            {
-                geometry = GenerateQrGeometry(payload);
-                _qrCache[payload] = geometry;
-            }
+            var geometry = GetQrGeometry(payload);
+            if (geometry == null) return;
 
             // Normalizar escala para caber exatamente em targetRect
             dc.PushTransform(new TranslateTransform(targetRect.X, targetRect.Y));
@@ -314,6 +309,18 @@ namespace ImpositorKonica.Views
             dc.DrawGeometry(Brushes.Black, null, geometry);
             dc.Pop();
             dc.Pop();
+        }
+
+        public Geometry? GetQrGeometry(string payload)
+        {
+            if (string.IsNullOrEmpty(payload)) return null;
+
+            if (!_qrCache.TryGetValue(payload, out var geometry))
+            {
+                geometry = GenerateQrGeometry(payload);
+                _qrCache[payload] = geometry;
+            }
+            return geometry;
         }
 
         private Geometry GenerateQrGeometry(string payload)
@@ -345,12 +352,6 @@ namespace ImpositorKonica.Views
             }
             streamGeom.Freeze();
             return streamGeom;
-        }
-
-        private static string Truncate(string val, int max)
-        {
-            if (string.IsNullOrEmpty(val)) return string.Empty;
-            return val.Length <= max ? val : val.Substring(0, max - 1) + "…";
         }
 
         #endregion
@@ -407,7 +408,7 @@ namespace ImpositorKonica.Views
         public void ResetZoom100()
         {
             // 1 mm = ~3.78 pixels em tela 96 DPI
-            double dpiFactor = VisualTreeHelper.GetDpi(this).PixelsPerInch / 25.4;
+            double dpiFactor = VisualTreeHelper.GetDpi(this).PixelsPerInchX / 25.4;
             Point center = new(ActualWidth / 2.0, ActualHeight / 2.0);
             double currentScale = _viewMatrix.M11;
             double factor = dpiFactor / currentScale;
@@ -417,7 +418,7 @@ namespace ImpositorKonica.Views
 
         #endregion
 
-        #region Eventos do Mouse e Drag & Drop
+        #region Eventos do Mouse, Drag & Drop e Marquee
 
         private void OnMouseDownHandler(object sender, MouseButtonEventArgs e)
         {
@@ -438,24 +439,116 @@ namespace ImpositorKonica.Views
 
             if (e.ChangedButton == MouseButton.Left)
             {
+                bool additive = (Keyboard.Modifiers & (ModifierKeys.Control | ModifierKeys.Shift)) != 0;
+
+                // 1. Hit-testing Crop Marks
+                if (ShowCropMarks)
+                {
+                    foreach (var l in _labels)
+                    {
+                        var bounds = l.GetBounds();
+                        bool isVertical = l.Rotation == 90 || bounds.Width < bounds.Height;
+                        Point localPos = worldPos;
+                        
+                        Rect r = bounds;
+                        if (isVertical)
+                        {
+                            double centerX = bounds.X + bounds.Width / 2.0;
+                            double centerY = bounds.Y + bounds.Height / 2.0;
+                            Matrix m = Matrix.Identity;
+                            m.RotateAt(-90, centerX, centerY);
+                            localPos = m.Transform(worldPos);
+                            r = new Rect(centerX - LabelLayout.NativeWidth / 2.0, centerY - LabelLayout.NativeHeight / 2.0, LabelLayout.NativeWidth, LabelLayout.NativeHeight);
+                        }
+
+                        foreach (var cm in l.CropMarks)
+                        {
+                            if (cm.IsDeleted) continue;
+                            Point p1 = new Point(cm.StartPointMm.X + r.X, cm.StartPointMm.Y + r.Y);
+                            Point p2 = new Point(cm.EndPointMm.X + r.X, cm.EndPointMm.Y + r.Y);
+                            
+                            double l2 = (p1.X - p2.X)*(p1.X - p2.X) + (p1.Y - p2.Y)*(p1.Y - p2.Y);
+                            double d = 0;
+                            if (l2 == 0) 
+                            {
+                                d = Point.Subtract(localPos, p1).Length;
+                            }
+                            else
+                            {
+                                double t = Math.Max(0, Math.Min(1, Vector.Multiply(localPos - p1, p2 - p1) / l2));
+                                Point projection = p1 + t * (p2 - p1);
+                                d = Point.Subtract(localPos, projection).Length;
+                            }
+
+                            if (d < 1.5) // 1.5mm hit radius
+                            {
+                                if (!additive)
+                                {
+                                    foreach (var lbl in _labels)
+                                    {
+                                        lbl.IsSelected = false;
+                                        foreach (var m in lbl.CropMarks) m.IsSelected = false;
+                                    }
+                                }
+                                cm.IsSelected = !cm.IsSelected;
+                                SelectionChanged?.Invoke(this, EventArgs.Empty);
+                                InvalidateVisual();
+                                e.Handled = true;
+                                return;
+                            }
+                        }
+                    }
+                }
+
                 // Hit-testing em espaço métrico
                 var hit = _labels.LastOrDefault(l => l.GetBounds().Contains(worldPos));
 
-                if (!Keyboard.IsKeyDown(Key.LeftCtrl) && !Keyboard.IsKeyDown(Key.RightCtrl))
-                {
-                    foreach (var l in _labels) l.IsSelected = false;
-                }
-
                 if (hit != null)
                 {
-                    hit.IsSelected = true;
+                    // Clicou na etiqueta → seleciona o grupo inteiro (se pertencer a um) ou a própria etiqueta
+                    var clickSet = hit.GroupId != null
+                        ? _labels.Where(l => l.GroupId == hit.GroupId).ToList()
+                        : new List<PlacedLabel> { hit };
+
+                    if (!additive)
+                    {
+                        foreach (var l in _labels) l.IsSelected = false;
+                    }
+                    foreach (var l in clickSet) l.IsSelected = true;
+
+                    // Conjunto de arraste: grupo completo ou toda a seleção atual
+                    var dragSet = hit.GroupId != null
+                        ? _labels.Where(l => l.GroupId == hit.GroupId).ToList()
+                        : _labels.Where(l => l.IsSelected).ToList();
+                    if (dragSet.Count == 0) dragSet.Add(hit);
+
                     _draggedLabel = hit;
                     _dragStartWorldPos = worldPos;
                     _labelOriginalPos = new Point(hit.X, hit.Y);
+                    _dragOrigins.Clear();
+                    foreach (var l in dragSet) _dragOrigins[l] = new Point(l.X, l.Y);
+
+                    _snapshotPendingForDrag = true;
+
                     CaptureMouse();
+                    SelectionChanged?.Invoke(this, EventArgs.Empty);
+                    InvalidateVisual();
+                    e.Handled = true;
+                    return;
                 }
 
-                SelectionChanged?.Invoke(this, EventArgs.Empty);
+                // Área vazia → inicio da seleção elástica (Marquee)
+                if (!additive)
+                {
+                    foreach (var l in _labels) l.IsSelected = false;
+                    SelectionChanged?.Invoke(this, EventArgs.Empty);
+                }
+
+                _marqueeAdditive = additive;
+                _isMarquee = true;
+                _marqueeStartScreen = screenPos;
+                _marqueeCurrentScreen = screenPos;
+                CaptureMouse();
                 InvalidateVisual();
                 e.Handled = true;
             }
@@ -475,15 +568,33 @@ namespace ImpositorKonica.Views
                 return;
             }
 
+            if (_isMarquee)
+            {
+                _marqueeCurrentScreen = screenPos;
+                InvalidateVisual();
+                e.Handled = true;
+                return;
+            }
+
             if (_draggedLabel != null)
             {
+                if (_snapshotPendingForDrag)
+                {
+                    SaveSnapshot();
+                    _snapshotPendingForDrag = false;
+                }
+
                 Point currentWorldPos = ScreenToWorld(screenPos);
                 Vector worldDelta = currentWorldPos - _dragStartWorldPos;
 
-                _draggedLabel.X = _labelOriginalPos.X + worldDelta.X;
-                _draggedLabel.Y = _labelOriginalPos.Y + worldDelta.Y;
+                // Move todos os membros do conjunto (grupo ou múltipla seleção) mantendo distâncias relativas
+                foreach (var pair in _dragOrigins)
+                {
+                    pair.Key.X = pair.Value.X + worldDelta.X;
+                    pair.Key.Y = pair.Value.Y + worldDelta.Y;
+                }
 
-                // Snapping simples às bordas da margem
+                // Snapping simples às bordas da margem (aplica-se apenas à etiqueta arrastada)
                 if (Math.Abs(_draggedLabel.X - MarginMm) < 1.5) _draggedLabel.X = MarginMm;
                 if (Math.Abs(_draggedLabel.Y - MarginMm) < 1.5) _draggedLabel.Y = MarginMm;
 
@@ -503,14 +614,54 @@ namespace ImpositorKonica.Views
                 return;
             }
 
+            if (_isMarquee)
+            {
+                _isMarquee = false;
+                ReleaseMouseCapture();
+                CommitMarqueeSelection();
+                e.Handled = true;
+                return;
+            }
+
             if (_draggedLabel != null)
             {
                 _draggedLabel = null;
+                _dragOrigins.Clear();
                 ReleaseMouseCapture();
                 SheetModified?.Invoke(this, EventArgs.Empty);
                 InvalidateVisual();
                 e.Handled = true;
             }
+        }
+
+        private void CommitMarqueeSelection()
+        {
+            Point startWorld = ScreenToWorld(_marqueeStartScreen);
+            Point currentWorld = ScreenToWorld(_marqueeCurrentScreen);
+
+            var worldRect = new Rect(
+                Math.Min(startWorld.X, currentWorld.X),
+                Math.Min(startWorld.Y, currentWorld.Y),
+                Math.Abs(currentWorld.X - startWorld.X),
+                Math.Abs(currentWorld.Y - startWorld.Y)
+            );
+
+            if (!_marqueeAdditive)
+            {
+                foreach (var l in _labels) l.IsSelected = false;
+            }
+
+            // Interseção geométrica com as etiquetas da folha
+            foreach (var l in _labels)
+            {
+                if (worldRect.IntersectsWith(l.GetBounds()))
+                {
+                    l.IsSelected = true;
+                }
+            }
+
+            SelectionChanged?.Invoke(this, EventArgs.Empty);
+            InvalidateVisual();
         }
 
         public Point ScreenToWorld(Point screen)
@@ -526,10 +677,51 @@ namespace ImpositorKonica.Views
 
         #endregion
 
-        #region Comandos de Imposição (AutoGang, Alinhamentos e Atalhos)
+        #region Seleção, Agrupamento e Comandos de Imposição
+
+        public Rect? GetSelectionBounds()
+        {
+            var sel = _labels.Where(l => l.IsSelected).ToList();
+            if (sel.Count == 0) return null;
+
+            double minX = sel.Min(l => l.X);
+            double minY = sel.Min(l => l.Y);
+            double maxX = sel.Max(l => l.X + l.Width);
+            double maxY = sel.Max(l => l.Y + l.Height);
+
+            return new Rect(minX, minY, maxX - minX, maxY - minY);
+        }
+
+        public void GroupSelected()
+        {
+            SaveSnapshot(); 
+            var selected = _labels.Where(l => l.IsSelected).ToList();
+            if (selected.Count == 0) return;
+
+            var groupId = Guid.NewGuid();
+            foreach (var l in selected) l.GroupId = groupId;
+
+            SheetModified?.Invoke(this, EventArgs.Empty);
+            SelectionChanged?.Invoke(this, EventArgs.Empty);
+            InvalidateVisual();
+        }
+
+        public void UngroupSelected()
+        {
+            SaveSnapshot(); 
+            var selected = _labels.Where(l => l.IsSelected).ToList();
+            if (selected.Count == 0) return;
+
+            foreach (var l in selected) l.GroupId = null;
+
+            SheetModified?.Invoke(this, EventArgs.Empty);
+            SelectionChanged?.Invoke(this, EventArgs.Empty);
+            InvalidateVisual();
+        }
 
         public void LoadPayload(ImpositionPayload payload)
         {
+            SheetName = string.IsNullOrEmpty(payload.SheetName) ? "FOLHA SRA3" : payload.SheetName;
             SheetWidthMm = payload.SheetWidthMm > 0 ? payload.SheetWidthMm : 330.0;
             SheetHeightMm = payload.SheetHeightMm > 0 ? payload.SheetHeightMm : 480.0;
             MarginMm = payload.MarginMm >= 0 ? payload.MarginMm : 5.0;
@@ -562,18 +754,32 @@ namespace ImpositorKonica.Views
 
         public void ExecuteAutoGang(IEnumerable<ImpositionItemDto> items)
         {
+            SaveSnapshot();
             _labels.Clear();
+            _dragOrigins.Clear();
             var itemList = items.ToList();
             if (itemList.Count == 0) return;
 
             bool isVertical = ActiveRotation == 90;
-            int cols = isVertical ? 8 : 3;
-            int rows = isVertical ? 5 : 12;
             double labelW = isVertical ? 35.0 : 90.0;
             double labelH = isVertical ? 90.0 : 35.0;
 
+            // Grade calculada pela folha real (cabe apenas o que couber na chapa)
+            double usableW = Math.Max(0, SheetWidthMm - 2 * MarginMm);
+            double usableH = Math.Max(0, SheetHeightMm - 2 * MarginMm);
+            int cols = (int)Math.Floor((usableW + GapMm) / (labelW + GapMm));
+            int rows = (int)Math.Floor((usableH + GapMm) / (labelH + GapMm));
+            if (cols < 1) cols = 1;
+            if (rows < 1) rows = 1;
+
             int capacity = cols * rows;
             int itemIndex = 0;
+
+            double totalGridW = cols * labelW + (cols - 1) * GapMm;
+            double totalGridH = rows * labelH + (rows - 1) * GapMm;
+            
+            double offsetX = MarginMm + (usableW - totalGridW) / 2.0;
+            double offsetY = MarginMm + (usableH - totalGridH) / 2.0;
 
             for (int r = 0; r < rows; r++)
             {
@@ -582,8 +788,8 @@ namespace ImpositorKonica.Views
                     if (_labels.Count >= capacity) break;
 
                     var item = itemList[itemIndex % itemList.Count];
-                    double x = MarginMm + c * (labelW + GapMm);
-                    double y = MarginMm + r * (labelH + GapMm);
+                    double x = offsetX + c * (labelW + GapMm);
+                    double y = offsetY + r * (labelH + GapMm);
 
                     var label = new PlacedLabel(item, x, y, labelW, labelH, ActiveRotation);
                     _labels.Add(label);
@@ -591,12 +797,14 @@ namespace ImpositorKonica.Views
                 }
             }
 
+            SelectionChanged?.Invoke(this, EventArgs.Empty);
             SheetModified?.Invoke(this, EventArgs.Empty);
             InvalidateVisual();
         }
 
         public void AddLabel(ImpositionItemDto item)
         {
+            SaveSnapshot();
             bool isVertical = ActiveRotation == 90;
             double labelW = isVertical ? 35.0 : 90.0;
             double labelH = isVertical ? 90.0 : 35.0;
@@ -627,7 +835,7 @@ namespace ImpositorKonica.Views
 
         public void DuplicateSelected()
         {
-            var selected = _labels.Where(l => l.IsSelected).ToList();
+            SaveSnapshot(); var selected = _labels.Where(l => l.IsSelected).ToList();
             if (selected.Count == 0) return;
 
             foreach (var s in selected)
@@ -650,7 +858,27 @@ namespace ImpositorKonica.Views
 
         public void DeleteSelected()
         {
-            _labels.RemoveAll(l => l.IsSelected);
+            SaveSnapshot();
+            bool deletedCropMarks = false;
+            foreach (var l in _labels)
+            {
+                foreach (var cm in l.CropMarks)
+                {
+                    if (cm.IsSelected && !cm.IsDeleted)
+                    {
+                        cm.IsDeleted = true;
+                        cm.IsSelected = false;
+                        deletedCropMarks = true;
+                    }
+                }
+            }
+
+            if (!deletedCropMarks)
+            {
+                _labels.RemoveAll(l => l.IsSelected);
+                _dragOrigins.Clear();
+            }
+
             SelectionChanged?.Invoke(this, EventArgs.Empty);
             SheetModified?.Invoke(this, EventArgs.Empty);
             InvalidateVisual();
@@ -658,7 +886,9 @@ namespace ImpositorKonica.Views
 
         public void ClearSheet()
         {
+            SaveSnapshot();
             _labels.Clear();
+            _dragOrigins.Clear();
             SelectionChanged?.Invoke(this, EventArgs.Empty);
             SheetModified?.Invoke(this, EventArgs.Empty);
             InvalidateVisual();
@@ -667,7 +897,7 @@ namespace ImpositorKonica.Views
         // Atalhos Gráficos (P, C, E, T, B, L, R)
         public void CenterSelectedOnSheet() // Tecla P
         {
-            var selected = _labels.Where(l => l.IsSelected).ToList();
+            SaveSnapshot(); var selected = _labels.Where(l => l.IsSelected).ToList();
             if (selected.Count == 0) return;
 
             double minX = selected.Min(l => l.X);
@@ -696,7 +926,7 @@ namespace ImpositorKonica.Views
 
         public void AlignSelectedCentersHorizontal() // Tecla C
         {
-            var selected = _labels.Where(l => l.IsSelected).ToList();
+            SaveSnapshot(); var selected = _labels.Where(l => l.IsSelected).ToList();
             if (selected.Count < 2) return;
             double centerX = selected.First().X + selected.First().Width / 2.0;
             foreach (var l in selected.Skip(1)) l.X = centerX - l.Width / 2.0;
@@ -706,7 +936,7 @@ namespace ImpositorKonica.Views
 
         public void AlignSelectedCentersVertical() // Tecla E
         {
-            var selected = _labels.Where(l => l.IsSelected).ToList();
+            SaveSnapshot(); var selected = _labels.Where(l => l.IsSelected).ToList();
             if (selected.Count < 2) return;
             double centerY = selected.First().Y + selected.First().Height / 2.0;
             foreach (var l in selected.Skip(1)) l.Y = centerY - l.Height / 2.0;
@@ -716,7 +946,7 @@ namespace ImpositorKonica.Views
 
         public void AlignSelectedTop() // Tecla T
         {
-            var selected = _labels.Where(l => l.IsSelected).ToList();
+            SaveSnapshot(); var selected = _labels.Where(l => l.IsSelected).ToList();
             if (selected.Count == 0) return;
             foreach (var l in selected) l.Y = MarginMm;
             SheetModified?.Invoke(this, EventArgs.Empty);
@@ -725,7 +955,7 @@ namespace ImpositorKonica.Views
 
         public void AlignSelectedBottom() // Tecla B
         {
-            var selected = _labels.Where(l => l.IsSelected).ToList();
+            SaveSnapshot(); var selected = _labels.Where(l => l.IsSelected).ToList();
             if (selected.Count == 0) return;
             foreach (var l in selected) l.Y = SheetHeightMm - MarginMm - l.Height;
             SheetModified?.Invoke(this, EventArgs.Empty);
@@ -734,7 +964,7 @@ namespace ImpositorKonica.Views
 
         public void AlignSelectedLeft() // Tecla L
         {
-            var selected = _labels.Where(l => l.IsSelected).ToList();
+            SaveSnapshot(); var selected = _labels.Where(l => l.IsSelected).ToList();
             if (selected.Count == 0) return;
             foreach (var l in selected) l.X = MarginMm;
             SheetModified?.Invoke(this, EventArgs.Empty);
@@ -743,9 +973,60 @@ namespace ImpositorKonica.Views
 
         public void AlignSelectedRight() // Tecla R
         {
-            var selected = _labels.Where(l => l.IsSelected).ToList();
+            SaveSnapshot(); var selected = _labels.Where(l => l.IsSelected).ToList();
             if (selected.Count == 0) return;
             foreach (var l in selected) l.X = SheetWidthMm - MarginMm - l.Width;
+            SheetModified?.Invoke(this, EventArgs.Empty);
+            InvalidateVisual();
+        }
+
+        #endregion
+        
+        #region Undo / Redo
+
+        public void SaveSnapshot()
+        {
+            if (_isRestoringSnapshot) return;
+
+            var snapshot = _labels.Select(l => l.Clone()).ToList();
+            _undoStack.Push(snapshot);
+            _redoStack.Clear(); // Any new action clears the redo stack
+        }
+
+        public void Undo()
+        {
+            if (_undoStack.Count == 0) return;
+
+            _isRestoringSnapshot = true;
+            // Save current state to Redo stack
+            _redoStack.Push(_labels.Select(l => l.Clone()).ToList());
+
+            var previousState = _undoStack.Pop(); System.IO.File.AppendAllText("undo_debug.txt", "Restoring snapshot with " + previousState.Count + " labels\n");
+            _labels.Clear();
+            _labels.AddRange(previousState.Select(l => l.Clone()));
+
+            _isRestoringSnapshot = false;
+
+            SelectionChanged?.Invoke(this, EventArgs.Empty);
+            SheetModified?.Invoke(this, EventArgs.Empty);
+            InvalidateVisual();
+        }
+
+        public void Redo()
+        {
+            if (_redoStack.Count == 0) return;
+
+            _isRestoringSnapshot = true;
+            // Save current state to Undo stack
+            _undoStack.Push(_labels.Select(l => l.Clone()).ToList());
+
+            var nextState = _redoStack.Pop();
+            _labels.Clear();
+            _labels.AddRange(nextState.Select(l => l.Clone()));
+
+            _isRestoringSnapshot = false;
+
+            SelectionChanged?.Invoke(this, EventArgs.Empty);
             SheetModified?.Invoke(this, EventArgs.Empty);
             InvalidateVisual();
         }

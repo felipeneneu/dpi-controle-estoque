@@ -20,5 +20,7 @@
 | ADR-014 | Padronização de Etiquetas Físicas (90x35mm), Imposição Konica e Quick-Switch | Aprovado | 2026-09-14 | inventory/machines | BR-002, BR-010, BR-021 | novo — complementa ADR-009 e ADR-013 |
 | ADR-015 | Arquitetura Sidecar e Ferramentas Nativas (ImpositorKonica WPF) | Aprovado | 2026-09-15 | desktop/imposition | BR-010, BR-021 | novo — complementa ADR-014 |
 | ADR-016 | Canal de rastreio Mimaki teste (CSV RasterLink) | Proposto | 2026-09-15 | integrations | BR-012 | novo — paralelo ao M2M (INT-001); sem dedução |
+| ADR-017 | Motor Headless de Imposição Automática (Step & Repeat CLI) | Aprovado (Fase de Validação em Fábrica) | 2026-09-16 | imposition | BR-010, BR-021 | novo — desacopia motor de cálculo do ImpositorKonica |
+| ADR-018 | Motor Gráfico de Saída Externo — CorelDRAW (COM/VGCore) vs Adobe Illustrator (COM/ExtendScript) | Proposto (avaliação) | 2026-09-16 | desktop/imposition | BR-010, BR-021 | novo — adoção condicionada a critérios |
 
 > ADR-010..012 são **pendentes**: decisões capturadas nos data-maps e catálogo ainda precisam ser formalizadas. Cada uma vira ADR quando sua RFC for concluída.

@@ -1,0 +1,68 @@
+============================================================
+ GUIA DE USO — Impor_70x100.bat (AutoImposerCLI)
+============================================================
+
+O QUE FAZ
+---------
+Gera o arquivo IMPOSTO (Step & Repeat) para a chapa 700x1000 mm,
+usando o motor AutoImposerCLI.exe (PdfSharp). O PDF de saida tem
+o nome:  <nome>_IMPOSTO_700x1000mm_<N>UN.pdf
+e fica na MESMA pasta do PDF de origem.
+
+Em que resolver: as pecas sao encaixadas com gap de 2 mm e
+margem de 10 mm na borda da chapa. Se couber, o motor rotaciona
+as pecas a 90 graus automaticamente para caber mais unidades.
+
+
+REQUISITOS
+----------
+- Windows x64.
+- O executavel precisa existir em:  sidecars\bin\cli\AutoImposerCLI.exe
+  (se nao existir, compile primeiro com:  npm run build:cli )
+- O PDF de origem precisa ser um PDF valido de verdade (com xref).
+  PDFs "artesanais" minimos (EXPORT do Glitter/Impor da atendente,
+  sem tabela de referencias) podem ser rejeitados. PDFs gerados por
+  CorelDRAW, Illustrator, Photoshop, Skia e afins funcionam.
+
+
+MODO 1 — Soltar o PDF (mais comum)
+----------------------------------
+Arraste o PDF por cima do Impor_70x100.bat e solte.
+Usa os padroes: chapa 700x1000 mm, gap 2 mm, margem 10 mm.
+
+  Exemplo no prompt (cmd):
+    Impor_70x100.bat "C:\jobs\etiqueta.pdf"
+
+Resultado:  etiqueta_IMPOSTO_700x1000mm_187UN.pdf  (no mesmo lugar)
+
+
+MODO 2 — Soltar o PDF + parametros extras
+-----------------------------------------
+Depois do PDF, pode informar, na ordem:
+  LARGURA_MM  ALTURA_MM  GAP_MM  MARGEM_MM
+
+  Exemplo (chapa 500x700, gap 3, margem 5):
+    Impor_70x100.bat "C:\jobs\etiqueta.pdf" 500 700 3 5
+
+
+MODO 3 — Interativo (duplo clique)
+----------------------------------
+Dê dois cliques no .bat. Ele pergunta:
+  PDF caminho completo   ->  caminho do PDF de origem
+  Largura em mm [700]    ->  Enter usa 700
+  Altura em mm [1000]    ->  Enter usa 1000
+  Espacamento [2]        ->  Enter usa 2
+  Margem [10]            ->  Enter usa 10
+
+Digite so o que quiser mudar e Enter para o resto.
+
+
+OBSERVACOES
+-----------
+- Os numeros sao em MILIMETROS, com ponto (.) se tiver casas decimais.
+- Se nao couber nenhuma peca, o container nao sera criado — revise
+  tamanho de chapa vs tamanho da peca (e margens).
+- Sempre confira o "PARAMETROS:" antes de soltar: ele imprime os
+  valores que serao usados.
+- O .bat NAO substitui o fluxo do app GraficaOS (rotas /automation);
+  ele serve para uso rapido na bancada/Coreldraw.
