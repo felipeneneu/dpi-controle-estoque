@@ -20,4 +20,12 @@ contextBridge.exposeInMainWorld('grafica', {
   imposition: {
     open: (payload) => ipcRenderer.invoke('imposition:open', payload),
   },
+  automation: {
+    impose: (payload) => ipcRenderer.invoke('automation:impose', payload),
+    pickArt: () => ipcRenderer.invoke('automation:pick-art'),
+  },
+});
+
+contextBridge.exposeInMainWorld('electronAPI', {
+  invoke: (channel, ...args) => ipcRenderer.invoke(channel, ...args),
 });

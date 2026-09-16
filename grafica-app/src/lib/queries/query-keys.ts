@@ -76,3 +76,15 @@ export const mimakiTestKeys = {
   list: () => [...mimakiTestKeys.all, "list"] as const,
   health: () => [...mimakiTestKeys.all, "health"] as const,
 }
+
+export const automationKeys = {
+  all: ["automation"] as const,
+  lists: () => [...automationKeys.all, "list"] as const,
+  list: (filters?: {
+    status?: string;
+    q?: string;
+    page?: number;
+    pageSize?: number;
+  }) => [...automationKeys.lists(), filters ?? {}] as const,
+  detail: (id: string) => [...automationKeys.all, "detail", id] as const,
+}

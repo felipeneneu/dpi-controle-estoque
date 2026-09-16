@@ -341,3 +341,60 @@ export const UNIT_LABEL: Record<string, string> = {
   ml: "ml",
   L: "L",
 };
+
+export type ImpositionJobStatus = "queued" | "running" | "done" | "failed" | "cancelled";
+
+export type ImpositionRotation = "auto" | "0" | "90";
+
+export interface ImpositionJobInput {
+  jobName: string;
+  inputPdf: string;
+  sheetWMm?: number;
+  sheetHMm?: number;
+  marginTopMm?: number;
+  marginRightMm?: number;
+  marginBottomMm?: number;
+  marginLeftMm?: number;
+  gapMm?: number;
+  rotation?: ImpositionRotation;
+  machineId?: string;
+  presetName?: string;
+  iccProfile?: string;
+}
+
+export interface ImpositionJob {
+  id: string;
+  jobName: string;
+  inputPdf: string;
+  sheetWMm: number;
+  sheetHMm: number;
+  gapMm: number;
+  marginTopMm: number | null;
+  marginRightMm: number | null;
+  marginBottomMm: number | null;
+  marginLeftMm: number | null;
+  rotation: ImpositionRotation;
+  rotationDeg: number;
+  machineId: string | null;
+  createdBy: string | null;
+  presetName: string | null;
+  iccProfile: string | null;
+  createdViaM2m: boolean;
+  status: ImpositionJobStatus;
+  outputPath: string | null;
+  outputBytes: number | null;
+  outputUnits: number | null;
+  checksum: string | null;
+  durationMs: number | null;
+  error: string | null;
+  startedAt: string | null;
+  finishedAt: string | null;
+  createdAt: string | null;
+}
+
+export interface ImpositionJobList {
+  rows: ImpositionJob[];
+  total: number;
+  page: number;
+  pageSize: number;
+}

@@ -50,12 +50,51 @@ async function ensureMachineTelemetryTable() {
   await client.execute(`CREATE INDEX IF NOT EXISTS machine_telemetry_machine_idx ON machine_telemetry (machine_id)`);
 }
 
+async function ensureImpositionJobsTable() {
+  await client.execute(`
+    CREATE TABLE IF NOT EXISTS imposition_jobs (
+      id text PRIMARY KEY NOT NULL,
+      job_name text NOT NULL,
+      input_pdf text NOT NULL,
+      sheet_w_mm real NOT NULL DEFAULT 700,
+      sheet_h_mm real NOT NULL DEFAULT 1000,
+      gap_mm real NOT NULL DEFAULT 2,
+      margin_top_mm real DEFAULT 10,
+      margin_right_mm real DEFAULT 10,
+      margin_bottom_mm real DEFAULT 10,
+      margin_left_mm real DEFAULT 10,
+      rotation_deg integer DEFAULT 0,
+      status text NOT NULL DEFAULT 'queued',
+      output_path text,
+      output_bytes integer,
+      output_units integer,
+      checksum text,
+      duration_ms integer,
+      machine_id text,
+      created_by text,
+      preset_name text,
+      icc_profile text,
+      created_via_m2m integer DEFAULT false,
+      error text,
+      started_at integer,
+      finished_at integer,
+      created_at integer,
+      FOREIGN KEY (machine_id) REFERENCES machines(id) ON UPDATE no action ON DELETE set null,
+      FOREIGN KEY (created_by) REFERENCES users(id) ON UPDATE no action ON DELETE set null
+    )
+  `);
+  await client.execute(`CREATE INDEX IF NOT EXISTS imposition_jobs_status_idx ON imposition_jobs (status)`);
+  await client.execute(`CREATE INDEX IF NOT EXISTS imposition_jobs_created_idx ON imposition_jobs (created_at)`);
+}
+
 try {
+  await ensureImpositionJobsTable();
   await migrate(db, { migrationsFolder: MIGRATIONS_DIR });
 } catch (err: unknown) {
   console.warn('[migration] Erro na migração. Aplicando correções manualmente...', err);
 
     await ensureMachineTelemetryTable();
+    await ensureImpositionJobsTable();
 
     const safeAddCol = async (table: string, col: string, type: string) => {
       try {

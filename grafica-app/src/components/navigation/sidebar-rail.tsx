@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { RiPrinterLine, RiStackLine, RiDropLine, RiChat3Line, RiSettings4Line, RiLayoutGridLine } from '@remixicon/react';
+import { RiPrinterLine, RiStackLine, RiDropLine, RiChat3Line, RiSettings4Line, RiLayoutGridLine, RiCollageLine } from '@remixicon/react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import Image from 'next/image';
 import { useNotifications } from '@/lib/queries/notifications';
@@ -26,6 +26,7 @@ export function SidebarRail() {
     { label: 'Produtos', icon: RiLayoutGridLine, href: '/produtos', badge: null },
     { label: 'Estoque de Mídias', icon: RiStackLine, href: '/estoque', badge: stockBadge },
     { label: 'Tintas & Química', icon: RiDropLine, href: '/tintas', badge: null },
+    { label: 'Imposição 70×100', icon: RiCollageLine, href: '/automation', badge: null },
     { label: 'Chat Interno', icon: RiChat3Line, href: '/chat', badge: chatBadgeStr },
   ];
 

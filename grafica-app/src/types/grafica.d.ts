@@ -22,5 +22,32 @@ interface Window {
     onWindowState: (
       callback: (state: { isFullScreen: boolean; isMaximized: boolean }) => void
     ) => () => void;
+    automation: {
+      impose: (payload: {
+        jobId: string;
+        inputPdf: string;
+        baseUrl?: string;
+        token?: string;
+        sheetWMm?: number;
+        sheetHMm?: number;
+        gapMm?: number;
+        marginTopMm?: number;
+        marginRightMm?: number;
+        marginBottomMm?: number;
+        marginLeftMm?: number;
+        rotation?: "auto" | "0" | "90";
+      }) => Promise<{
+        success: boolean;
+        exitCode: number;
+        error?: string;
+        result?: {
+          grid?: { cols?: number; rows?: number; units?: number; rotationDeg?: number };
+          outputPath?: string;
+          checksum?: string;
+          durationMs?: number;
+        } | null;
+      }>;
+      pickArt: () => Promise<string | null>;
+    };
   };
 }

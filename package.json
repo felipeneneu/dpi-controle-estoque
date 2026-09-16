@@ -15,6 +15,7 @@
     "build:export": "npm --prefix grafica-app run build",
     "build:backend": "npm --prefix grafica-app/backend run build",
     "build:cli": "dotnet publish sidecars/AutoImposerCLI -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o sidecars/bin/cli",
+    "build:cli:illustrator": "dotnet publish sidecars/IllustratorImposerCLI -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o sidecars/bin/cli",
     "db:push": "npm --prefix grafica-app/backend run db:push",
     "db:seed": "npm --prefix grafica-app/backend run seed",
     "lint": "npm --prefix grafica-app run lint && npm --prefix grafica-app/backend run lint",

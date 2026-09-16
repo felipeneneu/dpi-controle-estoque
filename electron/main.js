@@ -414,3 +414,27 @@ try {
 } catch (err) {
   console.warn('[main.js] Aviso ao carregar imposer-sidecar:', err.message);
 }
+
+// Registra o runner headless de imposição 70x100 (AutoImposerCLI / ADR-017)
+try {
+  const { registerAutoImposerRunner } = require('./sidecars/auto-imposer-runner.js');
+  registerAutoImposerRunner();
+} catch (err) {
+  console.warn('[main.js] Aviso ao carregar auto-imposer-runner:', err.message);
+}
+
+// Registra auditoria de jobs de imposição no SQLite (ADR-018 / Tarefa 1)
+try {
+  const { registerImpositionDbIpc } = require('./ipc/imposition-db-ipc.js');
+  registerImpositionDbIpc();
+} catch (err) {
+  console.warn('[main.js] Aviso ao carregar imposition-db-ipc:', err.message);
+}
+
+// Registra orquestrador unificado CLI .NET / Illustrator COM (ADR-018 / Tarefa 2)
+try {
+  const { registerImpositionOrchestratorIpc } = require('./services/imposition-orchestrator.js');
+  registerImpositionOrchestratorIpc();
+} catch (err) {
+  console.warn('[main.js] Aviso ao carregar imposition-orchestrator:', err.message);
+}
