@@ -354,5 +354,45 @@ export type MachineTelemetry = typeof machineTelemetry.$inferSelect;
 export type NewMachineTelemetry = typeof machineTelemetry.$inferInsert;
 export type MimakiJob = typeof mimakiJobs.$inferSelect;
 export type NewMimakiJob = typeof mimakiJobs.$inferInsert;
+export const impositionJobs = sqliteTable(
+  'imposition_jobs',
+  {
+    id: text('id').primaryKey(),
+    jobName: text('job_name').notNull(),
+    inputPdf: text('input_pdf').notNull(),
+    sheetWMm: real('sheet_w_mm').notNull().default(700),
+    sheetHMm: real('sheet_h_mm').notNull().default(1000),
+    gapMm: real('gap_mm').notNull().default(2),
+    marginTopMm: real('margin_top_mm').default(10),
+    marginRightMm: real('margin_right_mm').default(10),
+    marginBottomMm: real('margin_bottom_mm').default(10),
+    marginLeftMm: real('margin_left_mm').default(10),
+    rotationDeg: integer('rotation_deg').default(0),
+    status: text('status', { enum: ['queued', 'running', 'done', 'failed', 'cancelled'] })
+      .notNull()
+      .default('queued'),
+    outputPath: text('output_path'),
+    outputUnits: integer('output_units'),
+    outputBytes: integer('output_bytes'),
+    checksum: text('checksum'),
+    durationMs: integer('duration_ms'),
+    machineId: text('machine_id').references(() => machines.id, { onDelete: 'set null' }),
+    createdBy: text('created_by').references(() => users.id, { onDelete: 'set null' }),
+    presetName: text('preset_name'),
+    iccProfile: text('icc_profile'),
+    createdViaM2m: integer('created_via_m2m', { mode: 'boolean' }).default(false),
+    error: text('error'),
+    startedAt: integer('started_at', { mode: 'timestamp' }),
+    finishedAt: integer('finished_at', { mode: 'timestamp' }),
+    createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+  },
+  (t) => [
+    index('imposition_jobs_status_idx').on(t.status),
+    index('imposition_jobs_created_idx').on(t.createdAt),
+  ],
+);
+
 export type MimakiTestJob = typeof mimakiTestJobs.$inferSelect;
 export type NewMimakiTestJob = typeof mimakiTestJobs.$inferInsert;
+export type ImpositionJob = typeof impositionJobs.$inferSelect;
+export type NewImpositionJob = typeof impositionJobs.$inferInsert;
