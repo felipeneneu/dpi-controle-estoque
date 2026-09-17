@@ -1,0 +1,17 @@
+{
+  "frontInput": {
+    "substrate": { "kind": "sheet", "widthMm": 665, "initialLengthMm": 986,
+                   "maxLengthMm": null, "toleranceMm": 0.1, "registerMm": 0.1,
+                   "bleedMm": 0, "cutInsetMm": 0 },
+    "piece": { "widthMm": 19, "heightMm": 34 },
+    "gap": { "horizontalMm": 0, "verticalMm": 0 },
+    "margin": { "leftMm": 0, "rightMm": 0, "topMm": 0, "bottomMm": 0 },
+    "targetCopies": 1015,
+    "surplusPolicy": "truncate",
+    "scalePolicy": "reject",
+    "forcedOrientation": null,
+    "forcedCols": null,
+    "schemaVersion": "1.0"
+  },
+  "pairing": "HeadToFoot"
+}

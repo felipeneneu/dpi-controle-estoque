@@ -5,4 +5,5 @@
   <Folder Name="/tests/">
     <Project Path="tests/Imposition.Core.Tests/Imposition.Core.Tests.csproj" />
   </Folder>
+  <Project Path="../imposition-grid-cli/Imposition.GridCli.csproj" />
 </Solution>

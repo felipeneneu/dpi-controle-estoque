@@ -1,0 +1,8 @@
+{
+  "pairing": "HeadToFoot",
+  "frontTotal": 1015,
+  "backTotal": 1015,
+  "frontFirstPlacement": { "xMm": 0, "yMm": 0 },
+  "backFirstPlacement":  { "xMm": 0, "yMm": 952 },
+  "backLastPlacement":   { "xMm": 646, "yMm": 0 }
+}

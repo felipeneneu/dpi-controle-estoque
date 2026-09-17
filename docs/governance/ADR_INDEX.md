@@ -25,7 +25,7 @@
 | ADR-019 | Dynamic Insumo Forms and Data Modeling Adjustments | Aprovado | 2026-09-16 | inventory | — | novo — arquivo ausente no índice (registrado retroativamente) |
 | ADR-020 | Distribuição Modular de Sidecars, Gating por RBAC e Licenciamento por Edições | Proposto | 2026-09-16 | desktop/imposition, ops, company-config | BR-018, BR-021 | novo — complementa ADR-002, ADR-015, ADR-017, ADR-018; base em `docs/PLAN-sidecars-enterprise.md` |
 | ADR-021 | GridSearchEngine como Fonte Única de Verdade da Imposição | Proposto | 2026-09-17 | imposition | BR-010, BR-021 | novo — formaliza `IMPOSICAO-MOTOR.md` §6; complementa ADR-015, 017, 018, 020 |
-| ADR-022 | Duplex Head-to-Head / Head-to-Foot como Camada Wrapper do Core | Proposto | 2026-09-17 | imposition | BR-010, BR-021 | novo — aplica `packages/imposition-core/AGENTS.md` Regra 5; depende de ADR-021 |
+| ADR-022 | Duplex Head-to-Head / Head-to-Foot como Camada Wrapper do Core | Proposto | 2026-09-17 | imposition | BR-010, BR-021 | novo — `DuplexRequest` envolve `ImpositionInput`; core permanece alheio (Regra 5) |
 | ADR-023 | Contagem Verificada — Instrumentação + Read-back Condicional | Proposto | 2026-09-17 | imposition / quality | BR-010, BR-021 | novo — aplica `packages/imposition-core/AGENTS.md` Regra 4; depende de ADR-021 |
 
 > ADR-010..012 são **pendentes**: decisões capturadas nos data-maps e catálogo ainda precisam ser formalizadas. Cada uma vira ADR quando sua RFC for concluída.
