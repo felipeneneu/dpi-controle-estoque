@@ -7,6 +7,12 @@ using System.Text.Json;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
+using AutoImposerCLI.Imposition;
+using Imposition.Core.Contracts;
+using Imposition.Core.Geometry;
+using CoreInput = Imposition.Core.Contracts.ImpositionInput;
+using CorePlan = Imposition.Core.Contracts.ImpositionResult;
+using CoreImpositionException = Imposition.Core.Errors.ImpositionException;
 
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
@@ -15,7 +21,7 @@ if (args.Length == 0 || string.IsNullOrWhiteSpace(args[0]))
 {
     Console.ForegroundColor = ConsoleColor.Yellow;
     Console.WriteLine("USO: AutoImposerCLI.exe <arquivo.pdf> [largura_mm] [altura_mm] [gap_mm] [margem_mm] [pasta_saida] [target_copies]");
-    Console.WriteLine("     [--margin-t N] [--margin-r N] [--margin-b N] [--margin-l N] [--rotation auto|0|90] [--copies N] [--json]");
+    Console.WriteLine("     [--margin-t N] [--margin-r N] [--margin-b N] [--margin-l N] [--rotation auto|0|90] [--copies N] [--json] [--strict|--warn]");
     Console.WriteLine("     [--json '{\"inputPdf\":\"...\",\"sheetWMm\":665,...}']");
     Console.WriteLine("Exemplo: AutoImposerCLI.exe C:\\Artes\\adesivo.pdf 700 1000 2 10");
     Console.WriteLine("         AutoImposerCLI.exe --json '{\"inputPdf\":\"C:\\\\Artes\\\\copiar2.pdf\",\"sheetWMm\":665,\"sheetHMm\":986,\"cols\":35,\"rows\":29,\"pecaWMm\":19,\"pecaHMm\":34,\"gapMm\":0,\"marginLeftMm\":0,\"marginTopMm\":0,\"rotacionar90\":true,\"targetCopies\":1015}'");
@@ -85,6 +91,11 @@ int rotacaoGeral = rotationArg switch {
     _ => -1,
 };
 
+bool strictMode = args.Contains("--strict", StringComparer.OrdinalIgnoreCase)
+    && !args.Contains("--warn", StringComparer.OrdinalIgnoreCase);
+bool warnMode   = args.Contains("--warn", StringComparer.OrdinalIgnoreCase)
+    && !args.Contains("--strict", StringComparer.OrdinalIgnoreCase);
+
 bool jsonMode = jp != null || args.Contains("--json", StringComparer.OrdinalIgnoreCase);
 string outputDir = jp?.outputPath ?? (args.Length > 5 && !args[5].StartsWith("--", StringComparison.Ordinal) ? args[5].Trim('"') : Path.GetDirectoryName(inputPdf)!);
 if (outputDir.Length > 0 && !Directory.Exists(outputDir))
@@ -122,44 +133,74 @@ if (utilWMm <= 0 || utilHMm <= 0)
     return 1;
 }
 
-// ── Se JSON completo, usa dims da peça ao invés do MediaBox ──────────
+// ── Fonte única de grade: imposition-core via ImpositionBridge (ADR-021) ─
 double slotWMm, slotHMm;
 int cols, rows, targetCopies;
 bool rotacionar;
+CorePlan plano;
 
-if (jp != null && jp.cols > 0 && jp.rows > 0 && jp.pecaWMm > 0 && jp.pecaHMm > 0)
+try
 {
-    // Modo Electron: grade já calculada, peça escalada para caber no slot
-    rotacionar = jp.rotacionar90;
-    cols = jp.cols;
-    rows = jp.rows;
-    targetCopies = jp.targetCopies > 0 ? jp.targetCopies : cols * rows;
-    slotWMm = jp.pecaWMm;
-    slotHMm = jp.pecaHMm;
+    if (jp != null && jp.cols > 0 && jp.rows > 0 && jp.pecaWMm > 0 && jp.pecaHMm > 0)
+    {
+        // Modo Electron: peça escalada para o slot; o core vira a fonte da grade,
+        // mas a decisão de rotação da UI entra como orientação forçada.
+        targetCopies = jp.targetCopies > 0 ? jp.targetCopies : jp.cols * jp.rows;
+        plano = ImpositionBridge.Plan(ImpositionBridge.BuildInput(
+            sheetWMm, sheetHMm, gapMm,
+            marginTop, marginRight, marginBottom, marginLeft,
+            jp.pecaWMm, jp.pecaHMm, targetCopies,
+            jp.rotacionar90 ? Orientation.Landscape : Orientation.Portrait));
 
-    // Override arteWMm/arteHMm para display (usa dims reais da peça)
-    arteWMm = slotWMm;
-    arteHMm = slotHMm;
+        cols = plano.Cols;
+        rows = plano.Rows;
+        rotacionar = plano.Orientation == Orientation.Landscape;
+        slotWMm = jp.pecaWMm;
+        slotHMm = jp.pecaHMm;
+
+        // Override arteWMm/arteHMm para display (usa dims reais da peça)
+        arteWMm = jp.pecaWMm;
+        arteHMm = jp.pecaHMm;
+    }
+    else
+    {
+        // Modo legado: alvo default = capacidade (grade inteira), via core.
+        var capacidade = (int)Math.Floor((utilWMm + gapMm) / (arteWMm + gapMm))
+                       * (int)Math.Floor((utilHMm + gapMm) / (arteHMm + gapMm));
+
+        targetCopies = jp?.targetCopies > 0
+            ? jp.targetCopies
+            : (int)flagNum(args, "--target-copies",
+                (int)flagNum(args, "--copies", capacidade));
+
+        if (targetCopies == 0)
+        {
+            error = "Dimensão da arte excede a área útil do substrato.";
+            fail(result, jsonMode, error);
+            return 1;
+        }
+
+        Orientation? forcar = rotacaoForcada ? (Orientation)rotacaoGeral : null;
+        plano = ImpositionBridge.Plan(ImpositionBridge.BuildInput(
+            sheetWMm, sheetHMm, gapMm,
+            marginTop, marginRight, marginBottom, marginLeft,
+            arteWMm, arteHMm, targetCopies, forcar));
+
+        cols = plano.Cols;
+        rows = plano.Rows;
+        rotacionar = plano.Orientation == Orientation.Landscape;
+        slotWMm = rotacionar ? arteHMm : arteWMm;
+        slotHMm = rotacionar ? arteWMm : arteHMm;
+        targetCopies = plano.PlannedUnits;
+    }
 }
-else
+catch (CoreImpositionException cex)
 {
-    // Modo legado: calcula a partir do MediaBox
-    int cols0 = (int)Math.Floor((utilWMm + gapMm) / (arteWMm + gapMm));
-    int rows0 = (int)Math.Floor((utilHMm + gapMm) / (arteHMm + gapMm));
-
-    int cols90 = (int)Math.Floor((utilWMm + gapMm) / (arteHMm + gapMm));
-    int rows90 = (int)Math.Floor((utilHMm + gapMm) / (arteWMm + gapMm));
-
-    rotacionar = rotacaoForcada ? rotacaoGeral == 90 : cols90 * rows90 > cols0 * rows0;
-    cols = rotacionar ? cols90 : cols0;
-    rows = rotacionar ? rows90 : rows0;
-    slotWMm = rotacionar ? arteHMm : arteWMm;
-    slotHMm = rotacionar ? arteWMm : arteHMm;
-
-    targetCopies = jp?.targetCopies > 0
-        ? jp.targetCopies
-        : (int)flagNum(args, "--target-copies",
-            (int)flagNum(args, "--copies", cols * rows));
+    error = cex.Code is "E_GRID_OVERFLOW" or "E_INVALID_TARGET"
+        ? "Dimensão da arte excede a área útil do substrato."
+        : cex.Message;
+    fail(result, jsonMode, error);
+    return 1;
 }
 
 Console.ForegroundColor = ConsoleColor.Cyan;
@@ -269,6 +310,14 @@ try
     result.status = "ok";
     result.checksum = Sha256OfFile(result.outputFile);
 
+    // ── ADR-023: contagem verificada ────────────────────────────────────
+    result.plannedUnits = plano.PlannedUnits;
+    result.drawnUnits = geradas;
+    result.readBackUnits = PdfReadBack.CountDrawnUnits(result.outputFile);
+
+    bool strict = strictMode;
+    CountIntegrity.Validate(result.plannedUnits, result.drawnUnits, result.readBackUnits, strict);
+
     Console.ForegroundColor = ConsoleColor.Green;
     Console.WriteLine($"[SUCESSO] PDF gerado em:\n{result.outputFile}");
     Console.WriteLine($"          {geradas} unidades ({cols}×{rows}) em {sw.ElapsedMilliseconds}ms");
@@ -377,6 +426,9 @@ public class ImpositionResult
     public DateTime finishedAt { get; set; }
     public string? outputDir { get; set; }
     public string? outputFile { get; set; }
+    public int plannedUnits { get; set; }
+    public int drawnUnits { get; set; }
+    public int readBackUnits { get; set; }
 }
 
 public class ArtInfo { public double widthMm { get; set; } public double heightMm { get; set; } }
