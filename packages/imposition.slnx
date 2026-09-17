@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/imposition-core/">
+    <Project Path="imposition-core/src/Imposition.Core/Imposition.Core.csproj" />
+    <Project Path="imposition-core/tests/Imposition.Core.Tests/Imposition.Core.Tests.csproj" />
+  </Folder>
+  <Folder Name="/imposition-grid-cli/">
+    <Project Path="imposition-grid-cli/Imposition.GridCli.csproj" />
+  </Folder>
+  <Folder Name="/sidecars/">
+    <Project Path="../sidecars/AutoImposerCLI/AutoImposerCLI.csproj" />
+    <Project Path="../sidecars/IllustratorImposerCLI/IllustratorImposerCLI.csproj" />
+    <Project Path="../sidecars/ImpositorKonica/ImpositorKonica.csproj" />
+  </Folder>
+</Solution>

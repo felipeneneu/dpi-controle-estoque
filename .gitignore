@@ -58,3 +58,11 @@ playwright-report/
 coverage/
 **/coverage/
 .blob/
+
+# dotnet test artifacts
+TestResults/
+**/TestResults/
+
+# sidecar publish output
+sidecars/bin/
+**/sidecars/bin/

@@ -4,7 +4,7 @@ title Auto Imposer CLI - Imposicao de Chapas
 
 set "BIN=%~dp0sidecars\bin\cli\AutoImposerCLI.exe"
 if not exist "%BIN%" (
-    set "BIN=%~dp0sidecars\AutoImposerCLI\bin\Release\net8.0\win-x64\publish\AutoImposerCLI.exe"
+    set "BIN=%~dp0sidecars\AutoImposerCLI\bin\Release\net10.0\win-x64\publish\AutoImposerCLI.exe"
 )
 
 set "RAW_ARGS=%*"
