@@ -33,8 +33,8 @@ O objetivo deste documento é fixar o estado atual e definir o **modelo alvo** (
 
 | # | Motor | Tecnologia | Bibliotecas | Entrada | Saída | Exit code | Papel |
 |---|---|---|---|---|---|---|---|
-| 1 | `sidecars/AutoImposerCLI/Program.cs` | .NET 8 (console, headless) | PdfSharp 6.1.1 | Arte PDF + dimensões de chapa/folha + cópias (posicional) | PDF imposto + `RESULT_JSON:{ImpositionResult}` (linha 279) | `0` ok; `1` uso/erros | **Chapa/folha** — gera PDF vetorial paginado, letterbox, centrado |
-| 2 | `sidecars/IllustratorImposerCLI/Program.cs` + `Scripts/engine.jsx` | .NET 8-windows + COM (ExtendScript) | `Type.GetTypeFromProgID("Illustrator.Application")` (143), oleaut32 `GetActiveObject` (215-216), `InvokeMember("DoJavaScript")` (158-164) | Arte (AI/PDF) + dimensões + cópias (posicional) | PDF via Illustrator (PDFSaveOptions ACROBAT8, engine.jsx:170-176) + JSON inline (187) | `0` ok; `1` uso; `2` Illustrator ausente | **Rolo/bobina** — rotação por colunas, *roll auto-extend*, preenche última linha |
+| 1 | `sidecars/AutoImposerCLI/Program.cs` | .NET 10 (console, headless) | PdfSharp 6.1.1 | Arte PDF + dimensões de chapa/folha + cópias (posicional) | PDF imposto + `RESULT_JSON:{ImpositionResult}` (linha 279) | `0` ok; `1` uso/erros | **Chapa/folha** — gera PDF vetorial paginado, letterbox, centrado |
+| 2 | `sidecars/IllustratorImposerCLI/Program.cs` + `Scripts/engine.jsx` | .NET 10-windows + COM (ExtendScript) | `Type.GetTypeFromProgID("Illustrator.Application")` (143), oleaut32 `GetActiveObject` (215-216), `InvokeMember("DoJavaScript")` (158-164) | Arte (AI/PDF) + dimensões + cópias (posicional) | PDF via Illustrator (PDFSaveOptions ACROBAT8, engine.jsx:170-176) + JSON inline (187) | `0` ok; `1` uso; `2` Illustrator ausente | **Rolo/bobina** — rotação por colunas, *roll auto-extend*, preenche última linha |
 | 3 | `src/lib/imposition-roll-math.ts` (== `grafica-app/src/lib/imposition-roll-math.ts`, cópias idênticas) | TypeScript puro (matemática, sem runtime de imposição) | nenhuma (math pura) | `{rollWidthMm, piece, targetCopies, margins, gap, lengthMm, fillMode}` | `alternativeGrids` + `maxCopiesInAdvance` + `totalLengthMeters` (136-154) | n/a (biblioteca) | **Matemática de referência** para o front e para pré-visualização de bobina |
 | 4 | `sidecars/ImpositorKonica/Views/CanvasImposicao.cs` | WPF (interativo) | SkiaSharp 4.152.0, QRCoder 1.6.0 | Múltiplas peças (SKUs) + chapa | PDF via Skia + QR por etiqueta | n/a (GUI) | **Gang-run multi-SKU** — round-robin; sem orientação/alvo/sobras |
 
@@ -113,7 +113,7 @@ Fonte: `sidecars/AutoImposerCLI/Program.cs`.
 | ImpositorKonica | SkiaSharp | 4.152.0 | Renderização via Skia (`SkiaPdfExporter`, regenera QR por etiqueta, linha 99) |
 | ImpositorKonica | QRCoder | 1.6.0 | QR por etiqueta/cópia |
 | IllustratorImposerCLI | COM oleaut32 + ExtendScript | n/a | `GetActiveObject`, `Type.GetTypeFromProgID`, `InvokeMember("DoJavaScript")` (143, 158-164, 215-216); API Illustrator: `artboards`, `pageItems`, `PDFSaveOptions` |
-| Todos os CLIs | .NET | 8 (target) | Runtime dos sidecars headless |
+| Todos os CLIs | .NET | 10 (target) | Runtime dos sidecars headless |
 
 ### 4.2 Conversões, epsilon e arredondamentos
 
@@ -351,7 +351,7 @@ cols=35, rows=29, total=1015, orientation=0, lengthMm=986, surplus=0, file=_IMPO
 # Contexto
 Você está no monorepo `dpi-controle-estoque`. Existem 4 motores de imposição/step&repeat
 divergentes (ver docs/engineering/IMPOSICAO-MOTOR.md, seções 2-5):
-  1. sidecars/AutoImposerCLI/Program.cs          (.NET 8 + PdfSharp 6.1.1, chapa/folha)
+  1. sidecars/AutoImposerCLI/Program.cs          (.NET 10 + PdfSharp 6.1.1, chapa/folha)
   2. sidecars/IllustratorImposerCLI/Program.cs + Scripts/engine.jsx (COM/ExtendScript, rolo)
   3. src/lib/imposition-roll-math.ts             (= grafica-app/src/lib/imposition-roll-math.ts, math TS)
   4. sidecars/ImpositorKonica/Views/CanvasImposicao.cs (WPF + SkiaSharp + QRCoder, gang-run)

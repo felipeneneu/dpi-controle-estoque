@@ -5,6 +5,7 @@ using Imposition.Core.Duplex;
 using Imposition.Core.Errors;
 using Imposition.Core.Geometry;
 using Imposition.Core.Grid;
+using Imposition.GridCli;
 
 // Exit codes:
 //   0 = sucesso (resultado em stdout)
@@ -31,30 +32,33 @@ try
         var pairing = Enum.Parse<DuplexPairing>(pairingProp.GetString()!, ignoreCase: true);
         var frontInput = DeserializeInput(root.GetProperty("frontInput"));
         var plan = DuplexPlanner.Plan(new DuplexRequest(frontInput, pairing));
-        Console.Out.Write(JsonSerializer.Serialize(plan, JsonOpts));
+        Console.Out.Write(JsonSerializer.Serialize(plan, JsonContext.Default.DuplexPlan));
     }
     else
     {
         var input = DeserializeInput(root);
         var result = GridSearchEngine.Plan(input);
-        Console.Out.Write(JsonSerializer.Serialize(result, JsonOpts));
+        Console.Out.Write(JsonSerializer.Serialize(result, JsonContext.Default.ImpositionResult));
     }
 
     return 0;
 }
 catch (ImpositionException ex)
 {
-    Console.Error.WriteLine(JsonSerializer.Serialize(new { error = new { code = ex.Code, message = ex.Message } }, JsonOpts));
+    var err = new ErrorResponse(new ErrorPayload(ex.Code, ex.Message));
+    Console.Error.WriteLine(JsonSerializer.Serialize(err, JsonContext.Default.ErrorResponse));
     return 2;
 }
 catch (JsonException ex)
 {
-    Console.Error.WriteLine(JsonSerializer.Serialize(new { error = new { code = "E_INVALID_JSON", message = ex.Message } }, JsonOpts));
+    var err = new ErrorResponse(new ErrorPayload("E_INVALID_JSON", ex.Message));
+    Console.Error.WriteLine(JsonSerializer.Serialize(err, JsonContext.Default.ErrorResponse));
     return 1;
 }
 catch (Exception ex)
 {
-    Console.Error.WriteLine(JsonSerializer.Serialize(new { error = new { code = "E_UNEXPECTED", message = ex.Message } }, JsonOpts));
+    var err = new ErrorResponse(new ErrorPayload("E_UNEXPECTED", ex.Message));
+    Console.Error.WriteLine(JsonSerializer.Serialize(err, JsonContext.Default.ErrorResponse));
     return 3;
 }
 
@@ -111,13 +115,4 @@ static ImpositionInput DeserializeInput(JsonElement r)
         ForcedCols: r.GetProperty("forcedCols").ValueKind == JsonValueKind.Null
             ? null : r.GetProperty("forcedCols").GetInt32(),
         SchemaVersion: r.GetProperty("schemaVersion").GetString()!);
-}
-
-static partial class Program
-{
-    public static readonly JsonSerializerOptions JsonOpts = new()
-    {
-        WriteIndented = true,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-    };
 }

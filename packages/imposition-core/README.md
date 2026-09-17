@@ -26,6 +26,8 @@ Leia `AGENTS.md` **antes** de tocar em qualquer coisa. Resumo:
 
 ## Build
 
+TargetFramework: `net10.0` (migração documentada na `docs/governance/adr/ADR-024`).
+
 ```bash
 dotnet restore
 dotnet build -c Release   # warnings as errors
