@@ -54,8 +54,19 @@ export function useCreateStockItem() {
       code?: string
       currentQuantity?: number
       minQuantity?: number
-      machineId?: string
+      machineIds?: string[]
     }) => api<StockItem>("/api/stock-items", { method: "POST", body: JSON.stringify(body) }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: stockKeys.all })
+      queryClient.invalidateQueries({ queryKey: machineKeys.all })
+    },
+  })
+}
+
+export function useDeleteStockItem() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => api(`/api/stock-items/${id}`, { method: "DELETE" }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: stockKeys.all })
       queryClient.invalidateQueries({ queryKey: machineKeys.all })

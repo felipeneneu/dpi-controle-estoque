@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Imposition.Core</RootNamespace>
+    <AssemblyName>Imposition.Core</AssemblyName>
+  </PropertyGroup>
+  <!-- Regra 8 do AGENTS.md: core sem IO. Zero PackageReference. -->
+</Project>

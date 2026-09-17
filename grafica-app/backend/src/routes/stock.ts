@@ -24,7 +24,7 @@ const createItemSchema = z.object({
   currentQuantity: z.number().nonnegative().optional(),
   minQuantity: z.number().nonnegative().optional(),
   imageUrl: z.string().optional(),
-  machineId: z.string().optional(),
+  machineIds: z.array(z.string()).optional(),
 });
 
 const updateItemSchema = createItemSchema.partial();
@@ -159,7 +159,7 @@ export async function stockRoutes(app: FastifyInstance) {
           currentQuantity: { type: 'number' },
           minQuantity: { type: 'number' },
           imageUrl: { type: 'string' },
-          machineId: { type: 'string' },
+          machineIds: { type: 'array', items: { type: 'string' } },
         },
       },
       response: {
@@ -249,17 +249,19 @@ export async function stockRoutes(app: FastifyInstance) {
       });
     }
 
-    if (data.machineId) {
-      await db.insert(machineItems).values({
-        id: newId(),
-        machineId: data.machineId,
-        stockItemId: item.id,
-      });
+    if (data.machineIds && data.machineIds.length > 0) {
+      await db.insert(machineItems).values(
+        data.machineIds.map((machineId) => ({
+          id: newId(),
+          machineId,
+          stockItemId: item.id,
+        }))
+      );
     }
 
     return reply.code(201).send({
       ...item,
-      machineIds: data.machineId ? [data.machineId] : [],
+      machineIds: data.machineIds ?? [],
     });
   });
 
@@ -322,9 +324,15 @@ export async function stockRoutes(app: FastifyInstance) {
         204: { type: 'null' },
       },
     },
-    preHandler: [authenticate, authorize(['DEV_MASTER'])],
+    preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN'])],
   }, async (request, reply) => {
     const { id } = request.params as { id: string };
+    
+    await db.delete(machineItems).where(eq(machineItems.stockItemId, id));
+    await db.delete(bobinas).where(eq(bobinas.stockItemId, id));
+    await db.delete(garrafas).where(eq(garrafas.stockItemId, id));
+    await db.delete(stockTransactions).where(eq(stockTransactions.itemId, id));
+    
     await db.delete(stockItems).where(eq(stockItems.id, id));
     return reply.code(204).send();
   });

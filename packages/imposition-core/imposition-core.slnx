@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Imposition.Core/Imposition.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Imposition.Core.Tests/Imposition.Core.Tests.csproj" />
+  </Folder>
+</Solution>

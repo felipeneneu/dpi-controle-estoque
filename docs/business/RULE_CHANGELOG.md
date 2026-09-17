@@ -48,6 +48,37 @@
   necessidade real de dar baixa em rolo vendido inteiro, anotando motivo | ADR-009
   | Felipe
 
+
+## 2026-09-17 — BR-010 (Imposição) — Fonte única de verdade formalizada
+
+**Regra:** BR-010 — "Motor de imposição/step&repeat possui fonte única de verdade".
+
+**Status da regra:** `PROPOSED` → `PARTIAL` (com a PR #1 do `packages/imposition-core`).
+
+**Mudança:** formalização do modelo alvo em 3 ADRs:
+- `ADR-021` — GridSearchEngine como fonte única de verdade + resolução de
+  defaults em 4 camadas.
+- `ADR-022` — Duplex Head-to-Head / Head-to-Foot como camada wrapper.
+- `ADR-023` — Contagem verificada (instrumentação + read-back condicional).
+
+**Prova / Teste (P3 do `DOC_POLICIES.md`):**
+- Testes unitários e golden-master em
+  `packages/imposition-core/tests/Imposition.Core.Tests/` com convenção
+  `BR_010_*` (`TESTING_STRATEGY.md` §2).
+- Golden-master canônico em
+  `packages/imposition-core/tests/Imposition.Core.Tests/GoldenMaster/cases/000-canonical/`
+  (`IMPOSICAO-MOTOR.md` §3.1, §8.1).
+- CI workflow `.github/workflows/imposition-core.yml` roda em todo PR.
+
+**Notas:**
+- As ADRs 021–023 nascem como **Proposto**. Promoção a **Aprovado** ocorre
+  após 5 dias consecutivos de CI verde + produção sombra sem divergência de
+  contagem (ADR-021 §Nota de honestidade).
+- `ADR-024` (não emitido) cobre MachineProfile e presets de job — camadas 2 e
+  3 do resolver. Fica para PR subsequente.
+
+`source: docs/governance/adr/ADR-021-gridsearch-engine-fonte-unica.md` · `docs/governance/adr/ADR-022-duplex-wrapper.md` · `docs/governance/adr/ADR-023-contagem-verificada.md`
+
 ## Formato de entrada (a partir daqui)
 
 ```
@@ -57,8 +88,8 @@
 
 ## [1.2.0] — 2026-09-13 — Implementação M1 (Bobina como ativo)
 
-- **IMPLEMENTATION** BR-002, BR-010, BR-018: Cutover realizado. Estoque legado zerado, schema atualizado (`bobinas`, `bleed_adjustment_m`). Jobs órfãos geram status `PENDENTE_VINCULO` em `print_jobs` e `mimaki_jobs`. Fator de sangria aplicado nas deduções (HP/Mimaki). UI do equipamento e dashboard atualizados. | motivo: Migração M1 finalizada via Agent. | ADR-009, ADR-010 | Agent (Antigravity)- 2026-09-13: Emenda na **ADR-009**: Adicionado esclarecimento sobre gest�o de insumos n�o-rolo (tintas e folhas), os quais n�o s�o tratados como ativos f�sicos e utilizam lan�amentos diretos de \IN\/\OUT\/\ADJUSTMENT\ no estoque agregado (\currentQuantity\).
-- 2026-09-14: Emenda na **ADR-009**: Gera��o de ID Curto de Bobina (Serial) passa a ser estritamente autom�tica e gerada pelo sistema (formato BOB-XXXX), garantindo padroniza��o para M2/M3 (impress�o de QR Code). Formul�rio de \Novo Insumo\ agora suporta a cria��o simult�nea do primeiro rolo daquele material (cascateamento).
+- **IMPLEMENTATION** BR-002, BR-010, BR-018: Cutover realizado. Estoque legado zerado, schema atualizado (`bobinas`, `bleed_adjustment_m`). Jobs órfãos geram status `PENDENTE_VINCULO` em `print_jobs` e `mimaki_jobs`. Fator de sangria aplicado nas deduções (HP/Mimaki). UI do equipamento e dashboard atualizados. | motivo: Migração M1 finalizada via Agent. | ADR-009, ADR-010 | Agent (Antigravity)- 2026-09-13: Emenda na **ADR-009**: Adicionado esclarecimento sobre gest�o de insumos n�o-rolo (tintas e folhas), os quais n�o s�o tratados como ativos f�sicos e utilizam lan�amentos diretos de \IN\/\OUT\/\ADJUSTMENT\ no estoque agregado (\currentQuantity\).
+- 2026-09-14: Emenda na **ADR-009**: Gera��o de ID Curto de Bobina (Serial) passa a ser estritamente autom�tica e gerada pelo sistema (formato BOB-XXXX), garantindo padroniza��o para M2/M3 (impress�o de QR Code). Formul�rio de \Novo Insumo\ agora suporta a cria��o simult�nea do primeiro rolo daquele material (cascateamento).
 
 ## [1.3.0] — 2026-09-15 — Padronização de Etiquetas Físicas (106x35mm), Imposição Konica e Quick-Switch F2
 

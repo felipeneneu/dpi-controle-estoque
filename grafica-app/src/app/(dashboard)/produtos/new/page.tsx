@@ -11,19 +11,36 @@ import { RiArrowLeftLine } from "@remixicon/react";
 import { Spinner } from "@/components/ui/spinner";
 import { type StockCategory } from "@/lib/api";
 import { useCreateStockItem } from "@/lib/queries/stock";
+import { useMachines } from "@/lib/queries/machines";
 import { getUser } from "@/lib/api";
 
 export default function NovoProdutoPage() {
   const router = useRouter();
   const createStockItem = useCreateStockItem();
+  const machinesQuery = useMachines();
   const [name, setName] = useState("");
   const [category, setCategory] = useState<StockCategory>("PAPER_MEDIA");
   const [unit, setUnit] = useState("m");
   const [currentQuantity, setCurrentQuantity] = useState("");
   const [minQuantity, setMinQuantity] = useState("");
   const [width, setWidth] = useState("");
-  const [code, setCode] = useState("");
+  const [selectedMachines, setSelectedMachines] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+  const handleCategoryChange = (cat: StockCategory) => {
+    setCategory(cat);
+    if (cat === "INK_SUPPLY") {
+      setUnit("L");
+    } else if (cat === "PAPER_MEDIA") {
+      setUnit("m");
+    }
+  };
+
+  const toggleMachine = (id: string) => {
+    setSelectedMachines((prev) =>
+      prev.includes(id) ? prev.filter((m) => m !== id) : [...prev, id]
+    );
+  };
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -37,10 +54,10 @@ export default function NovoProdutoPage() {
         name,
         category,
         unit,
-        width: width ? Number(width) : undefined,
+        width: (unit === "fls" || category === "INK_SUPPLY") ? undefined : (width ? Number(width) : undefined),
         currentQuantity: Number(currentQuantity) || 0,
         minQuantity: Number(minQuantity) || 0,
-        code: code.trim() || undefined,
+        machineIds: selectedMachines,
       });
       router.push("/produtos");
     } catch (err) {
@@ -49,6 +66,7 @@ export default function NovoProdutoPage() {
   }
 
   const busy = createStockItem.isPending;
+  const showWidth = unit !== "fls" && category !== "INK_SUPPLY";
 
   return (
     <div className="max-w-[1200px] mx-auto space-y-6">
@@ -60,7 +78,7 @@ export default function NovoProdutoPage() {
         </Link>
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Novo Insumo</h2>
-          <p className="text-sm text-muted-foreground">Cadastre um novo material ou máquina no sistema</p>
+          <p className="text-sm text-muted-foreground">Cadastre um novo material ou tinta no sistema</p>
         </div>
       </div>
 
@@ -68,13 +86,13 @@ export default function NovoProdutoPage() {
         <CardContent className="p-0">
           <form onSubmit={submit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-xs font-bold text-muted-foreground tracking-wider uppercase">NOME DO MATERIAL</Label>
+              <Label htmlFor="name" className="text-xs font-bold text-muted-foreground tracking-wider uppercase">NOME DO INSUMO</Label>
               <Input
                 id="name"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Ex: Bobina Vinil Solvente 1.37m"
+                placeholder={category === "INK_SUPPLY" ? "Ex: Tinta Cyan 1L" : "Ex: Bobina Vinil Solvente 1.37m"}
                 className="h-12 rounded-xl"
               />
             </div>
@@ -85,7 +103,7 @@ export default function NovoProdutoPage() {
                 <select
                   id="category"
                   value={category}
-                  onChange={(e) => setCategory(e.target.value as StockCategory)}
+                  onChange={(e) => handleCategoryChange(e.target.value as StockCategory)}
                   className="h-12 w-full rounded-xl border border-input bg-transparent px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
                 >
                   <option value="PAPER_MEDIA">Mídia / Papel</option>
@@ -101,15 +119,24 @@ export default function NovoProdutoPage() {
                   onChange={(e) => setUnit(e.target.value)}
                   className="h-12 w-full rounded-xl border border-input bg-transparent px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
                 >
-                  <option value="m">Metro (m)</option>
-                  <option value="fls">Folhas (fls)</option>
-                  <option value="ml">Mililitro (ml)</option>
-                  <option value="L">Litro (L)</option>
+                  {category === "INK_SUPPLY" ? (
+                    <>
+                      <option value="ml">Mililitro (ml)</option>
+                      <option value="L">Litro (L)</option>
+                    </>
+                  ) : (
+                    <>
+                      <option value="m">Metro (m)</option>
+                      <option value="fls">Folhas (fls)</option>
+                      <option value="ml">Mililitro (ml)</option>
+                      <option value="L">Litro (L)</option>
+                    </>
+                  )}
                 </select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="qty" className="text-xs font-bold text-muted-foreground tracking-wider uppercase">
-                  {category === "PAPER_MEDIA" && unit === "m" ? "Qtd. inicial (Tamanho do 1º rolo)" : "Qtd. inicial"}
+                  {category === "PAPER_MEDIA" && unit === "m" ? "Qtd. inicial (1º rolo)" : category === "INK_SUPPLY" ? "Volume Inicial" : "Qtd. inicial"}
                 </Label>
                 <Input
                   id="qty"
@@ -118,32 +145,6 @@ export default function NovoProdutoPage() {
                   value={currentQuantity}
                   onChange={(e) => setCurrentQuantity(e.target.value)}
                   placeholder="Ex: 50"
-                  className="h-12 rounded-xl"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="code" className="text-xs font-bold text-muted-foreground tracking-wider uppercase">CÓDIGO (ID Curto)</Label>
-                <Input
-                  id="code"
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  placeholder="Ex: LONA-137"
-                  className="h-12 rounded-xl"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="width" className="text-xs font-bold text-muted-foreground tracking-wider uppercase">Largura do rolo (m) — opcional</Label>
-                <Input
-                  id="width"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={width}
-                  onChange={(e) => setWidth(e.target.value)}
-                  placeholder="Ex: 1.06 / 0.75 / 1.57"
                   className="h-12 rounded-xl"
                 />
               </div>
@@ -162,7 +163,44 @@ export default function NovoProdutoPage() {
                   className="h-12 rounded-xl"
                 />
               </div>
+              {showWidth && (
+                <div className="space-y-2">
+                  <Label htmlFor="width" className="text-xs font-bold text-muted-foreground tracking-wider uppercase">Largura do rolo (m)</Label>
+                  <Input
+                    id="width"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={width}
+                    onChange={(e) => setWidth(e.target.value)}
+                    placeholder="Ex: 1.06"
+                    className="h-12 rounded-xl"
+                  />
+                </div>
+              )}
             </div>
+
+            {machinesQuery.data && machinesQuery.data.length > 0 && (
+              <div className="space-y-3 pt-2">
+                <Label className="text-xs font-bold text-muted-foreground tracking-wider uppercase">Vincular às Máquinas (opcional)</Label>
+                <div className="flex flex-wrap gap-2">
+                  {machinesQuery.data.map((m) => (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => toggleMachine(m.id)}
+                      className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all border ${
+                        selectedMachines.includes(m.id)
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-card text-muted-foreground border-input hover:border-primary/50"
+                      }`}
+                    >
+                      {m.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {error && <p className="text-sm text-brand-pink font-semibold">{error}</p>}
 

@@ -94,7 +94,7 @@ export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiB
         width: Number.isFinite(widthNum) && widthNum > 0 ? widthNum : 0.75,
         currentQuantity: qtyNum,
         minQuantity: 10,
-        machineId: machineId ?? job.machineId,
+        machineIds: (machineId ?? job.machineId) ? [(machineId ?? job.machineId) as string] : [],
       })
 
       await bindMaterial.mutateAsync({

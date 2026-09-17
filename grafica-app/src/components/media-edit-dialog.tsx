@@ -96,7 +96,7 @@ export function MediaEditDialog({ job, machine, open, onOpenChange }: MediaEditD
         width: Number.isFinite(widthNum) && widthNum > 0 ? widthNum : 1.52,
         currentQuantity: qtyNum,
         minQuantity: minNum,
-        machineId: machine?.id,
+        machineIds: machine?.id ? [machine.id] : [],
       })
 
       if (job) {
