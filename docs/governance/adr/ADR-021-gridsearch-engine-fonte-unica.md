@@ -93,6 +93,10 @@ contrato (o resolver é uma função pura em `Contracts/`).
 
 ### 5. roll-math.ts rebaixado a interpolador de UI
 
+> **Nota (2026-09-18):** esta decisão foi **substituída** pela ADR-025.
+> O `roll-math.ts` foi deprecado e o preview migrou para C# nativo
+> in-process ao `imposition-core`. Ver `ADR-025-preview-nativo-csharp.md`.
+
 `src/lib/imposition-roll-math.ts` (e a cópia em `grafica-app/`) passa a ser
 **interpolador durante drag de slider** e **confirmador contra o core ao
 soltar**. Nunca é fonte de verdade. A assinatura pública atual

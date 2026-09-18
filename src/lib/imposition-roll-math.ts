@@ -1,3 +1,15 @@
+/**
+ * @deprecated Desde ADR-025 (2026-09-18). Substituído pelo preview
+ * nativo C# (`ImpositorKonica.exe --preview`), que consome
+ * `imposition-core` in-process.
+ *
+ * NÃO use este módulo em código novo. A assinatura pública é preservada
+ * apenas para não quebrar consumidores existentes até a deleção
+ * (PR #3b-2). Auditoria do PR #3b:
+ * `docs/engineering/AUDITORIA-roll-math-pr3b.md`.
+ *
+ * Ver `docs/governance/adr/ADR-025-preview-nativo-csharp.md`.
+ */
 export type ImpositionFillMode = 'fill_row' | 'fill_advance';
 
 export interface RollCalculationInput {

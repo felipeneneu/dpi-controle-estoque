@@ -21,7 +21,23 @@ namespace ImpositorKonica
             ImpositionPayload payload;
             string? dataFilePath = null;
 
-            // 1. Processamento dos argumentos CLI
+            // 0. Detectar --preview (ADR-025)
+            if (Array.IndexOf(e.Args, "--preview") >= 0)
+            {
+                var pDataIdx = Array.IndexOf(e.Args, "--data");
+                if (pDataIdx < 0 || pDataIdx + 1 >= e.Args.Length)
+                {
+                    Console.Error.WriteLine("Uso: ImpositorKonica.exe --preview --data <path>");
+                    Environment.Exit(2);
+                    return;
+                }
+                
+                int exitCode = ImpositorKonica.Preview.PreviewMode.Run(e.Args[pDataIdx + 1]);
+                Environment.Exit(exitCode);
+                return;
+            }
+
+            // 1. Processamento dos argumentos CLI (fluxo interativo normal)
             for (int i = 0; i < e.Args.Length; i++)
             {
                 if (e.Args[i] == "--data" && i + 1 < e.Args.Length)

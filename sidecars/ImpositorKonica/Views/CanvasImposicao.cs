@@ -235,6 +235,12 @@ namespace ImpositorKonica.Views
 
         private void DrawLabelContent(DrawingContext dc, PlacedLabel label, Rect r)
         {
+            if (_pieceThumbnail is not null)
+            {
+                dc.DrawImage(_pieceThumbnail, r);
+                return;
+            }
+
             // QR Code à esquerda, centralizado no eixo Y
             var qrRect = new Rect(
                 r.X + LabelLayout.QrOffsetX,
@@ -884,6 +890,16 @@ namespace ImpositorKonica.Views
             InvalidateVisual();
         }
 
+        
+        private System.Windows.Media.Imaging.BitmapSource? _pieceThumbnail;
+
+        public void LoadPreviewLabels(IEnumerable<PlacedLabel> labels, System.Windows.Media.Imaging.BitmapSource? thumbnail = null)
+        {
+            _pieceThumbnail = thumbnail;
+            _labels.Clear();
+            _labels.AddRange(labels);
+            InvalidateVisual();
+        }
         public void ClearSheet()
         {
             SaveSnapshot();
@@ -1034,3 +1050,11 @@ namespace ImpositorKonica.Views
         #endregion
     }
 }
+
+
+
+
+
+
+
+
