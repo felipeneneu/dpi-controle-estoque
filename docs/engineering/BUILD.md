@@ -124,12 +124,12 @@ git status --porcelain                    # sem TestResults/ nem sidecars/bin/
 node -e "JSON.parse(require('fs').readFileSync('package.json','utf8')); console.log('JSON ok')"
 
 # 7. Fix do .bat confirmado (fallback net10.0)
-Select-String -Path Impor_*.bat -Pattern "net8\.0"   # 0 ocorrências
+Select-String -Path MontarPDF.bat,Montar_*.bat -Pattern "net8\.0"   # 0 ocorrências
 ```
 
 ---
 
-Fonte: `Impor_70x100.bat:7` (fallback `net8.0` → `net10.0`),
+Fonte: `MontarPDF.bat:5-8` (fallback `net8.0` → `net10.0`),
 `package.json:17-18` (destinos de publish dos CLIs),
 `packages/imposition-grid-cli/Imposition.GridCli.csproj:13` (PublishAot),
 `.gitignore:61-68` (artefatos ignorados).

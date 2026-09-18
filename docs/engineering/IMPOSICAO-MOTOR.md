@@ -238,6 +238,8 @@ interface ImpositionInput {
 
 `score = wA·wasteRatio + wL·lengthPerCopyNorm + wS·surplusRatio` — candidatos inválidos (não cabem e não há auto-extend; `scalePolicy='reject'` com `scale < 1 − tol`) são **descartados antes** da pontuação.
 
+> **Nota (ADR-026, 2026-09-18):** em `SurplusPolicy.FillRow`, o termo `wS` é **zerado** — surplus é o objetivo declarado do operador (BR-024), não um custo. Os pesos `wA=0.50` e `wL=0.30` permanecem. Ver `docs/governance/adr/ADR-026-fill-row-sobra-garantida.md`.
+
 ### 6.4 Pseudocódigo
 
 ```text
@@ -339,7 +341,7 @@ cols=35, rows=29, total=1015, orientation=0, lengthMm=986, surplus=0, file=_IMPO
 
 ### 8.3 E2E smoke (manual e CI)
 
-`Impor_70x100.bat` / `Impor_Illustrator.bat` → CLI → abrir o PDF gerado e conferir: página única, grade visível, contagem de cópias, nome de arquivo e checksum SHA-256 (`Program.cs:290-296`). Repetir após P0/P1 em cada PR que toque os motores.
+`MontarPDF.bat` (genérico) / `Montar_Chapa_70x100.bat` / `Montar_SRA3_Konica.bat` / `Montar_Rolo_Mimaki.bat` / `Impor_Illustrator.bat` → CLI → abrir o PDF gerado e conferir: página única, grade visível, contagem de cópias, nome de arquivo e checksum SHA-256 (`Program.cs:290-296`). Repetir após P0/P1 em cada PR que toque os motores.
 
 ---
 
@@ -364,7 +366,7 @@ os top-10 bugs listados abaixo. NÃO realize outras refatorações.
 - docs/engineering/TESTING_STRATEGY.md (convenções de teste do repo).
 - Os 4 arquivos de motor citados acima + electron/services/imposition-orchestrator.js
   (= .ts) + electron/sidecars/auto-imposer-runner.js + os .bat raiz
-  (Impor_70x100.bat, Impor_Illustrator.bat).
+  (MontarPDF.bat, Montar_Chapa_70x100.bat, Montar_SRA3_Konica.bat, Montar_Rolo_Mimaki.bat, Impor_Illustrator.bat).
 - AGENTS.md e as regras de docs do Next.js (não gerar docs fora do escopo).
 
 # Passo 1 — Golden-master ANTES (caracterização)
@@ -431,7 +433,7 @@ Crie packages/imposition-core com:
 - Rode os scripts raiz: npm run build:cli, npm run build:cli:illustrator,
   npm run build:export e npm run lint — TODOS devem passar.
 - Rode os unit tests do packages/imposition-core.
-- E2E smoke: rode Impor_70x100.bat e Impor_Illustrator.bat e abra os PDFs gerados.
+- E2E smoke: rode MontarPDF.bat e Impor_Illustrator.bat e abra os PDFs gerados.
 
 # GUARDRAILS (obrigatórios, não negociáveis)
 - NÃO mude o naming de saída: _IMPOSTO_{W:F0}x{H:F0}mm_{N}UN.pdf (e o padrão do JSX).

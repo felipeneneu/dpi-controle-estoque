@@ -49,6 +49,25 @@
   | Felipe
 
 
+## 2026-09-18 — BR-024 (Imposição) — Sobra de grade explicitada (fill_row default)
+
+**Regra:** BR-024 — "Sobra de grade no impositor não é truncamento silencioso".
+
+**Status da regra:** nova — `IMPLEMENTED` (PR #3a.2, sidecar AutoImposerCLI).
+
+**Mudança:** o CLI legado (Motor 1) passou de truncamento silencioso para
+`SurplusPolicy.FillRow` como default — preenche a última linha e declara a sobra
+via `--surplus` (`truncate` = exato, `fill_advance` = aproveitamento). A contagem
+desenhada no PDF coincide com a reportada (Regra 4 do `AGENTS.md` do core).
+
+**Prova / Teste:**
+- `BR_010_ah_MaxCapacity_RespectsForcedOrientation` (969/1015 por orientação) e
+  `BR_010_ai_Roll_AutoExtendsToMaxLength` (rolo 2030) em
+  `sidecars/AutoImposerCLI/tests/AutoImposerCLI.Tests/CrossMotorTests.cs`.
+- Smoke chapa `MontarPDF.bat`: PEDIDO 200 → REAL 209, SOBRA 9 "para refile/amostra".
+
+`source: sidecars/AutoImposerCLI/Imposition/ImpositionBridge.cs` · `sidecars/AutoImposerCLI/tests/AutoImposerCLI.Tests/CrossMotorTests.cs` · missão PR #3a.2 (`.bat` operacional)
+
 ## 2026-09-17 — BR-010 (Imposição) — Fonte única de verdade formalizada
 
 **Regra:** BR-010 — "Motor de imposição/step&repeat possui fonte única de verdade".

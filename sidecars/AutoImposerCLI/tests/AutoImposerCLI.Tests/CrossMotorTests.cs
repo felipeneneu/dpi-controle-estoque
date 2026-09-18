@@ -128,4 +128,78 @@ public class CrossMotorTests
             if (File.Exists(tempFile)) File.Delete(tempFile);
         }
     }
+
+    [Fact]
+    public void BR_010_ah_MaxCapacity_RespectsForcedOrientation()
+    {
+        // Peça 34×19 em chapa 665×986 (gap 0, margens 0), capacidade máxima:
+        // - Diretamente (Portrait)  : 34×19 → (35 cols × 29 rows)?? não — ver cálculo abaixo
+        // - Rotacionada (Landscape): 19×34 → 35 cols × 29 rows = 1015
+        // A vencedora (auto) deve ser a de maior capacidade; orientação forçada respeita a pedida.
+        int capDirect = ImpositionBridge.MaxCapacity(
+            sheetWidthMm: 665, sheetHeightMm: 986, gapMm: 0,
+            marginTopMm: 0, marginRightMm: 0, marginBottomMm: 0, marginLeftMm: 0,
+            pieceWidthMm: 34, pieceHeightMm: 19,
+            forcedOrientation: Orientation.Portrait);
+
+        int capRotated = ImpositionBridge.MaxCapacity(
+            sheetWidthMm: 665, sheetHeightMm: 986, gapMm: 0,
+            marginTopMm: 0, marginRightMm: 0, marginBottomMm: 0, marginLeftMm: 0,
+            pieceWidthMm: 34, pieceHeightMm: 19,
+            forcedOrientation: Orientation.Landscape);
+
+        int capAuto = ImpositionBridge.MaxCapacity(
+            sheetWidthMm: 665, sheetHeightMm: 986, gapMm: 0,
+            marginTopMm: 0, marginRightMm: 0, marginBottomMm: 0, marginLeftMm: 0,
+            pieceWidthMm: 34, pieceHeightMm: 19,
+            forcedOrientation: null);
+
+        // Sem tolerância/rotação, 34×19: floor(665/34)=19 × floor(986/19)=51 → 969
+        capDirect.Should().Be(969);
+        capRotated.Should().Be(1015);
+        capAuto.Should().Be(1015);
+
+        // O plano respeita a orientação forçada no resultado
+        var inputPortrait = ImpositionBridge.BuildInput(
+            sheetWidthMm: 665, sheetHeightMm: 986, gapMm: 0,
+            marginTopMm: 0, marginRightMm: 0, marginBottomMm: 0, marginLeftMm: 0,
+            pieceWidthMm: 34, pieceHeightMm: 19,
+            targetCopies: capDirect,
+            forcedOrientation: Orientation.Portrait);
+
+        var planoPortrait = ImpositionBridge.Plan(inputPortrait);
+        planoPortrait.Orientation.Should().Be(Orientation.Portrait);
+        planoPortrait.PlannedUnits.Should().Be(capDirect);
+    }
+
+    [Fact]
+    public void BR_010_ai_Roll_AutoExtendsToMaxLength()
+    {
+        // Rolo de 665mm de largura, extensão máxima de 2000mm (mesma arte 34×19,
+        // gap 0, margens 0). Capacidade = 35 colunas × 58 linhas = 2030.
+        int capRoll = ImpositionBridge.MaxCapacityRoll(
+            rollWidthMm: 665, maxLengthMm: 2000, gapMm: 0,
+            marginTopMm: 0, marginRightMm: 0, marginBottomMm: 0, marginLeftMm: 0,
+            pieceWidthMm: 19, pieceHeightMm: 34);
+
+        capRoll.Should().Be(2030);
+
+        var inputRoll = ImpositionBridge.BuildInput(
+            sheetWidthMm: 665, sheetHeightMm: 2000, gapMm: 0,
+            marginTopMm: 0, marginRightMm: 0, marginBottomMm: 0, marginLeftMm: 0,
+            pieceWidthMm: 19, pieceHeightMm: 34,
+            targetCopies: capRoll,
+            forcedOrientation: null,
+            surplusPolicy: SurplusPolicy.FillRow,
+            kind: SubstrateKind.Roll,
+            maxLengthMm: 2000);
+
+        var planoRoll = ImpositionBridge.Plan(inputRoll);
+
+        planoRoll.Cols.Should().Be(35);
+        planoRoll.Rows.Should().Be(58);
+        planoRoll.PlannedUnits.Should().Be(2030);
+        // Não pode ultrapassar o comprimento máximo do rolo
+        planoRoll.LengthMm.Should().BeLessOrEqualTo(2000);
+    }
 }

@@ -7,6 +7,13 @@ if not exist "%BIN%" (
     set "BIN=%~dp0sidecars\AutoImposerCLI\bin\Release\net10.0\win-x64\publish\AutoImposerCLI.exe"
 )
 
+rem Argumentos opcionais do CLI (preenchidos pelos menus; vazios no fluxo posicional legado)
+set "TARGET_ARG="
+set "SURPLUS_ARG="
+set "SUBSTRATE_ARG="
+set "OUTPUT_ARG="
+set "PEDIDO=max"
+
 set "RAW_ARGS=%*"
 set "PDF="
 
@@ -20,7 +27,8 @@ if defined RAW_ARGS (
     rem 2. Se o primeiro parametro ja for um arquivo existente entre aspas
     if exist "%~1" (
         set "PDF=%~1"
-        rem Se alem do arquivo foram passados parametros de largura/altura por CLI
+        rem Se alem do arquivo foram passados parametros de largura/altura por CLI,
+        rem preservar o fluxo posicional legado: vai direto para :rodar sem menus.
         if not "%~2"=="" (
             set "PW=%~2"
             set "PH=%~3"
@@ -71,7 +79,10 @@ if not exist "!PDF!" (
     goto sair
 )
 
+rem Se a variavel MONTAR_PRESET esta definida (chamado por atalho especializado),
+rem pular o menu de formato e ir direto para o preset.
 :menu_opcoes
+if defined MONTAR_PRESET goto aplicar_preset
 cls
 echo ============================================================
 echo   AUTO IMPOSER CLI - CONFIGURACAO DA CHAPA
@@ -87,6 +98,7 @@ echo   [2] Meia Chapa 500 x 700 mm      - Gap: 2mm, Margem: 10mm
 echo   [3] Chapa Grande 1000 x 1500 mm  - Gap: 2mm, Margem: 10mm
 echo   [4] Folha SRA3 330 x 480 mm      - Gap: 2mm, Margem: 5mm (Konica)
 echo   [5] Personalizado (definir dimensoes, gap e margens)
+echo   [6] Rolo/Bobina (so largura)
 echo.
 echo ============================================================
 set "OPCAO=1"
@@ -102,16 +114,26 @@ if "!OPCAO_SEL!"=="2" goto opt_500x700
 if "!OPCAO_SEL!"=="3" goto opt_1000x1500
 if "!OPCAO_SEL!"=="4" goto opt_sra3
 if "!OPCAO_SEL!"=="5" goto opt_custom
+if "!OPCAO_SEL!"=="6" goto opt_rolo
 
 echo.
 echo [AVISO] Opcao invalida: "!OPCAO!"! Usando padrao [1] 700x1000 mm.
 goto opt_700x1000
+
+:aplicar_preset
+if /i "!MONTAR_PRESET!"=="chapa_70x100"  goto opt_700x1000
+if /i "!MONTAR_PRESET!"=="sra3_konica"   goto opt_sra3
+if /i "!MONTAR_PRESET!"=="rolo_mimaki"   goto opt_rolo
+echo [ERRO] Preset desconhecido: !MONTAR_PRESET!
+pause
+goto sair
 
 :opt_700x1000
 set "PW=700"
 set "PH=1000"
 set "GAP=2"
 set "MARG=10"
+set "SUBSTRATE_ARG="
 goto menu_rotacao
 
 :opt_500x700
@@ -119,6 +141,7 @@ set "PW=500"
 set "PH=700"
 set "GAP=2"
 set "MARG=10"
+set "SUBSTRATE_ARG="
 goto menu_rotacao
 
 :opt_1000x1500
@@ -126,6 +149,7 @@ set "PW=1000"
 set "PH=1500"
 set "GAP=2"
 set "MARG=10"
+set "SUBSTRATE_ARG="
 goto menu_rotacao
 
 :opt_sra3
@@ -133,6 +157,7 @@ set "PW=330"
 set "PH=480"
 set "GAP=2"
 set "MARG=5"
+set "SUBSTRATE_ARG="
 goto menu_rotacao
 
 :opt_custom
@@ -144,10 +169,28 @@ set "PW=700"
 set "PH=1000"
 set "GAP=2"
 set "MARG=10"
+set "SUBSTRATE_ARG="
 set /p "PW=Largura da chapa em mm [700]: "
 set /p "PH=Altura da chapa em mm [1000]: "
 set /p "GAP=Espacamento/Gap entre pecas em mm [2]: "
 set /p "MARG=Margem da chapa em mm [10]: "
+goto menu_rotacao
+
+:opt_rolo
+echo.
+echo ------------------------------------------------------------
+echo  ROLO / BOBINA
+echo ------------------------------------------------------------
+set "PW=1520"
+set "PH=0"
+set "GAP=2"
+set "MARG=5"
+set "SUBSTRATE_ARG=--substrate-kind roll"
+set /p "PW=Largura do rolo (boca) em mm [1520]: "
+set "MAXLEN="
+set /p "MAXLEN=Comprimento maximo em mm [10000]: "
+if "!MAXLEN!"=="" set "MAXLEN=10000"
+set "SUBSTRATE_ARG=--substrate-kind roll --max-length !MAXLEN!"
 goto menu_rotacao
 
 :menu_rotacao
@@ -166,12 +209,64 @@ if "%ROTOPCAO%"=="" set "ROTOPCAO=1"
 set "ROT_SEL=%ROTOPCAO:~0,1%"
 if "%ROT_SEL%"=="2" set "ROT=0"
 if "%ROT_SEL%"=="3" set "ROT=90"
+goto menu_copias
+
+:menu_copias
+echo.
+echo ------------------------------------------------------------
+echo  QUANTAS COPIAS DESEJA?
+echo ------------------------------------------------------------
+echo  [ENTER] Capacidade maxima
+echo  [N]     Numero especifico (ex: 200)
+echo ------------------------------------------------------------
+set "COPIAS="
+set /p "COPIAS=Digite o numero [ENTER para maximo]: "
+set "COPIAS=!COPIAS: =!"
+
+if "!COPIAS!"=="" (
+    set "TARGET_ARG="
+    set "SURPLUS_ARG="
+    set "PEDIDO=max"
+    goto preparar_saida
+) else (
+    set "TARGET_ARG=--target-copies !COPIAS!"
+    set "PEDIDO=!COPIAS!"
+    goto menu_surplus
+)
+
+:menu_surplus
+echo.
+echo ------------------------------------------------------------
+echo  SE PEDIR NUMERO ESPECIFICO, quantas extras deseja?
+echo ------------------------------------------------------------
+echo  [ENTER] Fechar a ultima linha (padrao - sobra p/ refile)
+echo  [0]     Cortar exato no pedido
+echo ------------------------------------------------------------
+set "SURPLUS="
+set /p "SURPLUS=Escolha [ENTER para fechar linha]: "
+set "SURPLUS=!SURPLUS: =!"
+
+if "!SURPLUS!"=="0" (
+    set "SURPLUS_ARG=--surplus truncate"
+) else (
+    set "SURPLUS_ARG=--surplus fill_row"
+)
+goto preparar_saida
+
+:preparar_saida
+set "PDF_DIR=%~dp0"
+for %%F in ("!PDF!") do set "PDF_DIR=%%~dpF"
+set "OUT_DIR=!PDF_DIR!saida"
+if not exist "!OUT_DIR!" mkdir "!OUT_DIR!"
+set "OUTPUT_ARG=--output-dir "!OUT_DIR!""
+goto rodar
 
 :rodar
 echo.
 echo ============================================================
 echo PROCESSANDO IMPOSICAO...
 echo Chapa: !PW! x !PH! mm, Gap: !GAP! mm, Margem: !MARG! mm, Rotacao: !ROT!
+echo Pedido: !PEDIDO! copias
 echo ============================================================
 echo.
 
@@ -186,7 +281,7 @@ if not exist "%BIN%" (
     goto sair
 )
 
-"%BIN%" "!PDF!" !PW! !PH! !GAP! !MARG! --rotation !ROT!
+"%BIN%" "!PDF!" !PW! !PH! !GAP! !MARG! --rotation !ROT! !TARGET_ARG! !SURPLUS_ARG! !SUBSTRATE_ARG! !OUTPUT_ARG!
 
 echo.
 :sair

@@ -21,9 +21,12 @@ if (args.Length == 0 || string.IsNullOrWhiteSpace(args[0]))
 {
     Console.ForegroundColor = ConsoleColor.Yellow;
     Console.WriteLine("USO: AutoImposerCLI.exe <arquivo.pdf> [largura_mm] [altura_mm] [gap_mm] [margem_mm] [pasta_saida] [target_copies]");
-    Console.WriteLine("     [--margin-t N] [--margin-r N] [--margin-b N] [--margin-l N] [--rotation auto|0|90] [--copies N] [--json] [--strict|--warn]");
+    Console.WriteLine("     [--margin-t N] [--margin-r N] [--margin-b N] [--margin-l N] [--rotation auto|0|90]");
+    Console.WriteLine("     [--target-copies N] [--surplus truncate|fill_row|fill_advance] [--output-dir DIR]");
+    Console.WriteLine("     [--substrate-kind sheet|roll] [--max-length N] [--json] [--strict|--warn]");
     Console.WriteLine("     [--json '{\"inputPdf\":\"...\",\"sheetWMm\":665,...}']");
     Console.WriteLine("Exemplo: AutoImposerCLI.exe C:\\Artes\\adesivo.pdf 700 1000 2 10");
+    Console.WriteLine("         AutoImposerCLI.exe C:\\Artes\\adesivo.pdf 700 1000 2 10 --surplus fill_row --output-dir C:\\saida");
     Console.WriteLine("         AutoImposerCLI.exe --json '{\"inputPdf\":\"C:\\\\Artes\\\\copiar2.pdf\",\"sheetWMm\":665,\"sheetHMm\":986,\"cols\":35,\"rows\":29,\"pecaWMm\":19,\"pecaHMm\":34,\"gapMm\":0,\"marginLeftMm\":0,\"marginTopMm\":0,\"rotacionar90\":true,\"targetCopies\":1015}'");
     Console.ResetColor();
     return 1;
@@ -91,13 +94,30 @@ int rotacaoGeral = rotationArg switch {
     _ => -1,
 };
 
+// ── Substrato: sheet | roll (PR #3a.2) ────────────────────────────────
+bool isRoll = jp == null && ParseSubstrateKindRoll(args);
+double? maxLengthMm = isRoll ? ParseMaxLength(args) : null;
+if (isRoll && maxLengthMm is null)
+{
+    Console.ForegroundColor = ConsoleColor.Red;
+    Console.WriteLine("[ERRO] Modo rolo exige --max-length N (mm).");
+    Console.ResetColor();
+    return 1;
+}
+SubstrateKind substrateKind = isRoll ? SubstrateKind.Roll : SubstrateKind.Sheet;
+
+// Altura efetiva de planejamento: rolo auto-estende até maxLength; chapa é fixa.
+double planeHeightMm = isRoll ? maxLengthMm!.Value : sheetHMm;
+
 bool strictMode = args.Contains("--strict", StringComparer.OrdinalIgnoreCase)
     && !args.Contains("--warn", StringComparer.OrdinalIgnoreCase);
 bool warnMode   = args.Contains("--warn", StringComparer.OrdinalIgnoreCase)
     && !args.Contains("--strict", StringComparer.OrdinalIgnoreCase);
 
 bool jsonMode = jp != null || args.Contains("--json", StringComparer.OrdinalIgnoreCase);
-string outputDir = jp?.outputPath ?? (args.Length > 5 && !args[5].StartsWith("--", StringComparison.Ordinal) ? args[5].Trim('"') : Path.GetDirectoryName(inputPdf)!);
+string outputDir = jp?.outputPath
+    ?? ParseOutputDir(args)
+    ?? (args.Length > 5 && !args[5].StartsWith("--", StringComparison.Ordinal) ? args[5].Trim('"') : Path.GetDirectoryName(inputPdf)!);
 if (outputDir.Length > 0 && !Directory.Exists(outputDir))
 {
     Directory.CreateDirectory(outputDir);
@@ -124,11 +144,11 @@ double arteWMm = Math.Round(arteForm.PointWidth * PT_TO_MM, 2);
 double arteHMm = Math.Round(arteForm.PointHeight * PT_TO_MM, 2);
 
 double utilWMm = sheetWMm - marginLeft - marginRight;
-double utilHMm = sheetHMm - marginTop - marginBottom;
+double utilHMm = planeHeightMm - marginTop - marginBottom;
 
 if (utilWMm <= 0 || utilHMm <= 0)
 {
-    error = "Margens configuradas são maiores que o tamanho da chapa.";
+    error = "Margens configuradas são maiores que o tamanho do substrato.";
     fail(result, jsonMode, error);
     return 1;
 }
@@ -136,8 +156,10 @@ if (utilWMm <= 0 || utilHMm <= 0)
 // ── Fonte única de grade: imposition-core via ImpositionBridge (ADR-021) ─
 double slotWMm, slotHMm;
 int cols, rows, targetCopies;
+int requestedCopies = 0;
 bool rotacionar;
 CorePlan plano;
+SurplusPolicy surplusPolicy = SurplusPolicy.FillRow;
 
 try
 {
@@ -146,11 +168,13 @@ try
         // Modo Electron: peça escalada para o slot; o core vira a fonte da grade,
         // mas a decisão de rotação da UI entra como orientação forçada.
         targetCopies = jp.targetCopies > 0 ? jp.targetCopies : jp.cols * jp.rows;
+        surplusPolicy = SurplusPolicy.Truncate;
         plano = ImpositionBridge.Plan(ImpositionBridge.BuildInput(
             sheetWMm, sheetHMm, gapMm,
             marginTop, marginRight, marginBottom, marginLeft,
             jp.pecaWMm, jp.pecaHMm, targetCopies,
-            jp.rotacionar90 ? Orientation.Landscape : Orientation.Portrait));
+            jp.rotacionar90 ? Orientation.Landscape : Orientation.Portrait,
+            surplusPolicy));
 
         cols = plano.Cols;
         rows = plano.Rows;
@@ -164,29 +188,37 @@ try
     }
     else
     {
-        // Modo legado: alvo default = capacidade (grade inteira), via core.
-        var capacidade = ImpositionBridge.MaxCapacity(
-            sheetWMm, sheetHMm, gapMm,
-            marginTop, marginRight, marginBottom, marginLeft,
-            arteWMm, arteHMm);
+        // Modo legado (POSICIONAL / .bat): alvo default = capacidade (grade inteira),
+        // via core. Respeita orientação forçada, surplus e substrato (BR-024).
+        Orientation? forcar = rotacaoForcada ? (Orientation)rotacaoGeral : null;
+        surplusPolicy = ParseSurplus(args);
 
-        targetCopies = jp?.targetCopies > 0
-            ? jp.targetCopies
-            : (int)flagNum(args, "--target-copies",
-                (int)flagNum(args, "--copies", capacidade));
+        int capacidade = isRoll
+            ? ImpositionBridge.MaxCapacityRoll(
+                sheetWMm, maxLengthMm!.Value, gapMm,
+                marginTop, marginRight, marginBottom, marginLeft,
+                arteWMm, arteHMm)
+            : ImpositionBridge.MaxCapacity(
+                sheetWMm, planeHeightMm, gapMm,
+                marginTop, marginRight, marginBottom, marginLeft,
+                arteWMm, arteHMm, forcar);
 
-        if (targetCopies == 0)
+        if (capacidade == 0)
         {
             error = "Dimensão da arte excede a área útil do substrato.";
             fail(result, jsonMode, error);
             return 1;
         }
 
-        Orientation? forcar = rotacaoForcada ? (Orientation)rotacaoGeral : null;
+        requestedCopies = ParseTargetCopies(args) ?? capacidade;
+        targetCopies = requestedCopies;
+
         plano = ImpositionBridge.Plan(ImpositionBridge.BuildInput(
-            sheetWMm, sheetHMm, gapMm,
+            sheetWMm, planeHeightMm, gapMm,
             marginTop, marginRight, marginBottom, marginLeft,
-            arteWMm, arteHMm, targetCopies, forcar));
+            arteWMm, arteHMm, targetCopies, forcar,
+            surplusPolicy, substrateKind,
+            isRoll ? maxLengthMm : null));
 
         cols = plano.Cols;
         rows = plano.Rows;
@@ -205,10 +237,13 @@ catch (CoreImpositionException cex)
     return 1;
 }
 
+result.requestedUnits = jp != null ? targetCopies : requestedCopies;
+result.surplusUnits = Math.Max(0, plano.PlannedUnits - result.requestedUnits);
+
 Console.ForegroundColor = ConsoleColor.Cyan;
 Console.WriteLine("------------------------------------------------------------");
 Console.WriteLine($"ARQUIVO:       {Path.GetFileName(inputPdf)} ({arteWMm:F1} x {arteHMm:F1} mm)");
-Console.WriteLine($"SUBSTRATO:     {sheetWMm:F0} x {sheetHMm:F0} mm (Margens T/R/B/L: {marginTop:F0}/{marginRight:F0}/{marginBottom:F0}/{marginLeft:F0} | Gap: {gapMm}mm)");
+Console.WriteLine($"SUBSTRATO:     {sheetWMm:F0} x {(isRoll ? "rolo" : planeHeightMm + " mm")} (Margens T/R/B/L: {marginTop:F0}/{marginRight:F0}/{marginBottom:F0}/{marginLeft:F0} | Gap: {gapMm}mm)");
 Console.WriteLine($"ORIENTAÇÃO:    {(rotacionar ? "ROTACIONADO (90°)" : "DIRETO (0°)")}");
 Console.WriteLine($"APROVEITAMENTO: {targetCopies} UN ({cols} colunas x {rows} linhas)");
 Console.WriteLine($"PEÇA SLOT:     {slotWMm:F1} x {slotHMm:F1} mm");
@@ -244,10 +279,11 @@ double drawHPt90 = arteHPt * scale90;
 double gradeWMm = (cols * slotWMm) + ((cols - 1) * gapMm);
 double gradeHMm = (rows * slotHMm) + ((rows - 1) * gapMm);
 double startXMm = marginLeft + ((utilWMm - gradeWMm) / 2.0);
-double startYMm = marginTop + ((utilHMm - gradeHMm) / 2.0);
+// Rolo não centraliza verticalmente: começa no topo e termina na última linha.
+double startYMm = isRoll ? marginTop : marginTop + ((utilHMm - gradeHMm) / 2.0);
 
 result.sheet = new SheetInfo {
-    widthMm = sheetWMm, heightMm = sheetHMm,
+    widthMm = sheetWMm, heightMm = planeHeightMm,
     gapMm = gapMm,
     marginTopMm = marginTop, marginRightMm = marginRight,
     marginBottomMm = marginBottom, marginLeftMm = marginLeft,
@@ -260,8 +296,12 @@ try
 {
     using var outputDoc = new PdfDocument();
     var page = outputDoc.AddPage();
-    page.Width = XUnit.FromPoint(sheetWMm * MM_TO_PT);
-    page.Height = XUnit.FromPoint(sheetHMm * MM_TO_PT);
+    page.Width = XUnit.FromMillimeter(sheetWMm);
+    // Rolo: página termina na última linha (comprimento usado = plano.LengthMm).
+    double pageHMm = isRoll
+        ? Math.Max(1.0, marginTop + plano.LengthMm + marginBottom)
+        : planeHeightMm;
+    page.Height = XUnit.FromMillimeter(pageHMm);
 
     int geradas = 0;
     using (var gfx = XGraphics.FromPdfPage(page))
@@ -302,7 +342,8 @@ try
     result.grid.units = geradas;
     result.outputDir = outputDir;
     string baseName = Path.GetFileNameWithoutExtension(inputPdf);
-    result.outputFile = Path.Combine(outputDir, $"{baseName}_IMPOSTO_{sheetWMm:F0}x{sheetHMm:F0}mm_{geradas}UN.pdf");
+    double nameHMm = isRoll ? pageHMm : sheetHMm;
+    result.outputFile = Path.Combine(outputDir, $"{baseName}_IMPOSTO_{sheetWMm:F0}x{nameHMm:F0}mm_{geradas}UN.pdf");
 
     outputDoc.Save(result.outputFile);
 
@@ -319,6 +360,26 @@ try
 
     bool strict = strictMode;
     CountIntegrity.Validate(result.plannedUnits, result.drawnUnits, result.readBackUnits, strict);
+
+    // ── Resumo final (PR #3a.2) ─────────────────────────────────────────
+    string surplusHuman = surplusPolicy switch
+    {
+        SurplusPolicy.FillRow     => "para refile/amostra",
+        SurplusPolicy.FillAdvance => "aproveitamento",
+        _                         => "exato",
+    };
+
+    Console.ForegroundColor = ConsoleColor.Green;
+    Console.WriteLine("------------------------------------------------------------");
+    Console.WriteLine($"PEDIDO:    {result.requestedUnits} UN");
+    Console.WriteLine($"REAL:      {result.plannedUnits} UN  "
+                    + $"({plano.Cols} colunas × {plano.Rows} linhas)");
+    Console.WriteLine($"SOBRA:     {result.surplusUnits} UN  ({surplusHuman})");
+    Console.WriteLine($"SAÍDA:     {outputDir}");
+    Console.WriteLine($"PDF:       {Path.GetFileName(result.outputFile)}");
+    Console.WriteLine($"CHECKS:    planned={result.plannedUnits} drawn={result.drawnUnits} readBack={result.readBackUnits}");
+    Console.WriteLine("------------------------------------------------------------");
+    Console.ResetColor();
 
     Console.ForegroundColor = ConsoleColor.Green;
     Console.WriteLine($"[SUCESSO] PDF gerado em:\n{result.outputFile}");
@@ -354,11 +415,16 @@ static double numArg(string[] args, int index, double def)
 
 static double flagNum(string[] args, string flag, double def)
 {
+    return flagNumNull(args, flag) ?? def;
+}
+
+static double? flagNumNull(string[] args, string flag)
+{
     for (int i = 0; i < args.Length - 1; i++)
         if (string.Equals(args[i], flag, StringComparison.OrdinalIgnoreCase) &&
             double.TryParse(args[i + 1], NumberStyles.Any, CultureInfo.InvariantCulture, out var v))
             return v;
-    return def;
+    return null;
 }
 
 static string flagStr(string[] args, string flag, string def)
@@ -367,6 +433,42 @@ static string flagStr(string[] args, string flag, string def)
         if (string.Equals(args[i], flag, StringComparison.OrdinalIgnoreCase))
             return args[i + 1];
     return def;
+}
+
+// ── Parsers PR #3a.2 ─────────────────────────────────────────────────
+static int? ParseTargetCopies(string[] args)
+{
+    // --target-copies N (alias legado: --copies N)
+    var v = flagNumNull(args, "--target-copies") ?? flagNumNull(args, "--copies");
+    if (v is null || v < 1) return null;
+    return (int)v;
+}
+
+static SurplusPolicy ParseSurplus(string[] args)
+{
+    // BR-024: default fill_row. --surplus truncate/fill_advance para exato/aproveitamento.
+    var s = flagStr(args, "--surplus", "fill_row");
+    return s.ToLowerInvariant() switch
+    {
+        "truncate"     => SurplusPolicy.Truncate,
+        "fill_advance" => SurplusPolicy.FillAdvance,
+        _              => SurplusPolicy.FillRow,
+    };
+}
+
+static string? ParseOutputDir(string[] args)
+{
+    var d = flagStr(args, "--output-dir", "");
+    return string.IsNullOrWhiteSpace(d) ? null : d.Trim().Trim('"');
+}
+
+static bool ParseSubstrateKindRoll(string[] args)
+    => string.Equals(flagStr(args, "--substrate-kind", "sheet"), "roll", StringComparison.OrdinalIgnoreCase);
+
+static double? ParseMaxLength(string[] args)
+{
+    var v = flagNumNull(args, "--max-length");
+    return v is > 0 ? v : null;
 }
 
 static void fail(ImpositionResult result, bool jsonMode, string message)
@@ -431,6 +533,8 @@ public class ImpositionResult
     public int plannedUnits { get; set; }
     public int drawnUnits { get; set; }
     public int readBackUnits { get; set; }
+    public int requestedUnits { get; set; }
+    public int surplusUnits { get; set; }
 }
 
 public class ArtInfo { public double widthMm { get; set; } public double heightMm { get; set; } }
