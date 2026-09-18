@@ -28,6 +28,9 @@
 | ADR-022 | Duplex Head-to-Head / Head-to-Foot como Camada Wrapper do Core | Proposto | 2026-09-17 | imposition | BR-010, BR-021 | novo — `DuplexRequest` envolve `ImpositionInput`; core permanece alheio (Regra 5) |
 | ADR-023 | Contagem Verificada — Instrumentação + Read-back Condicional | Proposto | 2026-09-17 | imposition / quality | BR-010, BR-021 | novo — aplica `packages/imposition-core/AGENTS.md` Regra 4; depende de ADR-021 |
 | ADR-024 | Migração dos projetos C# para .NET 10 | Proposto | 2026-09-17 | build / devops | — | novo — aplica `AGENTS.md` Regra 6; pré-requisito do PR #3-0/#3a |
+| ADR-025 | Preview Nativo C# (substitui roll-math.ts) | Proposto | 2026-09-18 | desktop/imposition | BR-010, BR-021 | complementa ADR-015, 017, 021; altera ADR-021 Decisão 5 |
 | ADR-026 | Política fill_row garante sobra (ajuste na função de custo) | Proposto | 2026-09-18 | imposition | BR-024, BR-010, BR-021 | novo — altera IMPOSICAO-MOTOR.md §6.3; depende de ADR-021 |
+| ADR-040 | Marcas de imposição (crop/registro/colorbar/slugline + overlay corte) | Proposto | 2026-09-18 | imposition | BR-010, BR-021 | novo — reservado; base em `docs/PLAN-marcas-imposicao.md` |
+| ADR-041 | Imposição multi-rodada (MultiSheetPlanner / multi-page) | Proposto | 2026-09-18 | imposition | BR-010, BR-021 | novo — reservado; base em `docs/PLAN-imposicao-multipagina.md` |
 
-> ADR-010..012 são **pendentes**: decisões capturadas nos data-maps e catálogo ainda precisam ser formalizadas. Cada uma vira ADR quando sua RFC for concluída.| ADR-025 | Preview Nativo C# (substitui roll-math.ts) | Proposto | 2026-09-18 | desktop/imposition | BR-010, BR-021 | complementa ADR-015, 017, 021; altera ADR-021 Decisuo 5 |
+> ADR-010..012 são **pendentes**: decisões capturadas nos data-maps e catálogo ainda precisam ser formalizadas. Cada uma vira ADR quando sua RFC for concluída.
