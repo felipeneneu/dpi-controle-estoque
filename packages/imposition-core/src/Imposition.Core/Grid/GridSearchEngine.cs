@@ -167,8 +167,27 @@ public static class GridSearchEngine
         double lengthLim)
     {
         var placements = new List<Placement>(winner.Planned);
-        var x0 = input.Margin.LeftMm;
-        var y0 = input.Margin.TopMm;
+
+        // ADR-021 (Fix B, PR #3c): centralização na fonte única de verdade.
+        // X sempre centraliza (sheet e roll); Y centraliza apenas em sheet —
+        // rolo alinha no topo, pois a página do rolo cresce até a última
+        // cópia (centralizar Y puxaria a grade para fora da página).
+        var gradeW = winner.Cols * winner.PieceWmm
+                   + (winner.Cols - 1) * input.Gap.HorizontalMm;
+        var gradeH = winner.Rows * winner.PieceHmm
+                   + (winner.Rows - 1) * input.Gap.VerticalMm;
+
+        var utilW = input.Substrate.WidthMm
+                  - input.Margin.LeftMm - input.Margin.RightMm;
+        var utilH = (input.Substrate.Kind == SubstrateKind.Roll
+            ? (input.Substrate.MaxLengthMm ?? input.Substrate.InitialLengthMm)
+            : input.Substrate.InitialLengthMm)
+                  - input.Margin.TopMm - input.Margin.BottomMm;
+
+        var startX = input.Margin.LeftMm + (utilW - gradeW) / 2.0;
+        var startY = input.Substrate.Kind == SubstrateKind.Roll
+            ? input.Margin.TopMm                                   // rolo: topo
+            : input.Margin.TopMm + (utilH - gradeH) / 2.0;         // sheet: centro
 
         for (var r = 0; r < winner.Rows; r++)
         for (var c = 0; c < winner.Cols; c++)
@@ -177,8 +196,8 @@ public static class GridSearchEngine
             if (input.SurplusPolicy == SurplusPolicy.Truncate
                 && idx >= input.TargetCopies) break;
 
-            var x = x0 + c * (winner.PieceWmm + input.Gap.HorizontalMm);
-            var y = y0 + r * (winner.PieceHmm + input.Gap.VerticalMm);
+            var x = startX + c * (winner.PieceWmm + input.Gap.HorizontalMm);
+            var y = startY + r * (winner.PieceHmm + input.Gap.VerticalMm);
 
             placements.Add(new Placement(
                 idx, r, c,
@@ -228,13 +247,26 @@ public static class GridSearchEngine
             throw new ImpositionException(
                 ErrorCodes.InvalidPiece,
                 $"Peça inválida: {input.Piece.WidthMm}×{input.Piece.HeightMm}mm");
-        if (input.Substrate.WidthMm <= 0 || input.Substrate.InitialLengthMm <= 0)
+        if (input.Substrate.WidthMm <= 0)
             throw new ImpositionException(
                 ErrorCodes.InvalidSubstrate,
-                $"Substrato inválido: {input.Substrate.WidthMm}×{input.Substrate.InitialLengthMm}mm");
-        if (input.Substrate.Kind == SubstrateKind.Roll && input.Substrate.MaxLengthMm is null)
+                $"Largura inválida: {input.Substrate.WidthMm}mm");
+
+        if (input.Substrate.Kind == SubstrateKind.Roll)
+        {
+            // Fix A (PR #3c): rolo tem altura dinâmica — InitialLengthMm pode
+            // ser 0; o limite físico vem de MaxLengthMm.
+            if (input.Substrate.MaxLengthMm is null || input.Substrate.MaxLengthMm <= 0)
+                throw new ImpositionException(
+                    ErrorCodes.InvalidSubstrate,
+                    "Rolo exige MaxLengthMm > 0.");
+        }
+        else if (input.Substrate.InitialLengthMm <= 0)
+        {
             throw new ImpositionException(
-                ErrorCodes.InvalidSubstrate, "Rolo exige maxLengthMm.");
+                ErrorCodes.InvalidSubstrate,
+                $"Folha exige InitialLengthMm > 0 (recebido: {input.Substrate.InitialLengthMm}mm).");
+        }
 
         // ADR-021 §Escopo OUT — cutInsetMm chega em P1 do roadmap §7.
         // Aceitamos o campo no schema, mas rejeitamos em runtime (Regra 9).

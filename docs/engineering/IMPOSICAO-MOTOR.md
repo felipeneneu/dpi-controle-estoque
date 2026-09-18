@@ -95,9 +95,11 @@ Fonte: `sidecars/AutoImposerCLI/Program.cs`.
    - `cols0·rows0 = 35·29 = 1015`; `cols90·rows90 = 19·51 = 969` → `969 > 1015`? Não → **sem rotação**. (Concorda com o caso, mas diverge em outros — ver 5.1.)
 3. **Grid pré-computado** via JSON ou re-derivado (130-143): `35 × 29`.
 4. **Scale-to-fit letterbox** (185-198): `scale0 = min(slotW·MM_TO_PT/artW, slotH·MM_TO_PT/artH)` — como o slot é exatamente `665/35 × 986/29 = 19 × 34 mm`, se a arte for 19×34 mm, `scale0 ≈ 1`.
-5. **Centralização nos dois eixos** (200-204).
+5. **Centralização nos dois eixos** (200-204) — **movida para o core no PR #3c**: o CLI consome `Placements` do `GridSearchEngine` sem recálculo (ADR-021).
 6. **Geração** (226-256): uma página `PdfDocument` + `XGraphics`, loop `rows × cols` **truncando em `targetCopies`** (não preenche a última linha — aqui 1015 exatos, sem truncamento).
 7. **Saída** (262): `{base}_IMPOSTO_{sheetW:F0}x{sheetH:F0}mm_{geradas}UN.pdf` → ex. `_IMPOSTO_665x986mm_1015UN.pdf`; SHA-256 (290-296); contrato `RESULT_JSON` (279).
+
+> **Nota (PR #3c, ADR-021):** a centralização passa a viver no `GridSearchEngine.BuildResult` (fonte única de verdade). Regra: **X** sempre centraliza (`startX = marginLeft + (utilW − gradeW)/2`) em sheet e rolo; **Y** centraliza em folha (`startY = marginTop + (utilH − gradeH)/2`) e alinha no **topo** em rolo (`startY = marginTop`) — a página do rolo cresce até a última cópia. O CLI deixou de calcular `startXMm/startYMm` e desenha exatamente os `Placements`.
 
 > ✅ **Neste caso os três concordam** (`35 cols × 29 rows = 1015`, sem rotação, comprimento 986). Isso torna o caso ideal para caracterização. Nos demais casos, cada motor chega a um grid diferente — ver seção 5.
 
@@ -226,6 +228,8 @@ interface ImpositionInput {
 5. **Ponto de extensão multi-peça / gang-run:** quota round-robin entre SKUs (evolução do `ExecuteAutoGang` da Konica), com soma de áreas por chapa.
 6. **Política de precisão:** relatório de desvios em mm e registro residual (máximo desvio de corte por chapa); suporte a **configuragrama em 1/10 mm** para reporte de register.
 7. **Saída única** (contrato estável para os 4 motores consumirem): grade vencedora + alternativas + métricas (aproveitamento %, metros lineares, sobras, desvio de register, decisão de escala/bleed).
+
+> **Nota (PR #3c, ADR-021):** a **centralização** da grade dentro da área útil é responsabilidade do core (`BuildResult`) — fonte única de verdade; consumidores desenham os `Placements` sem recalcular offsets. Regra: X centraliza sempre; Y centraliza em folha e alinha no topo em rolo.
 
 ### 6.3 Função de custo (pesos)
 

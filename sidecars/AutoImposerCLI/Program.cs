@@ -275,12 +275,9 @@ double scale90 = Math.Min((slotHMm * MM_TO_PT) / arteWPt, (slotWMm * MM_TO_PT) /
 double drawWPt90 = arteWPt * scale90;
 double drawHPt90 = arteHPt * scale90;
 
-// ── Centralização da grade na folha ──────────────────────────────────
-double gradeWMm = (cols * slotWMm) + ((cols - 1) * gapMm);
-double gradeHMm = (rows * slotHMm) + ((rows - 1) * gapMm);
-double startXMm = marginLeft + ((utilWMm - gradeWMm) / 2.0);
-// Rolo não centraliza verticalmente: começa no topo e termina na última linha.
-double startYMm = isRoll ? marginTop : marginTop + ((utilHMm - gradeHMm) / 2.0);
+// ── Centralização: responsabilidade do core (ADR-021, PR #3c) ──────
+// O GridSearchEngine centraliza (X sempre; Y em folha; rolo alinha no
+// topo). O CLI desenha exatamente os Placements — sem recálculo.
 
 result.sheet = new SheetInfo {
     widthMm = sheetWMm, heightMm = planeHeightMm,
@@ -306,36 +303,25 @@ try
     int geradas = 0;
     using (var gfx = XGraphics.FromPdfPage(page))
     {
-        for (int r = 0; r < rows; r++)
+        // ADR-021 (PR #3c): fonte única — desenha onde o core mandou.
+        foreach (var placement in plano.Placements)
         {
-            for (int c = 0; c < cols; c++)
-            {
-                if (geradas >= targetCopies)
-                {
-                    break;
-                }
+            double xPt = placement.XMm * MM_TO_PT;
+            double yPt = placement.YMm * MM_TO_PT;
 
-                double xPt = (startXMm + (c * (slotWMm + gapMm))) * MM_TO_PT;
-                double yPt = (startYMm + (r * (slotHMm + gapMm))) * MM_TO_PT;
-
-                var state = gfx.Save();
-                if (rotacionar)
-                {
-                    gfx.TranslateTransform(xPt + (slotWMm * MM_TO_PT), yPt);
-                    gfx.RotateTransform(90);
-                    gfx.DrawImage(arteForm, 0, 0, drawWPt90, drawHPt90);
-                }
-                else
-                {
-                    gfx.DrawImage(arteForm, xPt, yPt, drawWPt0, drawHPt0);
-                }
-                gfx.Restore(state);
-                geradas++;
-            }
-            if (geradas >= targetCopies)
+            var state = gfx.Save();
+            if (rotacionar)
             {
-                break;
+                gfx.TranslateTransform(xPt + (slotWMm * MM_TO_PT), yPt);
+                gfx.RotateTransform(90);
+                gfx.DrawImage(arteForm, 0, 0, drawWPt90, drawHPt90);
             }
+            else
+            {
+                gfx.DrawImage(arteForm, xPt, yPt, drawWPt0, drawHPt0);
+            }
+            gfx.Restore(state);
+            geradas++;
         }
     }
 
