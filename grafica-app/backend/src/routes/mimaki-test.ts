@@ -105,6 +105,13 @@ export async function mimakiTestRoutes(app: FastifyInstance) {
           parsedHeightMm: mimakiTestJobs.parsedHeightMm,
           parsedUnits: mimakiTestJobs.parsedUnits,
           parsedCopies: mimakiTestJobs.parsedCopies,
+          parsedBobinaSerial: mimakiTestJobs.parsedBobinaSerial,
+          heightMm: mimakiTestJobs.heightMm,
+          linearMeters: mimakiTestJobs.linearMeters,
+          stockDeducted: mimakiTestJobs.stockDeducted,
+          stockItemId: mimakiTestJobs.stockItemId,
+          bobinaId: mimakiTestJobs.bobinaId,
+          mimakiJobId: mimakiTestJobs.mimakiJobId,
           parseErrors: mimakiTestJobs.parseErrors,
           createdAt: mimakiTestJobs.createdAt,
         })

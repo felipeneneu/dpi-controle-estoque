@@ -53,6 +53,34 @@ export async function deductMimakiStockForJob(
   let deductedSubstrate = false;
   let deductedInksCount = 0;
 
+  // Anti-duplicação: verifica se já foi debitado no mimaki_jobs ou pelo watcher físico (mimaki_test_jobs)
+  const jobRow = await db.select().from(mimakiJobs).where(eq(mimakiJobs.id, job.id)).get();
+  if (jobRow?.stockDeducted) {
+    app.log.info(`[mimaki] Job ${job.id} (${job.jobName}) já possui estoque debitado. Ignorando para evitar duplicata.`);
+    return { deductedSubstrate: false, deductedInksCount: 0 };
+  }
+
+  const { mimakiTestJobs } = await import('../db/schema.js');
+  const physicalDeducted = await db
+    .select({ id: mimakiTestJobs.id })
+    .from(mimakiTestJobs)
+    .where(
+      and(
+        or(
+          eq(mimakiTestJobs.keyFilename, job.jobName),
+          jobRow?.orderCode ? eq(mimakiTestJobs.parsedOrderCode, jobRow.orderCode) : sql`1 = 0`
+        ),
+        eq(mimakiTestJobs.stockDeducted, true)
+      )
+    )
+    .get();
+
+  if (physicalDeducted) {
+    app.log.info(`[mimaki] Job ${job.id} (${job.jobName}) já teve baixa física registrada pelo watcher. Sincronizando stockDeducted=true.`);
+    await db.update(mimakiJobs).set({ stockDeducted: true }).where(eq(mimakiJobs.id, job.id));
+    return { deductedSubstrate: false, deductedInksCount: 0 };
+  }
+
   // 1. Débito de Substrato / Mídia
   if (job.stockItemId && job.lengthMeters && job.lengthMeters > 0) {
     const item = await db

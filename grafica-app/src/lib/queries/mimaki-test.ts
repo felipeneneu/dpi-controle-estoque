@@ -32,6 +32,13 @@ export interface MimakiTestJob {
   parsedHeightMm: number | null
   parsedUnits: number | null
   parsedCopies: number | null
+  parsedBobinaSerial: string | null
+  heightMm: number | null
+  linearMeters: number | null
+  stockDeducted: boolean | null
+  stockItemId: string | null
+  bobinaId: string | null
+  mimakiJobId: string | null
   parseErrors: string | null
   createdAt: string | null
 }

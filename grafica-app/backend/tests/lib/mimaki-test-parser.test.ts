@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parsePrintCsv, extractFilenameMeta } from '../mimaki-test-parser.js';
+import { parsePrintCsv, extractFilenameMeta, extractBobinaSerial } from '../../src/lib/mimaki-test-parser.js';
 
 const okCsv31180 = `KEY_FILENAME,KEY_RESULT,KEY_INKUSE,KEY_RIP_S_TIME,KEY_RIP_E_TIME,KEY_PRINT_S_TIME,KEY_PRINT_E_TIME,KEY_ARRANGE_CNT,KEY_RESULT_DETAIL
 31180 - José Augusto - Vinil Adesivo Branco Brilho - 60x60 - 88un.pdf,OK,Cyan:1.277cc Magenta:1.062cc Yellow:0.928cc Black:0.984cc White:0.000cc White:0.000cc Clear:0.000cc Clear:0.000cc,20260915_145744,20260915_145808,20260915_145808,20260915_150513,1,
@@ -104,6 +104,21 @@ describe('extractFilenameMeta', () => {
     expect(meta.units).toBe(40);
     expect(meta.copies).toBe(3);
     expect(meta.material).toBe('Vinil Branco Brilho');
+  });
+
+  it('extrai bobina serial de diferentes formatos', () => {
+    expect(extractBobinaSerial('31188 - Galgani - BOB-4290 - 50x50mm.pdf')).toBe('BOB-4290');
+    expect(extractBobinaSerial('31188 - BOB_4290 - teste.pdf')).toBe('BOB-4290');
+    expect(extractBobinaSerial('31188 - BOB4290 - teste.pdf')).toBe('BOB-4290');
+    expect(extractBobinaSerial('31188 - [BOB-3702] - Vinil.pdf')).toBe('BOB-3702');
+    expect(extractBobinaSerial('BOB-5832 - 31188.pdf')).toBe('BOB-5832');
+    expect(extractBobinaSerial('31188 - sem bobina.pdf')).toBeNull();
+
+    const meta = extractFilenameMeta('31188 - Galgani - BOB-4290 - Vinil Adesivo - 50x50mm - 100un.pdf');
+    expect(meta.orderCode).toBe('31188');
+    expect(meta.client).toBe('Galgani');
+    expect(meta.bobinaSerial).toBe('BOB-4290');
+    expect(meta.material).toBe('Vinil Adesivo');
   });
 
   it('nome sem código de pedido não quebra', () => {

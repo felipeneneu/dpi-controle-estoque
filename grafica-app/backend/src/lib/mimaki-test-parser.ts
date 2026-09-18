@@ -35,7 +35,18 @@ export interface FilenameMeta {
   heightMm: number | null;
   units: number | null;
   copies: number | null;
+  bobinaSerial: string | null;
   parseErrors: string[];
+}
+
+export function extractBobinaSerial(filename: string): string | null {
+  const match = filename.match(/(?:^|[\s\-_#[\](])(BOB[-_]?[A-Z0-9]{3,8})(?:$|[\s\-_#[\])])/i);
+  if (!match) return null;
+  let raw = match[1].toUpperCase().replace('_', '-');
+  if (!raw.includes('-')) {
+    raw = raw.replace(/^BOB([A-Z0-9]+)/i, 'BOB-$1');
+  }
+  return raw;
 }
 
 const ORDER_CODE_RE = /^\d{5}$/;
@@ -158,11 +169,18 @@ export function extractFilenameMeta(keyFilename: string): FilenameMeta {
       heightMm: null,
       units: null,
       copies: null,
+      bobinaSerial: null,
       parseErrors: ['KEY_FILENAME vazio'],
     };
   }
 
-  const segments = base.split(' - ').map((s) => s.trim());
+  const bobinaSerial = extractBobinaSerial(base);
+
+  const rawSegments = base.split(' - ').map((s) => s.trim());
+  const segments = rawSegments.filter((seg) => {
+    const b = extractBobinaSerial(seg);
+    return !b || seg.length > b.length + 3;
+  });
 
   // 1. Código do pedido (5 dígitos) no primeiro segmento
   let orderCode: string | null = null;
@@ -213,7 +231,7 @@ export function extractFilenameMeta(keyFilename: string): FilenameMeta {
   const copiesMatch = base.match(COPIES_RE);
   const copies = copiesMatch ? parseInt(copiesMatch[1], 10) : null;
 
-  return { orderCode, client, material, widthMm, heightMm, units, copies, parseErrors: errors };
+  return { orderCode, client, material, widthMm, heightMm, units, copies, bobinaSerial, parseErrors: errors };
 }
 
 function tagHits(value: string): number {

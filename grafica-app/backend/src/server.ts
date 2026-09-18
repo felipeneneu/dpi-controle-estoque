@@ -136,6 +136,14 @@ try {
     await safeAddCol('print_jobs', 'linear_meters_debited', 'real');
     await safeAddCol('print_jobs', 'hidden', 'integer DEFAULT false');
 
+    await safeAddCol('mimaki_test_jobs', 'parsed_bobina_serial', 'text');
+    await safeAddCol('mimaki_test_jobs', 'height_mm', 'real');
+    await safeAddCol('mimaki_test_jobs', 'linear_meters', 'real');
+    await safeAddCol('mimaki_test_jobs', 'stock_deducted', 'integer DEFAULT 0');
+    await safeAddCol('mimaki_test_jobs', 'stock_item_id', 'text');
+    await safeAddCol('mimaki_test_jobs', 'bobina_id', 'text');
+    await safeAddCol('mimaki_test_jobs', 'mimaki_job_id', 'text');
+
     const hashes = await db.all<{ hash: string }>(sql`SELECT hash FROM __drizzle_migrations`);
     const existing = new Set(hashes.map((h) => h.hash));
     const migrationFiles = [

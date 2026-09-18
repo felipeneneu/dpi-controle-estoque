@@ -195,10 +195,12 @@ export function MimakiTestPanel() {
                     <th className="py-2 pr-3">Pedido</th>
                     <th className="py-2 pr-3">Cliente</th>
                     <th className="py-2 pr-3">Arquivo</th>
+                    <th className="py-2 pr-3">Bobina</th>
                     <th className="py-2 pr-3">Material</th>
+                    <th className="py-2 pr-3 text-right">Metragem</th>
                     <th className="py-2 pr-3 text-right">Tamanho</th>
-                    <th className="py-2 pr-3 text-right">Un.</th>
                     <th className="py-2 pr-3 text-right">Tinta</th>
+                    <th className="py-2 pr-3">Estoque</th>
                     <th className="py-2 pr-3">Resultado</th>
                     <th className="py-2">Extração</th>
                   </tr>
@@ -224,14 +226,25 @@ export function MimakiTestPanel() {
                           </p>
                         </div>
                       </td>
+                      <td className="py-2 pr-3 whitespace-nowrap">
+                        {j.parsedBobinaSerial ? (
+                          <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-0.5 text-xs font-mono font-bold text-blue-700 border border-blue-200">
+                            {j.parsedBobinaSerial}
+                          </span>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        )}
+                      </td>
                       <td className="py-2 pr-3 text-gray-600">{j.parsedMaterial ?? "—"}</td>
-                      <td className="py-2 pr-3 text-right tabular-nums text-gray-700">
-                        {j.parsedWidthMm != null && j.parsedHeightMm != null
-                          ? `${j.parsedWidthMm}×${j.parsedHeightMm}mm`
-                          : "—"}
+                      <td className="py-2 pr-3 text-right tabular-nums font-semibold text-gray-800">
+                        {j.linearMeters != null ? `${j.linearMeters.toFixed(3)} m` : "—"}
                       </td>
                       <td className="py-2 pr-3 text-right tabular-nums text-gray-700">
-                        {j.parsedUnits ? `${j.parsedUnits}${j.parsedCopies ? ` · ${j.parsedCopies}cp` : ""}` : "—"}
+                        {j.heightMm != null
+                          ? `${j.heightMm}mm${j.arrangeCnt ? ` ×${j.arrangeCnt}` : ""}`
+                          : j.parsedWidthMm != null && j.parsedHeightMm != null
+                          ? `${j.parsedWidthMm}×${j.parsedHeightMm}mm`
+                          : "—"}
                       </td>
                       <td className="py-2 pr-3 text-right tabular-nums text-gray-800">
                         {(j.inkTotalCc ?? 0).toLocaleString("pt-BR", { maximumFractionDigits: 2 })}
@@ -240,6 +253,19 @@ export function MimakiTestPanel() {
                             .map((i) => `${i.label}${j[i.key]}`)
                             .join(" · ")}
                         </span>
+                      </td>
+                      <td className="py-2 pr-3 whitespace-nowrap">
+                        {j.stockDeducted ? (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-bold text-emerald-800">
+                            ✓ Baixado
+                          </span>
+                        ) : j.result === "OK" ? (
+                          <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+                            Pendente
+                          </span>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        )}
                       </td>
                       <td className="py-2 pr-3">
                         <div className="flex flex-col gap-0.5">
