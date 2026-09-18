@@ -148,11 +148,16 @@ public static class GridSearchEngine
         var lengthPerCopyNorm = c.LengthMm / Math.Max(1, input.TargetCopies)
                               / Math.Max(1e-9, lengthLim);
 
-        var surplusRatio = input.TargetCopies > 0
-            ? (double)c.Surplus / input.TargetCopies
-            : 0.0;
+        // ADR-026 (BR-024): em FillRow, surplus é o objetivo declarado
+        // pelo operador. Zerar o peso evita escolher grade "exata" que
+        // desperdiça a última linha.
+        var surplusTerm = input.SurplusPolicy == SurplusPolicy.FillRow
+            ? 0.0
+            : 0.20 * (input.TargetCopies > 0
+                ? (double)c.Surplus / input.TargetCopies
+                : 0.0);
 
-        return 0.50 * wasteRatio + 0.30 * lengthPerCopyNorm + 0.20 * surplusRatio;
+        return 0.50 * wasteRatio + 0.30 * lengthPerCopyNorm + surplusTerm;
     }
 
     private static ImpositionResult BuildResult(

@@ -139,4 +139,32 @@ public class GridSearchEngineTests
         act.Should().Throw<ImpositionException>()
            .Which.Code.Should().Be(ErrorCodes.NotImplemented);
     }
+
+    [Fact] // BR-024 / ADR-026: fill_row garante sobra quando alvo não fecha
+    public void BR_010_aj_FillRow_GaranteSurplus()
+    {
+        // Peça 34×19 em chapa 700×1000, margem 10, gap 2.
+        // Alvo 200 com fill_row: deve escolher grade com surplus > 0,
+        // não uma grade "exata" que desperdiça a última linha.
+        var input = new ImpositionInput(
+            Substrate: new SubstrateSpec(
+                Kind: SubstrateKind.Sheet,
+                WidthMm: 700, InitialLengthMm: 1000,
+                MaxLengthMm: null,
+                ToleranceMm: 0.1, RegisterMm: 0.1),
+            Piece: new PieceSpec(34, 19),
+            Gap: new GapSpec(2, 2),
+            Margin: new MarginSpec(10, 10, 10, 10),
+            TargetCopies: 200,
+            SurplusPolicy: SurplusPolicy.FillRow,
+            ScalePolicy: ScalePolicy.Reject,
+            ForcedOrientation: null,
+            ForcedCols: null);
+
+        var result = GridSearchEngine.Plan(input);
+
+        result.PlannedUnits.Should().BeGreaterThanOrEqualTo(200);
+        result.Surplus.Should().BeGreaterThan(0,
+            "fill_row deve produzir sobra (BR-024 / ADR-026)");
+    }
 }

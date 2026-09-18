@@ -20,6 +20,8 @@ public static class ImpositionBridge
     /// Capacidade máxima da chapa em cópias (default do modo legado quando o
     /// operador não informa tiragem). Regra 1 do AGENTS.md: tol aplicada ANTES
     /// do floor, nas DUAS orientações — a vencedora é a de maior capacidade.
+    /// Se <paramref name="forcedOrientation"/> for informado, respeita a
+    /// orientação (ignora a outra).
     /// </summary>
     public static int MaxCapacity(
         double sheetWidthMm,
@@ -30,18 +32,58 @@ public static class ImpositionBridge
         double marginBottomMm,
         double marginLeftMm,
         double pieceWidthMm,
-        double pieceHeightMm)
+        double pieceHeightMm,
+        Orientation? forcedOrientation = null)
     {
         var tol  = Tolerance.Resolve(DefaultToleranceMm, DefaultRegisterMm);
         var utilW = sheetWidthMm - marginLeftMm - marginRightMm;
         var utilH = sheetHeightMm - marginTopMm - marginBottomMm;
 
-        var direta   = Math.Floor((utilW + gapMm + tol) / (pieceWidthMm + gapMm))
-                     * Math.Floor((utilH + gapMm + tol) / (pieceHeightMm + gapMm));
-        var rotaciona = Math.Floor((utilW + gapMm + tol) / (pieceHeightMm + gapMm))
-                     * Math.Floor((utilH + gapMm + tol) / (pieceWidthMm + gapMm));
-        return (int)Math.Max(direta, rotaciona);
+        int Cap(double pW, double pH) =>
+            (int)(Math.Floor((utilW + gapMm + tol) / (pW + gapMm))
+                * Math.Floor((utilH + gapMm + tol) / (pH + gapMm)));
+
+        return forcedOrientation switch
+        {
+            Orientation.Portrait  => Cap(pieceWidthMm, pieceHeightMm),
+            Orientation.Landscape => Cap(pieceHeightMm, pieceWidthMm),
+            null                  => Math.Max(
+                                      Cap(pieceWidthMm, pieceHeightMm),
+                                      Cap(pieceHeightMm, pieceWidthMm)),
+            _ => throw new ArgumentOutOfRangeException(
+                     nameof(forcedOrientation), forcedOrientation,
+                     "Orientação inválida (valores válidos: Portrait, Landscape)."),
+        };
     }
+
+    /// <summary>
+    /// Capacidade máxima de um rolo/bobina (auto-estende até
+    /// <paramref name="maxLengthMm"/>). Mesma fórmula da Regra 1, aplicada
+    /// nas DUAS orientações.
+    /// </summary>
+    public static int MaxCapacityRoll(
+        double rollWidthMm,
+        double maxLengthMm,
+        double gapMm,
+        double marginTopMm,
+        double marginRightMm,
+        double marginBottomMm,
+        double marginLeftMm,
+        double pieceWidthMm,
+        double pieceHeightMm)
+    {
+        var tol  = Tolerance.Resolve(DefaultToleranceMm, DefaultRegisterMm);
+        var utilW = rollWidthMm - marginLeftMm - marginRightMm;
+        var utilH = maxLengthMm - marginTopMm - marginBottomMm;
+
+        int Cap(double pW, double pH) =>
+            (int)(Math.Floor((utilW + gapMm + tol) / (pW + gapMm))
+                * Math.Floor((utilH + gapMm + tol) / (pH + gapMm)));
+
+        return Math.Max(Cap(pieceWidthMm, pieceHeightMm),
+                        Cap(pieceHeightMm, pieceWidthMm));
+    }
+
     public static ImpositionInput BuildInput(
         double sheetWidthMm,
         double sheetHeightMm,
@@ -53,22 +95,29 @@ public static class ImpositionBridge
         double pieceWidthMm,
         double pieceHeightMm,
         int targetCopies,
-        Orientation? forcedOrientation = null)
+        Orientation? forcedOrientation = null,
+        SurplusPolicy surplusPolicy = SurplusPolicy.FillRow,
+        SubstrateKind kind = SubstrateKind.Sheet,
+        double? maxLengthMm = null)
     {
+        if (kind == SubstrateKind.Roll && maxLengthMm is null)
+            throw new ArgumentException(
+                "Rolo requer maxLengthMm.", nameof(maxLengthMm));
+
         return new ImpositionInput(
             Substrate: new SubstrateSpec(
-                Kind: SubstrateKind.Sheet,
+                Kind: kind,
                 WidthMm: sheetWidthMm,
                 InitialLengthMm: sheetHeightMm,
-                MaxLengthMm: null,
+                MaxLengthMm: kind == SubstrateKind.Roll ? maxLengthMm : null,
                 ToleranceMm: DefaultToleranceMm,
                 RegisterMm: DefaultRegisterMm),
             Piece: new PieceSpec(pieceWidthMm, pieceHeightMm),
             Gap: new GapSpec(gapMm, gapMm),
             Margin: new MarginSpec(marginLeftMm, marginRightMm, marginTopMm, marginBottomMm),
             TargetCopies: targetCopies,
-            SurplusPolicy: SurplusPolicy.Truncate,
-            ScalePolicy: ScalePolicy.Fit,
+            SurplusPolicy: surplusPolicy,
+            ScalePolicy: ScalePolicy.Reject,
             ForcedOrientation: forcedOrientation,
             ForcedCols: null);
     }
