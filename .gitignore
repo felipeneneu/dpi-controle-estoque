@@ -66,3 +66,6 @@ TestResults/
 # sidecar publish output
 sidecars/bin/
 **/sidecars/bin/
+
+# Imposition output
+*_IMPOSTO_*.pdf

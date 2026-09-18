@@ -165,8 +165,10 @@ try
     else
     {
         // Modo legado: alvo default = capacidade (grade inteira), via core.
-        var capacidade = (int)Math.Floor((utilWMm + gapMm) / (arteWMm + gapMm))
-                       * (int)Math.Floor((utilHMm + gapMm) / (arteHMm + gapMm));
+        var capacidade = ImpositionBridge.MaxCapacity(
+            sheetWMm, sheetHMm, gapMm,
+            marginTop, marginRight, marginBottom, marginLeft,
+            arteWMm, arteHMm);
 
         targetCopies = jp?.targetCopies > 0
             ? jp.targetCopies

@@ -40,6 +40,42 @@ public class CrossMotorTests
     }
 
     [Fact]
+    public void BR_010_ag_LegacyDefaultCapacity_RespectsRotationAndTolerance()
+    {
+        var capacidade = ImpositionBridge.MaxCapacity(
+            sheetWidthMm: 665,
+            sheetHeightMm: 986,
+            gapMm: 0,
+            marginTopMm: 0,
+            marginRightMm: 0,
+            marginBottomMm: 0,
+            marginLeftMm: 0,
+            pieceWidthMm: 34,
+            pieceHeightMm: 19);
+
+        capacidade.Should().Be(1015);
+
+        var input = ImpositionBridge.BuildInput(
+            sheetWidthMm: 665,
+            sheetHeightMm: 986,
+            gapMm: 0,
+            marginTopMm: 0,
+            marginRightMm: 0,
+            marginBottomMm: 0,
+            marginLeftMm: 0,
+            pieceWidthMm: 34,
+            pieceHeightMm: 19,
+            targetCopies: capacidade,
+            forcedOrientation: null);
+
+        var cliResult = ImpositionBridge.Plan(input);
+
+        cliResult.Cols.Should().Be(35);
+        cliResult.Rows.Should().Be(29);
+        cliResult.PlannedUnits.Should().Be(1015);
+    }
+
+    [Fact]
     public void BR_010_af_CountIntegrity_PdfReadBack()
     {
         // Gerar um PDF de teste em memória e salvá-lo para read-back
