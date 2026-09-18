@@ -11,4 +11,7 @@
     <Project Path="../sidecars/IllustratorImposerCLI/IllustratorImposerCLI.csproj" />
     <Project Path="../sidecars/ImpositorKonica/ImpositorKonica.csproj" />
   </Folder>
+  <Folder Name="/sidecars-tests/">
+    <Project Path="../sidecars/AutoImposerCLI/tests/AutoImposerCLI.Tests/AutoImposerCLI.Tests.csproj" />
+  </Folder>
 </Solution>

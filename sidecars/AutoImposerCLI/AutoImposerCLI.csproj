@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -15,6 +15,12 @@
     <!-- ADR-021 Decisão 6: imposition-core é a fonte única de grade. -->
     <ProjectReference Include="../../packages/imposition-core/src/Imposition.Core/Imposition.Core.csproj" />
     <InternalsVisibleTo Include="AutoImposerCLI.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="tests\**" />
+    <EmbeddedResource Remove="tests\**" />
+    <None Remove="tests\**" />
   </ItemGroup>
 
 </Project>

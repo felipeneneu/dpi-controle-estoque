@@ -4,11 +4,13 @@ on:
   pull_request:
     paths:
       - 'packages/imposition-core/**'
+      - 'sidecars/AutoImposerCLI/**'
       - '.github/workflows/imposition-core.yml'
   push:
     branches: [main]
     paths:
       - 'packages/imposition-core/**'
+      - 'sidecars/AutoImposerCLI/**'
 
 jobs:
   test:
@@ -25,8 +27,10 @@ jobs:
         run: dotnet restore
       - name: build (warnings as errors)
         run: dotnet build --no-restore -c Release
-      - name: test (golden canÃ´nico obrigatÃ³rio)
-        run: dotnet test --no-build -c Release --logger "console;verbosity=detailed"
+      - name: test (golden canônico obrigatório + sidecars cross-motor)
+        run: |
+          dotnet test --no-build -c Release --logger "console;verbosity=detailed"
+          dotnet test ../../sidecars/AutoImposerCLI/tests/AutoImposerCLI.Tests -c Release --logger "console;verbosity=detailed"
       - name: upload test results
         if: always()
         uses: actions/upload-artifact@v4

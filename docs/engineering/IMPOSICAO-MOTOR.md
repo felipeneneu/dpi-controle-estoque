@@ -140,11 +140,11 @@ Fonte: `sidecars/AutoImposerCLI/Program.cs`.
 
 ### 5.1 Decisão de orientação incompatível (3 critérios diferentes)
 
-- **Área**: `Program.cs:153` — `rotacionar = cols90·rows90 > cols0·rows0`.
+- **Área**: (Resolvido no Motor 1 no PR #3a, agora consome o core)
 - **Colunas**: `engine.jsx:56-62,59-60` — `cols90 > cols0` (único com epsilon).
 - **Custo/ordenação**: `imposition-roll-math.ts:109-122` — a orientação é resolvida **por ordenação de score**, não por comparação binária.
 
-Resultado: para a mesma entrada, os motores podem escolher orientações opostas.
+Resultado: os motores 2 e 3 ainda podem escolher orientações opostas (Motor 1 resolvido via fonte única).
 
 ### 5.2 Margens assimétricas e orquestrador inconsistente
 
@@ -154,8 +154,8 @@ Resultado: para a mesma entrada, os motores podem escolher orientações opostas
 
 ### 5.3 Contagem de unidades e `target_copies` ignorado
 
-- `targetCopies` posicional está **documentado mas é ignorado** no fluxo do `AutoImposerCLI` via bat (o `Impor_70x100.bat` nem passa target; `Impor_Illustrator.bat` usa default 750 mm/100 cópias).
-- **CLI trunca** em `targetCopies` (`Program.cs:226-256`) vs **JSX preenche a última linha** com sobras (`engine.jsx:135-168`) → a mesma especificação gera PDFs com contagens diferentes.
+- `targetCopies` posicional: resolvido no Motor 1 no PR #3a (respeita o argumento e trunca conforme o plano).
+- **JSX preenche a última linha** com sobras (`engine.jsx:135-168`) → pendente de alinhamento com a política de sobras unificada.
 
 ### 5.4 Auto-extensão de rolo só no JSX
 
