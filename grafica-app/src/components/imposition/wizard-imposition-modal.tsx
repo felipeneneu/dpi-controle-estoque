@@ -71,7 +71,8 @@ export function WizardImpositionModal({ open, onOpenChange, onFinished }: any) {
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setCaminhoArte(file.path || file.name);
+      const filePath = (file as unknown as { path?: string }).path || file.name;
+      setCaminhoArte(filePath);
       setNomeJob(file.name.replace(/\.[^/.]+$/, ""));
     }
   };
@@ -81,7 +82,8 @@ export function WizardImpositionModal({ open, onOpenChange, onFinished }: any) {
     e.stopPropagation();
     const file = e.dataTransfer.files?.[0];
     if (file) {
-      setCaminhoArte(file.path || file.name);
+      const filePath = (file as unknown as { path?: string }).path || file.name;
+      setCaminhoArte(filePath);
       setNomeJob(file.name.replace(/\.[^/.]+$/, ""));
     }
   };

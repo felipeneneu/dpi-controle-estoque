@@ -101,7 +101,43 @@ Fonte: `sidecars/AutoImposerCLI/Program.cs`.
 
 > **Nota (PR #3c, ADR-021):** a centralização passa a viver no `GridSearchEngine.BuildResult` (fonte única de verdade). Regra: **X** sempre centraliza (`startX = marginLeft + (utilW − gradeW)/2`) em sheet e rolo; **Y** centraliza em folha (`startY = marginTop + (utilH − gradeH)/2`) e alinha no **topo** em rolo (`startY = marginTop`) — a página do rolo cresce até a última cópia. O CLI deixou de calcular `startXMm/startYMm` e desenha exatamente os `Placements`.
 
+> **Ajuste `--trim-to-content`:** o PDF pode ser gerado com o
+> tamanho da grade (+ margens) em vez do substrato inteiro — em rolo e em
+> chapa. Útil para HP Latex e Mimaki (evita borda morta) e para folha com
+> sobra morta. Em rolo, Y já nasce no topo (nenhum offset): só encurta X;
+> em folha, o core centraliza X e Y e o trim corta os DOIS lados
+> (`offsetXMm/offsetYMm` = negativo do centramento). Aplicável apenas ao
+> fluxo por argumentos (modo JSON/Electron segue sem trim). Flag opcional
+> — sem a flag, comportamento atual mantido.
+
 > ✅ **Neste caso os três concordam** (`35 cols × 29 rows = 1015`, sem rotação, comprimento 986). Isso torna o caso ideal para caracterização. Nos demais casos, cada motor chega a um grid diferente — ver seção 5.
+
+### 3.5 Multi-rodadas: exit code 4 e protocolo `OPTION_*` (stderr)
+
+Quando `targetCopies > capacidade`, o Motor 1 **não gera PDF**: escreve no
+**stderr** as linhas `OPTION_*` (parseáveis por `for /f`) e termina com
+**exit code 4**. Quem invoca (o `MontarPDF.bat`) decide. Contrato:
+
+- Mensagens (stderr), todas ASCII (evita mojibake no `cmd`):
+  `[ERRO] Pedido de N UN excede a capacidade da chapa WxHmm.`,
+  `Capacidade por rodada: {cap} UN ({cols} cols).`,
+  `Rodadas necessarias: {N}.`
+- Opções (stderr): `OPTION_COUNT=3`; `OPTION_1_*` = **1 rodada de `capacidade`**
+  (máximo); `OPTION_2..4_*` = rodadas `N, N+1, N+2` com
+  `copiasRodada = ceil(target/N)` arredondado **para múltiplo de `cols`**
+  (cada rodada é uma chapa cheia só de linhas completas) e
+  `sobra = copiasRodada·N − target`; `OPTION_BASE_*` = base p/ labels.
+- Fórmula: `N¹ = ceil(target/capacidade)`; `total = copiasRodada·N`;
+  `sobra = total − target`. Nunca excede `capacidade` por rodada
+  (`capacidade` é múltiplo de `cols`).
+- Exit codes intactos: 0 sucesso; 1 erro de entrada/args; 2 PDF inválido;
+  3 erro de saída; **4 pedido excede a chapa**.
+- `--trim-to-content` e contratos existentes não são alterados no fluxo 4.
+
+> **Nota (cmd):** o `set "VAR=!VAR: =!"` (remove espaços) sobre variável
+> **vazia** é um bug conhecido do `cmd` — corrompe o valor e quebra o default
+> `[ENTER]`. Todos os strips do `MontarPDF.bat` são condicionais:
+> `if not "!VAR!"=="" set "VAR=!VAR: =!"`.
 
 ---
 

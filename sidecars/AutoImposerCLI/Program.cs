@@ -23,7 +23,7 @@ if (args.Length == 0 || string.IsNullOrWhiteSpace(args[0]))
     Console.WriteLine("USO: AutoImposerCLI.exe <arquivo.pdf> [largura_mm] [altura_mm] [gap_mm] [margem_mm] [pasta_saida] [target_copies]");
     Console.WriteLine("     [--margin-t N] [--margin-r N] [--margin-b N] [--margin-l N] [--rotation auto|0|90]");
     Console.WriteLine("     [--target-copies N] [--surplus truncate|fill_row|fill_advance] [--output-dir DIR]");
-    Console.WriteLine("     [--substrate-kind sheet|roll] [--max-length N] [--json] [--strict|--warn]");
+    Console.WriteLine("     [--substrate-kind sheet|roll] [--max-length N] [--trim-to-content] [--json] [--strict|--warn]");
     Console.WriteLine("     [--json '{\"inputPdf\":\"...\",\"sheetWMm\":665,...}']");
     Console.WriteLine("Exemplo: AutoImposerCLI.exe C:\\Artes\\adesivo.pdf 700 1000 2 10");
     Console.WriteLine("         AutoImposerCLI.exe C:\\Artes\\adesivo.pdf 700 1000 2 10 --surplus fill_row --output-dir C:\\saida");
@@ -213,6 +213,66 @@ try
         requestedCopies = ParseTargetCopies(args) ?? capacidade;
         targetCopies = requestedCopies;
 
+// Suporte a correção (exit code 4): pedido acima da capacidade não
+        // chega ao core. O .bat lê o bloco OPTION_* (stderr, parseável por
+        // for /f) e oferece dividir o pedido em N rodadas do mesmo arquivo.
+        // A peça SEMPRE cabe quando target <= capacidade (o grid da melhor
+        // orientação acomoda o pedido fechando a última linha), então este
+        // pré-check é exatamente equivalente ao E_GRID_OVERFLOW do core.
+        if (targetCopies > capacidade)
+        {
+            // colsVencedor vem do BestGrid — fonte única da fórmula da Regra 1,
+            // mesma orientação vencedora que define capacidade.
+            var colsVencedor = ImpositionBridge.BestGrid(
+                sheetWMm, planeHeightMm, gapMm,
+                marginTop, marginRight, marginBottom, marginLeft,
+                arteWMm, arteHMm, forcar).Cols;
+
+            var rodadasMin = (int)Math.Ceiling((double)targetCopies / capacidade);
+
+            Console.Error.WriteLine(
+                $"[ERRO] Pedido de {targetCopies} UN excede a capacidade " +
+                $"da chapa {sheetWMm:F0}x{planeHeightMm:F0}mm.");
+            Console.Error.WriteLine(
+                $"       Capacidade por rodada: {capacidade} UN " +
+                $"({colsVencedor} cols).");
+            Console.Error.WriteLine(
+                $"       Rodadas necessarias: {rodadasMin}.");
+
+            // Informações base para o .bat (formato parseável por for /f).
+            Console.Error.WriteLine("OPTION_COUNT=3");
+            Console.Error.WriteLine("OPTION_1_ROUNDS=1");
+            Console.Error.WriteLine($"OPTION_1_TARGET={capacidade}");
+            Console.Error.WriteLine($"OPTION_1_TOTAL={capacidade}");
+            Console.Error.WriteLine($"OPTION_1_SURPLUS={capacidade - targetCopies}");
+            Console.Error.WriteLine($"OPTION_1_LABEL=1 rodada de {capacidade} UN (maximo)");
+
+            for (int i = 0; i < 3; i++)
+            {
+                var n = rodadasMin + i;
+                var copiasIdeais = (int)Math.Ceiling((double)targetCopies / n);
+                var resto = copiasIdeais % colsVencedor;
+                var copiasRodada = resto == 0
+                    ? copiasIdeais
+                    : copiasIdeais + (colsVencedor - resto);
+                var total = copiasRodada * n;
+                var sobra = total - targetCopies;
+
+                Console.Error.WriteLine($"OPTION_{i + 2}_ROUNDS={n}");
+                Console.Error.WriteLine($"OPTION_{i + 2}_TARGET={copiasRodada}");
+                Console.Error.WriteLine($"OPTION_{i + 2}_TOTAL={total}");
+                Console.Error.WriteLine($"OPTION_{i + 2}_SURPLUS={sobra}");
+                Console.Error.WriteLine(
+                    $"OPTION_{i + 2}_LABEL={n} rodadas de {copiasRodada} UN = {total} UN (sobra {sobra})");
+            }
+
+            Console.Error.WriteLine($"OPTION_BASE_CAP={capacidade}");
+            Console.Error.WriteLine($"OPTION_BASE_COLS={colsVencedor}");
+            Console.Error.WriteLine($"OPTION_BASE_TARGET={targetCopies}");
+
+            return 4;
+        }
+
         plano = ImpositionBridge.Plan(ImpositionBridge.BuildInput(
             sheetWMm, planeHeightMm, gapMm,
             marginTop, marginRight, marginBottom, marginLeft,
@@ -292,13 +352,56 @@ result.startedAt = DateTime.Now;
 try
 {
     using var outputDoc = new PdfDocument();
-    var page = outputDoc.AddPage();
-    page.Width = XUnit.FromMillimeter(sheetWMm);
+
+    // Ajuste --trim-to-content: PDF no tamanho da grade (+ margens) em vez do
+    // substrato inteiro — rolo E chapa (o .bat pergunta em todos os formatos;
+    // o modo JSON/Electron segue sem trim). Ver IMPOSICAO-MOTOR.md §3.4.
+    var trimToContent = ParseTrimToContent(args);
+    if (trimToContent && jp != null)
+    {
+        Console.Error.WriteLine(
+            "[AVISO] --trim-to-content é aplicável apenas ao fluxo por argumentos (não em modo JSON).");
+        trimToContent = false;
+    }
+
+    double offsetXMm = 0.0, offsetYMm = 0.0;
+    double pageWMm = sheetWMm;
     // Rolo: página termina na última linha (comprimento usado = plano.LengthMm).
     double pageHMm = isRoll
         ? Math.Max(1.0, marginTop + plano.LengthMm + marginBottom)
         : planeHeightMm;
+
+    if (trimToContent)
+    {
+        // Grade na orientação vencedora (slot já rotacionado) + gaps.
+        var gradeWMm = cols * slotWMm + (cols - 1) * gapMm;
+        var gradeHMm = plano.LengthMm; // lengthMm = rows*slotH + gaps
+
+        pageWMm = gradeWMm + marginLeft + marginRight;
+        pageHMm = gradeHMm + marginTop + marginBottom;
+
+        // O core centraliza X no substrato (startX = marginLeft + (utilW − gradeW)/2),
+        // em sheet E rolo; Y centraliza em folha (startY = marginTop + (utilH −
+        // gradeH)/2) e alinha no topo em rolo (PR #3c, ADR-021). Na página
+        // trimada, X volta para a margem esquerda e Y para o topo — o
+        // deslocamento é o negativo do centramento, aplicado onde o core
+        // centralizou (X sempre; Y só em folha).
+        offsetXMm = (gradeWMm - utilWMm) / 2.0;
+        if (!isRoll)
+            offsetYMm = (gradeHMm - utilHMm) / 2.0;
+    }
+
+    var page = outputDoc.AddPage();
+    page.Width = XUnit.FromMillimeter(pageWMm);
     page.Height = XUnit.FromMillimeter(pageHMm);
+
+    if (trimToContent)
+    {
+        // TrimBox/BleedBox = página útil (grade + margens); MediaBox já é a page.
+        var trim = new PdfRectangle(new XRect(0, 0, pageWMm * MM_TO_PT, pageHMm * MM_TO_PT));
+        page.TrimBox = trim;
+        page.BleedBox = trim;
+    }
 
     int geradas = 0;
     using (var gfx = XGraphics.FromPdfPage(page))
@@ -306,8 +409,8 @@ try
         // ADR-021 (PR #3c): fonte única — desenha onde o core mandou.
         foreach (var placement in plano.Placements)
         {
-            double xPt = placement.XMm * MM_TO_PT;
-            double yPt = placement.YMm * MM_TO_PT;
+            double xPt = (placement.XMm + offsetXMm) * MM_TO_PT;
+            double yPt = (placement.YMm + offsetYMm) * MM_TO_PT;
 
             var state = gfx.Save();
             if (rotacionar)
@@ -328,8 +431,10 @@ try
     result.grid.units = geradas;
     result.outputDir = outputDir;
     string baseName = Path.GetFileNameWithoutExtension(inputPdf);
-    double nameHMm = isRoll ? pageHMm : sheetHMm;
-    result.outputFile = Path.Combine(outputDir, $"{baseName}_IMPOSTO_{sheetWMm:F0}x{nameHMm:F0}mm_{geradas}UN.pdf");
+    // Com --trim-to-content, o nome reflete o tamanho REAL da página (grade + margens).
+    double nameWMm = trimToContent ? pageWMm : sheetWMm;
+    double nameHMm = pageHMm;
+    result.outputFile = Path.Combine(outputDir, $"{baseName}_IMPOSTO_{nameWMm:F0}x{nameHMm:F0}mm_{geradas}UN.pdf");
 
     outputDoc.Save(result.outputFile);
 
@@ -456,6 +561,9 @@ static double? ParseMaxLength(string[] args)
     var v = flagNumNull(args, "--max-length");
     return v is > 0 ? v : null;
 }
+
+static bool ParseTrimToContent(string[] args)
+    => args.Contains("--trim-to-content", StringComparer.OrdinalIgnoreCase);
 
 static void fail(ImpositionResult result, bool jsonMode, string message)
 {

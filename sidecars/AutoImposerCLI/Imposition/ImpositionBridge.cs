@@ -21,9 +21,53 @@ public static class ImpositionBridge
     /// operador não informa tiragem). Regra 1 do AGENTS.md: tol aplicada ANTES
     /// do floor, nas DUAS orientações — a vencedora é a de maior capacidade.
     /// Se <paramref name="forcedOrientation"/> for informado, respeita a
-    /// orientação (ignora a outra).
+    /// orientação (ignora a outra). Delega a única fórmula para
+    /// <see cref="BestGrid"/>. Fonte única.
     /// </summary>
     public static int MaxCapacity(
+        double sheetWidthMm,
+        double sheetHeightMm,
+        double gapMm,
+        double marginTopMm,
+        double marginRightMm,
+        double marginBottomMm,
+        double marginLeftMm,
+        double pieceWidthMm,
+        double pieceHeightMm,
+        Orientation? forcedOrientation = null)
+        => BestGrid(
+            sheetWidthMm, sheetHeightMm, gapMm,
+            marginTopMm, marginRightMm, marginBottomMm, marginLeftMm,
+            pieceWidthMm, pieceHeightMm, forcedOrientation).Capacity;
+
+    /// <summary>
+    /// Capacidade máxima de um rolo/bobina (auto-estende até
+    /// <paramref name="maxLengthMm"/>). Mesma fórmula da Regra 1, aplicada
+    /// nas DUAS orientações. Delega para <see cref="BestGrid"/>. Fonte única.
+    /// </summary>
+    public static int MaxCapacityRoll(
+        double rollWidthMm,
+        double maxLengthMm,
+        double gapMm,
+        double marginTopMm,
+        double marginRightMm,
+        double marginBottomMm,
+        double marginLeftMm,
+        double pieceWidthMm,
+        double pieceHeightMm)
+        => BestGrid(
+            rollWidthMm, maxLengthMm, gapMm,
+            marginTopMm, marginRightMm, marginBottomMm, marginLeftMm,
+            pieceWidthMm, pieceHeightMm, null).Capacity;
+
+    /// <summary>
+    /// Melhor grade (maior capacidade) para chapa/rolo, respeitando orientação
+    /// forçada se informada. Regra 1: tol aplicada ANTES do floor, nas DUAS
+    /// orientações; a vencedora é a de maior capacidade (roll usa
+    /// <c>sheetHeightMm</c> = comprimento máximo). Usado pelo CLI para a
+    /// mensagem de capacidade no exit code 4.
+    /// </summary>
+    public static (int Cols, int Rows, int Capacity) BestGrid(
         double sheetWidthMm,
         double sheetHeightMm,
         double gapMm,
@@ -39,49 +83,27 @@ public static class ImpositionBridge
         var utilW = sheetWidthMm - marginLeftMm - marginRightMm;
         var utilH = sheetHeightMm - marginTopMm - marginBottomMm;
 
-        int Cap(double pW, double pH) =>
-            (int)(Math.Floor((utilW + gapMm + tol) / (pW + gapMm))
-                * Math.Floor((utilH + gapMm + tol) / (pH + gapMm)));
+        (int Cols, int Rows) Cap(double pW, double pH) => (
+            (int)Math.Floor((utilW + gapMm + tol) / (pW + gapMm)),
+            (int)Math.Floor((utilH + gapMm + tol) / (pH + gapMm)));
 
-        return forcedOrientation switch
+        var portrait  = Cap(pieceWidthMm, pieceHeightMm);
+        var landscape = Cap(pieceHeightMm, pieceWidthMm);
+
+        var (cols, rows) = forcedOrientation switch
         {
-            Orientation.Portrait  => Cap(pieceWidthMm, pieceHeightMm),
-            Orientation.Landscape => Cap(pieceHeightMm, pieceWidthMm),
-            null                  => Math.Max(
-                                      Cap(pieceWidthMm, pieceHeightMm),
-                                      Cap(pieceHeightMm, pieceWidthMm)),
+            Orientation.Portrait  => portrait,
+            Orientation.Landscape => landscape,
+            null                  => portrait.Cols * portrait.Rows
+                                   >= landscape.Cols * landscape.Rows
+                                       ? portrait
+                                       : landscape,
             _ => throw new ArgumentOutOfRangeException(
                      nameof(forcedOrientation), forcedOrientation,
                      "Orientação inválida (valores válidos: Portrait, Landscape)."),
         };
-    }
 
-    /// <summary>
-    /// Capacidade máxima de um rolo/bobina (auto-estende até
-    /// <paramref name="maxLengthMm"/>). Mesma fórmula da Regra 1, aplicada
-    /// nas DUAS orientações.
-    /// </summary>
-    public static int MaxCapacityRoll(
-        double rollWidthMm,
-        double maxLengthMm,
-        double gapMm,
-        double marginTopMm,
-        double marginRightMm,
-        double marginBottomMm,
-        double marginLeftMm,
-        double pieceWidthMm,
-        double pieceHeightMm)
-    {
-        var tol  = Tolerance.Resolve(DefaultToleranceMm, DefaultRegisterMm);
-        var utilW = rollWidthMm - marginLeftMm - marginRightMm;
-        var utilH = maxLengthMm - marginTopMm - marginBottomMm;
-
-        int Cap(double pW, double pH) =>
-            (int)(Math.Floor((utilW + gapMm + tol) / (pW + gapMm))
-                * Math.Floor((utilH + gapMm + tol) / (pH + gapMm)));
-
-        return Math.Max(Cap(pieceWidthMm, pieceHeightMm),
-                        Cap(pieceHeightMm, pieceWidthMm));
+        return (cols, rows, cols * rows);
     }
 
     public static ImpositionInput BuildInput(

@@ -98,15 +98,15 @@ echo   [1] Chapa 700 x 1000 mm (Padrao) - Gap: 2mm, Margem: 10mm  [ENTER]
 echo   [2] Meia Chapa 500 x 700 mm      - Gap: 2mm, Margem: 10mm
 echo   [3] Chapa Grande 1000 x 1500 mm  - Gap: 2mm, Margem: 10mm
 echo   [4] Folha SRA3 330 x 480 mm      - Gap: 2mm, Margem: 5mm (Konica)
-echo   [5] Personalizado (definir dimensoes)
+echo   [5] Personalizado (definir dimensoes, gap e margens)
 echo   [6] Rolo/Bobina (so largura)
 echo.
 echo ============================================================
 set "OPCAO=1"
 set /p "OPCAO=Digite o numero da opcao [1]: "
 
-rem Remove espacos (so se nao estiver vazio: strip de vazio eh bug do cmd)
-if not "!OPCAO!"=="" set "OPCAO=!OPCAO: =!"
+rem Remove espacos
+set "OPCAO=!OPCAO: =!"
 if "!OPCAO!"=="" set "OPCAO=1"
 set "OPCAO_SEL=!OPCAO:~0,1!"
 
@@ -129,18 +129,13 @@ echo [ERRO] Preset desconhecido: !MONTAR_PRESET!
 pause
 goto sair
 
-rem ------------------------------------------------------------
-rem Presets (definem defaults, depois vao para :menu_ajustes)
-rem ------------------------------------------------------------
-
 :opt_700x1000
 set "PW=700"
 set "PH=1000"
 set "GAP=2"
 set "MARG=10"
 set "SUBSTRATE_ARG="
-set "TRIM_ARG="
-goto menu_ajustes
+goto menu_rotacao
 
 :opt_500x700
 set "PW=500"
@@ -148,8 +143,7 @@ set "PH=700"
 set "GAP=2"
 set "MARG=10"
 set "SUBSTRATE_ARG="
-set "TRIM_ARG="
-goto menu_ajustes
+goto menu_rotacao
 
 :opt_1000x1500
 set "PW=1000"
@@ -157,8 +151,7 @@ set "PH=1500"
 set "GAP=2"
 set "MARG=10"
 set "SUBSTRATE_ARG="
-set "TRIM_ARG="
-goto menu_ajustes
+goto menu_rotacao
 
 :opt_sra3
 set "PW=330"
@@ -166,21 +159,20 @@ set "PH=480"
 set "GAP=2"
 set "MARG=5"
 set "SUBSTRATE_ARG="
-set "TRIM_ARG="
-goto menu_ajustes
+goto menu_rotacao
 
 :opt_custom
 echo.
 echo ------------------------------------------------------------
-echo  PERSONALIZADO - DIMENSOES DA CHAPA
+echo  Parametros Personalizados (Apenas Enter usa o valor padrao)
 echo ------------------------------------------------------------
 set "PW=700"
 set "PH=1000"
 set "GAP=2"
 set "MARG=10"
 set "SUBSTRATE_ARG="
-set "TRIM_ARG="
 
+rem Padrao TMP: le em variavel temporaria para preservar default no ENTER.
 set "TMP="
 set /p "TMP=Largura da chapa em mm [700]: "
 if not "!TMP!"=="" set "PW=!TMP!"
@@ -189,7 +181,15 @@ set "TMP="
 set /p "TMP=Altura da chapa em mm [1000]: "
 if not "!TMP!"=="" set "PH=!TMP!"
 
-goto menu_ajustes
+set "TMP="
+set /p "TMP=Espacamento/Gap entre pecas em mm [2]: "
+if not "!TMP!"=="" set "GAP=!TMP!"
+
+set "TMP="
+set /p "TMP=Margem da chapa em mm [10]: "
+if not "!TMP!"=="" set "MARG=!TMP!"
+
+goto menu_rotacao
 
 :opt_rolo
 echo.
@@ -201,9 +201,9 @@ set "PH=0"
 set "GAP=2"
 set "MARG=5"
 set "MAXLEN=10000"
-set "TRIM_ARG="
 set "SUBSTRATE_ARG=--substrate-kind roll"
 
+rem Padrao TMP: le em variavel temporaria para preservar default no ENTER.
 set "TMP="
 set /p "TMP=Largura do rolo (boca) em mm [1520]: "
 if not "!TMP!"=="" set "PW=!TMP!"
@@ -213,37 +213,7 @@ set /p "TMP=Comprimento maximo em mm [10000]: "
 if not "!TMP!"=="" set "MAXLEN=!TMP!"
 
 set "SUBSTRATE_ARG=--substrate-kind roll --max-length !MAXLEN!"
-goto menu_ajustes
-
-rem ------------------------------------------------------------
-rem Ajustes finos (todos os formatos passam aqui)
-rem ------------------------------------------------------------
-
-:menu_ajustes
-echo.
-echo ------------------------------------------------------------
-echo  AJUSTES DA CHAPA (ENTER mantem o valor entre colchetes)
-echo ------------------------------------------------------------
-
-set "TMP="
-set /p "TMP=Gap entre pecas em mm [!GAP!]: "
-if not "!TMP!"=="" set "GAP=!TMP!"
-
-set "TMP="
-set /p "TMP=Margem da chapa em mm [!MARG!]: "
-if not "!TMP!"=="" set "MARG=!TMP!"
-
-set "TMP="
-set /p "TMP=Fechar PDF na grade (N/Nao, S/Sim) [N]: "
-if not "!TMP!"=="" set "TMP=!TMP: =!"
-if /i "!TMP!"=="s"   set "TRIM_ARG=--trim-to-content"
-if /i "!TMP!"=="sim" set "TRIM_ARG=--trim-to-content"
-
 goto menu_rotacao
-
-rem ------------------------------------------------------------
-rem Rotacao
-rem ------------------------------------------------------------
 
 :menu_rotacao
 set "ROT=auto"
@@ -256,16 +226,12 @@ echo   [3] Forcar Rotacionado (90 graus)
 echo ------------------------------------------------------------
 set "ROTOPCAO=1"
 set /p "ROTOPCAO=Escolha a orientacao [1]: "
-if not "!ROTOPCAO!"=="" set "ROTOPCAO=!ROTOPCAO: =!"
+set "ROTOPCAO=!ROTOPCAO: =!"
 if "!ROTOPCAO!"=="" set "ROTOPCAO=1"
 set "ROT_SEL=!ROTOPCAO:~0,1!"
 if "!ROT_SEL!"=="2" set "ROT=0"
 if "!ROT_SEL!"=="3" set "ROT=90"
 goto menu_copias
-
-rem ------------------------------------------------------------
-rem Copias + sobra
-rem ------------------------------------------------------------
 
 :menu_copias
 echo.
@@ -277,7 +243,7 @@ echo  [N]     Numero especifico (ex: 200)
 echo ------------------------------------------------------------
 set "COPIAS="
 set /p "COPIAS=Digite o numero [ENTER para maximo]: "
-if not "!COPIAS!"=="" set "COPIAS=!COPIAS: =!"
+set "COPIAS=!COPIAS: =!"
 
 if "!COPIAS!"=="" (
     set "TARGET_ARG="
@@ -300,18 +266,32 @@ echo  [0]     Cortar exato no pedido
 echo ------------------------------------------------------------
 set "SURPLUS="
 set /p "SURPLUS=Escolha [ENTER para fechar linha]: "
-if not "!SURPLUS!"=="" set "SURPLUS=!SURPLUS: =!"
+set "SURPLUS=!SURPLUS: =!"
 
 if "!SURPLUS!"=="0" (
     set "SURPLUS_ARG=--surplus truncate"
 ) else (
     set "SURPLUS_ARG=--surplus fill_row"
 )
-goto preparar_saida
+goto menu_zerar_bordas
 
-rem ------------------------------------------------------------
-rem Preparacao e execucao
-rem ------------------------------------------------------------
+:menu_zerar_bordas
+set "TRIM_ARG="
+rem So pergunta se for rolo (SUBSTRATE_ARG preenchido apenas no fluxo [6]).
+if not defined SUBSTRATE_ARG goto preparar_saida
+
+echo.
+echo ------------------------------------------------------------
+echo  ZERAR BORDAS DO PDF?
+echo ------------------------------------------------------------
+echo  [ENTER] Nao - PDF no tamanho da bobina
+echo  [1]     Sim - PDF ajustado a grade (sem borda morta)
+echo ------------------------------------------------------------
+set "TMP="
+set /p "TMP=Escolha [ENTER para nao]: "
+set "TMP=!TMP: =!"
+if "!TMP!"=="1" set "TRIM_ARG=--trim-to-content"
+goto preparar_saida
 
 :preparar_saida
 set "PDF_DIR=%~dp0"
@@ -327,7 +307,6 @@ echo ============================================================
 echo PROCESSANDO IMPOSICAO...
 echo Chapa: !PW! x !PH! mm, Gap: !GAP! mm, Margem: !MARG! mm, Rotacao: !ROT!
 echo Pedido: !PEDIDO! copias
-if defined TRIM_ARG echo Fechar PDF na grade: SIM
 echo ============================================================
 echo.
 
@@ -342,38 +321,18 @@ if not exist "%BIN%" (
     goto sair
 )
 
-rem Redirecionar stderr para arquivo temporario (para parsear OPTION_* no exit 4)
-set "STDERR_FILE=%TEMP%\impostor_stderr.txt"
-"%BIN%" "!PDF!" !PW! !PH! !GAP! !MARG! --rotation !ROT! !TARGET_ARG! !SURPLUS_ARG! !SUBSTRATE_ARG! !TRIM_ARG! !OUTPUT_ARG! 2>"!STDERR_FILE!"
+"%BIN%" "!PDF!" !PW! !PH! !GAP! !MARG! --rotation !ROT! !TARGET_ARG! !SURPLUS_ARG! !SUBSTRATE_ARG! !TRIM_ARG! !OUTPUT_ARG!
 set "EXIT_CODE=%ERRORLEVEL%"
 
 if "%EXIT_CODE%"=="0" goto sucesso
 if "%EXIT_CODE%"=="1" goto tratar_uso
 if "%EXIT_CODE%"=="2" goto tratar_negocio
 if "%EXIT_CODE%"=="3" goto tratar_inesperado
-
-rem Exit 4: parsear as opcoes do stderr e mostrar o menu de correcao
-if "%EXIT_CODE%"=="4" (
-    set "OPTION_1_LABEL="
-    set "OPTION_2_LABEL="
-    set "OPTION_3_LABEL="
-    set "OPTION_1_TARGET="
-    set "OPTION_2_TARGET="
-    set "OPTION_3_TARGET="
-    for /f "tokens=1,* delims==" %%A in ('type "!STDERR_FILE!" ^| findstr /b "OPTION_"') do set "%%A=%%B"
-
-    rem Explicacao do CLI (tudo que NAO for OPTION_*) aparece antes do menu
-    type "!STDERR_FILE!" | findstr /v /b "OPTION_"
-    del "!STDERR_FILE!"
-    goto tratar_excesso_capacidade
-)
-
-rem Outros erros (1/2/3): limpa stderr residual (explicacao sai no stdout)
-if exist "!STDERR_FILE!" del "!STDERR_FILE!"
+if "%EXIT_CODE%"=="4" goto tratar_excesso_capacidade
 goto tratar_inesperado
 
 rem ------------------------------------------------------------
-rem Handlers de erro (nao mata o .bat, oferece correcao)
+rem Handler de erros (nao mata o .bat, oferece correcao)
 rem ------------------------------------------------------------
 
 :sucesso
@@ -381,7 +340,6 @@ echo.
 goto sair
 
 :tratar_uso
-if exist "!STDERR_FILE!" del "!STDERR_FILE!" 2>nul
 echo.
 echo ============================================================
 echo  ERRO DE USO
@@ -394,13 +352,12 @@ echo   [2] Cancelar
 echo.
 set "ERR_OPT="
 set /p "ERR_OPT=Escolha [1]: "
-if not "!ERR_OPT!"=="" set "ERR_OPT=!ERR_OPT: =!"
+set "ERR_OPT=!ERR_OPT: =!"
 if "!ERR_OPT!"=="" set "ERR_OPT=1"
 if "!ERR_OPT!"=="1" goto menu_opcoes
 goto sair
 
 :tratar_negocio
-if exist "!STDERR_FILE!" del "!STDERR_FILE!" 2>nul
 echo.
 echo ============================================================
 echo  ERRO DE GEOMETRIA / CONFIGURACAO
@@ -413,7 +370,7 @@ echo   [3] Cancelar
 echo.
 set "ERR_OPT="
 set /p "ERR_OPT=Escolha [1]: "
-if not "!ERR_OPT!"=="" set "ERR_OPT=!ERR_OPT: =!"
+set "ERR_OPT=!ERR_OPT: =!"
 if "!ERR_OPT!"=="" set "ERR_OPT=1"
 if "!ERR_OPT!"=="1" goto menu_opcoes
 if "!ERR_OPT!"=="2" goto menu_copias
@@ -424,40 +381,24 @@ echo.
 echo ============================================================
 echo  PEDIDO EXCEDE A CAPACIDADE
 echo ============================================================
+echo  Ver mensagem acima (o CLI informou o maximo calculado).
 echo.
 echo  Como proceder?
-echo.
-echo   [1] %OPTION_1_LABEL%
-echo   [2] %OPTION_2_LABEL%
-echo   [3] %OPTION_3_LABEL%
-echo   [4] Aumentar chapa (voltar ao menu de formato)
-echo   [5] Cancelar
+echo   [1] Reduzir tiragem (voltar ao menu de copias)
+echo   [2] Aumentar chapa (voltar ao menu de formato)
+echo   [3] Ajustar rolo (voltar ao menu [6])
+echo   [4] Cancelar
 echo.
 set "ERR_OPT="
 set /p "ERR_OPT=Escolha [1]: "
-if not "!ERR_OPT!"=="" set "ERR_OPT=!ERR_OPT: =!"
+set "ERR_OPT=!ERR_OPT: =!"
 if "!ERR_OPT!"=="" set "ERR_OPT=1"
-
-if "!ERR_OPT!"=="1" (
-    set "TARGET_ARG=--target-copies %OPTION_1_TARGET%"
-    set "PEDIDO=%OPTION_1_TARGET%"
-    goto rodar
-)
-if "!ERR_OPT!"=="2" (
-    set "TARGET_ARG=--target-copies %OPTION_2_TARGET%"
-    set "PEDIDO=%OPTION_2_TARGET%"
-    goto rodar
-)
-if "!ERR_OPT!"=="3" (
-    set "TARGET_ARG=--target-copies %OPTION_3_TARGET%"
-    set "PEDIDO=%OPTION_3_TARGET%"
-    goto rodar
-)
-if "!ERR_OPT!"=="4" goto menu_opcoes
+if "!ERR_OPT!"=="1" goto menu_copias
+if "!ERR_OPT!"=="2" goto menu_opcoes
+if "!ERR_OPT!"=="3" goto opt_rolo
 goto sair
 
 :tratar_inesperado
-if exist "!STDERR_FILE!" del "!STDERR_FILE!" 2>nul
 echo.
 echo ============================================================
 echo  ERRO INESPERADO
@@ -470,7 +411,7 @@ echo   [3] Cancelar
 echo.
 set "ERR_OPT="
 set /p "ERR_OPT=Escolha [1]: "
-if not "!ERR_OPT!"=="" set "ERR_OPT=!ERR_OPT: =!"
+set "ERR_OPT=!ERR_OPT: =!"
 if "!ERR_OPT!"=="" set "ERR_OPT=1"
 if "!ERR_OPT!"=="1" goto rodar
 if "!ERR_OPT!"=="2" goto menu_opcoes
