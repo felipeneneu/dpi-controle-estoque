@@ -3,112 +3,29 @@ using System.IO;
 using System.Text.Json;
 using System.Windows;
 using ImpositorKonica.Models;
+using ImpositorKonica.Services;
+using ImpositorKonica.ViewModels;
 
 namespace ImpositorKonica
 {
-    /// <summary>
-    /// Ponto de entrada do sidecar nativo ImpositorKonica.
-    /// Gerencia argumentos CLI e códigos de saída padronizados da ADR-015.
-    /// </summary>
     public partial class App : Application
     {
-        public static int ExitCodeResult { get; set; } = 1; // 1 = cancelado por padrão
+        public static int ExitCodeResult { get; set; } = 0;
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
-            ImpositionPayload payload;
-            string? dataFilePath = null;
+            // Mocking for now, we will just use ShellViewModel.
+            var imposicaoService = new MockImposicaoService();
+            var shellViewModel = new ShellViewModel(imposicaoService);
 
-            // 0. Detectar --preview (ADR-025)
-            if (Array.IndexOf(e.Args, "--preview") >= 0)
-            {
-                var pDataIdx = Array.IndexOf(e.Args, "--data");
-                if (pDataIdx < 0 || pDataIdx + 1 >= e.Args.Length)
-                {
-                    Console.Error.WriteLine("Uso: ImpositorKonica.exe --preview --data <path>");
-                    Environment.Exit(2);
-                    return;
-                }
-                
-                int exitCode = ImpositorKonica.Preview.PreviewMode.Run(e.Args[pDataIdx + 1]);
-                Environment.Exit(exitCode);
-                return;
-            }
-
-            // 1. Processamento dos argumentos CLI (fluxo interativo normal)
-            for (int i = 0; i < e.Args.Length; i++)
-            {
-                if (e.Args[i] == "--data" && i + 1 < e.Args.Length)
-                {
-                    dataFilePath = e.Args[i + 1];
-                    break;
-                }
-            }
-
-            if (!string.IsNullOrEmpty(dataFilePath))
-            {
-                // Carregamento a partir de arquivo temporário fornecido pelo Electron
-                if (!File.Exists(dataFilePath))
-                {
-                    Console.Error.WriteLine($"[ImpositorKonica] Erro: Arquivo de dados não encontrado: {dataFilePath}");
-                    Environment.Exit(2); // Código 2: Arquivo inexistente
-                    return;
-                }
-
-                try
-                {
-                    byte[] raw = File.ReadAllBytes(dataFilePath);
-                    if (raw.Length >= 3 && raw[0] == 0xEF && raw[1] == 0xBB && raw[2] == 0xBF)
-                    {
-                        Array.Copy(raw, 3, raw, 0, raw.Length - 3);
-                        Array.Resize(ref raw, raw.Length - 3);
-                    }
-
-                    string json;
-                    try
-                    {
-                        json = new System.Text.UTF8Encoding(false, true).GetString(raw);
-                    }
-                    catch (System.Text.DecoderFallbackException)
-                    {
-                        json = System.Text.Encoding.GetEncoding(1252).GetString(raw);
-                        Console.Error.WriteLine("[ImpositorKonica] Aviso: payload JSON não é UTF-8 puro; interpretado como Windows-1252.");
-                    }
-
-                    var parsed = JsonSerializer.Deserialize<ImpositionPayload>(json, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    });
-
-                    if (parsed == null)
-                    {
-                        Console.Error.WriteLine("[ImpositorKonica] Erro: JSON resultou em payload nulo.");
-                        Environment.Exit(2);
-                        return;
-                    }
-
-                    payload = parsed;
-                }
-                catch (Exception ex)
-                {
-                    Console.Error.WriteLine($"[ImpositorKonica] Erro fatal desserializando JSON: {ex.Message}");
-                    Environment.Exit(2); // Código 2: JSON corrompido / inválido
-                    return;
-                }
-            }
-            else
-            {
-                // Inicialização sem argumentos: Mock para desenvolvimento isolado
-                Console.WriteLine("[ImpositorKonica] Iniciando com dados MOCK de demonstração...");
-                payload = ImpositionPayload.CreateMock();
-            }
-
-            // 2. Criação e exibição da Janela Principal
             try
             {
-                var mainWindow = new MainWindow(payload);
+                var mainWindow = new MainWindow
+                {
+                    DataContext = shellViewModel
+                };
                 MainWindow = mainWindow;
                 mainWindow.Show();
             }
