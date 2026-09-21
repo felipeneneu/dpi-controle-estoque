@@ -1,0 +1,14 @@
+[2026-09-20 12:53:12.396] [00001A2C] === Logging started ===
+[2026-09-20 12:53:12.400] [00001A2C] Executing: "C:\Program Files\dotnet\dotnet.exe" run -c Release -- C:\Users\Uso\Desktop\camadaadobe.pdf 700 1000 0 0 saida, PID: 6700, PPID: 16544
+[2026-09-20 12:53:12.401] [00001A2C] IsElevated: False
+[2026-09-20 12:53:12.401] [00001A2C] Is64BitProcess: True
+[2026-09-20 12:53:12.401] [00001A2C] RebootPending: False
+[2026-09-20 12:53:12.401] [00001A2C] ProcessorArchitecture: amd64
+[2026-09-20 12:53:12.401] [00001A2C] HostArchitecture: x64
+[2026-09-20 12:53:12.401] [00001A2C] SdkDirectory: 10.0.302
+[2026-09-20 12:53:12.401] [00001A2C] VerifySignatures: False
+[2026-09-20 12:53:12.401] [00001A2C] SDK feature band: 10.0.300
+[2026-09-20 12:53:15.999] [00001A2C] Shutting down
+[2026-09-20 12:53:15.999] [00001A2C] Shutdown completed.
+[2026-09-20 12:53:15.999] [00001A2C] Restart required: False
+[2026-09-20 12:53:16.000] [00001A2C] === Logging ended ===

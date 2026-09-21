@@ -1,0 +1,676 @@
+# strings dxcompiler.dll
+
+Arquivo: D:\Programas\Adobe Illustrator 2026\Support Files\Contents\Windows\dxcompiler.dll
+Filtros: AGM|PDFL|AdobePIE|UXP|CEP|ExtendScript|AMPS|svg|impos|prepress|csep|imposition|moire|rook|nebula|plugin|aip|GPU|DXGI|D3D|DirectX|Vulkan|OpenGL|adobeusd|usd|C2PA|cai|Content Credentials|sensei|neural|onnx|winml|tensorflow|dva|UI|panel (case-insensitive)
+Total unicos: 669
+Formato: offset_hex|snippet
+
+0x00062EC3|C,9GPui
+0x00062F0F|H9Gpu
+0x0006305D|C@9G`ui
+0x00063082|H9GpuEA
+0x000631B7|C$9GPu
+0x00063971|C(9GPu^
+0x0008410F|DIFlagPuH;
+0x0009EAD8|xceptionH9C
+0x001064E2|ui!\$0H
+0x0012DC52|CEPH
+0x001C7F39|uI@:
+0x002F8F1E|uI:P
+0x0045F51A|D8t$ uI
+0x0047A01D|#pragma H
+0x004BEBD3|CpH9Gpu
+0x004DE31A|dgpu_numH9B
+0x004DE49C|xceptionH9B
+0x005A0F75||$ LcePE
+0x0083DB4F|L$0H9GPu
+0x0083E8B1|H9GPu
+0x0083F8DF|wXH9GPu
+0x0083F911|GXH9GPu
+0x0084C24C|noexceptH;
+0x00873DDA|cept;C
+0x0089BC70|hared_caI
+0x009B93C9|{ UI
+0x00A823EC|ui@8}-t
+0x00A9218C|x( uI
+0x00BC8883|_except_H;
+0x00C8B9D5|CEpH
+0x00CDA4E0|Unknown exception
+0x00CDBFB8|Advanced Texture Ops
+0x00CDC0C0|(width,offset,value,replacedValue)
+0x00CE03C8|DIFlagPublic
+0x00CE1D38|llvm.eh.exceptioncode
+0x00CE6EA8|disable-exception-handling
+0x00CE6EC8|Disable dxc handling of exceptions
+0x00CE7AF0|Specify whitelist of debug info category (file -> source -> line, tool, vulkan-with-source)
+0x00CE7E30|Specify the target environment: vulkan1.0 (default), vulkan1.1, vulkan1.1spirv1.4, vulkan1.2, vulkan1.3, or universal1.5
+0x00CE8078|Specify Vulkan binding number shift for b-type register
+0x00CE80E0|Specify Vulkan binding number and set number for the $Globals cbuffer
+0x00CE8150|Specify Vulkan descriptor set and binding for a specific register
+0x00CE81D0|Negate SV_Position.y before writing to stage output in VS/DS/GS to accommodate Vulkan's coordinate system
+0x00CE8250|Specify Vulkan binding number shift for s-type register
+0x00CE82A0|Specify Vulkan stage I/O location assignment order
+0x00CE8300|Follow Vulkan spec to use gl_BaseInstance as the first vertex instance, which makes SV_InstanceID = gl_InstanceIndex - gl_BaseInstance (without this o
+0x00CE83D0|Specify Vulkan binding number shift for t-type register
+0x00CE8418|Specify Vulkan binding number shift for u-type register
+0x00CE8468|Use DirectX memory layout for Vulkan resources
+0x00CE84B0|Reciprocate SV_Position.w after reading from stage input in PS to accommodate the difference between Vulkan and DirectX
+0x00CE8540|Use strict OpenGL std140/std430 memory layout for Vulkan resources
+0x00CE85A0|Use scalar memory layout for Vulkan resources
+0x00CE9C10|Do not emit warnings for ingored features resulting from no Vulkan support
+0x00CEAA00|unknown Vulkan stage I/O location assignment order: 
+0x00CEAA64|vulkan
+0x00CEAA70|vulkan-with-source
+0x00CEAA88|vulkan-with-source-test
+0x00CEAAD0|vulkan1.0
+0x00CEDC90|AcceptHitAndEndSearch
+0x00CEDCA8|acceptHitAndEndSearch
+0x00CF1328|dx.types.ResourceProperties
+0x00CF4A00|D3DSerializeRootSignature: unknown root parameter type (
+0x00CF5840|pragma-unroll-threshold
+0x00CF6490|Use this unroll count for all loops including those with unroll_count pragma values, for testing purposes
+0x00CF6580|Unrolled size limit for loops with an unroll(full) or unroll_count pragma.
+0x00CF9FB0|D3D12 constant/texture buffer template element can only be a struct.
+0x00CFC3B8|Remove all unused function except entry from DxilModule
+0x00CFCAB0|Remove all unused function except entry from HLModule
+0x00CFF2C0|Unsupported input type for intrinsic D3DColorToUByte4.
+0x00CFF350|Unsupported Vulkan intrinsic.
+0x00D015C0|Remove unused exception handling info
+0x00D03080|indvars
+0x00D03088|Number of indvars widened
+0x00D03260|indvar.conv
+0x00D03270|D:\agent\_work\14\s\DXC\lib\Transforms\Scalar\IndVarSimplify.cpp
+0x00D03B10|Unable to fully unroll loop as directed by unroll(full) pragma because unrolled size is too large.
+0x00D03B80|Unable to fully unroll loop as directed by unroll(full) pragma because loop has a runtime trip count.
+0x00D03BF0|Unable to unroll loop the number of times directed by unroll_count pragma because unrolled size is too large.
+0x00D04DB0|Non-AllocaInst SROA'd elements.
+0x00D06C1C|amdgpu
+0x00D0D950|D:\agent\_work\14\s\DXC\tools\clang\lib\CodeGen\CGException.cpp
+0x00D0D9D8|HLSL does not support exceptions
+0x00D0EE08|__cxa_get_exception_ptr
+0x00D0EEB0|HLSL does not support exception
+0x00D0F1E0|_CxxThrowException
+0x00D125E8|impossible
+0x00D15968|#pragma 
+0x00D159A0|#pragma clang __debug 
+0x00D15A00|#pragma warning(
+0x00D15A18|#pragma warning(push
+0x00D15A30|#pragma warning(pop)
+0x00D15A68|#pragma
+0x00D15A70|#pragma GCC
+0x00D15A80|#pragma clang
+0x00D15A90|#pragma omp
+0x00D15E90|fp:except-
+0x00D15EA0|fp:except
+0x00D16E70|fsjlj-exceptions
+0x00D16E88|Use SjLj style exceptions
+0x00D17868|fuse-linker-plugin
+0x00D18A98|Load the named plugin (dynamic shared object)
+0x00D1BC40|plugin-arg-
+0x00D1BC50|Pass <arg> to plugin <name>
+0x00D1BC80|plugin
+0x00D1BC90|Use the named plugin action instead of the default action (use "help" to list available options)
+0x00D1D890|Warn if a function definition returns or accepts an object larger in bytes than a given value
+0x00D37358|add-plugin
+0x00D37368|Use the named plugin action in addition to the default action
+0x00D38D80|cuda-gpu-arch=
+0x00D38D90|CUDA GPU architecture
+0x00D39550|Exception handling model
+0x00D39CC0|fapple-pragma-pack
+0x00D39CD8|Enable Apple gcc-compatible #pragma pack handling
+0x00D39F70|Accept non-standard constructs supported by the Borland compiler
+0x00D3A280|fconcepts-ts
+0x00D3A290|Enable C++ Extensions for Concepts.
+0x00D3A638|fcuda-include-gpubinary
+0x00D3A6C0|fcxx-exceptions
+0x00D3A6D0|Enable C++ exceptions
+0x00D3B0F0|fexceptions
+0x00D3B100|Enable support for exception handling
+0x00D3B460|Form fused FP ops (e.g. FMAs): fast (everywhere) | on (according to FP_CONTRACT pragma, default) | off (never fuse)
+0x00D3C7F0|Accept some non-standard constructs supported by the Microsoft compiler
+0x00D3CA60|fno-apple-pragma-pack
+0x00D3CEA0|fno-cxx-exceptions
+0x00D3D2F0|fno-exceptions
+0x00D3DAC0|fno-non-call-exceptions
+0x00D3DAD8|fno-objc-arc-exceptions
+0x00D3DB00|fno-objc-exceptions
+0x00D3E8F0|fno-use-linker-plugin
+0x00D3EA88|fnon-call-exceptions
+0x00D3EB38|fobjc-arc-exceptions
+0x00D3EC50|fobjc-exceptions
+0x00D3EC68|Enable Objective-C exceptions
+0x00D574D8|D3DCOLORtoUBYTE4
+0x00D57F18|pixelfragment
+0x00D57F28|vertexfragment
+0x00D5D980|amdgpu_num_sgpr
+0x00D5D990|amdgpu_num_vgpr
+0x00D5E260|objc_exception
+0x00D5ED00|concept
+0x00D61500|pragma
+0x00D621D0|a prior #pragma section
+0x00D62790|impossible friendship kind
+0x00D62BC0|D:\agent\_work\14\s\DXC\tools\clang\lib\Sema\SemaExceptionSpec.cpp
+0x00D64278|CXXNoexceptExpr
+0x00D64CE8|SEHExceptStmt
+0x00D65C98| noexcept
+0x00D67CC8|Impossible TemplateArgument
+0x00D693C0|RAY_FLAG_ACCEPT_FIRST_HIT_AND_END_SEARCH
+0x00D69AC8|AMDGPUNumSGPR
+0x00D69AD8|AMDGPUNumVGPR
+0x00D69E98|GuardedVar
+0x00D6A480|ObjCException
+0x00D6A5E0|PtGuardedVar
+0x00D6B300| noexcept-unevaluated 
+0x00D6B318| noexcept-uninstantiated 
+0x00D6C1A0|#pragma omp threadprivate
+0x00D6C3A0|__except (
+0x00D6C4B8|#pragma omp parallel 
+0x00D6C4D0|#pragma omp simd 
+0x00D6C4E8|#pragma omp for 
+0x00D6C500|#pragma omp for simd 
+0x00D6C518|#pragma omp sections 
+0x00D6C530|#pragma omp section
+0x00D6C548|#pragma omp single 
+0x00D6C560|#pragma omp master
+0x00D6C578|#pragma omp critical
+0x00D6C590|#pragma omp parallel for 
+0x00D6C5B0|#pragma omp parallel for simd 
+0x00D6C5D0|#pragma omp parallel sections 
+0x00D6C5F0|#pragma omp task 
+0x00D6C608|#pragma omp taskyield
+0x00D6C620|#pragma omp barrier
+0x00D6C638|#pragma omp taskwait
+0x00D6C650|#pragma omp taskgroup
+0x00D6C668|#pragma omp flush 
+0x00D6C680|#pragma omp ordered
+0x00D6C698|#pragma omp atomic 
+0x00D6C6B0|#pragma omp target 
+0x00D6C6C8|#pragma omp teams 
+0x00D6C6E0|#pragma omp cancellation point 
+0x00D6C700|#pragma omp cancel 
+0x00D6D300|noexcept(
+0x00D6D6A8| __attribute__((amdgpu_num_sgpr(
+0x00D6D6E0| __attribute__((amdgpu_num_vgpr(
+0x00D6E860|#pragma init_seg 
+0x00D6E8C8|#pragma clang loop 
+0x00D6E8E0|#pragma unroll 
+0x00D6E8F0|#pragma nounroll 
+0x00D6EF88| __attribute__((objc_exception))
+0x00D72F98|exception
+0x00D76458| #pragma.
+0x00D76579|  #pragma push_macro Info: 
+0x00D76730|  %d #import/#pragma once files.
+0x00D769D8|pragma once
+0x00D76A10|D:\agent\_work\14\s\DXC\tools\clang\lib\Lex\Pragma.cpp
+0x00D76A80|pragma diagnostic
+0x00D76A98|pragma warning
+0x00D76AC8|pragma message
+0x00D76AD8|pragma error
+0x00D76AE8|Unknown PragmaMessageKind!
+0x00D76D50|impossible Radix
+0x00D76DD8|_Pragma
+0x00D77CE0|%0 only allowed in __except block or filter expression
+0x00D77D18|%0 only allowed in __except filter expression
+0x00D77D70|expected '__except' or '__finally' block
+0x00D78268|#pragma entered here
+0x00D914E2|#pragma-messages
+0x00D91612|analyzer-incompatible-plugin
+0x00D9183D|backend-plugin
+0x00D921DB|exceptions
+0x00D926BC|ignored-pragmas
+0x00D926E8|implicit-atomic-properties*implicit-conversion-floating-point-to-bool implicit-exception-spec-mismatch
+0x00D93137|objc-nonunified-exceptions
+0x00D93560|pragmas&predefined-identifier-outside-function
+0x00D93714|remark-backend-plugin
+0x00D937CC|rtti-for-exceptions
+0x00D93EDB|unknown-pragmas
+0x00D940A9|unused-exception-parameter
+0x00D95C90|[no]neon is not accepted as modifier, please use [no]simd instead
+0x00D962B0|implicitly enabling rtti for exception handling
+0x00D96890|unable to find plugin '%0'
+0x00D96A38|unable to load plugin '%0': '%1'
+0x00D97120|current API version is '%0', but plugin was compiled with version '%1'
+0x00D97540|checker plugin '%0' is not compatible with this version of the analyzer
+0x00D981D8|_Pragma takes a parenthesized string literal
+0x00D98ED8|already inside '#pragma clang arc_cf_code_audited'
+0x00D98F10|already inside '#pragma clang assume_nonnull'
+0x00D98F90|'#pragma clang arc_cf_code_audited' was not ended within this file
+0x00D98FD8|'#pragma clang assume_nonnull' was not ended within this file
+0x00D992E0|cannot #include files inside '#pragma clang arc_cf_code_audited'
+0x00D99328|cannot #include files inside '#pragma clang assume_nonnull'
+0x00D99738|not currently inside '#pragma clang arc_cf_code_audited'
+0x00D99778|not currently inside '#pragma clang assume_nonnull'
+0x00D99820|pragma %select{message|warning|error}0 requires parenthesized string
+0x00D99868|pragma %0 requires a parenthesized string
+0x00D99FE0|expected 'ON' or 'OFF' or 'DEFAULT' in pragma
+0x00D9A290|expected end of directive in pragma
+0x00D9A2B8|unknown pragma in STDC namespace
+0x00D9A7E0|#pragma once in main file
+0x00D9A800|#pragma system_header ignored in main file
+0x00D9B240|pragma diagnostic pop could not pop, no matching push
+0x00D9B280|pragma diagnostic expected 'error', 'warning', 'ignored', 'fatal', 'push', or 'pop'
+0x00D9B2D8|pragma diagnostic expected option name (e.g. "-Wundef")
+0x00D9B310|unexpected token in pragma diagnostic
+0x00D9B360|unknown pragma ignored
+0x00D9B378|pragma include_alias expected '%0'
+0x00D9B3A0|pragma include_alias expected include filename
+0x00D9B470|pragma pop_macro could not pop '%0', no matching push_macro
+0x00D9B4B0|#pragma warning expected '%0'
+0x00D9B4D0|#pragma warning expected a warning number
+0x00D9B500|#pragma warning(push, level) requires a level between 0 and 4
+0x00D9B540|#pragma warning expected 'push', 'pop', 'default', 'disable', 'error', 'once', 'suppress', 1, 2, 3, or 4
+0x00D9B5B0|pragma STDC FENV_ACCESS ON is not supported, ignoring pragma
+0x00D9C180|cannot have both throw() and noexcept() clause on the same function
+0x00D9C218|unexpected end of exception specification
+0x00D9E5C0|'#pragma omp %0' cannot be an immediate substatement
+0x00D9E600|directive '#pragma omp %0' cannot contain more than one '%1' clause
+0x00D9E648|unexpected OpenMP clause '%0' in directive '#pragma omp %1'
+0x00D9E688|unexpected OpenMP directive '#pragma omp %0'
+0x00D9E910|pragma comment requires parenthesized identifier and optional string
+0x00D9E958|unknown kind of pragma comment
+0x00D9E980|pragma detect_mismatch is malformed; it requires two comma-separated string literals
+0x00D9E9E0|'#pragma fp_contract' can only appear at file scope or at the start of a compound statement
+0x00D9EBA0|missing argument to '#pragma %0'%select{|; expected %2}1
+0x00D9EBE0|unexpected extra argument '%0' to '#pragma clang optimize'
+0x00D9EC20|unexpected argument '%0' to '#pragma clang optimize'; expected 'on' or 'off'
+0x00D9FAC8|exception specification of '...' is a Microsoft extension
+0x00DA0C88|noexcept specifications are incompatible with C++98
+0x00DA0CC0|noexcept expressions are incompatible with C++98
+0x00DA1508|extra tokens at the end of '#pragma omp %0' are ignored
+0x00DA1540|expected '=' following '#pragma %select{align|options align}0' - ignored
+0x00DA1590|invalid alignment option in '#pragma %select{align|options align}0' - ignored
+0x00DA15E0|'#pragma comment %0' ignored
+0x00DA1600|expected action or ')' in '#pragma %0' - ignored
+0x00DA1688|expected identifier in '#pragma %0' - ignored
+0x00DA16C0|expected 'compiler', 'lib', 'user', or a string literal for the section name in '#pragma %0' - ignored
+0x00DA1730|expected integer between %0 and %1 inclusive in '#pragma %2' - ignored
+0x00DA1778|missing '(' after '#pragma %0' - ignoring
+0x00DA17A8|expected non-wide string literal in '#pragma %0'
+0x00DA17E0|expected ')' or ',' in '#pragma %0'
+0x00DA1808|missing ')' after '#pragma %0' - ignoring
+0x00DA1840|expected a stack label or a string literal for the section name in '#pragma %0' - ignored
+0x00DA18A0|expected a string literal for the section name in '#pragma %0' - ignored
+0x00DA18F0|expected push, pop or a string literal for the section name in '#pragma %0' - ignored
+0x00DA1948|extra tokens at end of '#pragma %0' - ignored
+0x00DA1980|'#pragma init_seg' is only supported when targeting a Microsoft environment
+0x00DA19D0|unknown action for '#pragma %0' - ignored
+0x00DA1A00|unknown action '%1' for '#pragma %0' - ignored
+0x00DA1A30|incorrect use of '#pragma ms_struct on|off' - ignored
+0x00DA1A68|unexpected '#pragma omp ...' in program
+0x00DA1A90|expected 'align' following '#pragma options' - ignored
+0x00DA1AC8|expected integer or identifier in '#pragma pack' - ignored
+0x00DA1B30|argument to '#pragma unroll' should not be in parentheses in CUDA C/C++
+0x00DA1B78|known but unsupported action '%1' for '#pragma %0' - ignored
+0x00DA1BB8|expected '#pragma unused' argument to be a variable name
+0x00DA48F0|exception object of type %0 has %select{private|protected}1 destructor
+0x00DA8DF0|%select{'auto'|'decltype(auto)'}0 not allowed %select{in function prototype|in non-static struct member|in non-static union member|in non-static class
+0x00DAA958|cannot catch exceptions by rvalue reference
+0x00DAC3B0|exception specifications of %select{return|argument}0 types differ
+0x00DAD210|exception specifications are not allowed beyond a single level of indirection
+0x00DAD930|exception specifications are not allowed in %select{typedefs|type aliases}0
+0x00DAD980|exception specification is not available until end of class definition
+0x00DAD9C8|cannot use '%0' with exceptions disabled
+0x00DB0F70|%0 is a Vulkan specific feature
+0x00DB1978|target exception specification is not superset of source
+0x00DB19E0|%select{|pointer to |reference to }0incomplete type %1 is not allowed in exception specification
+0x00DB1CC0|exception specification of explicitly defaulted %select{default constructor|copy constructor|move constructor|copy assignment operator|move assignment
+0x00DB2080|cannot initialize %select{a variable|a parameter|return object|an exception object|a member subobject|an array element|a new value|a value|a base clas
+0x00DB4380|exception specification in declaration does not match previous declaration
+0x00DB43D0|exception specification in explicit instantiation does not match instantiated one
+0x00DB5178|argument to noexcept specifier must be a constant expression
+0x00DB5D90|cannot use '%0' with Objective-C exceptions disabled
+0x00DB7140|directive '#pragma omp atomic' cannot contain more than one 'read', 'write', 'update' or 'capture' clause
+0x00DB75C0|arguments of '#pragma omp %0' must have %select{global storage|static storage duration}1
+0x00DB7AE0|%select{statement after '#pragma omp %1' must be a for loop|expected %2 for loops after '#pragma omp %1'%select{|, but found only %4}3}0
+0x00DB7D00|the statement for '#pragma omp parallel sections' must be a compound statement
+0x00DB8220|arguments of '#pragma omp %0' cannot be of reference type %1
+0x00DB8280|the statement for '#pragma omp sections' must be a compound statement
+0x00DB8540|'#pragma omp %0' must appear in the scope of the %q1 variable declaration
+0x00DB8600|'#pragma omp %0' must precede all references to variable %q1
+0x00DB8640|arguments of OpenMP clause '%0' in '#pragma omp %2' directive cannot be of variably-modified type %1
+0x00DB91D0|exception specification of overriding function is more lax than base version
+0x00DBA650|mac68k alignment pragma is not supported on this target
+0x00DBA690|#pragma visibility pop with no matching #pragma visibility push
+0x00DBA6D0|#pragma visibility push with no matching #pragma visibility pop
+0x00DBAB90|exception declarator cannot be qualified
+0x00DBBB50|rvalue reference type %0 is not allowed in exception specification
+0x00DC20A0|%select{expression|base type|declaration type|data member type|bit-field size|static assertion|fixed underlying type|enumerator value|using declaratio
+0x00DC4FE0|function previously declared with an %select{explicit|implicit}0 exception specification redeclared with an %select{implicit|explicit}0 exception spec
+0x00DC97C0|jump exits __except block
+0x00DCECF8|jump bypasses initialization of __except block
+0x00DCF920|in instantiation of exception specification for %0 requested here
+0x00DD4A18|exception of type %0 will be caught by earlier handler
+0x00DD4A50|dynamic exception specifications are deprecated
+0x00DD6F40|invalid use of a cast in an inline asm context requiring an l-value: accepted due to -fheinous-gnu-extensions, but clang may remove support for this i
+0x00DD77B8|%0 is missing exception specification '%1'
+0x00DD8920|cannot catch an exception thrown with @throw in C++ in the non-unified exception model
+0x00DD8F30|%0 should not return a null pointer unless it is declared 'throw()'%select{| or 'noexcept'}1
+0x00DD9618|#pragma options align=reset failed: %0
+0x00DD9640|expected #pragma pack parameter to be '1', '2', '4', '8', or '16'
+0x00DD96C8|value of #pragma pack(show) == %0
+0x00DD96F0|#pragma %0(pop, ...) failed: %1
+0x00DD9710|only variables can be arguments to '#pragma unused'
+0x00DD9750|undeclared variable %0 used as an argument for '#pragma unused'
+0x00DDCAC8|unused exception parameter %0
+0x00DDD700|#pragma message Directive
+0x00DEA1F0|UiUiD*Ui
+0x00DEA280|__exception_code
+0x00DEA298|_exception_code
+0x00DEA2A8|__exception_info
+0x00DEA2C0|_exception_info
+0x00DEA300|__GetExceptionInfo
+0x00DEA960|objc_exception_extract
+0x00DEA980|objc/objc-exception.h
+0x00DEA998|objc_exception_try_enter
+0x00DEA9B8|objc_exception_try_exit
+0x00DEA9D0|objc_exception_match
+0x00DEA9F0|objc_exception_throw
+0x00DEB730|noexcept
+0x00DED9C8|annot_pragma_unused
+0x00DED9E0|annot_pragma_vis
+0x00DED9F8|annot_pragma_pack
+0x00DEDA10|annot_pragma_parser_crash
+0x00DEDA30|annot_pragma_captured
+0x00DEDA48|annot_pragma_msstruct
+0x00DEDA60|annot_pragma_align
+0x00DEDA78|annot_pragma_weak
+0x00DEDA90|annot_pragma_weakalias
+0x00DEDAA8|annot_pragma_redefine_extname
+0x00DEDAC8|annot_pragma_fp_contract
+0x00DEDAE8|annot_pragma_ms_pointers_to_members
+0x00DEDB10|annot_pragma_ms_vtordisp
+0x00DEDB30|annot_pragma_ms_pragma
+0x00DEDB48|annot_pragma_opencl_extension
+0x00DEDB68|annot_pragma_openmp
+0x00DEDB80|annot_pragma_openmp_end
+0x00DEDB98|annot_pragma_loop_hint
+0x00DF8FE0|please file a bug report on https://github.com/Microsoft/DirectXShaderCompiler/issues with source code if possible
+0x00DF9450|%select{tbuffer|cbuffer}0 member initializer ignored since no Vulkan equivalent
+0x00DF9DB0|no equivalent for %0 intrinsic method in Vulkan
+0x00DF9E08|sampling with implicit lod is only allowed in fragment shaders
+0x00DFA228|no equivalent for %0 intrinsic function in Vulkan
+0x00DFAB10|pow2 partitioning scheme is not supported since there is no equivalent in Vulkan
+0x00DFB3E8|vulkan1.1
+0x00DFB3F8|vulkan1.1spirv1.4
+0x00DFB410|vulkan1.2
+0x00DFB420|vulkan1.3
+0x00DFB440|Vulkan 1.0
+0x00DFB450|Vulkan 1.1
+0x00DFB460|Vulkan 1.1 with SPIR-V 1.4
+0x00DFB480|Vulkan 1.2
+0x00DFB490|Vulkan 1.3
+0x00DFB4F5| vulkan1.0
+0x00DFB500| vulkan1.1
+0x00DFB50B| vulkan1.1spirv1.4
+0x00DFB51E| vulkan1.2
+0x00DFB529| vulkan1.3
+0x00DFB750|SPV_EXT_fragment_fully_covered
+0x00DFB770|SPV_EXT_fragment_invocation_density
+0x00DFB7E0|SPV_AMD_gpu_shader_half_float
+0x00DFB800|SPV_AMD_shader_early_and_late_fragment_tests
+0x00DFB918|SPV_KHR_fragment_shading_rate
+0x00DFB978|SPV_KHR_vulkan_memory_model
+0x00DFF1E0|dual-source blending only accepts 0 or 1 as vk::index
+0x00E01FF8|exception specification
+0x00E02548|NSException
+0x00E03A70|%s is not a valid flag.  Flag passes should have the form '--pass_name[=pass_args]'. Special flag names also accepted: -O and -Os.
+0x00E05150|SPV_AMD_gpu_shader_int16
+0x00E051C0|SPV_AMD_shader_fragment_mask
+0x00E051E0|SPV_AMD_gpu_shader_half_float_fetch
+0x00E05250|SPV_NV_fragment_shader_barycentric
+0x00E05388|SPV_KHR_fragment_shader_barycentric
+0x00E280F8|FragmentMaskFetchAMD
+0x00E28110|FragmentFetchAMD
+0x00E28C28|TypeAvcMcePayloadINTEL
+0x00E28D50|SubgroupAvcMceGetDefaultInterBaseMultiReferencePenaltyINTEL
+0x00E28D90|SubgroupAvcMceSetInterBaseMultiReferencePenaltyINTEL
+0x00E29498|SubgroupAvcImeConvertToMcePayloadINTEL
+0x00E29B58|SubgroupAvcRefConvertToMcePayloadINTEL
+0x00E29D90|SubgroupAvcSicConvertToMcePayloadINTEL
+0x00E2ADF0|VKD3D Shader Compiler
+0x00E2AE08|Wine VKD3D Shader Compiler
+0x00E2AE70|W3C WebGPU Group
+0x00E2AEA0|W3C WebGPU Group WHLSL Shader Translator
+0x00E2B040|Rust GPU Compiler Backend
+0x00E2B060|Embark Studios Rust GPU Compiler Backend
+0x00E46DC8|Fragment
+0x00E46F40|Vulkan
+0x00E46F48|VulkanKHR
+0x00E47000|EarlyFragmentTests
+0x00E47278|EarlyAndLateFragmentTestsAMD
+0x00E48338|ForcePow2DepthINTEL
+0x00E489F0|ClipDistancePerViewNV
+0x00E48A08|CullDistancePerViewNV
+0x00E48AB8|FragmentSizeNV
+0x00E493C8|FragmentShadingRateKHR
+0x00E496A0|FragmentMaskAMD
+0x00E497C8|FragmentFullyCoveredEXT
+0x00E49818|FragmentBarycentricKHR
+0x00E49830|FragmentBarycentricNV
+0x00E49868|FragmentDensityEXT
+0x00E49C98|VulkanMemoryModel
+0x00E49CB0|VulkanMemoryModelKHR
+0x00E49CC8|VulkanMemoryModelDeviceScope
+0x00E49CE8|VulkanMemoryModelDeviceScopeKHR
+0x00E49DA8|FragmentShaderSampleInterlockEXT
+0x00E49DD0|FragmentShaderShadingRateInterlockEXT
+0x00E49E10|FragmentShaderPixelInterlockEXT
+0x00E4BDF8|SPV_EXT_fragment_shader_interlock
+0x00E556D0|DebugInlinedVariable
+0x00E56B00|vulkan1.1spv1.4
+0x00E56BE8|opengl4.0
+0x00E56BF8|opengl4.1
+0x00E56C08|opengl4.2
+0x00E56C18|opengl4.3
+0x00E56C28|opengl4.5
+0x00E56C48|SPIR-V 1.0 (under Vulkan 1.0 semantics)
+0x00E56E60|SPIR-V 1.0 (under OpenGL 4.0 semantics)
+0x00E56E88|SPIR-V 1.0 (under OpenGL 4.1 semantics)
+0x00E56EB0|SPIR-V 1.0 (under OpenGL 4.2 semantics)
+0x00E56ED8|SPIR-V 1.0 (under OpenGL 4.3 semantics)
+0x00E56F00|SPIR-V 1.0 (under OpenGL 4.5 semantics)
+0x00E56F48|SPIR-V 1.3 (under Vulkan 1.1 semantics)
+0x00E56F80|SPIR-V 1.4 (under Vulkan 1.1 semantics)
+0x00E56FA8|SPIR-V 1.5 (under Vulkan 1.2 semantics)
+0x00E56FE0|SPIR-V 1.6 (under Vulkan 1.3 semantics)
+0x00E57008|OpenGL
+0x00E57690|in Vulkan environment, Output Storage Class must not be used in GLCompute, RayGenerationKHR, IntersectionKHR, AnyHitKHR, ClosestHitKHR, MissKHR, or Ca
+0x00E57750|in Vulkan environment, Workgroup Storage Class is limited to MeshNV, TaskNV, and GLCompute execution model
+0x00E5C1E0|OpKill requires Fragment execution model
+0x00E5C210|OpTerminateInvocation requires Fragment execution model
+0x00E5C610|(except for OpLine, which can be mixed with OpPhi).
+0x00E5C900|Index can only be applied to Fragment output variables
+0x00E5C968|PerVertexKHR can only be applied to Fragment Execution Models
+0x00E5D1E8|From Vulkan spec, Push Constant Interface section:
+0x00E5D3B0|From Vulkan spec:
+0x00E5D580|Variable decorated with Invariant must only be identified with the Input or Output storage class in Vulkan environment.
+0x00E5D600|Variable struct member decorated with Invariant must only be identified with the Input or Output storage class in Vulkan environment.
+0x00E5D9BC|For Vulkan OpTypeRuntimeArray can only 
+0x00E5DA48|For Vulkan with RuntimeDescriptorArrayEXT, a variable 
+0x00E5DAF0|For Vulkan, an OpTypeStruct variable containing an 
+0x00E5DC00|For Vulkan, OpTypeStruct variables containing 
+0x00E5E098|In the Vulkan environment, cannot store to Uniform Blocks
+0x00E5FD30| decorated variable must not be used in fragment execution model as an Output storage class for Entry Point id 
+0x00E5FDA0|Fragment OpEntryPoint operand 
+0x00E60370| In Vulkan, BufferBlock is disallowed on variables in the StorageBuffer storage class
+0x00E606B8| is banned when using the Vulkan memory model.
+0x00E60760|In Vulkan, the FPRoundingMode mode must only by RTE or RTZ.
+0x00E612B8|According to the Vulkan spec BuiltIn 
+0x00E61310|Vulkan spec allows BuiltIn 
+0x00E61380|Vulkan spec doesn't allow BuiltIn ClipDistance/CullDistance to be used for variables with Input storage class if execution model is Vertex.
+0x00E61410|Vulkan spec doesn't allow BuiltIn ClipDistance/CullDistance to be used for variables with Input storage class if execution model is MeshNV.
+0x00E614A0|Vulkan spec doesn't allow BuiltIn ClipDistance/CullDistance to be used for variables with Input storage class if execution model is MeshEXT.
+0x00E61530|Vulkan spec doesn't allow BuiltIn ClipDistance/CullDistance to be used for variables with Output storage class if execution model is Fragment.
+0x00E615C0| to be used only with Fragment, Vertex, TessellationControl, TessellationEvaluation or Geometry execution models. 
+0x00E61710| spec allows BuiltIn FragCoord to be used only with Fragment execution model. 
+0x00E61810| spec allows BuiltIn FragDepth to be used only with Fragment execution model. 
+0x00E61960| spec allows BuiltIn FrontFacing to be used only with Fragment execution model. 
+0x00E619C0|According to the Vulkan spec BuiltIn HelperInvocation variable needs to be a bool scalar. 
+0x00E61A20|Vulkan spec allows BuiltIn HelperInvocation to be only used for variables with Input storage class. 
+0x00E61A90|Vulkan spec allows BuiltIn HelperInvocation to be used only with Fragment execution model. 
+0x00E61AF0|According to the Vulkan spec BuiltIn InvocationId variable needs to be a 32-bit int scalar. 
+0x00E61B50|Vulkan spec allows BuiltIn InvocationId to be only used for variables with Input storage class. 
+0x00E61BC0|Vulkan spec allows BuiltIn InvocationId to be used only with TessellationControl or Geometry execution models. 
+0x00E61D40|According to the Vulkan spec BuiltIn PatchVertices variable needs to be a 32-bit int scalar. 
+0x00E61DA0|Vulkan spec allows BuiltIn PatchVertices to be only used for variables with Input storage class. 
+0x00E61E10|Vulkan spec allows BuiltIn PatchVertices to be used only with TessellationControl or TessellationEvaluation execution models. 
+0x00E61E90|According to the Vulkan spec BuiltIn PointCoord variable needs to be a 2-component 32-bit float vector. 
+0x00E61F00|Vulkan spec allows BuiltIn PointCoord to be only used for variables with Input storage class. 
+0x00E61F60|Vulkan spec allows BuiltIn PointCoord to be used only with Fragment execution model. 
+0x00E61FC0|According to the Vulkan spec BuiltIn PointSize variable needs to be a 32-bit float scalar. 
+0x00E62020|Vulkan spec allows BuiltIn PointSize to be only used for variables with Input or Output storage class. 
+0x00E62090|Vulkan spec doesn't allow BuiltIn PointSize to be used for variables with Input storage class if execution model is Vertex.
+0x00E62110|Vulkan spec allows BuiltIn PointSize to be used only with Vertex, TessellationControl, TessellationEvaluation or Geometry execution models. 
+0x00E621A0|According to the Vulkan spec BuiltIn Position variable needs to be a 4-component 32-bit float vector. 
+0x00E62210|Vulkan spec allows BuiltIn Position to be only used for variables with Input or Output storage class. 
+0x00E62280|Vulkan spec doesn't allow BuiltIn Position to be used for variables with Input storage class if execution model is Vertex.
+0x00E62300|Vulkan spec doesn't allow BuiltIn Position to be used for variables with Input storage class if execution model is MeshNV.
+0x00E62380|Vulkan spec doesn't allow BuiltIn Position to be used for variables with Input storage class if execution model is MeshEXT.
+0x00E62400|Vulkan spec allows BuiltIn Position to be used only with Vertex, TessellationControl, TessellationEvaluation or Geometry execution models. 
+0x00E62490|According to the Vulkan spec BuiltIn PrimitiveId variable needs to be a 32-bit int scalar. 
+0x00E624F0|Vulkan spec allows BuiltIn PrimitiveId to be only used for variables with Input or Output storage class. 
+0x00E62560|Vulkan spec doesn't allow BuiltIn PrimitiveId to be used for variables with Output storage class if execution model is TessellationControl.
+0x00E625F0|Vulkan spec doesn't allow BuiltIn PrimitiveId to be used for variables with Output storage class if execution model is TessellationEvaluation.
+0x00E62680|Vulkan spec doesn't allow BuiltIn PrimitiveId to be used for variables with Output storage class if execution model is Fragment.
+0x00E62710|Vulkan spec doesn't allow BuiltIn PrimitiveId to be used for variables with Output storage class if execution model is IntersectionKHR.
+0x00E627A0|Vulkan spec doesn't allow BuiltIn PrimitiveId to be used for variables with Output storage class if execution model is AnyHitKHR.
+0x00E62830|Vulkan spec doesn't allow BuiltIn PrimitiveId to be used for variables with Output storage class if execution model is ClosestHitKHR.
+0x00E628C0|Vulkan spec allows BuiltIn PrimitiveId to be used only with Fragment, TessellationControl, TessellationEvaluation, Geometry, MeshNV, MeshEXT, Intersec
+0x00E62990|According to the Vulkan spec BuiltIn SampleId variable needs to be a 32-bit int scalar. 
+0x00E629F0|Vulkan spec allows BuiltIn SampleId to be only used for variables with Input storage class. 
+0x00E62A50|Vulkan spec allows BuiltIn SampleId to be used only with Fragment execution model. 
+0x00E62AB0|According to the Vulkan spec BuiltIn SampleMask variable needs to be a 32-bit int array. 
+0x00E62B10|Vulkan spec allows BuiltIn SampleMask to be only used for variables with Input or Output storage class. 
+0x00E62B80|Vulkan spec allows BuiltIn SampleMask to be used only with Fragment execution model. 
+0x00E62BE0|According to the Vulkan spec BuiltIn SamplePosition variable needs to be a 2-component 32-bit float vector. 
+0x00E62C50|Vulkan spec allows BuiltIn SamplePosition to be only used for variables with Input storage class. 
+0x00E62CC0|Vulkan spec allows BuiltIn SamplePosition to be used only with Fragment execution model. 
+0x00E62D20|According to the Vulkan spec BuiltIn TessCoord variable needs to be a 3-component 32-bit float vector. 
+0x00E62D90|Vulkan spec allows BuiltIn TessCoord to be only used for variables with Input storage class. 
+0x00E62DF0|Vulkan spec allows BuiltIn TessCoord to be used only with TessellationEvaluation execution model. 
+0x00E62E60|According to the Vulkan spec BuiltIn TessLevelOuter variable needs to be a 4-component 32-bit float array. 
+0x00E62ED0|According to the Vulkan spec BuiltIn TessLevelOuter variable needs to be a 2-component 32-bit float array. 
+0x00E62F40|Vulkan spec doesn't allow TessLevelOuter/TessLevelInner to be used for variables with Input storage class if execution model is TessellationControl.
+0x00E62FE0|Vulkan spec doesn't allow TessLevelOuter/TessLevelInner to be used for variables with Output storage class if execution model is TessellationEvaluatio
+0x00E63128|Vulkan spec doesn't allow BuiltIn VertexId to be used.
+0x00E63240|Vulkan spec doesn't allow BuiltIn Layer and ViewportIndex to be used for variables with Input storage class if execution model is Vertex, Tessellation
+0x00E63300|Vulkan spec doesn't allow BuiltIn Layer and ViewportIndex to be used for variables with Output storage class if execution model is Fragment.
+0x00E63460| to be used only with Vertex, TessellationEvaluation, Geometry, or Fragment execution models. 
+0x00E63568| to be used only with Fragment execution model. 
+0x00E637B8|Vulkan spec requires BuiltIn WorkgroupSize to be a constant. 
+0x00E639F8| to be used only with the Fragment execution model. 
+0x00E63AC0|Vulkan spec does not allow BuiltIn 
+0x00E654E0|In Vulkan, OpTypeForwardPointer must have 
+0x00E65B70|Prior to SPIR-V 1.4, specialization constant operation UConvert requires Kernel capability or extension SPV_AMD_gpu_shader_int16
+0x00E67720|PhysicalStorageBuffer64 addressing mode requires the result integer type to have a 64-bit width for Vulkan environment.
+0x00E67810|PhysicalStorageBuffer64 addressing mode requires the input integer to have a 64-bit width for Vulkan environment.
+0x00E67D70|Derivative instructions require Fragment or GLCompute execution model: 
+0x00E69450|Expected Sampled Type to be a 32-bit int, 64-bit int or 32-bit float scalar type for Vulkan environment
+0x00E69788|Sampled must be 1 or 2 in the Vulkan environment.
+0x00E69920|Expected Image 'Sampled' parameter to be 1 for Vulkan environment.
+0x00E69F10|Expected the Image Format in Image to be R64i, R64ui, R32f, R32i, or R32ui for Vulkan environment
+0x00E6A1B0|In Vulkan, OpImage*Dref* instructions must not use images with a 3D Dim
+0x00E6A370|Expected Component Operand to be a const object for Vulkan environment
+0x00E6A468|Dim SubpassData requires Fragment execution model: 
+0x00E6A910|OpImageQueryLod requires Fragment or GLCompute execution model
+0x00E6ABA0|ImplicitLod instructions require Fragment or GLCompute execution model: 
+0x00E6AEE0|: Vulkan spec only allows storage classes for atomic to be: Uniform, Workgroup, Image, StorageBuffer, PhysicalStorageBuffer or TaskPayloadWorkgroupEXT
+0x00E6CA10| requires Fragment execution model
+0x00E6E880|' is not valid for the Vulkan execution environment.
+0x00E6ECA0|In Vulkan: The OpGroupNonUniformBallotBitCount group operation must be only: Reduce, InclusiveScan, or ExclusiveScan.
+0x00E6EFB8| is not allowed by Vulkan 1.0 specification
+0x00E6F008| is not allowed by Vulkan 1.1 specification
+0x00E6F038| is not allowed by Vulkan 1.2 specification
+0x00E6F220|Fragment execution model entry points can only specify one of OriginUpperLeft or OriginLowerLeft execution modes.
+0x00E6F2A0|Fragment execution model entry points require either an OriginUpperLeft or OriginLowerLeft execution mode.
+0x00E6F310|Fragment execution model entry points can specify at most one of DepthGreater, DepthLess or DepthUnchanged execution modes.
+0x00E6F390|Fragment execution model entry points can specify at most one fragment shader interlock execution mode.
+0x00E6F400|Fragment execution model entry points can specify at most one of StencilRefUnchangedFrontAMD, StencilRefLessFrontAMD or StencilRefGreaterFrontAMD exec
+0x00E6F4B0|Fragment execution model entry points can specify at most one of StencilRefUnchangedBackAMD, StencilRefLessBackAMD or StencilRefGreaterBackAMD executi
+0x00E6F930|In the Vulkan environment, GLCompute execution model entry points require either the LocalSize or LocalSizeId execution mode or an object decorated wi
+0x00E6FDE0|Execution mode can only be used with the Fragment execution model.
+0x00E6FF80|In the Vulkan environment, the OriginLowerLeft execution mode must not be used.
+0x00E6FFD0|In the Vulkan environment, the PixelCenterInteger execution mode must not be used.
+0x00E70030|VulkanMemoryModelKHR capability must only be specified if the VulkanKHR memory model is used.
+0x00E70140|in the Vulkan environment.
+0x00E708E0|Type of ExpectedValue operand of OpExpectKHR does not match the result type 
+0x00E70930|OpBeginInvocationInterlockEXT/OpEndInvocationInterlockEXT require a fragment shader interlock execution mode.
+0x00E709A0|OpBeginInvocationInterlockEXT/OpEndInvocationInterlockEXT require Fragment execution model
+0x00E70A00|OpDemoteToHelperInvocationEXT requires Fragment execution model
+0x00E70A40|OpIsHelperInvocationEXT requires Fragment execution model
+0x00E71E70|in Vulkan environment, OpControlBarrier execution scope must be Subgroup for Fragment, Vertex, Geometry, TessellationEvaluation, RayGeneration, Inters
+0x00E71F40|in Vulkan environment, Workgroup execution scope is only for TaskNV, MeshNV, TaskEXT, MeshEXT, TessellationControl, and GLCompute execution models
+0x00E71FD8|: in Vulkan environment Execution scope is limited to 
+0x00E72010|: in Vulkan environment Execution Scope is limited to 
+0x00E72208|Use of device scope with VulkanKHR memory model requires the 
+0x00E72248|VulkanMemoryModelDeviceScopeKHR capability
+0x00E72280|: in Vulkan environment Memory Scope is limited to Device, QueueFamily, Workgroup, ShaderCallKHR, Subgroup, or Invocation
+0x00E72300|: in Vulkan 1.0 environment Memory Scope is can not be Subgroup without SubgroupBallotKHR or SubgroupVoteKHR declared
+0x00E72600|SequentiallyConsistent memory semantics cannot be used with the VulkanKHR memory model.
+0x00E72710|: Memory Semantics Volatile requires capability VulkanMemoryModelKHR
+0x00E72900|: Vulkan specification requires Memory Semantics to have one of the following bits set: Acquire, Release, AcquireRelease or SequentiallyConsistent
+0x00E729A0|: Vulkan specification requires Memory Semantics to be None if used with Invocation Memory Scope
+0x00E72A10|: expected Memory Semantics to include a Vulkan-supported storage class
+0x00E72B10|Vulkan spec disallows OpAtomicLoad with Memory Semantics Release, AcquireRelease and SequentiallyConsistent
+0x00E72B80|Vulkan spec disallows OpAtomicStore with Memory Semantics Acquire, AcquireRelease and SequentiallyConsistent
+0x00E761C0|indvar
+0x00E761C8|indvar.next
+0x00E80CD0|llvm.localescape only accepts static allocas
+0x00E84D68|#pragma nounroll
+0x00E84D80|#pragma unroll
+0x00E84D90|#pragma clang loop
+0x00F86988|ADVAPI32.dll
+0x00F86F3E|?uncaught_exception@std@@YA_NXZ
+0x00F87A92|__std_exception_copy
+0x00F87AAA|__std_exception_destroy
+0x00F87B34|__current_exception
+0x00F87B4A|__current_exception_context
+0x00F886E2|UnhandledExceptionFilter
+0x00F886FE|SetUnhandledExceptionFilter
+0x00F8FFF0|.?AVCAtlException@ATL@@
+0x00F90070|.?AVexception@std@@
+0x00F90098|.?AUException@hlsl@@
+0x00F90380|.?AV<lambda_f8712704d3de3483f58f903ae6056f36>@@
+0x00F90600|.?AVexception@CheckedReader@RDAT@hlsl@@
+0x00F918C0|.?AVexception@CheckedWriter@?A0x6d79cbca@@
+0x00F919C0|.?AV<lambda_4273029d6096a6943f38e55d3d3ff2e1>@@
+0x00F94840|.?AV<lambda_4e9113a93c688f7d3db6f08432576f70>@@
+0x00F976B0|.?AV<lambda_160d3d487398fc7552b3632ab9213626>@@
+0x00F98A30|.?AV<lambda_48178b02219d3d1582be15bfabfa02ba>@@
+0x00F98E50|.?AV<lambda_d3d903b8629ddcdbecf2e0dc8cecfc4f>@@
+0x00F9DEB0|.?AVAllocaInst@llvm@@
+0x00F9F410|.?AV?$_Func_impl_no_alloc@V<lambda_f8712704d3de3483f58f903ae6056f36>@@XPEAVAbstractMemoryStream@hlsl@@@std@@
+0x00F9FCB0|.?AUID3D12ShaderReflectionType@@
+0x00F9FCE8|.?AUID3D12ShaderReflectionVariable@@
+0x00F9FD20|.?AUID3D12ShaderReflectionConstantBuffer@@
+0x00F9FD60|.?AUID3D12FunctionReflection@@
+0x00F9FD90|.?AUID3D12FunctionParameterReflection@@
+0x00F9FF28|.?AUID3D12ShaderReflection@@
+0x00F9FF58|.?AUID3D12LibraryReflection@@
+0x00FA1BC0|.?AVCorrelatedValuePropagation@?A0xf9c3d2bd@@
+0x00FA2050|.?AVIndVarSimplify@?A0x4df93018@@
+0x00FA2088|.?AVIndVarSimplifyVisitor@?A0x4df93018@@
+0x00FA52C0|.?AVPragmaHandler@clang@@
+0x00FA5330|.?AUUnknownPragmaHandler@?A0xd4e39872@@
+0x00FA9758|.?AVPragmaNamespace@clang@@
+0x00FA98B8|.?AVEmptyPragmaHandler@clang@@
+0x00FA98E8|.?AUPragmaOnceHandler@?A0x81608727@@
+0x00FA9920|.?AUPragmaMarkHandler@?A0x81608727@@
+0x00FA9958|.?AUPragmaDiagnosticHandler@?A0x81608727@@
+0x00FA9998|.?AUPragmaMessageHandler@?A0x81608727@@
+0x00FADFB8|.?AVFragmentIteratorBase@@
+0x00FADFE8|.?AVDILayoutFragmentIterator@@
+0x00FAE018|.?AVDebugLayoutFragmentIterator@@
+0x00FAE050|.?AVCompositeTypeFragmentIterator@@
+0x00FB03D0|.?AVPrettyStackTraceParserEntry@?A0x04d3d01f@@
+0x00FB0548|.?AUPragmaPackMatrixHandler@?A0x946c9e77@@
+0x00FB0668|.?AVCastExpressionIdValidator@?A0xcf79629f@@
+0x00FB0ED8|.?AVAggressiveDCEPass@opt@spvtools@@
+0x00FB11D8|.?AVDeadVariableElimination@opt@spvtools@@
+0x00FB2010|.?AV?$_Func_impl_no_alloc@V<lambda_4273029d6096a6943f38e55d3d3ff2e1>@@XPEBVInstruction@opt@spvtools@@@std@@
+0x00FB8CF0|.?AV?$_Func_impl_no_alloc@V<lambda_4e9113a93c688f7d3db6f08432576f70>@@XPEAVInstruction@opt@spvtools@@@std@@
+0x00FBFCB0|.?AV?$_Func_impl_no_alloc@V<lambda_160d3d487398fc7552b3632ab9213626>@@_NPEAVIRContext@opt@spvtools@@PEAVInstruction@34@AEBV?$vector@PEBVConstant@analy
+0x00FC2A08|.?AVDependencePoint@opt@spvtools@@
+0x00FC3580|.?AV?$_Func_impl_no_alloc@V<lambda_48178b02219d3d1582be15bfabfa02ba>@@_NI@std@@
+0x00FC4710|.?AV?$_Func_impl_no_alloc@V<lambda_d3d903b8629ddcdbecf2e0dc8cecfc4f>@@XPEBVBasicBlock@val@spvtools@@@std@@
+0x00FCB040|.?AVConcept@TargetTransformInfo@llvm@@

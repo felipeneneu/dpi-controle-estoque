@@ -14,6 +14,7 @@
     <PackageReference Include="PdfSharp" Version="6.1.1" />
     <!-- ADR-021 Decisão 6: imposition-core é a fonte única de grade. -->
     <ProjectReference Include="../../packages/imposition-core/src/Imposition.Core/Imposition.Core.csproj" />
+    <ProjectReference Include="..\..\packages\imposition-pdf\src\Imposition.Pdf\Imposition.Pdf.csproj" />
     <InternalsVisibleTo Include="AutoImposerCLI.Tests" />
   </ItemGroup>
 

@@ -133,3 +133,12 @@ Fonte: `MontarPDF.bat:5-8` (fallback `net8.0` â†’ `net10.0`),
 `package.json:17-18` (destinos de publish dos CLIs),
 `packages/imposition-grid-cli/Imposition.GridCli.csproj:13` (PublishAot),
 `.gitignore:61-68` (artefatos ignorados).
+## QPDF (dependência do Imposition.Pdf)
+O Imposition.Pdf.dll chama qpdf.exe para preservar camadas OCG.
+O binário é baixado via script:
+
+`powershell
+.\scripts\fetch-qpdf.ps1
+``n
+Colocado em sidecars/bin/cli/qpdf/. Empacotado no publish.
+**Não é versionado no git.**

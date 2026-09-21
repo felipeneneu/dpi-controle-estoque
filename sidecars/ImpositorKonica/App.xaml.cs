@@ -1,8 +1,5 @@
 using System;
-using System.IO;
-using System.Text.Json;
 using System.Windows;
-using ImpositorKonica.Models;
 using ImpositorKonica.Services;
 using ImpositorKonica.ViewModels;
 
@@ -16,9 +13,12 @@ namespace ImpositorKonica
         {
             base.OnStartup(e);
 
-            // Mocking for now, we will just use ShellViewModel.
-            var imposicaoService = new MockImposicaoService();
-            var shellViewModel = new ShellViewModel(imposicaoService);
+            var dialogService = new MockFileDialogService();
+            var pdfImportService = new MockPdfImportService();
+            var impositionService = new ImpositionService();
+            var recentFilesRepo = new MockRecentFilesRepository();
+
+            var shellViewModel = new ShellViewModel(dialogService, pdfImportService, impositionService, recentFilesRepo);
 
             try
             {

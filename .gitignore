@@ -69,3 +69,16 @@ sidecars/bin/
 
 # Imposition output
 *_IMPOSTO_*.pdf
+
+# Spikes (não versionados)
+spikes/
+# QPDF binary
+sidecars/bin/cli/qpdf/
+packages/imposition-pdf/tests/**/Fixtures/*.pdf
+!packages/imposition-pdf/tests/**/Fixtures/.gitkeep
+
+*.exe
+*.pdf
+in.txt
+in_rolo.txt
+temp_*.pdf

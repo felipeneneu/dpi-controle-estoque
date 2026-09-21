@@ -1,0 +1,2007 @@
+# strings dvaui.dll
+
+Arquivo: D:\Programas\Adobe Illustrator 2026\Support Files\Contents\Windows\dvaui.dll
+Filtros: AGM|PDFL|AdobePIE|UXP|CEP|ExtendScript|AMPS|svg|impos|prepress|csep|imposition|moire|rook|nebula|plugin|aip|GPU|DXGI|D3D|DirectX|Vulkan|OpenGL|adobeusd|usd|C2PA|cai|Content Credentials|sensei|neural|onnx|winml|tensorflow|dva|UI|panel (case-insensitive)
+Total unicos: 2000
+Formato: offset_hex|snippet
+
+0x00508866|uI@8p
+0x00669B84|Save SVGH
+0x0069DDF9|.svg
+0x0069E0E3|8.svg
+0x0080DF38|Unknown exception
+0x0080EDE0|$$$/dvacore/utility/Error/InvalidTypeConversion=Invalid type conversion.
+0x0080EE80|dvaui::accessibility_support
+0x0080EF98|dvaui.accessibility_support_enabled
+0x0080F368|dvaui
+0x0080F3A8|init-dvaui
+0x00813910|UI Automation timed out waiting for action to be ready. See source for details
+0x00813960|UI Automation may be hung waiting for After Effects busy state. See source for details
+0x00813B00|dvacore::async::detail::ContinuationCaller::CallFutureContinuation
+0x00817538|Exception parsing/running UI Automation steps: 
+0x008179B0|dvacore.config.ForceDisableAssertDialog
+0x00817AD0|dvaui::uiautomation_support
+0x00817B08|dvaui.uiautomation_testing_enabled
+0x00817B2C|dvanet
+0x008187E8|dvaui::selected_app_fonts
+0x00818820|dvaui::wacom_support
+0x00818890|dvaui::config::EnableRuntimeOption
+0x008188C0|D:\J\ws\ilst_rel_30_6\META\dist\projects\dva\Drover\dvaui\config\src\DVAUIRuntimeConfiguration.cpp
+0x00818928|drawbotagm
+0x00818AE8|dvaui.FlashUpdateRegion
+0x00818B00|dvaui.FlashUpdateRegion - Specify the number of milliseconds to flash the update region during redraw.
+0x00818B68|dvaui.SetAppScaleFactor
+0x00818B80|dvaui.SetAppScaleFactor - Specify the scaling factor, i.e. 1.0, 1.5 or 2.0
+0x00818C28|dvaui.SetAppScaleFactor <scaling factor>
+0x008197C8|com.adobe.dva.OS_GIFPlayer
+0x0081BB30|dvaui/GridView/DragType
+0x00829B50|dvaui::UI_CellsView::AutoScrollRegionForVariableSpeed
+0x00829B88|dvaui::UI_CellsView::ScrollSpeedReductionFactor
+0x0082A780|$$$/dvaui/accessibility/defaultActionForCheckbox/Uncheck=Uncheck
+0x0082A7C8|$$$/dvaui/accessibility/defaultActionForCheckbox/Check=Check
+0x00838CE0|DVA_ControlsLayout
+0x00838CF8|DVA_ControlsLayout Data
+0x00838D80|$$$/dvaui/ui/Error/InvalidControlLayoutDefinition=Not a valid control layout definition.
+0x00838DE0|$$$/dvaui/ui/Error/IncompatibleControlLayoutDefinition=Unable to load controls layout. Incompatible controls layout definition version.
+0x00839DA0|$$$/dvaui/UI_DateTextEdit/Warning/FormatError=The date format is not valid. Please enter date in YYYY/MM/DD HH:MM:SS format.
+0x0083E280|$$$/dvaui/controls/UI_AutoCompleteTextEditWithCapture/ToolTip=Drag to resize the text area
+0x0083EC90|$$$/dvaadameve/controls/UI_FilePicker/OpenFileDlgTitle=Choose File
+0x0083ECE0|$$$/dvaadameve/controls/UI_FilePicker/FolderDlgTitle=Choose Folder
+0x0083ED30|$$$/dvaadameve/controls/UI_FilePicker/SaveFileDlgTitle=Save File
+0x0083ED80|$$$/dvaadameve/controls/UI_FilePicker/FileDlgAllFilesFilter=All Files (*.*)
+0x008481F0|$$$/dvaui/controls/Tearoff=Tearoff
+0x00848220|$$$/dvaui/controls/Tearoff/CustomAccessibilityLabel=Click to open the tools menu
+0x0084B208|$$$/dvaui/controls/UI_LevelMeter/Over=Over
+0x0084B9A0|$$$/dvaui/controls/UI_LevelMeterView/Master=Master
+0x0084DED0|DVA/MCT/RowsDragType
+0x0084DEF8|dvaui.UI_MultiColumnTree
+0x00850238|$$$/dvaui/accessibility/defaultActionForTreeHeader/Click=Click
+0x00850AD0|$$$/dvaui/accessibility/defaultActionForTreeRow/Collapse=Collapse
+0x00850B18|$$$/dvaui/accessibility/defaultActionForTreeRow/Expand=Expand
+0x00850B60|$$$/dvaui/accessibility/defaultActionForTreeRow/DoubleClick=Double Click
+0x008530A0|UI_PanelContainer
+0x0085B3F8|$$$/dvaui/accessibility/selectionTopLeft=Top Left
+0x0085B430|$$$/dvaui/accessibility/selectionMidTop=Mid Top
+0x0085B460|$$$/dvaui/accessibility/selectionRightTop=Right Top
+0x0085B498|$$$/dvaui/accessibility/selectionLeftBottom=Left Bottom
+0x0085B4D0|$$$/dvaui/accessibility/selectionLeftMid=Left Mid
+0x0085B508|$$$/dvaui/accessibility/selectionRightBottom=Right Bottom
+0x0085B548|$$$/dvaui/accessibility/selectionMidMid=Mid Mid
+0x0085B578|$$$/dvaui/accessibility/selectionRightMid=Right Mid
+0x0085B5B0|$$$/dvaui/accessibility/selectionMidBottom=Mid Bottom
+0x0085B5E8|$$$/dvaui/accessibility/selectionInvalid=Invalid Selection
+0x00864BB0|$$$/dvaui/accessibility/defaultActionForRadioButton/Check=Check
+0x008688C6|&@dvaui.controls.UI_ScrollView
+0x00869FF0|dvaui::UI_ScrollView::SmoothScrollScale
+0x0086A9A0|$$$/dvaui/controls/UI_SearchBox/SearchHistory/NoRecentMatch=[No Recent Terms Matched]
+0x0086AA00|$$$/dvaui/controls/UI_SearchBox/SearchHistory/NoRecent=[No Recent Terms]
+0x0086AA50|$$$/dvaui/controls/UI_SearchBox/SearchHistory/NoSaved=[Shift-Click to Save a Term]
+0x0086AAB0|$$$/dvaui/controls/UI_SearchBox/SearchHistory/RemovedSavedWin=[Alt-Click to Remove a Term]
+0x0087C1F0|$$$/dvaui/controls/UI_TabWell/CloseIcon/TooltipString=Close
+0x0087C240|$$$/dvaui/controls/UI_TabWell/LockViewerIcon/TooltipString=Toggle Viewer Lock
+0x0087FCE0|$$$/dvaui/controls/UI_ThemePicker/ThemeColorLabel=Color Theme
+0x0087FD20|$$$/dvaui/controls/UI_ThemePicker/ThemeColorDarkest=Darkest
+0x0087FD60|$$$/dvaui/controls/UI_ThemePicker/ThemeColorDark=Dark
+0x0087FD98|$$$/dvaui/controls/UI_ThemePicker/ThemeColorLight=Light
+0x00884728|$$$/dvaui/controls/UI_ToolBar/ButtonEditor=Button Editor
+0x008849C8|DVA/PictureToolBarItem
+0x008849E0|DVA/SpacerToolBarItem
+0x008865D8|$$$/dvaui/controls/UI_ToolBarItem/Space=Space
+0x00888C00|$$$/dvaui/controls/UI_ToolBarPopupWindow/ButtonEditor=Button Editor
+0x00888C50|$$$/dvaui/controls/UI_ToolBarPopupWindow/ResetLayout=Reset Layout
+0x00888C98|$$$/dvaui/controls/UI_ToolBarPopupWindow/Cancel=Cancel
+0x00888CD0|$$$/dvaui/controls/UI_ToolBarPopupWindow/OK=OK
+0x00888DE8|DVA/TOOLITEM
+0x0088ED70|$$$/dvaui/controls/unithandler/point/formatter=# $
+0x0088EDA8|$$$/dvaui/controls/unithandler/point/description=point
+0x0088EDF8|$$$/dvaui/controls/unithandler/inch/formatter=# $
+0x0088EE30|$$$/dvaui/controls/unithandler/inch/description=inch
+0x0088EEB0|$$$/dvaui/controls/unithandler/cm/formatter=# $
+0x0088EEE0|$$$/dvaui/controls/unithandler/cm/description=centimeter
+0x0088EF60|$$$/dvaui/controls/unithandler/mm/formatter=# $
+0x0088EF90|$$$/dvaui/controls/unithandler/mm/description=millimeter
+0x0088EFD0|$$$/dvaui/controls/unithandler/q/formatter=# $
+0x0088F000|$$$/dvaui/controls/unithandler/q/description=Kyu units
+0x0088F040|$$$/dvaui/controls/unithandler/ha/formatter=# $
+0x0088F070|$$$/dvaui/controls/unithandler/ha/description=Ha units
+0x0088F0C0|$$$/dvaui/controls/unithandler/pixel/formatter=# $
+0x0088F0F8|$$$/dvaui/controls/unithandler/pixel/description=pixel
+0x0088F148|$$$/dvaui/controls/unithandler/ftInch/formatter=# $
+0x0088F180|$$$/dvaui/controls/unithandler/feetInch/description=feetInch
+0x0088F1C0|$$$/dvaui/controls/unithandler/ft/formatter=# $
+0x0088F1F0|$$$/dvaui/controls/unithandler/feet/description=feet
+0x0088F250|$$$/dvaui/controls/unithandler/m/formatter=# $
+0x0088F280|$$$/dvaui/controls/unithandler/meter/description=meter
+0x0088F2D0|$$$/dvaui/controls/unithandler/yd/formatter=# $
+0x0088F300|$$$/dvaui/controls/unithandler/yard/description=yard
+0x0088F338|$$$/dvaui/controls/unithandler/percent/formatter=#%
+0x0088F370|$$$/dvaui/controls/unithandler/percent/description=percent
+0x0088F3C8|$$$/dvaui/controls/unithandler/pica/formatter=#$
+0x0088F400|$$$/dvaui/controls/unithandler/pica/description=pica
+0x0088F438|$$$/dvaui/controls/unithandler/degree/formatter=#$
+0x0088F470|$$$/dvaui/controls/unithandler/degree/description=degree
+0x0088F4B0|$$$/dvaui/controls/unithandler/x/formatter=#$
+0x0088F4E0|$$$/dvaui/controls/unithandler/x/description=times
+0x00894D90|DVAUI/FileDrop
+0x00894DA0|DVAUI/UnicodeText
+0x00894DB8|com.adobe.cep.dnd.file
+0x00894DD0|com.adobe.cep.dnd.pasteboardtype
+0x00894DF8|com.adobe.uxp.drag-drop-dummy
+0x00896408|UI Diagnostic View
+0x00896420|dvaui::diagnostics::diagnosticviews
+0x00896DD0|UI Inventory Report
+0x008971C8|UI Cache Policy
+0x00897210|https://wiki.corp.adobe.com/display/drover/dvadiagnosticui
+0x00897310|ID_Save_SVG
+0x008974B8|dvaui.HighlightMisSizedControls
+0x00897530|UI Inspector Wiki
+0x00897580|Save SVG
+0x00897598|UI Path
+0x00897D60|$$$/dvaui/diagnostics/TargetButtonTip=You first click the button to gain keyboard focus. Then move the mouse over the control of interest and invoke t
+0x00897E20|$$$/dvaui/diagnostics/RefreshButtonTip=Updates the left side tree to refresh for account for changes in application state
+0x00897EA0|$$$/dvaui/diagnostics/InvalidateButtonTip=Requests UI Invalidation. For most controls, this will force a repaint, but that isn't guaranteed
+0x00897F30|$$$/dvaui/diagnostics/RainbowButtonTip=Toggles the ^QShow Rainbow Rects^Q debug flag, which can be super handy for investigating control rendering, si
+0x00897FE0|$$$/dvaui/diagnostics/HighlightButtonTip=Controls can be assigned any size with UI_SetLocalRectF(), but that doesn't mean those controls will be able 
+0x00898160|$$$/dvaui/diagnostics/InspectorWikiButtonTip=Open Wiki
+0x00898198|$$$/dvaui/diagnostics/SVGButtonTip=Save as SVG image
+0x008981D0|$$$/dvaui/diagnostics/InventoryButtonTip=Provide a breakdown of all control types within the UI tree of node.
+0x00898298|Warning: This node is detached from the active UI tree.
+0x008982E8|UI_Snapshot.svg
+0x00899950|UI Inspector Dialog
+0x0089A848|$$$/dvaui/dialogs/ConvertProjectDialog/kResLocation=Location:
+0x0089A888|$$$/dvaui/dialogs/ConvertProjectDialog/kResBrowse=Browse...
+0x0089A8C8|$$$/dvaui/dialogs/ConvertProjectDialog/kResName=Name:
+0x0089A900|$$$/dvaui/dialogs/ConvertProjectDialog/kResOK=OK
+0x0089A938|$$$/dvaui/dialogs/ConvertProjectDialog/kResCancel=Cancel
+0x0089A978|$$$/dvaui/dialogs/ConvertProjectDialog/SaveAs=Save As...
+0x0089A9C0|$$$/dvaui/dialogs/ConvertProjectDialog/ConfirmOverwrite=This project already exists. Confirm overwrite? (This action is not undoable!)
+0x0089C4E0|$$$/dvaui/dialogs/interpret_file_data=Interpret File Data
+0x0089C540|$$$/dvaui/dialogs/OK=OK
+0x0089C558|$$$/dvaui/dialogs/Cancel=Cancel
+0x0089D6A8|$$$/dvaui/dialogs/Option1=Option 1
+0x0089D6D0|$$$/dvaui/dialogs/Option2=Option 2
+0x0089D6F8|$$$/dvaui/dialogs/Append=Append
+0x0089D718|$$$/dvaui/dialogs/Delete=Delete
+0x0089D738|$$$/dvaui/dialogs/Save=Save
+0x0089D758|$$$/dvaui/dialogs/Browse=Browse
+0x0089D778|$$$/dvaui/dialogs/Yes=Yes
+0x0089D798|$$$/dvaui/dialogs/YesToAll=Yes To All
+0x0089D7C0|$$$/dvaui/dialogs/No=No
+0x0089D7D8|$$$/dvaui/dialogs/NoToAll=No To All
+0x0089D800|$$$/dvaui/dialogs/Abort=Abort
+0x0089D820|$$$/dvaui/dialogs/Retry=Retry
+0x0089D840|$$$/dvaui/dialogs/Ignore=Ignore
+0x0089D860|$$$/dvaui/dialogs/DontSave=Don^}t Save
+0x0089D890|$$$/dvaui/dialogs/messagebox/CopyToClipboard/KeyboardShortcut=C
+0x0089F1B0|$$$/dvaui/dialogs/EstimatedTimeRemaining=Estimated time remaining: 
+0x0089F1F8|$$$/dvaui/dialogs/OneHour=1 hour
+0x0089F220|$$$/dvaui/dialogs/PluralHours=@0 hours
+0x0089F248|$$$/dvaui/dialogs/TimeCommaSpaceSep=, 
+0x0089F270|$$$/dvaui/dialogs/OneMinute=1 minute
+0x0089F298|$$$/dvaui/dialogs/PluralMinutes=@0 minutes
+0x0089F2C8|$$$/dvaui/dialogs/OneSecond=1 second
+0x0089F2F0|$$$/dvaui/dialogs/PluralSeconds=@0 seconds
+0x008A0298|dvaui.SetReducedContrastForegroundColor
+0x008A02C0|dvaui.SetReducedContrastForegroundColor <500/600/700> - Configure the default foreground color in Drover 7 reduced contrast mode.
+0x008A0348|dvaui.ReducedContrastForegroundColor
+0x008A03A0|Usage: dvaui.SetReducedContrastForegroundColor <500/600/700>
+0x008AE16F|.dvaui::RegisterDrawbot
+0x008AE700|$$$/dvaui/drawbot/Error/OSSupplier/UnableToCreateReference=Unable to create drawing reference.
+0x008AE930|SVGImage::DoRaster (all)
+0x008AE950|SVGImage::DoRaster (create)
+0x008AE970|dvaui::drawbot::InvokeDrawbot
+0x008AE990|$$$/dvaui/drawbot/Error/OSSupplier/InvalidCast=Drawbot UI Error: An invalid cast was attempted from '^1' to '^2'.
+0x008AEABF|>$$$/dvaui/drawbot/Error/ColorManagement/NoColorManagementCallback=Color management callback not registered.
+0x008AEDE0|SVG Files (*.svg)
+0x008AEDF8|Save Spectrum Playground Page to SVG
+0x008AF3F0|$$$/dvaui/drawbot/Error/GradientValildation=Invalid gradient parameters.
+0x008AF7F0|SVGLinearShaderInterface::WriteSVGElement
+0x008AF9E0|http://www.w3.org/2000/svg
+0x008AFA98|SVGSurface::PaintRect
+0x008AFAE0|SVGSurface::FillPath
+0x008AFAF8|SVGSurface::StrokePath
+0x008AFB40|SVGSurface::ShadePath
+0x008AFBC0|SVGSurface::DrawString
+0x008AFC18|SVGSurface::DrawImage (Sizing in progress)
+0x008AFC48|SVGSurface::DrawCache
+0x008AFC60|SVGSurface::DrawMultiLineString
+0x008AFC80|SVGSurface::DrawMultiLineStringImpl
+0x008AFCA8|SVGSurface::DrawStringImpl
+0x008AFCD0|SVGSurface::DrawImageImpl (Sizing in progress)
+0x008AFE80|SVGSurface::SetAntiAliasPolicy()
+0x008AFEB8|SVGSurface::SetInterpolationPolicy()
+0x008AFEE0|SVGSurface::SetTextDisplayPolicy()
+0x008AFF08|SVGSurface::ApplyTransform()
+0x008AFF48|SVGSurface::ApplyClip()
+0x008B0B00|dvaui::factory
+0x008B0C20|dvaui::factory::FactorySingleton
+0x008B0C90|$$$/dvaui/ksv/BackspaceKey=Backspace
+0x008B0CB8|$$$/dvaui/ksv/DeleteKey=Delete
+0x008B0CD8|$$$/dvaui/ksv/CtrlKeyName=Ctrl
+0x008B0CF8|$$$/dvaui/ksv/AltKeyName=Alt
+0x008B0D18|$$$/dvaui/ksv/StartKeyName=Start
+0x008B0D40|$$$/dvaui/ksv/EnterKey=Enter
+0x008B0D60|$$$/dvaui/ksv/SpaceKey=Space
+0x008B0D80|$$$/dvaui/ksv/TabKey=Tab
+0x008B0DA0|$$$/dvaui/ksv/EscapeKey=Escape
+0x008B0DC0|$$$/dvaui/ksv/F1Key=F1
+0x008B0DD8|$$$/dvaui/ksv/F2Key=F2
+0x008B0DF0|$$$/dvaui/ksv/F3Key=F3
+0x008B0E08|$$$/dvaui/ksv/F4Key=F4
+0x008B0E20|$$$/dvaui/ksv/F5Key=F5
+0x008B0E38|$$$/dvaui/ksv/F6Key=F6
+0x008B0E50|$$$/dvaui/ksv/F7Key=F7
+0x008B0E68|$$$/dvaui/ksv/F8Key=F8
+0x008B0E80|$$$/dvaui/ksv/F9Key=F9
+0x008B0E98|$$$/dvaui/ksv/F10Key=F10
+0x008B0EB8|$$$/dvaui/ksv/F11Key=F11
+0x008B0ED8|$$$/dvaui/ksv/F12Key=F12
+0x008B0EF8|$$$/dvaui/ksv/F13Key=F13
+0x008B0F18|$$$/dvaui/ksv/F14Key=F14
+0x008B0F38|$$$/dvaui/ksv/F15Key=F15
+0x008B0F58|$$$/dvaui/ksv/F16Key=F16
+0x008B0F78|$$$/dvaui/ksv/F17Key=F17
+0x008B0F98|$$$/dvaui/ksv/F18Key=F18
+0x008B0FB8|$$$/dvaui/ksv/F19Key=F19
+0x008B0FD8|$$$/dvaui/ksv/F20Key=F20
+0x008B0FF8|$$$/dvaui/ksv/F21Key=F21
+0x008B1018|$$$/dvaui/ksv/F22Key=F22
+0x008B1038|$$$/dvaui/ksv/F23Key=F23
+0x008B1058|$$$/dvaui/ksv/F24Key=F24
+0x008B1078|$$$/dvaui/ksv/PageUpKey=Page Up
+0x008B1098|$$$/dvaui/ksv/PageDownKey=Page Down
+0x008B10C0|$$$/dvaui/ksv/HelpKey=Help
+0x008B10E0|$$$/dvaui/ksv/ClearKey=Clear
+0x008B1100|$$$/dvaui/ksv/LeftArrowKey=Left
+0x008B1120|$$$/dvaui/ksv/RightArrowKey=Right
+0x008B1148|$$$/dvaui/ksv/UpArrowKey=Up
+0x008B1168|$$$/dvaui/ksv/DownArrowKey=Down
+0x008B1188|$$$/dvaui/ksv/CapsLockKey=Caps Lock
+0x008B11B0|$$$/dvaui/ksv/HomeKey=Home
+0x008B11D0|$$$/dvaui/ksv/EndKey=End
+0x008B11F0|$$$/dvaui/ksv/ShiftKeyName=Shift
+0x008B1218|$$$/dvaui/ksv/PadDeleteKeyName=Delete
+0x008B1240|$$$/dvaui/ksv/Num=(Num)
+0x008B1258|$$$/dvaui/ksv/win/ControlKey=Ctrl+
+0x008B1280|$$$/dvaui/ksv/win/AltKey=Alt+
+0x008B12A0|$$$/dvaui/ksv/win/ShiftKey=Shift+
+0x008B1B18|dvaui::ksv::ShortcutManager::ShortcutManager
+0x008B1B48|dvaui::ksv::ShortcutManager::ActionsForKey
+0x008B1B78|dvaui::ksv::ShortcutManager::ActionsForPredicate
+0x008B1BB0|dvaui::ksv::ShortcutManager::ActionForExactMatch
+0x008B1BE8|dvaui::ksv::ShortcutManager::ActionsForCategory
+0x008B1C18|dvaui::ksv::ShortcutManager::GetCategories
+0x008B1C48|dvaui::ksv::ShortcutManager::AssignShortcutToAction
+0x008B1C80|dvaui::ksv::ShortcutManager::DeleteShortcutForAction
+0x008B1CB8|dvaui::ksv::ShortcutManager::ActionForUniqueID
+0x008B1CE8|dvaui::ksv::ShortcutManager::GetChangeableActionForUniqueID
+0x008B3AE8|$$$/dvaui/ksv/DefaultFileName=Untitled Custom Preset
+0x008B3B20|$$$/dvaui/ksv/KeySetNameInvalid=The key set name you entered is invalid. Please choose another name.
+0x008B3B88|$$$/dvaui/ksv/NoModifier=None
+0x008B3BA8|$$$/dvaui/ksv/Colon=:
+0x008B3BC0|$$$/dvaui/ksv/Key=Key: 
+0x008B3BE0|$$$/dvaui/ksv/MultipleCommandsAssigned=(multiple commands assigned)
+0x008B3C28|$$$/dvaui/ksv/CreatePreset=Create Preset
+0x008B3C58|$$$/dvaui/ksv/KeyboardLayoutSetName=Preset Name: 
+0x008B3C90|$$$/dvaui/ksv/OverwriteExistingMsg=A custom shortcut set already exists with the name @0. Would you like to overwrite it?
+0x008B3D10|Exception occured while reading layout xml
+0x008B3D40|Exception occured while converting to std string
+0x008B3D78|Exception occured while updating std stringstream
+0x008B3DB0|$$$/bridge/sharedui/VisualShortcutDialog/AcceptButtonText=Accept
+0x008B3E00|$$$/bridge/sharedui/VisualShortcutDialog/AcceptAndGoButtonText=Accept and Go to Conflict
+0x008B3F00|$$$/dvaui/ksv/DefaultMessage=Create new or edit existing shortcut by clicking in the "Shortcut" column
+0x008B3F68|$$$/dvaui/ksv/CopiedToClipboardText=Copied to clipboard
+0x008B3FA0|$$$/dvaui/ksv/CopiedToClipboardFaliedText=Copy to clipboard failed
+0x008B5868|$$$/dvaui/ksv/column/Command=Command
+0x008B5890|$$$/dvaui/ksv/column/Shortcut=Shortcut
+0x008B58B8|$$$/dvaui/ksv/column/Description=Description
+0x008B58E8|$$$/dvaui/ksv/column/Modifiers=Modifiers
+0x008B5920|$$$/dvaui/ksv/VisualShortcuts/DeleteLayoutSet=Are you sure you want to delete the keyboard layout set @0?
+0x008B5990|$$$/dvaui/ksv/Redo=Redo
+0x008B5A58|$$$/dvaui/ksv/Undo=Undo
+0x008B7AE8|dvaui.UseCustomKSVLayoutFolder
+0x008B7B08|dvaui.CustomKSVLayoutFolder
+0x008B7B38|dvaui.AlwaysReloadKSVLayouts
+0x008BA470|Drawbot/UI Diagnostics
+0x008BA718|dvauiprivate
+0x008BA730|Allows for verifying if specified node is on the UI Tree. No special OS dependency.
+0x008BA7A0|Get screen coordinates of requested node from dvaui. No special OS dependency.
+0x008BAAB8|Perform a UI scroll action, for handling by view
+0x008BAB40|LegacyUIAutomation houses old Drover UI interoperation mechanisms for use in THP. This API is a transitional solution, due to reliance on OS level UI 
+0x008BB110|UIAutomation object provides utilities to interoperate with drover's OS based UI system, to facilitate test scenarios.
+0x008BBFA8|dvaui::scripting::UIControlEvent
+0x008BC230|Absolut path to UI control.
+0x008BC260|Node ID of UI control.
+0x008BC280|A UI control is about to change its value.
+0x008BCA58|dvaui.CodeProfilerConsoleView::UI_Draw
+0x008BCDE0|dvaui.CodeProfilerConsoleView::UpdateDisplayData
+0x008BCE50|dvaui.CodeProfilerConsoleView::UpdateLayout
+0x008BD7D8|$$$/dvaui/sharedui/ColorPicker/HueRadioString=H:
+0x008BD810|$$$/dvaui/sharedui/ColorPicker/HueRadioNoSuffixString=H
+0x008BD848|$$$/dvaui/sharedui/ColorPicker/SatRadioString=S:
+0x008BD880|$$$/dvaui/sharedui/ColorPicker/SatRadioNoSuffixString=S
+0x008BD8B8|$$$/dvaui/sharedui/ColorPicker/BriRadioString=B:
+0x008BD8F0|$$$/dvaui/sharedui/ColorPicker/BriRadioNoSuffixString=B
+0x008BD928|$$$/dvaui/sharedui/ColorPicker/RedRadioString=R:
+0x008BD960|$$$/dvaui/sharedui/ColorPicker/RedRadioNoSuffixString=R
+0x008BD998|$$$/dvaui/sharedui/ColorPicker/GreenRadioString=G:
+0x008BD9D0|$$$/dvaui/sharedui/ColorPicker/GreenRadioNoSuffixString=G
+0x008BDA10|$$$/dvaui/sharedui/ColorPicker/BlueRadioString=B:
+0x008BDA48|$$$/dvaui/sharedui/ColorPicker/BlueRadioNoSuffixString=B
+0x008BE470|$$$/dvaui/controls/ColorPickerDlog/Title=Color Picker
+0x008BE4C0|$$$/dvaui/controls/ColorPickerDlog/OK=OK
+0x008BE4F0|$$$/dvaui/controls/ColorPickerDlog/Cancel=Cancel
+0x008BFC90|con.echo <on | off> - Turns on or off echo of DVA_TRACE statements. Omitting arguments will return current state of echo
+0x008BFDA0|ConsolePanelView
+0x008C10F0|dvaui.useLegacyConsole
+0x008C1188|$$$/dvaui/sharedui/ConsoleView/CreateLogFile=Create Log File
+0x008C13C8|dvaui::sharedui::CommandEditText
+0x008C58C8|DVAAboutDlog
+0x008C58D8|DVAWelcomeDlogImpl
+0x008C95C0|$$$/dvaui/sharedui/UI_AppearanceCustomizer/Darker=Darker
+0x008C9600|$$$/dvaui/sharedui/UI_AppearanceCustomizer/Lighter=Lighter
+0x008C9640|$$$/dvaui/sharedui/UI_AppearanceCustomizer/Default=Default
+0x008C9680|$$$/dvaui/sharedui/UI_AppearanceCustomizer/HighlightColors=Highlight Color
+0x008C98B0|$$$/dvaui/sharedui/UI_AppearanceCustomizer/ColorName/Strawberry=Strawberry
+0x008C9900|$$$/dvaui/sharedui/UI_AppearanceCustomizer/ColorName/Amber=Amber
+0x008C9950|$$$/dvaui/sharedui/UI_AppearanceCustomizer/ColorName/Lemon=Lemon
+0x008C9998|$$$/dvaui/sharedui/UI_AppearanceCustomizer/ColorName/Lime=Lime
+0x008C99D8|$$$/dvaui/sharedui/UI_AppearanceCustomizer/ColorName/Sky=Sky
+0x008C9A20|$$$/dvaui/sharedui/UI_AppearanceCustomizer/ColorName/Lavender=Lavender
+0x008C9A70|$$$/dvaui/sharedui/UI_AppearanceCustomizer/ColorName/Fuchsia=Fuchsia
+0x008C9AC0|$$$/dvaui/sharedui/UI_AppearanceCustomizer/ColorName/DefaultColor=Default Color
+0x008C9B10|$$$/dvaui/sharedui/UI_AppearanceCustomizer/ColorName/OSThemeColor=OS Theme Color
+0x008CC588|dvaui.FontPopupHasDynamicNameWidth
+0x008D0C18|exception eaten in SpectrumToastWindow destructor
+0x008D0CD0|dvacore::threads::CurrentThreadIsMainThread()
+0x008D0D00|dvaui::sharedui::UI_ToastManager::PrivateImpl::DisplayToastMessage
+0x008D0D50|D:\J\ws\ilst_rel_30_6\META\dist\projects\dva\Drover\dvaui\sharedui\src\UI_ToastManager.cpp
+0x008D1190|dvaui::skins
+0x008D12F8|V5_AdvancedGridViewSkin
+0x008D1310|V5_AdvancedGridInnerViewSkin
+0x008D14F0|DVAColorThemes
+0x008D1500|DVAColorThemesV2
+0x008D1518|DVAColorThemesV3
+0x008D1530|DVAColorThemesV4
+0x008D1548|DVAColorThemesV5
+0x008D1560|DVAColorThemesV6
+0x008DC200|$$$/dvaui/sharedui/UI_AppearanceCustomizer/InteractiveControl=Interactive Controls:
+0x008DC270|$$$/dvaui/sharedui/UI_AppearanceCustomizer/FocusIndicator=Focus Indicators:
+0x008DC2C0|$$$/dvaui/sharedui/UI_AppearanceCustomizer/Sample=Sample
+0x008DC408|V4ColorRampSkin
+0x008DCD20|V5ColorRampSkin
+0x008DD9B0|SVGImage::GetIconData (all)
+0x008DD9D0|SVGImage::GetIconData (create)
+0x008DE1E0|V7_AdvancedGridViewSkin
+0x008DE678|V7ColorRampSkin
+0x008DED18|dvaui-arrowskin
+0x008DED40|V7_AdvancedGridInnerViewSkin
+0x008DF350|svg::RasterizerParametersHash
+0x008DFA98|DVADR-4194932
+0x008DFCF8|SVGImage::GetMultiChannelIconData (all)
+0x008DFD20|SVGImage::GetMultiChannelIconData (create)
+0x008EE2D0|$$$/dvaui/ui/Error/ThemeSupplierAbsent=ThemeSupplier is empty
+0x008EE440|dvaui.ui.windows.ShowCloseBoxOnModalDialogs
+0x008EE470|dvaui.ui.windows.ShowMaximizeBoxOnModalDialogs
+0x008EE4A0|dvaui.ui.dialogs.HideDialogsOnDeactiateApp
+0x008EE4D0|dvaui.controls.UI_SliderGap
+0x008EE4F0|dvaui.controls.UI_TextEdit.LoseFocusOnPreMouse
+0x008EE520|dvaui.controls.UI_Button.LoseFocusOnESC
+0x008EE548|dvaui.controls.UI_PictureButton.ActivateOnReturnEnter
+0x008EE580|dvaui.controls.UI_Popup.KeyboardSearchableWhenNotEditable
+0x008EE5C0|dvaui.controls.UI_HotTextNumber.ShowBlankEditFieldsForHotNumbersWithunknownState
+0x008EE658|dvaui.utils.FontDependentBaselines
+0x008EE680|dvaui.utils.BaselineCalculationForAdobeClean
+0x008EE6B0|dvaui.controls.UI_SliderCenterTick
+0x008EE6D8|dvaui.controls.UI_SliderCenterTick_Height
+0x008EE708|dvaui.controls.UI_SliderCenterTick_Gap
+0x008EE730|dvaui.controls.UI_SliderCenterTick_Color
+0x008EE760|dvaui.controls.UI_SliderCenterTick_Complete
+0x008EE790|dvaui.drawbot.mac.ColorMatching
+0x008EE7B0|dvaui.colorprofile.device
+0x008EE7D0|dvaui.drawbot.SurfaceInterface.HighlightScaledImageDrawing
+0x008EE810|dvaui.drawbot.SurfaceInterface.HighlightPNGImageDrawing
+0x008EE848|dvaui.controls.UI_ColorRamp_DrawClassicColorRamp
+0x008EE880|dvaui.utility.DrawbotImageResourceCache.Load1xImages
+0x008EE8B8|dvaui.utility.DrawbotImageResourceCache.Load2xImages
+0x008EE8F0|dvaui.utility.DrawbotImageResourceCache.Load3to2xImages
+0x008EE928|dvaui.ui.windows.EnableEraseBackground
+0x008EE950|dvaui.utility.DrawbotImageResourceCache.Load3xImages
+0x008EE990|dvaui.utility.DrawbotImageResourceCache.ProvidePngIconFallbacks
+0x008EE9D0|dvaui.utility.UI_TabTextControl.ShowTabTextPopups
+0x008EEA08|dvaui.ui.TouchInterface_Wacom.Initialize_Wacom_Multitouch
+0x008EEA48|dvaui.ui.TouchInterface_Wacom.Catch_Wacom_Machine_Exceptions
+0x008EEA88|dvaui.Drawbot.default_preferred_cache_policy
+0x008EEAB8|dvaui.controls.touch.show_auto_onscreenkeyb
+0x008EEAE8|dvaui.utility.resource.use_surface_scale_for_cursors
+0x008EEB20|dvaui.controls.UI_TextEdit_IgnoreUpdatesWhileBeingActivelyEdited
+0x008EEB68|DVA.ui.EnableAnimator
+0x008EEB80|DVA.workspace.SplitterSizeTouch
+0x008EEBA0|DVA.workspace.SplitterSizePen
+0x008EEBC0|dvaui.ui.Prefer_WM_POINTER_events
+0x008EEBE8|dvaui.ui.FilterMask_For_WM_POINTER_events
+0x008EEC18|dvaui.skins.v5.show_mct_header_border
+0x008EEC40|dvaui.skins.v5.draw_bold_outline_around_primary_buttons
+0x008EEC80|dvaui.skins.v5.thin_outline_and_wide_gap_between_label_and_control
+0x008EECC8|dvaui.skins.v5.hot_text_dotted_underline
+0x008EECF8|dvaui.skins.v5.draw_scrollbar_scroll_arrow
+0x008EED30|dvaui.skins.v5.multiline_textedit_looks_like_singleline_textedit
+0x008EED78|dvaui.control.use_custom_popup_context_menu
+0x008EEDB0|dvaui.control.reset_popup_close_timer_and_popupwindow_on_parent_change
+0x008EEDF8|dvaui.control.resolve_icon_name_from_type
+0x008EEE28|dvaui.control.add_state_suffix_in_icon_name
+0x008EEE60|dvaui.control.increment_numberedit_on_scroll_in_non_focussed_state
+0x008EEEA8|dvaui.control.use_svg_cursors
+0x008EEEC8|dvaui.control.use_colored_svg_icon_fill
+0x008EEEF0|dvaui.control.support_large_units_in_unit_number_edit
+0x008EEF28|dvaui.accessibility.use_class_name_as_accessibility_name
+0x008EEF68|dvaui.accessibility.enable_accessibility
+0x008EEFA0|dvaui.drawbot.SurfaceInterface.enable_fontbaseline_underline_gap
+0x008EEFE8|dvaui.control.set_anti_alias_policy_med_for_scrollbar
+0x008EF020|dvaui.control.set_swp_nocopybits_for_setwindowpos
+0x008EF058|dvaui.control.set_iconflyout_disable_custom_color
+0x008EF090|dvaui.control.set_stepper_border_custom_color
+0x008EF0C0|dvaui.control.set_margin_custom
+0x008EF0E0|dvaui.control.set_background_custom_color
+0x008EF110|dvaui.control.set_divider_non_editable_state
+0x008EF140|dvaui.control.custom_background_for_listbox_item
+0x008EF178|dvaui.control.enable_enter_key_activate_focused_button
+0x008EF1B0|dvaui.control.disbale_increment_numberedit_on_scroll
+0x008EF1E8|dvaui.accessibility.suppress_accessibility
+0x008EF218|dvaui.accessibility.color_contrast
+0x008EF240|dvaui.controls.UI_TextEdit.MacUseCellsizeHeightExpansion
+0x008EF280|drawbotagm.text.MacUseCTSDesktopFallbackFonts
+0x008EF410|dvaui::HapticFeedbackHandlers
+0x008F0550|OS_OpenGLView
+0x008F0E28|dvaui.ui.UI_Container 
+0x008F0E40|dvaui.TrackAttachmentToRootNode
+0x008F0E60|DVADR-4194416
+0x008F0E70|$$$/dvaui/TrackNodeAttachmentFeature/Description=Track for attachment of Drover UI nodes. Bypass UI cosmetics operations which are costly when nodes a
+0x008F0F20|$$$/dvaui/TrackNodeAttachmentFeature/Name=Track Node attachments
+0x008F1738|dvaui::ui::UI_Node
+0x008F1760|$$$/dvaui/utility/Error/ResourceUtils/UnableToAccessResource=Unable to access resource.
+0x008F17B8|$$$/dvaui/ui/Error/ParentNotFound=Parent not found.
+0x008F1848|dvaui.DrawControlOverlay
+0x008F1DB0|DVADialogPrefs
+0x008F1DC0|DVADialogPrefs.xml
+0x008F2048|dvaui::ui::PrefManager::SetGetWindowPositionAdjustor
+0x008F2080|D:\J\ws\ilst_rel_30_6\META\dist\projects\dva\Drover\dvaui\ui\src\PrefManager.cpp
+0x008F2510|dvaui.wacom_support_enabled
+0x008F2568|dvaui.TouchInterface
+0x008F25D8|dvaui::ui::TouchInterface_Wacom::InitializeWacomDriver
+0x008F2610|D:\J\ws\ilst_rel_30_6\META\dist\projects\dva\Drover\dvaui\ui\src\TouchInterface_Wacom.cpp
+0x008F46C0|dvaui::controls::UI_TextEdit
+0x008F4700|dvaui::controls::UI_ScrollBar
+0x008F6D80|dvaui.UIBuilderSupport
+0x008F7048|dvaui::ui::UI_SubView
+0x008F7178|dvaui::ui::UI_TransformSubView
+0x008F7198|dvaui::controls::UI_SearchBox
+0x008F71B8|dvaui::controls::UI_InteractiveControlView
+0x008F71E8|dvaui::controls::UI_ControlView
+0x008F7240|dvaui::ui::UI_GridView
+0x008F7298|dvaui::ui::UI_LayoutView
+0x008F72F8|dvaui::controls::UI_PathBar
+0x008F7318|dvaui::controls::UI_LevelMeter
+0x008F73B8|dvaui::controls::UI_RadioGroup
+0x008F73D8|dvaui::controls::UI_SliderT
+0x008F73F8|dvaui::controls::UI_TextEdit_S
+0x008F7418|dvaui::controls::UI_PasswordTextEdit
+0x008F7440|dvaui::controls::UI_ThemePicker
+0x008F7470|dvaui::controls::UI_ClearButtonTextEdit
+0x008F7498|dvaui::controls::UI_TextEdit_M
+0x008F74B8|dvaui::controls::UI_TextEdit_MS
+0x008F74D8|dvaui::controls::UI_ValidatedTextEdit
+0x008F7500|dvaui::controls::UI_DateTextEdit
+0x008F7528|dvaui::controls::UI_StaticText
+0x008F7598|dvaui::controls::UI_TextCrawl
+0x008F7638|dvaui::controls::UI_Button
+0x008F7778|dvaui::controls::UI_TextButton
+0x008F77B8|dvaui::controls::UI_PictureButton
+0x008F7830|dvaui::controls::UI_PictureTextButton
+0x008F78E8|dvaui::controls::UI_OwnerDrawButton
+0x008F7910|dvaui::controls::UI_DisclosureTriangleButton
+0x008F79B0|dvaui::controls::UI_Popup
+0x008F79D0|dvaui::controls::UI_Popup_Combo
+0x008F79F0|dvaui::controls::UI_PopupListBox
+0x008F7A38|dvaui::controls::UI_PicturePopup
+0x008F7A60|dvaui::controls::UI_Checkbox
+0x008F7A90|dvaui::controls::UI_AnglePicker
+0x008F7AB0|dvaui::controls::UI_Knob
+0x008F7B20|dvaui::controls::UI_Divider
+0x008F7B50|dvaui::controls::UI_HotText
+0x008F7B80|dvaui::controls::UI_HotTextButton
+0x008F7BA8|dvaui::controls::UI_HotTextNumber
+0x008F7BF0|dvaui::controls::UI_HotTextURL
+0x008F7C18|dvaui::controls::UI_NumberEdit
+0x008F7C38|dvaui::controls::UI_RadioButton
+0x008F7C90|dvaui::controls::UI_ScrollBar_V
+0x008F7CB0|dvaui::controls::UI_ScrollBar_H
+0x008F7CD0|dvaui::controls::UI_ScrollView
+0x008F7CF0|dvaui::controls::UI_SectionView
+0x008F7D78|dvaui::controls::UI_Slider
+0x008F7E10|dvaui::controls::UI_SliderHotTextNumber
+0x008F8068|dvaui::controls::UI_StaticImage
+0x008F8088|dvaui::controls::UI_ProgressBar
+0x008F80B0|dvaui::controls::UI_TabStop
+0x008F80D0|dvaui::controls::UI_TabWell
+0x008F80F0|dvaui::ui::UI_ArrangementView
+0x008F81D0|dvaui::controls::UI_SplitterView
+0x008F8208|dvaui::controls::UI_OutlineBox
+0x008F8228|dvaui::controls::UI_OutlineBoxWithLabel
+0x008F8250|dvaui::controls::UI_LockButton
+0x008F8270|dvaui::controls::UI_LinkButton
+0x008F8290|dvaui::controls::UI_ListBox
+0x008F82B0|dvaui::controls::UI_MultiColumnTree
+0x008F82D8|dvaui::controls::UI_TabContainer
+0x008F8300|dvaui::controls::UI_TabView
+0x008F8320|dvaui::controls::UI_PickWhipButton
+0x008F8348|dvaui::controls::UI_URLEdit
+0x008F8C40|dvaui::ui::UI_Dialog::Init
+0x008F8C60|D:\J\ws\ilst_rel_30_6\META\dist\projects\dva\Drover\dvaui\ui\src\UI_Dialog.cpp
+0x008FACB8|.*(dvaui.*controls).*
+0x008FACD0|.*(dvaworkspace.*sharedui|dva*).*
+0x008FACF8|.*(dvauxpui.*).*
+0x008FAD3F|=dvaui.ui.UI_SubView
+0x008FE170|$$$/dvaui/ui/Error/UnknownToolTipError=Unknown tool tip error.
+0x008FF828|Save SVG of Page
+0x008FF860|_Playground.svg
+0x008FF870|SVG File Saved.
+0x008FF910|https://jira.corp.adobe.com/issues/?jql=project%20%3D%20DVADR%20AND%20resolution%20%3D%20Unresolved%20AND%20labels%20%3D%20'
+0x008FFA18|selftest.svgcomparison
+0x008FFC10|hellodrover_svg_comparison_diff_log.txt
+0x00900408|UI Playground
+0x00903230|_Inspection.svg
+0x009049D8|Search UI Playground...
+0x00905480|$$$/dvaui/utility/ProgressCategory/ProgressCategoryViewController/Status=Complete
+0x009054E0|$$$/dvaui/utility/ProgressCategory/ProgressItemTree/Column0=Name
+0x00905530|$$$/dvaui/utility/ProgressCategory/ProgressItemTree/Column1=Status
+0x00905890|$$$/dvaui/utility/ProgressCategory/ProgressItemViewController/PauseResumeProgress=Pause/Resume
+0x009058F0|$$$/dvaui/utility/ProgressCategory/ProgressItemViewController/Paused=Paused...
+0x00905940|$$$/dvaui/utility/ProgressCategory/ProgressItemViewController/Cancelled=Cancelled...
+0x009059A0|$$$/dvaui/utility/ProgressCategory/ProgressItemViewController/Waiting=Waiting...
+0x00905A00|$$$/dvaui/utility/ProgressCategory/ProgressItemViewController/Complete=Complete
+0x00905A50|$$$/dvaui/utility/ProgressCategory/ProgressItemViewController/CancelProgress=Cancel
+0x00906078|<svg width = "
+0x00906088|<svg[^>]*>
+0x00906230|dvaui::guides::SaveGuidesToFile
+0x00906250|dvaui::guides::ReadGuidesFromPath
+0x00906630|$$$/dvaui/utility/Error/MenuUtils/InvalidMenuOperation=Invalid menu operation.
+0x00906680|$$$/dvaui/utility/OS_Menu/ModKey/Ctrl=Ctrl
+0x009066B0|$$$/dvaui/utility/OS_Menu/ModKey/Alt=Alt
+0x009066E0|$$$/dvaui/utility/OS_Menu/ModKey/Shift=Shift
+0x00906710|$$$/dvaui/utility/OS_Menu/Key/LeftArrow=Left Arrow
+0x00906748|$$$/dvaui/utility/OS_Menu/Key/RightArrow=Right Arrow
+0x00906780|$$$/dvaui/utility/OS_Menu/Key/UpArrow=Up Arrow
+0x009067B0|$$$/dvaui/utility/OS_Menu/Key/DownArrow=Down Arrow
+0x009067E8|$$$/dvaui/utility/OS_Menu/Key/NumpadEnter=Numpad Enter
+0x00906820|$$$/dvaui/utility/OS_Menu/Key/NumpadPeriod=Numpad .
+0x00906858|$$$/dvaui/utility/OS_Menu/Key/NumpadComma=Numpad ,
+0x00906890|$$$/dvaui/utility/OS_Menu/Key/NumpadMultiply=Numpad *
+0x009068C8|$$$/dvaui/utility/OS_Menu/Key/NumpadPlus=Numpad +
+0x00906900|$$$/dvaui/utility/OS_Menu/Key/NumpadDivide=Numpad /
+0x00906938|$$$/dvaui/utility/OS_Menu/Key/NumpadMinus=Numpad -
+0x00906970|$$$/dvaui/utility/OS_Menu/Key/NumpadEqual=Numpad =
+0x009069A8|$$$/dvaui/utility/OS_Menu/Key/NumpadInsert=Numpad 0
+0x009069E0|$$$/dvaui/utility/OS_Menu/Key/NumpadDelete=Numpad .
+0x00906A18|$$$/dvaui/utility/OS_Menu/Key/NumpadHome=Numpad 7
+0x00906A50|$$$/dvaui/utility/OS_Menu/Key/NumpadEnd=Numpad 1
+0x00906A88|$$$/dvaui/utility/OS_Menu/Key/NumpadPageUp=Numpad 9
+0x00906AC0|$$$/dvaui/utility/OS_Menu/Key/NumpadPageDown=Numpad 3
+0x00906AF8|$$$/dvaui/utility/OS_Menu/Key/Numpad0=Numpad 0
+0x00906B28|$$$/dvaui/utility/OS_Menu/Key/Numpad1=Numpad 1
+0x00906B58|$$$/dvaui/utility/OS_Menu/Key/Numpad2=Numpad 2
+0x00906B88|$$$/dvaui/utility/OS_Menu/Key/Numpad3=Numpad 3
+0x00906BB8|$$$/dvaui/utility/OS_Menu/Key/Numpad4=Numpad 4
+0x00906BE8|$$$/dvaui/utility/OS_Menu/Key/Numpad5=Numpad 5
+0x00906C18|$$$/dvaui/utility/OS_Menu/Key/Numpad6=Numpad 6
+0x00906C48|$$$/dvaui/utility/OS_Menu/Key/Numpad7=Numpad 7
+0x00906C78|$$$/dvaui/utility/OS_Menu/Key/Numpad8=Numpad 8
+0x00906CA8|$$$/dvaui/utility/OS_Menu/Key/Numpad9=Numpad 9
+0x00906CD8|$$$/dvaui/utility/OS_Menu/Key/F1=F1
+0x00906D00|$$$/dvaui/utility/OS_Menu/Key/F2=F2
+0x00906D28|$$$/dvaui/utility/OS_Menu/Key/F3=F3
+0x00906D50|$$$/dvaui/utility/OS_Menu/Key/F4=F4
+0x00906D78|$$$/dvaui/utility/OS_Menu/Key/F5=F5
+0x00906DA0|$$$/dvaui/utility/OS_Menu/Key/F6=F6
+0x00906DC8|$$$/dvaui/utility/OS_Menu/Key/F7=F7
+0x00906DF0|$$$/dvaui/utility/OS_Menu/Key/F8=F8
+0x00906E18|$$$/dvaui/utility/OS_Menu/Key/F9=F9
+0x00906E40|$$$/dvaui/utility/OS_Menu/Key/F10=F10
+0x00906E68|$$$/dvaui/utility/OS_Menu/Key/F11=F11
+0x00906E90|$$$/dvaui/utility/OS_Menu/Key/F12=F12
+0x00906EB8|$$$/dvaui/utility/OS_Menu/Key/F13=F13
+0x00906EE0|$$$/dvaui/utility/OS_Menu/Key/F14=F14
+0x00906F08|$$$/dvaui/utility/OS_Menu/Key/F15=F15
+0x00906F30|$$$/dvaui/utility/OS_Menu/Key/F16=F16
+0x00906F58|$$$/dvaui/utility/OS_Menu/Key/F17=F17
+0x00906F80|$$$/dvaui/utility/OS_Menu/Key/F18=F18
+0x00906FA8|$$$/dvaui/utility/OS_Menu/Key/F19=F19
+0x00906FD0|$$$/dvaui/utility/OS_Menu/Key/F20=F20
+0x00906FF8|$$$/dvaui/utility/OS_Menu/Key/F21=F21
+0x00907020|$$$/dvaui/utility/OS_Menu/Key/F22=F22
+0x00907048|$$$/dvaui/utility/OS_Menu/Key/F23=F23
+0x00907070|$$$/dvaui/utility/OS_Menu/Key/F24=F24
+0x00907098|$$$/dvaui/utility/OS_Menu/Key/Help=Help
+0x009070C0|$$$/dvaui/utility/OS_Menu/Key/Home=Home
+0x009070E8|$$$/dvaui/utility/OS_Menu/Key/PageUp=PageUp
+0x00907118|$$$/dvaui/utility/OS_Menu/Key/Delete=Delete
+0x00907148|$$$/dvaui/utility/OS_Menu/Key/End=End
+0x00907170|$$$/dvaui/utility/OS_Menu/Key/PageDown=PageDown
+0x009071A0|$$$/dvaui/utility/OS_Menu/Key/PadNumLock=NumLock
+0x009071D8|$$$/dvaui/utility/OS_Menu/Key/Insert=Insert
+0x00907208|$$$/dvaui/utility/OS_Menu/Key/Pause=Pause
+0x00907238|$$$/dvaui/utility/OS_Menu/Key/CapsLock=CapsLock
+0x00907268|$$$/dvaui/utility/OS_Menu/Key/Spacebar=Spacebar
+0x00907298|$$$/dvaui/utility/OS_Menu/Key/Escape=Esc
+0x009072C8|$$$/dvaui/utility/OS_Menu/Key/Return=Return#{mswindows}Enter
+0x00907308|$$$/dvaui/utility/OS_Menu/Key/Tab=Tab
+0x00907330|$$$/dvaui/utility/OS_Menu/Key/Backspace=Backspace
+0x00907368|DVA_CursorData
+0x00907390|$$$/dvaui/ui/Error/InvalidCursorDataFile=Not a valid cursor data definition.
+0x009073E0|$$$/dvaui/ui/Error/IncompatibleCursorDataFileVersion=Unable to load cursor data file. Incompatible version.
+0x009075B0|dvaui::uxp::UI_CustomControlViewMgr
+0x009075E0|dvaui::uxp::UI_CustomControlViewMgr::RegisterCustomControlViewCreator
+0x00907628|dvaui::uxp::UI_CustomControlViewMgr::CreateCustomControlView
+0x00909900|$$$/dvaui/ui/Error/UnableToCreateTextEdit=Unable to create edit text.
+0x0090AA9F|F$$$/dvaui/dialogs/FileSaveAsDialog_WIN/IsTooLong=@0 is too long. Try a shorter name.
+0x0090AB00|$$$/dvaui/dialogs/FileSaveAsDialog_WIN/ConfirmSaveAs=Confirm Save As
+0x0090AB50|$$$/dvaui/dialogs/FileSaveAsDialog_WIN/AlreadyExistsReplace=@0 already exists.#{endl}Do you want to replace it?
+0x0090ABC0|$$$/dvaui/dialogs/FileSaveAsDialog_WIN/IsReadOnly=@0 is read-only and cannot be replaced.
+0x0090ADB8|dvaui.d2d.CacheTextMeasurements
+0x0090ADD8|DVADR-4195172
+0x0090AE60|dvaappsupport::feature
+0x0090AE78|dvaui::drawbot::DirectWriteFontInterface
+0x0090B830|$$$/dvaui/drawbot/Error/OSSupplier/UnsupportedPixelFormat=Unsupported Pixel Format.
+0x0090B890|$$$/dvaui/drawbot/Error/OSSupplier/UnknownAntiAliasPolicy=Unknown Anti-Alias Policy.
+0x0090B8F0|$$$/dvaui/drawbot/Error/OSSupplier/UnknownInterpolationPolicy=Unknown Interpolation Policy.
+0x0090B950|$$$/dvaui/drawbot/Error/OSSupplier/UnknownFillType=Unknown Fill Type.
+0x0090B9A0|$$$/dvaui/drawbot/Error/OSSupplier/UnknownLineCapType=Unknown Line Cap Type.
+0x0090B9F0|$$$/dvaui/drawbot/Error/OSSupplier/UnknownLineJoinType=Unknown Line Join Type.
+0x0090BA40|$$$/dvaui/drawbot/Error/OSSupplier/GDIPlus/NotInitializedWithGdiStatus=GDI+ not initialized. GDI Status: ^1
+0x0090BAB0|$$$/dvaui/drawbot/Error/OSSupplier/UnableToReadImageFileWithGdiStatus=Unable to read image file. GDI Status: ^1
+0x0090BB20|$$$/dvaui/drawbot/Error/OSSupplier/UnableToCreateImageBufferWithGdiStatus=Unable to create image buffer. GDI Status: ^1 Size: ^2x^3
+0x0090BBB0|$$$/dvaui/drawbot/Error/OSSupplier/UnableToCreateSurfaceWithGdiStatus=Unable to create drawing surface. GDI Status: ^1
+0x0090BC30|$$$/dvaui/drawbot/Error/OSSupplier/UnableToCreateFontWithGdiStatus=Unable to load operating system font. GDI Status: ^1 Font: ^2 Style: ^3
+0x0090BCC0|$$$/dvaui/drawbot/Error/OSSupplier/UnableToGetFamilyNameWithGdiStatus=Unable to get font family name. GDI Status: ^1
+0x0090BD40|$$$/dvaui/drawbot/Error/OSSupplier/UnableToSetClipErrorWithGdiStatus=Unable to set clip. GDI Status: ^1
+0x0090BDB0|$$$/dvaui/drawbot/Error/OSSupplier/UnableToSetSmoothingModeWithGdiStatus=Unable to set smoothing mode. GDI Status: ^1
+0x0090BE30|$$$/dvaui/drawbot/Error/OSSupplier/UnableToSetInterpolationModeWithGdiStatus=Unable to set interpolation mode. GDI Status: ^1
+0x0090BEB0|$$$/dvaui/drawbot/Error/OSSupplier/UnableToSetTextRenderingHintWithGdiStatus=Unable to set text rendering hint. GDI Status: ^1
+0x0090BF30|$$$/dvaui/drawbot/Error/OSSupplier/UnableToGetTransformWithGdiStatus=Unable to get transform. GDI Status: ^1
+0x0090BFA0|$$$/dvaui/drawbot/Error/OSSupplier/UnableToSetTransformWithGdiStatus=Unable to set transform. GDI Status: ^1
+0x0090C010|$$$/dvaui/drawbot/Error/OSSupplier/UnableToRestoreWithGdiStatus=Unable to restore. GDI Status: ^1
+0x0090C080|$$$/dvaui/drawbot/Error/OSSupplier/UnableToGdiplusMeasureStringWithGdiStatus=Unable to measure string. GDI Status: ^1
+0x0090C100|$$$/dvaui/drawbot/Error/OSSupplier/UnableToSetCompositingModeWithGdiStatus=Unable to set compositing mode. GDI Status: ^1
+0x0090C180|$$$/dvaui/drawbot/Error/OSSupplier/UnableToSetCompositingQualityWithGdiStatus=Unable to set compositing quality. GDI Status: ^1
+0x0090C200|$$$/dvaui/drawbot/Error/OSSupplier/UnableToSetPixelOffsetModeWithGdiStatus=Unable to set pixel offset mode. GDI Status: ^1
+0x0090C280|$$$/dvaui/drawbot/Error/OSSupplier/UnableToDrawImageWithGdiStatus=Unable to draw image. GDI Status: ^1
+0x0090C2F0|$$$/dvaui/drawbot/Error/OSSupplier/UnableToFillRectangleWithGdiStatus=Unable to fill rectangle. GDI Status: ^1
+0x0090C360|$$$/dvaui/drawbot/Error/OSSupplier/UnableToSetFillModeWithGdiStatus=Unable to set fill mode. GDI Status: ^1
+0x0090C3D0|$$$/dvaui/drawbot/Error/OSSupplier/UnableToFillPathWithGdiStatus=Unable to fill path. GDI Status: ^1
+0x0090C440|$$$/dvaui/drawbot/Error/OSSupplier/UnableToGetVisibleClipBoundsWithGdiStatus=Unable to get visible clip bounds. GDI Status: ^1
+0x0090C4C0|$$$/dvaui/drawbot/Error/OSSupplier/UnableToMultiplyTransformWithGdiStatus=Unable to multiply transform. GDI Status: ^1
+0x0090C540|$$$/dvaui/drawbot/Error/OSSupplier/UnableToDrawPathWithGdiStatus=Unable to draw path. GDI Status: ^1
+0x0090C5B0|$$$/dvaui/drawbot/Error/OSSupplier/UnableToSetTextContrastWithGdiStatus=Unable to set text contrast. GDI Status: ^1
+0x0090C630|$$$/dvaui/drawbot/Error/OSSupplier/UnableToDrawStringWithGdiStatus=Unable to draw string. GDI Status: ^1
+0x0090C6A0|$$$/dvaui/drawbot/Error/OSSupplier/UnableToSetFormatFlagsWithGdiStatus=Unable to set format flag. GDI Status: ^1
+0x0090C720|$$$/dvaui/drawbot/Error/OSSupplier/UnableToSetColorMatrixWithGdiStatus=Unable to set color matrix. GDI Status: ^1
+0x0090C7A0|$$$/dvaui/drawbot/Error/OSSupplier/UnableToCreatePenBufferWithGdiStatus=Unable to create pen buffer. GDI Status: ^1
+0x0090C820|$$$/dvaui/drawbot/Error/OSSupplier/UnableToSetWidthWithGdiStatus=Unable to set width. GDI Status: ^1
+0x0090C890|$$$/dvaui/drawbot/Error/OSSupplier/UnableToSetMiterLimitWithGdiStatus=Unable to set miter limit. GDI Status: ^1
+0x0090C900|$$$/dvaui/drawbot/Error/OSSupplier/UnableToSetLineJoinWithGdiStatus=Unable to set line join. GDI Status: ^1
+0x0090C970|$$$/dvaui/drawbot/Error/OSSupplier/UnableToSetLineCapWithGdiStatus=Unable to set line cap. GDI Status: ^1
+0x0090C9E0|$$$/dvaui/drawbot/Error/OSSupplier/UnableToSetDashPatternWithGdiStatus=Unable to set dash pattern. GDI Status: ^1
+0x0090CA60|$$$/dvaui/drawbot/Error/OSSupplier/UnableToGetDashPatternWithGdiStatus=Unable to get dash pattern. GDI Status: ^1
+0x0090CAE0|$$$/dvaui/drawbot/Error/OSSupplier/UnableToCreateSolidBrushBufferWithGdiStatus=Unable to create solid brush buffer. GDI Status: ^1
+0x0090CB70|$$$/dvaui/drawbot/Error/OSSupplier/UnableToCreateLinearGradientBrushBufferWithGdiStatus=Unable to create linear gradient brush buffer. GDI Status: ^1
+0x0090CC10|$$$/dvaui/drawbot/Error/OSSupplier/UnableToSetInterpolationColorsWithGdiStatus=Unable to set interpolation colors. GDI Status: ^1
+0x0090CCA0|$$$/dvaui/drawbot/Error/OSSupplier/UnableToAddEllipseWithGdiStatus=Unable to add ellipse. GDI Status: ^1
+0x0090CD10|$$$/dvaui/drawbot/Error/OSSupplier/UnableToCreatePathGradientBrushBufferWithGdiStatus=Unable to create path gradient brush buffer. GDI Status: ^1
+0x0090CDB0|$$$/dvaui/drawbot/Error/OSSupplier/UnableToSetCenterColorWithGdiStatus=Unable to set center color. GDI Status: ^1
+0x0090CE30|$$$/dvaui/drawbot/Error/OSSupplier/UnableToSetSurroundColorsWithGdiStatus=Unable to set surround colors. GDI Status: ^1
+0x0090CEB0|$$$/dvaui/drawbot/Error/OSSupplier/UnableToCreateGraphicsPathBufferWithGdiStatus=Unable to create graphics path buffer. GDI Status: ^1
+0x0090CF40|$$$/dvaui/drawbot/Error/OSSupplier/UnableToCloseFigureWithGdiStatus=Unable to close figure. GDI Status: ^1
+0x0090CFB0|$$$/dvaui/drawbot/Error/OSSupplier/UnableToStartFigureWithGdiStatus=Unable to start figure. GDI Status: ^1
+0x0090D020|$$$/dvaui/drawbot/Error/OSSupplier/UnableToAddLineWithGdiStatus=Unable to add line. GDI Status: ^1
+0x0090D090|$$$/dvaui/drawbot/Error/OSSupplier/UnableToAddBezierWithGdiStatus=Unable to add bezier. GDI Status: ^1
+0x0090D100|$$$/dvaui/drawbot/Error/OSSupplier/UnableToAddRectangleWithGdiStatus=Unable to add rectangle. GDI Status: ^1
+0x0090D170|$$$/dvaui/drawbot/Error/OSSupplier/UnableToAddArcWithGdiStatus=Unable to add arc. GDI Status: ^1
+0x0090D1E0|$$$/dvaui/drawbot/Error/OSSupplier/UnableToAddPhaseWithGdiStatus=Unable to set phase. GDI Status: ^1
+0x0090D250|$$$/dvaui/drawbot/Error/OSSupplier/UnspecifiedWithGdiStatus=Unspecified drawing error. GDI Status: ^1
+0x0090D480|$$$/dvaui/drawbot/Error/OSSupplier/InvalidImageFile=Invalid image file.
+0x0090D4D0|$$$/dvaui/drawbot/Error/OSSupplier/UnableToCreateImageBuffer=Unable to create image buffer. Size: ^1x^2 (^3)
+0x0090D540|$$$/dvaui/drawbot/Error/OSSupplier/UnableToCreateImageBufferGDIOffscreen=Unable to create image buffer. Size: ^1x^2 (^3)
+0x0090D5E0|$$$/dvaui/drawbot/Error/OSSupplier/InvalidSurfaceImage=Invalid surface image.
+0x0090D820|dvaui.d2d.TreatBadHandlesAsFatalErrors
+0x0090D848|DVADR-4194922
+0x0090D860|$$$/dvaui/TreatBadHandlesAsCriticalErrorsFeature/Description=When Windows OS reports D2D is dealing with object handles, treat that as a critical erro
+0x0090D940|$$$/dvaui/TreatBadHandlesAsCriticalErrorsFeature/Name=Treat bad object handles as Critical Error in D2D.
+0x0090E180|$$$/dvaui/drawbot/Error/D2DSupplier/GenericD2DDrawBotErrorWithHR=Direct2D Drawbot error. HRESULT: ^1
+0x0090E1F0|$$$/dvaui/drawbot/Error/OSSupplier/UnsupportedPixelFormatWithHR=Unsupported Pixel Format. HRESULT: ^1
+0x0090E260|$$$/dvaui/drawbot/Error/OSSupplier/InvalidImageFileWithHR=Invalid image file. HRESULT: ^1
+0x0090E2C0|$$$/dvaui/drawbot/Error/D2DSupplier/NotCurrentlyAvailable=Direct 2D Drawbot Error - DXGI graphics resource or request is not currently available. HRES
+0x0090E360|$$$/dvaui/drawbot/Error/D2DSupplier/DeviceRemoved=Direct 2D Drawbot Error - DXGI GPU device instance has been suspended due to removal. HRESULT: ^1
+0x0090E400|$$$/dvaui/drawbot/Error/D2DSupplier/DeviceReset=Direct 2D Drawbot Error - DXGI GPU device failed due to a badly formed command. HRESULT: ^1
+0x0090E490|$$$/dvaui/drawbot/Error/D2DSupplier/DriverInternalError=Direct 2D Drawbot Error - DXGI GPU device driver has encountered a problem. HRESULT: ^1
+0x0090E520|$$$/dvaui/drawbot/Error/D2DSupplier/D2DRecreateTarget=Direct 2D Drawbot Error - Direct2D has encountered a problem with the GPU device. HRESULT: ^1
+0x0090E5C0|$$$/dvaui/drawbot/Error/D2DSupplier/InvalidWindowHandle=Direct 2D Drawbot Error - Invalid Window Handle. HRESULT: ^1
+0x0090E640|$$$/dvaui/drawbot/Error/D2DSupplier/OutOfMemory=Direct 2D Drawbot Error - Out of Memory. HRESULT: ^1
+0x0090E980|dvaui.Direct2D
+0x0090EB90|$$$/dvaui/drawbot/Error/OSSupplier/UnableToCreateImageBufferFromFile=Unable to create image buffer. Size: ^1
+0x0090FBC0|dvaui.ui.dialog.changetitle
+0x00910600|dvaui.OS_Window.UI_Paint
+0x00910620|dvaui.OS_Window
+0x00910E30|dvauiwin10.dll
+0x009114F8|$$$/dvaui/utility/OS_Menu/ModKey/OnlyFormatTemplate=tap @0
+0x00911550|$$$/dvaui/drawbot/Error/OSSupplier/GDIPlus/Initialization=Unable to initialize GDI+.
+0x009117D0|$$$/dvaui/utility/Error/ResourceUtils/UnableToAccessResourceDetailed=Unable to access resource '^1' (type ^2)
+0x009CF11C|D:\J\ws\ilst_rel_30_6\META\dist\Spec_Desktop\msvs_win32\Release\x64\build\Drover\dvaui_dvaui\dvaui\dvaui.pdb
+0x00A5F1AC|<TDVA
+0x00ACEDBC|z ui
+0x00ACF703|4 ui
+0x00ACF876|, ui
+0x00ACFD55|@4 ui
+0x00B2028F|D D!D"D#D$D%D&D'D(D)D*D+D,D-D.D/D0D1D2D3D4D5D6D7D8D9D:D;D<D=D>D?D@DADBDCDDDEDFDGDHDIDJDKDLDMDNDODPDQDRDSDTDUDVDWDXDYDZD[D\D]D^D_D`DaDbDcDdDeDfDgDhDiDj
+0x00B22C8F|Y Y!Y"Y#Y$Ydvaui.dll
+0x00B22CA4|?$TSS0@?1??Get@?$SkinSingleton@VBaseStaticTextSkin@csnext@skins@dvaui@@@core@skins@dvaui@@SAPEAVBaseStaticTextSkin@csnext@45@XZ@4HA
+0x00B22D28|?$TSS0@?1??Get@?$SkinSingleton@VV4AnglePickerSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4AnglePickerSkin@v4@45@XZ@4HA
+0x00B22DA2|?$TSS0@?1??Get@?$SkinSingleton@VV4AppearanceCustomizerSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4AppearanceCustomizerSkin@v4@45@XZ@4HA
+0x00B22E2E|?$TSS0@?1??Get@?$SkinSingleton@VV4ButtonBarAltPictureButtonSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4ButtonBarAltPictureButtonSkin@v4@45@XZ@4HA
+0x00B22EC4|?$TSS0@?1??Get@?$SkinSingleton@VV4ButtonBarAltSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4ButtonBarAltSkin@v4@45@XZ@4HA
+0x00B22F40|?$TSS0@?1??Get@?$SkinSingleton@VV4ButtonBarAltTextButtonSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4ButtonBarAltTextButtonSkin@v4@45@XZ@4HA
+0x00B22FD0|?$TSS0@?1??Get@?$SkinSingleton@VV4ButtonBarSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4ButtonBarSkin@v4@45@XZ@4HA
+0x00B23046|?$TSS0@?1??Get@?$SkinSingleton@VV4ButtonSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4ButtonSkin@v4@45@XZ@4HA
+0x00B230B6|?$TSS0@?1??Get@?$SkinSingleton@VV4CheckboxSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4CheckboxSkin@v4@45@XZ@4HA
+0x00B2312A|?$TSS0@?1??Get@?$SkinSingleton@VV4CircleLoaderSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4CircleLoaderSkin@v4@45@XZ@4HA
+0x00B231A6|?$TSS0@?1??Get@?$SkinSingleton@VV4ClearButtonEditSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4ClearButtonEditSkin@v4@45@XZ@4HA
+0x00B23228|?$TSS0@?1??Get@?$SkinSingleton@VV4ColorRampSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4ColorRampSkin@v4@45@XZ@4HA
+0x00B2329E|?$TSS0@?1??Get@?$SkinSingleton@VV4ColorSwatchSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4ColorSwatchSkin@v4@45@XZ@4HA
+0x00B23318|?$TSS0@?1??Get@?$SkinSingleton@VV4ComboSliderSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4ComboSliderSkin@v4@45@XZ@4HA
+0x00B23392|?$TSS0@?1??Get@?$SkinSingleton@VV4ControlPropertiesSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4ControlPropertiesSkin@v4@45@XZ@4HA
+0x00B23418|?$TSS0@?1??Get@?$SkinSingleton@VV4DialogViewContainerSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4DialogViewContainerSkin@v4@45@XZ@4HA
+0x00B234A2|?$TSS0@?1??Get@?$SkinSingleton@VV4DisclosureTriangleButtonSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4DisclosureTriangleButtonSkin@v4@45@XZ@4HA
+0x00B23536|?$TSS0@?1??Get@?$SkinSingleton@VV4DividerSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4DividerSkin@v4@45@XZ@4HA
+0x00B235A8|?$TSS0@?1??Get@?$SkinSingleton@VV4GenericArrowsSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4GenericArrowsSkin@v4@45@XZ@4HA
+0x00B23626|?$TSS0@?1??Get@?$SkinSingleton@VV4HotTextSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4HotTextSkin@v4@45@XZ@4HA
+0x00B23698|?$TSS0@?1??Get@?$SkinSingleton@VV4IconFlyoutMenuItemSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4IconFlyoutMenuItemSkin@v4@45@XZ@4HA
+0x00B23720|?$TSS0@?1??Get@?$SkinSingleton@VV4IconFlyoutMenuItemTextSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4IconFlyoutMenuItemTextSkin@v4@45@XZ@4HA
+0x00B237B0|?$TSS0@?1??Get@?$SkinSingleton@VV4IconFlyoutMenuSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4IconFlyoutMenuSkin@v4@45@XZ@4HA
+0x00B23830|?$TSS0@?1??Get@?$SkinSingleton@VV4LevelMeterViewSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4LevelMeterViewSkin@v4@45@XZ@4HA
+0x00B238B0|?$TSS0@?1??Get@?$SkinSingleton@VV4ListBoxItemSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4ListBoxItemSkin@v4@45@XZ@4HA
+0x00B2392A|?$TSS0@?1??Get@?$SkinSingleton@VV4ListBoxSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4ListBoxSkin@v4@45@XZ@4HA
+0x00B2399C|?$TSS0@?1??Get@?$SkinSingleton@VV4MultiColumnTreeHeaderSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4MultiColumnTreeHeaderSkin@v4@45@XZ@4HA
+0x00B23A2A|?$TSS0@?1??Get@?$SkinSingleton@VV4MultiColumnTreeRowSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4MultiColumnTreeRowSkin@v4@45@XZ@4HA
+0x00B23AB2|?$TSS0@?1??Get@?$SkinSingleton@VV4MultiColumnTreeSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4MultiColumnTreeSkin@v4@45@XZ@4HA
+0x00B23B34|?$TSS0@?1??Get@?$SkinSingleton@VV4OutlineBoxSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4OutlineBoxSkin@v4@45@XZ@4HA
+0x00B23BAC|?$TSS0@?1??Get@?$SkinSingleton@VV4PathBarSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4PathBarSkin@v4@45@XZ@4HA
+0x00B23C1E|?$TSS0@?1??Get@?$SkinSingleton@VV4PickWhipSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4PickWhipSkin@v4@45@XZ@4HA
+0x00B23C92|?$TSS0@?1??Get@?$SkinSingleton@VV4PictureButtonSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4PictureButtonSkin@v4@45@XZ@4HA
+0x00B23D10|?$TSS0@?1??Get@?$SkinSingleton@VV4PicturePopupListBoxSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4PicturePopupListBoxSkin@v4@45@XZ@4HA
+0x00B23D9A|?$TSS0@?1??Get@?$SkinSingleton@VV4PicturePopupSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4PicturePopupSkin@v4@45@XZ@4HA
+0x00B23E16|?$TSS0@?1??Get@?$SkinSingleton@VV4PictureTextButtonSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4PictureTextButtonSkin@v4@45@XZ@4HA
+0x00B23E9C|?$TSS0@?1??Get@?$SkinSingleton@VV4PopupListBoxDividerSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4PopupListBoxDividerSkin@v4@45@XZ@4HA
+0x00B23F26|?$TSS0@?1??Get@?$SkinSingleton@VV4PopupListBoxItemSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4PopupListBoxItemSkin@v4@45@XZ@4HA
+0x00B23FAA|?$TSS0@?1??Get@?$SkinSingleton@VV4PopupListBoxScrollBarSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4PopupListBoxScrollBarSkin@v4@45@XZ@4HA
+0x00B24038|?$TSS0@?1??Get@?$SkinSingleton@VV4PopupListBoxSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4PopupListBoxSkin@v4@45@XZ@4HA
+0x00B240B4|?$TSS0@?1??Get@?$SkinSingleton@VV4PopupSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4PopupSkin@v4@45@XZ@4HA
+0x00B24122|?$TSS0@?1??Get@?$SkinSingleton@VV4PopupSliderSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4PopupSliderSkin@v4@45@XZ@4HA
+0x00B2419C|?$TSS0@?1??Get@?$SkinSingleton@VV4ProgressBarSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4ProgressBarSkin@v4@45@XZ@4HA
+0x00B24216|?$TSS0@?1??Get@?$SkinSingleton@VV4RadioButtonSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4RadioButtonSkin@v4@45@XZ@4HA
+0x00B24290|?$TSS0@?1??Get@?$SkinSingleton@VV4ScrollBarSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4ScrollBarSkin@v4@45@XZ@4HA
+0x00B24306|?$TSS0@?1??Get@?$SkinSingleton@VV4SearchBoxSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4SearchBoxSkin@v4@45@XZ@4HA
+0x00B2437C|?$TSS0@?1??Get@?$SkinSingleton@VV4SectionViewSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4SectionViewSkin@v4@45@XZ@4HA
+0x00B243F6|?$TSS0@?1??Get@?$SkinSingleton@VV4SliderForPopupSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4SliderForPopupSkin@v4@45@XZ@4HA
+0x00B24476|?$TSS0@?1??Get@?$SkinSingleton@VV4SliderHotTextNumberSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4SliderHotTextNumberSkin@v4@45@XZ@4HA
+0x00B24500|?$TSS0@?1??Get@?$SkinSingleton@VV4SliderSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4SliderSkin@v4@45@XZ@4HA
+0x00B24570|?$TSS0@?1??Get@?$SkinSingleton@VV4SplitterViewSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4SplitterViewSkin@v4@45@XZ@4HA
+0x00B245EC|?$TSS0@?1??Get@?$SkinSingleton@VV4StarRatingSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4StarRatingSkin@v4@45@XZ@4HA
+0x00B24664|?$TSS0@?1??Get@?$SkinSingleton@VV4StepperSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4StepperSkin@v4@45@XZ@4HA
+0x00B246D6|?$TSS0@?1??Get@?$SkinSingleton@VV4SwatchSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4SwatchSkin@v4@45@XZ@4HA
+0x00B24746|?$TSS0@?1??Get@?$SkinSingleton@VV4TabCloseButtonSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4TabCloseButtonSkin@v4@45@XZ@4HA
+0x00B247C6|?$TSS0@?1??Get@?$SkinSingleton@VV4TabContainerSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4TabContainerSkin@v4@45@XZ@4HA
+0x00B24842|?$TSS0@?1??Get@?$SkinSingleton@VV4TabContainerWellItemSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4TabContainerWellItemSkin@v4@45@XZ@4HA
+0x00B248CE|?$TSS0@?1??Get@?$SkinSingleton@VV4TabContainerWellSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4TabContainerWellSkin@v4@45@XZ@4HA
+0x00B24952|?$TSS0@?1??Get@?$SkinSingleton@VV4TabPopupSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4TabPopupSkin@v4@45@XZ@4HA
+0x00B249C6|?$TSS0@?1??Get@?$SkinSingleton@VV4TabStopSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4TabStopSkin@v4@45@XZ@4HA
+0x00B24A38|?$TSS0@?1??Get@?$SkinSingleton@VV4TabWellItemSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4TabWellItemSkin@v4@45@XZ@4HA
+0x00B24AB2|?$TSS0@?1??Get@?$SkinSingleton@VV4TabWellOverflowSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4TabWellOverflowSkin@v4@45@XZ@4HA
+0x00B24B34|?$TSS0@?1??Get@?$SkinSingleton@VV4TabWellSingleTabSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4TabWellSingleTabSkin@v4@45@XZ@4HA
+0x00B24BB8|?$TSS0@?1??Get@?$SkinSingleton@VV4TabWellSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4TabWellSkin@v4@45@XZ@4HA
+0x00B24C2A|?$TSS0@?1??Get@?$SkinSingleton@VV4TextButtonSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4TextButtonSkin@v4@45@XZ@4HA
+0x00B24CA2|?$TSS0@?1??Get@?$SkinSingleton@VV4TextEditSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4TextEditSkin@v4@45@XZ@4HA
+0x00B24D16|?$TSS0@?1??Get@?$SkinSingleton@VV4ToolBarSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4ToolBarSkin@v4@45@XZ@4HA
+0x00B24D88|?$TSS0@?1??Get@?$SkinSingleton@VV4ToolTipSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4ToolTipSkin@v4@45@XZ@4HA
+0x00B24DFA|?$TSS0@?1??Get@?$SkinSingleton@VV4UtilitiesSkin@v4@skins@dvaui@@@core@skins@dvaui@@SAPEAVV4UtilitiesSkin@v4@45@XZ@4HA
+0x00B24E70|?$TSS0@?1??Get@?$SkinSingleton@VV5AdvancedGridViewSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5AdvancedGridViewSkin@v5@45@XZ@4HA
+0x00B24EF4|?$TSS0@?1??Get@?$SkinSingleton@VV5AnglePickerSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5AnglePickerSkin@v5@45@XZ@4HA
+0x00B24F6E|?$TSS0@?1??Get@?$SkinSingleton@VV5AppearanceCustomizerSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5AppearanceCustomizerSkin@v5@45@XZ@4HA
+0x00B24FFA|?$TSS0@?1??Get@?$SkinSingleton@VV5BannerHotTextSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5BannerHotTextSkin@v5@45@XZ@4HA
+0x00B25078|?$TSS0@?1??Get@?$SkinSingleton@VV5BannerTextButtonSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5BannerTextButtonSkin@v5@45@XZ@4HA
+0x00B250FC|?$TSS0@?1??Get@?$SkinSingleton@VV5BrushShapePreviewSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5BrushShapePreviewSkin@v5@45@XZ@4HA
+0x00B25182|?$TSS0@?1??Get@?$SkinSingleton@VV5ButtonAltSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5ButtonAltSkin@v5@45@XZ@4HA
+0x00B251F8|?$TSS0@?1??Get@?$SkinSingleton@VV5ButtonBarPictureButtonSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5ButtonBarPictureButtonSkin@v5@45@XZ@4HA
+0x00B25288|?$TSS0@?1??Get@?$SkinSingleton@VV5ButtonBarSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5ButtonBarSkin@v5@45@XZ@4HA
+0x00B252FE|?$TSS0@?1??Get@?$SkinSingleton@VV5ButtonBarTextButtonSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5ButtonBarTextButtonSkin@v5@45@XZ@4HA
+0x00B25388|?$TSS0@?1??Get@?$SkinSingleton@VV5ButtonSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5ButtonSkin@v5@45@XZ@4HA
+0x00B253F8|?$TSS0@?1??Get@?$SkinSingleton@VV5CheckboxAltSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5CheckboxAltSkin@v5@45@XZ@4HA
+0x00B25472|?$TSS0@?1??Get@?$SkinSingleton@VV5CheckboxSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5CheckboxSkin@v5@45@XZ@4HA
+0x00B254E6|?$TSS0@?1??Get@?$SkinSingleton@VV5CircleLoaderSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5CircleLoaderSkin@v5@45@XZ@4HA
+0x00B25562|?$TSS0@?1??Get@?$SkinSingleton@VV5ClearButtonTextEditSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5ClearButtonTextEditSkin@v5@45@XZ@4HA
+0x00B255EC|?$TSS0@?1??Get@?$SkinSingleton@VV5ColorRampSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5ColorRampSkin@v5@45@XZ@4HA
+0x00B25662|?$TSS0@?1??Get@?$SkinSingleton@VV5ColorSpectrum@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5ColorSpectrum@v5@45@XZ@4HA
+0x00B256D8|?$TSS0@?1??Get@?$SkinSingleton@VV5ColorSwatchPairSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5ColorSwatchPairSkin@v5@45@XZ@4HA
+0x00B2575A|?$TSS0@?1??Get@?$SkinSingleton@VV5ColorSwatchSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5ColorSwatchSkin@v5@45@XZ@4HA
+0x00B257D4|?$TSS0@?1??Get@?$SkinSingleton@VV5ControlPropertiesSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5ControlPropertiesSkin@v5@45@XZ@4HA
+0x00B2585A|?$TSS0@?1??Get@?$SkinSingleton@VV5DialogViewContainerSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5DialogViewContainerSkin@v5@45@XZ@4HA
+0x00B258E4|?$TSS0@?1??Get@?$SkinSingleton@VV5DisclosureTriangleButtonSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5DisclosureTriangleButtonSkin@v5@45@XZ@4HA
+0x00B25978|?$TSS0@?1??Get@?$SkinSingleton@VV5DividerSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5DividerSkin@v5@45@XZ@4HA
+0x00B259EA|?$TSS0@?1??Get@?$SkinSingleton@VV5GenericArrowsSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5GenericArrowsSkin@v5@45@XZ@4HA
+0x00B25A68|?$TSS0@?1??Get@?$SkinSingleton@VV5HotTextAltSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5HotTextAltSkin@v5@45@XZ@4HA
+0x00B25AE0|?$TSS0@?1??Get@?$SkinSingleton@VV5HotTextSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5HotTextSkin@v5@45@XZ@4HA
+0x00B25B52|?$TSS0@?1??Get@?$SkinSingleton@VV5IconFlyoutMenuItemSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5IconFlyoutMenuItemSkin@v5@45@XZ@4HA
+0x00B25BDA|?$TSS0@?1??Get@?$SkinSingleton@VV5IconFlyoutMenuItemTextSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5IconFlyoutMenuItemTextSkin@v5@45@XZ@4HA
+0x00B25C6A|?$TSS0@?1??Get@?$SkinSingleton@VV5IconFlyoutMenuSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5IconFlyoutMenuSkin@v5@45@XZ@4HA
+0x00B25CEA|?$TSS0@?1??Get@?$SkinSingleton@VV5LevelMeterSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5LevelMeterSkin@v5@45@XZ@4HA
+0x00B25D62|?$TSS0@?1??Get@?$SkinSingleton@VV5LevelMeterViewSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5LevelMeterViewSkin@v5@45@XZ@4HA
+0x00B25DE2|?$TSS0@?1??Get@?$SkinSingleton@VV5LinkButtonSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5LinkButtonSkin@v5@45@XZ@4HA
+0x00B25E5A|?$TSS0@?1??Get@?$SkinSingleton@VV5ListBoxItemCustomSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5ListBoxItemCustomSkin@v5@45@XZ@4HA
+0x00B25EE0|?$TSS0@?1??Get@?$SkinSingleton@VV5ListBoxItemSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5ListBoxItemSkin@v5@45@XZ@4HA
+0x00B25F5A|?$TSS0@?1??Get@?$SkinSingleton@VV5ListBoxSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5ListBoxSkin@v5@45@XZ@4HA
+0x00B25FCC|?$TSS0@?1??Get@?$SkinSingleton@VV5LockButtonSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5LockButtonSkin@v5@45@XZ@4HA
+0x00B26044|?$TSS0@?1??Get@?$SkinSingleton@VV5MessageBoxSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5MessageBoxSkin@v5@45@XZ@4HA
+0x00B260BC|?$TSS0@?1??Get@?$SkinSingleton@VV5MultiColumnTreeAltSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5MultiColumnTreeAltSkin@v5@45@XZ@4HA
+0x00B26144|?$TSS0@?1??Get@?$SkinSingleton@VV5MultiColumnTreeHeaderAltSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5MultiColumnTreeHeaderAltSkin@v5@45@XZ@4HA
+0x00B261D8|?$TSS0@?1??Get@?$SkinSingleton@VV5MultiColumnTreeHeaderArrowSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5MultiColumnTreeHeaderArrowSkin@v5@45@XZ@4H
+0x00B26270|?$TSS0@?1??Get@?$SkinSingleton@VV5MultiColumnTreeHeaderSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5MultiColumnTreeHeaderSkin@v5@45@XZ@4HA
+0x00B262FE|?$TSS0@?1??Get@?$SkinSingleton@VV5MultiColumnTreeSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5MultiColumnTreeSkin@v5@45@XZ@4HA
+0x00B26380|?$TSS0@?1??Get@?$SkinSingleton@VV5OutlineBoxSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5OutlineBoxSkin@v5@45@XZ@4HA
+0x00B263F8|?$TSS0@?1??Get@?$SkinSingleton@VV5PathBarFlyoutSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5PathBarFlyoutSkin@v5@45@XZ@4HA
+0x00B26476|?$TSS0@?1??Get@?$SkinSingleton@VV5PathBarSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5PathBarSkin@v5@45@XZ@4HA
+0x00B264E8|?$TSS0@?1??Get@?$SkinSingleton@VV5PickWhipSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5PickWhipSkin@v5@45@XZ@4HA
+0x00B2655C|?$TSS0@?1??Get@?$SkinSingleton@VV5PictureButtonSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5PictureButtonSkin@v5@45@XZ@4HA
+0x00B265DA|?$TSS0@?1??Get@?$SkinSingleton@VV5PicturePopupSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5PicturePopupSkin@v5@45@XZ@4HA
+0x00B26656|?$TSS0@?1??Get@?$SkinSingleton@VV5PictureTextButtonSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5PictureTextButtonSkin@v5@45@XZ@4HA
+0x00B266DC|?$TSS0@?1??Get@?$SkinSingleton@VV5PinSelectorSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5PinSelectorSkin@v5@45@XZ@4HA
+0x00B26756|?$TSS0@?1??Get@?$SkinSingleton@VV5PopupButtonSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5PopupButtonSkin@v5@45@XZ@4HA
+0x00B267D0|?$TSS0@?1??Get@?$SkinSingleton@VV5PopupListBoxSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5PopupListBoxSkin@v5@45@XZ@4HA
+0x00B2684C|?$TSS0@?1??Get@?$SkinSingleton@VV5PopupSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5PopupSkin@v5@45@XZ@4HA
+0x00B268BA|?$TSS0@?1??Get@?$SkinSingleton@VV5PopupSliderSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5PopupSliderSkin@v5@45@XZ@4HA
+0x00B26934|?$TSS0@?1??Get@?$SkinSingleton@VV5PopupTextEditSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5PopupTextEditSkin@v5@45@XZ@4HA
+0x00B269B2|?$TSS0@?1??Get@?$SkinSingleton@VV5ProgressBarSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5ProgressBarSkin@v5@45@XZ@4HA
+0x00B26A2C|?$TSS0@?1??Get@?$SkinSingleton@VV5ProgressBarSkinRectangular@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5ProgressBarSkinRectangular@v5@45@XZ@4HA
+0x00B26ABC|?$TSS0@?1??Get@?$SkinSingleton@VV5RadioButtonAltSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5RadioButtonAltSkin@v5@45@XZ@4HA
+0x00B26B3C|?$TSS0@?1??Get@?$SkinSingleton@VV5RadioButtonSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5RadioButtonSkin@v5@45@XZ@4HA
+0x00B26BB6|?$TSS0@?1??Get@?$SkinSingleton@VV5RulerBaseSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5RulerBaseSkin@v5@45@XZ@4HA
+0x00B26C2C|?$TSS0@?1??Get@?$SkinSingleton@VV5ScrollBarSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5ScrollBarSkin@v5@45@XZ@4HA
+0x00B26CA2|?$TSS0@?1??Get@?$SkinSingleton@VV5SearchBoxSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5SearchBoxSkin@v5@45@XZ@4HA
+0x00B26D18|?$TSS0@?1??Get@?$SkinSingleton@VV5SectionViewSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5SectionViewSkin@v5@45@XZ@4HA
+0x00B26D92|?$TSS0@?1??Get@?$SkinSingleton@VV5SliderSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5SliderSkin@v5@45@XZ@4HA
+0x00B26E02|?$TSS0@?1??Get@?$SkinSingleton@VV5SplitterViewSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5SplitterViewSkin@v5@45@XZ@4HA
+0x00B26E7E|?$TSS0@?1??Get@?$SkinSingleton@VV5StarRatingSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5StarRatingSkin@v5@45@XZ@4HA
+0x00B26EF6|?$TSS0@?1??Get@?$SkinSingleton@VV5StepperSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5StepperSkin@v5@45@XZ@4HA
+0x00B26F68|?$TSS0@?1??Get@?$SkinSingleton@VV5SwatchSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5SwatchSkin@v5@45@XZ@4HA
+0x00B26FD8|?$TSS0@?1??Get@?$SkinSingleton@VV5TabContainerSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5TabContainerSkin@v5@45@XZ@4HA
+0x00B27054|?$TSS0@?1??Get@?$SkinSingleton@VV5TabContainerWellItemSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5TabContainerWellItemSkin@v5@45@XZ@4HA
+0x00B270E0|?$TSS0@?1??Get@?$SkinSingleton@VV5TabContainerWellSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5TabContainerWellSkin@v5@45@XZ@4HA
+0x00B27164|?$TSS0@?1??Get@?$SkinSingleton@VV5TabPopupSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5TabPopupSkin@v5@45@XZ@4HA
+0x00B271D8|?$TSS0@?1??Get@?$SkinSingleton@VV5TabStopSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5TabStopSkin@v5@45@XZ@4HA
+0x00B2724A|?$TSS0@?1??Get@?$SkinSingleton@VV5TabWellItemSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5TabWellItemSkin@v5@45@XZ@4HA
+0x00B272C4|?$TSS0@?1??Get@?$SkinSingleton@VV5TabWellOverflowPopupSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5TabWellOverflowPopupSkin@v5@45@XZ@4HA
+0x00B27350|?$TSS0@?1??Get@?$SkinSingleton@VV5TabWellOverflowSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5TabWellOverflowSkin@v5@45@XZ@4HA
+0x00B273D2|?$TSS0@?1??Get@?$SkinSingleton@VV5TabWellSingleTabSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5TabWellSingleTabSkin@v5@45@XZ@4HA
+0x00B27456|?$TSS0@?1??Get@?$SkinSingleton@VV5TabWellSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5TabWellSkin@v5@45@XZ@4HA
+0x00B274C8|?$TSS0@?1??Get@?$SkinSingleton@VV5TextButtonSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5TextButtonSkin@v5@45@XZ@4HA
+0x00B27540|?$TSS0@?1??Get@?$SkinSingleton@VV5TextEditAltSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5TextEditAltSkin@v5@45@XZ@4HA
+0x00B275BA|?$TSS0@?1??Get@?$SkinSingleton@VV5TextEditSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5TextEditSkin@v5@45@XZ@4HA
+0x00B2762E|?$TSS0@?1??Get@?$SkinSingleton@VV5ToastManagerSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5ToastManagerSkin@v5@45@XZ@4HA
+0x00B276AA|?$TSS0@?1??Get@?$SkinSingleton@VV5ToolBarSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5ToolBarSkin@v5@45@XZ@4HA
+0x00B2771C|?$TSS0@?1??Get@?$SkinSingleton@VV5ToolTipSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5ToolTipSkin@v5@45@XZ@4HA
+0x00B2778E|?$TSS0@?1??Get@?$SkinSingleton@VV5URLEditSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5URLEditSkin@v5@45@XZ@4HA
+0x00B27800|?$TSS0@?1??Get@?$SkinSingleton@VV5UnitNumberEditSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5UnitNumberEditSkin@v5@45@XZ@4HA
+0x00B27880|?$TSS0@?1??Get@?$SkinSingleton@VV5UnitTextEditPopupSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5UnitTextEditPopupSkin@v5@45@XZ@4HA
+0x00B27906|?$TSS0@?1??Get@?$SkinSingleton@VV5UnitTextEditPopupSliderSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5UnitTextEditPopupSliderSkin@v5@45@XZ@4HA
+0x00B27998|?$TSS0@?1??Get@?$SkinSingleton@VV5UtilitiesSkin@v5@skins@dvaui@@@core@skins@dvaui@@SAPEAVV5UtilitiesSkin@v5@45@XZ@4HA
+0x00B27A0E|?$TSS0@?1??Get@?$SkinSingleton@VV6AnglePickerSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6AnglePickerSkin@v6@45@XZ@4HA
+0x00B27A88|?$TSS0@?1??Get@?$SkinSingleton@VV6ButtonBarPictureButtonSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6ButtonBarPictureButtonSkin@v6@45@XZ@4HA
+0x00B27B18|?$TSS0@?1??Get@?$SkinSingleton@VV6ButtonBarSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6ButtonBarSkin@v6@45@XZ@4HA
+0x00B27B8E|?$TSS0@?1??Get@?$SkinSingleton@VV6ButtonBarTextButtonSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6ButtonBarTextButtonSkin@v6@45@XZ@4HA
+0x00B27C18|?$TSS0@?1??Get@?$SkinSingleton@VV6ButtonSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6ButtonSkin@v6@45@XZ@4HA
+0x00B27C88|?$TSS0@?1??Get@?$SkinSingleton@VV6CheckboxSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6CheckboxSkin@v6@45@XZ@4HA
+0x00B27CFC|?$TSS0@?1??Get@?$SkinSingleton@VV6CircleLoaderSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6CircleLoaderSkin@v6@45@XZ@4HA
+0x00B27D78|?$TSS0@?1??Get@?$SkinSingleton@VV6ClearButtonTextEditSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6ClearButtonTextEditSkin@v6@45@XZ@4HA
+0x00B27E02|?$TSS0@?1??Get@?$SkinSingleton@VV6ColorSwatchSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6ColorSwatchSkin@v6@45@XZ@4HA
+0x00B27E7C|?$TSS0@?1??Get@?$SkinSingleton@VV6DisclosureTriangleButtonSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6DisclosureTriangleButtonSkin@v6@45@XZ@4HA
+0x00B27F10|?$TSS0@?1??Get@?$SkinSingleton@VV6DividerSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6DividerSkin@v6@45@XZ@4HA
+0x00B27F82|?$TSS0@?1??Get@?$SkinSingleton@VV6GenericArrowsSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6GenericArrowsSkin@v6@45@XZ@4HA
+0x00B28000|?$TSS0@?1??Get@?$SkinSingleton@VV6HotTextSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6HotTextSkin@v6@45@XZ@4HA
+0x00B28072|?$TSS0@?1??Get@?$SkinSingleton@VV6IconFlyoutMenuItemSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6IconFlyoutMenuItemSkin@v6@45@XZ@4HA
+0x00B280FA|?$TSS0@?1??Get@?$SkinSingleton@VV6IconFlyoutMenuItemTextSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6IconFlyoutMenuItemTextSkin@v6@45@XZ@4HA
+0x00B2818A|?$TSS0@?1??Get@?$SkinSingleton@VV6IconFlyoutMenuSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6IconFlyoutMenuSkin@v6@45@XZ@4HA
+0x00B2820A|?$TSS0@?1??Get@?$SkinSingleton@VV6LevelMeterViewSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6LevelMeterViewSkin@v6@45@XZ@4HA
+0x00B2828A|?$TSS0@?1??Get@?$SkinSingleton@VV6ListBoxItemSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6ListBoxItemSkin@v6@45@XZ@4HA
+0x00B28304|?$TSS0@?1??Get@?$SkinSingleton@VV6ListBoxSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6ListBoxSkin@v6@45@XZ@4HA
+0x00B28376|?$TSS0@?1??Get@?$SkinSingleton@VV6MessageBoxSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6MessageBoxSkin@v6@45@XZ@4HA
+0x00B283EE|?$TSS0@?1??Get@?$SkinSingleton@VV6MultiColumnTreeRowSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6MultiColumnTreeRowSkin@v6@45@XZ@4HA
+0x00B28476|?$TSS0@?1??Get@?$SkinSingleton@VV6MultiColumnTreeSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6MultiColumnTreeSkin@v6@45@XZ@4HA
+0x00B284F8|?$TSS0@?1??Get@?$SkinSingleton@VV6OutlineBoxSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6OutlineBoxSkin@v6@45@XZ@4HA
+0x00B28570|?$TSS0@?1??Get@?$SkinSingleton@VV6PictureButtonSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6PictureButtonSkin@v6@45@XZ@4HA
+0x00B285EE|?$TSS0@?1??Get@?$SkinSingleton@VV6PicturePopupSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6PicturePopupSkin@v6@45@XZ@4HA
+0x00B2866A|?$TSS0@?1??Get@?$SkinSingleton@VV6PictureTextButtonSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6PictureTextButtonSkin@v6@45@XZ@4HA
+0x00B286F0|?$TSS0@?1??Get@?$SkinSingleton@VV6PopupListBoxItemSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6PopupListBoxItemSkin@v6@45@XZ@4HA
+0x00B28774|?$TSS0@?1??Get@?$SkinSingleton@VV6PopupListBoxSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6PopupListBoxSkin@v6@45@XZ@4HA
+0x00B287F0|?$TSS0@?1??Get@?$SkinSingleton@VV6PopupSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6PopupSkin@v6@45@XZ@4HA
+0x00B2885E|?$TSS0@?1??Get@?$SkinSingleton@VV6ProgressBarSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6ProgressBarSkin@v6@45@XZ@4HA
+0x00B288D8|?$TSS0@?1??Get@?$SkinSingleton@VV6RadioButtonSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6RadioButtonSkin@v6@45@XZ@4HA
+0x00B28952|?$TSS0@?1??Get@?$SkinSingleton@VV6RulerBaseSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6RulerBaseSkin@v6@45@XZ@4HA
+0x00B289C8|?$TSS0@?1??Get@?$SkinSingleton@VV6ScrollBarSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6ScrollBarSkin@v6@45@XZ@4HA
+0x00B28A3E|?$TSS0@?1??Get@?$SkinSingleton@VV6SearchBoxSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6SearchBoxSkin@v6@45@XZ@4HA
+0x00B28AB4|?$TSS0@?1??Get@?$SkinSingleton@VV6SliderSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6SliderSkin@v6@45@XZ@4HA
+0x00B28B24|?$TSS0@?1??Get@?$SkinSingleton@VV6StarRatingSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6StarRatingSkin@v6@45@XZ@4HA
+0x00B28B9C|?$TSS0@?1??Get@?$SkinSingleton@VV6TabCloseButtonSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6TabCloseButtonSkin@v6@45@XZ@4HA
+0x00B28C1C|?$TSS0@?1??Get@?$SkinSingleton@VV6TabContainerWellSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6TabContainerWellSkin@v6@45@XZ@4HA
+0x00B28CA0|?$TSS0@?1??Get@?$SkinSingleton@VV6TabPopupSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6TabPopupSkin@v6@45@XZ@4HA
+0x00B28D14|?$TSS0@?1??Get@?$SkinSingleton@VV6TabWellItemSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6TabWellItemSkin@v6@45@XZ@4HA
+0x00B28D8E|?$TSS0@?1??Get@?$SkinSingleton@VV6TabWellOverflowPopupSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6TabWellOverflowPopupSkin@v6@45@XZ@4HA
+0x00B28E1A|?$TSS0@?1??Get@?$SkinSingleton@VV6TabWellOverflowSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6TabWellOverflowSkin@v6@45@XZ@4HA
+0x00B28E9C|?$TSS0@?1??Get@?$SkinSingleton@VV6TabWellSingleTabSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6TabWellSingleTabSkin@v6@45@XZ@4HA
+0x00B28F20|?$TSS0@?1??Get@?$SkinSingleton@VV6TabWellSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6TabWellSkin@v6@45@XZ@4HA
+0x00B28F92|?$TSS0@?1??Get@?$SkinSingleton@VV6TextButtonSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6TextButtonSkin@v6@45@XZ@4HA
+0x00B2900A|?$TSS0@?1??Get@?$SkinSingleton@VV6TextEditSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6TextEditSkin@v6@45@XZ@4HA
+0x00B2907E|?$TSS0@?1??Get@?$SkinSingleton@VV6ToastManagerSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6ToastManagerSkin@v6@45@XZ@4HA
+0x00B290FA|?$TSS0@?1??Get@?$SkinSingleton@VV6UtilitiesSkin@v6@skins@dvaui@@@core@skins@dvaui@@SAPEAVV6UtilitiesSkin@v6@45@XZ@4HA
+0x00B29170|?$TSS0@?1??Get@?$SkinSingleton@VV7AccentActionButtonSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7AccentActionButtonSkin@v7@45@XZ@4HA
+0x00B291F8|?$TSS0@?1??Get@?$SkinSingleton@VV7AdvancedGridViewSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7AdvancedGridViewSkin@v7@45@XZ@4HA
+0x00B2927C|?$TSS0@?1??Get@?$SkinSingleton@VV7AnglePickerSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7AnglePickerSkin@v7@45@XZ@4HA
+0x00B292F6|?$TSS0@?1??Get@?$SkinSingleton@VV7AppearanceCustomizerSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7AppearanceCustomizerSkin@v7@45@XZ@4HA
+0x00B29382|?$TSS0@?1??Get@?$SkinSingleton@VV7BannerHotTextSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7BannerHotTextSkin@v7@45@XZ@4HA
+0x00B29400|?$TSS0@?1??Get@?$SkinSingleton@VV7BannerTextButtonSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7BannerTextButtonSkin@v7@45@XZ@4HA
+0x00B29484|?$TSS0@?1??Get@?$SkinSingleton@VV7BluePictureButtonSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7BluePictureButtonSkin@v7@45@XZ@4HA
+0x00B2950A|?$TSS0@?1??Get@?$SkinSingleton@VV7BrushShapePreviewSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7BrushShapePreviewSkin@v7@45@XZ@4HA
+0x00B29590|?$TSS0@?1??Get@?$SkinSingleton@VV7ButtonBarButtonSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7ButtonBarButtonSkin@v7@45@XZ@4HA
+0x00B29612|?$TSS0@?1??Get@?$SkinSingleton@VV7ButtonBarPictureButtonSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7ButtonBarPictureButtonSkin@v7@45@XZ@4HA
+0x00B296A2|?$TSS0@?1??Get@?$SkinSingleton@VV7ButtonBarSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7ButtonBarSkin@v7@45@XZ@4HA
+0x00B29718|?$TSS0@?1??Get@?$SkinSingleton@VV7ButtonBarTextButtonSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7ButtonBarTextButtonSkin@v7@45@XZ@4HA
+0x00B297A2|?$TSS0@?1??Get@?$SkinSingleton@VV7ButtonGroupSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7ButtonGroupSkin@v7@45@XZ@4HA
+0x00B2981C|?$TSS0@?1??Get@?$SkinSingleton@VV7ButtonSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7ButtonSkin@v7@45@XZ@4HA
+0x00B2988C|?$TSS0@?1??Get@?$SkinSingleton@VV7CheckboxSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7CheckboxSkin@v7@45@XZ@4HA
+0x00B29900|?$TSS0@?1??Get@?$SkinSingleton@VV7CircleLoaderSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7CircleLoaderSkin@v7@45@XZ@4HA
+0x00B2997C|?$TSS0@?1??Get@?$SkinSingleton@VV7ClearButtonSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7ClearButtonSkin@v7@45@XZ@4HA
+0x00B299F6|?$TSS0@?1??Get@?$SkinSingleton@VV7ClearButtonTextEditSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7ClearButtonTextEditSkin@v7@45@XZ@4HA
+0x00B29A80|?$TSS0@?1??Get@?$SkinSingleton@VV7ColorRampSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7ColorRampSkin@v7@45@XZ@4HA
+0x00B29AF6|?$TSS0@?1??Get@?$SkinSingleton@VV7ColorSpectrum@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7ColorSpectrum@v7@45@XZ@4HA
+0x00B29B6C|?$TSS0@?1??Get@?$SkinSingleton@VV7ColorSwatchPairSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7ColorSwatchPairSkin@v7@45@XZ@4HA
+0x00B29BEE|?$TSS0@?1??Get@?$SkinSingleton@VV7ColorSwatchSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7ColorSwatchSkin@v7@45@XZ@4HA
+0x00B29C68|?$TSS0@?1??Get@?$SkinSingleton@VV7ComboSliderSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7ComboSliderSkin@v7@45@XZ@4HA
+0x00B29CE2|?$TSS0@?1??Get@?$SkinSingleton@VV7CompositionPathBarSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7CompositionPathBarSkin@v7@45@XZ@4HA
+0x00B29D6A|?$TSS0@?1??Get@?$SkinSingleton@VV7ControlPropertiesSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7ControlPropertiesSkin@v7@45@XZ@4HA
+0x00B29DF0|?$TSS0@?1??Get@?$SkinSingleton@VV7DialogViewContainerSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7DialogViewContainerSkin@v7@45@XZ@4HA
+0x00B29E7A|?$TSS0@?1??Get@?$SkinSingleton@VV7DisclosureTriangleButtonSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7DisclosureTriangleButtonSkin@v7@45@XZ@4HA
+0x00B29F0E|?$TSS0@?1??Get@?$SkinSingleton@VV7DividerSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7DividerSkin@v7@45@XZ@4HA
+0x00B29F80|?$TSS0@?1??Get@?$SkinSingleton@VV7FontPopupSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7FontPopupSkin@v7@45@XZ@4HA
+0x00B29FF6|?$TSS0@?1??Get@?$SkinSingleton@VV7GenericArrowsSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7GenericArrowsSkin@v7@45@XZ@4HA
+0x00B2A074|?$TSS0@?1??Get@?$SkinSingleton@VV7GreenOutlinePictureButtonSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7GreenOutlinePictureButtonSkin@v7@45@XZ@4HA
+0x00B2A10A|?$TSS0@?1??Get@?$SkinSingleton@VV7GreenPictureButtonSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7GreenPictureButtonSkin@v7@45@XZ@4HA
+0x00B2A192|?$TSS0@?1??Get@?$SkinSingleton@VV7GridInnerViewSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7GridInnerViewSkin@v7@45@XZ@4HA
+0x00B2A210|?$TSS0@?1??Get@?$SkinSingleton@VV7HotTextSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7HotTextSkin@v7@45@XZ@4HA
+0x00B2A282|?$TSS0@?1??Get@?$SkinSingleton@VV7HotTextURLSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7HotTextURLSkin@v7@45@XZ@4HA
+0x00B2A2FA|?$TSS0@?1??Get@?$SkinSingleton@VV7IconFlyoutMenuItemSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7IconFlyoutMenuItemSkin@v7@45@XZ@4HA
+0x00B2A382|?$TSS0@?1??Get@?$SkinSingleton@VV7IconFlyoutMenuItemTextSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7IconFlyoutMenuItemTextSkin@v7@45@XZ@4HA
+0x00B2A412|?$TSS0@?1??Get@?$SkinSingleton@VV7IconFlyoutMenuSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7IconFlyoutMenuSkin@v7@45@XZ@4HA
+0x00B2A492|?$TSS0@?1??Get@?$SkinSingleton@VV7KeyframePictureButtonSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7KeyframePictureButtonSkin@v7@45@XZ@4HA
+0x00B2A520|?$TSS0@?1??Get@?$SkinSingleton@VV7LevelMeterSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7LevelMeterSkin@v7@45@XZ@4HA
+0x00B2A598|?$TSS0@?1??Get@?$SkinSingleton@VV7LevelMeterViewSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7LevelMeterViewSkin@v7@45@XZ@4HA
+0x00B2A618|?$TSS0@?1??Get@?$SkinSingleton@VV7LinkButtonSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7LinkButtonSkin@v7@45@XZ@4HA
+0x00B2A690|?$TSS0@?1??Get@?$SkinSingleton@VV7ListBoxItemSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7ListBoxItemSkin@v7@45@XZ@4HA
+0x00B2A70A|?$TSS0@?1??Get@?$SkinSingleton@VV7ListBoxSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7ListBoxSkin@v7@45@XZ@4HA
+0x00B2A77C|?$TSS0@?1??Get@?$SkinSingleton@VV7LockButtonSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7LockButtonSkin@v7@45@XZ@4HA
+0x00B2A7F4|?$TSS0@?1??Get@?$SkinSingleton@VV7MenuCheckmarkCheckboxSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7MenuCheckmarkCheckboxSkin@v7@45@XZ@4HA
+0x00B2A882|?$TSS0@?1??Get@?$SkinSingleton@VV7MessageBoxSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7MessageBoxSkin@v7@45@XZ@4HA
+0x00B2A8FA|?$TSS0@?1??Get@?$SkinSingleton@VV7MultiColumnTreeHeaderRowSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7MultiColumnTreeHeaderRowSkin@v7@45@XZ@4HA
+0x00B2A98E|?$TSS0@?1??Get@?$SkinSingleton@VV7MultiColumnTreeRowSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7MultiColumnTreeRowSkin@v7@45@XZ@4HA
+0x00B2AA16|?$TSS0@?1??Get@?$SkinSingleton@VV7MultiColumnTreeSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7MultiColumnTreeSkin@v7@45@XZ@4HA
+0x00B2AA98|?$TSS0@?1??Get@?$SkinSingleton@VV7OutlineBoxSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7OutlineBoxSkin@v7@45@XZ@4HA
+0x00B2AB10|?$TSS0@?1??Get@?$SkinSingleton@VV7PathBarFlyoutSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7PathBarFlyoutSkin@v7@45@XZ@4HA
+0x00B2AB8E|?$TSS0@?1??Get@?$SkinSingleton@VV7PathBarSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7PathBarSkin@v7@45@XZ@4HA
+0x00B2AC00|?$TSS0@?1??Get@?$SkinSingleton@VV7PickWhipSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7PickWhipSkin@v7@45@XZ@4HA
+0x00B2AC74|?$TSS0@?1??Get@?$SkinSingleton@VV7PictureButtonSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7PictureButtonSkin@v7@45@XZ@4HA
+0x00B2ACF2|?$TSS0@?1??Get@?$SkinSingleton@VV7PicturePopupListBoxSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7PicturePopupListBoxSkin@v7@45@XZ@4HA
+0x00B2AD7C|?$TSS0@?1??Get@?$SkinSingleton@VV7PicturePopupSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7PicturePopupSkin@v7@45@XZ@4HA
+0x00B2ADF8|?$TSS0@?1??Get@?$SkinSingleton@VV7PictureTextButtonSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7PictureTextButtonSkin@v7@45@XZ@4HA
+0x00B2AE7E|?$TSS0@?1??Get@?$SkinSingleton@VV7PinSelectorSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7PinSelectorSkin@v7@45@XZ@4HA
+0x00B2AEF8|?$TSS0@?1??Get@?$SkinSingleton@VV7PopupButtonSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7PopupButtonSkin@v7@45@XZ@4HA
+0x00B2AF72|?$TSS0@?1??Get@?$SkinSingleton@VV7PopupListBoxItemSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7PopupListBoxItemSkin@v7@45@XZ@4HA
+0x00B2AFF6|?$TSS0@?1??Get@?$SkinSingleton@VV7PopupListBoxSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7PopupListBoxSkin@v7@45@XZ@4HA
+0x00B2B072|?$TSS0@?1??Get@?$SkinSingleton@VV7PopupSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7PopupSkin@v7@45@XZ@4HA
+0x00B2B0E0|?$TSS0@?1??Get@?$SkinSingleton@VV7PopupSliderSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7PopupSliderSkin@v7@45@XZ@4HA
+0x00B2B15A|?$TSS0@?1??Get@?$SkinSingleton@VV7ProgressBarSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7ProgressBarSkin@v7@45@XZ@4HA
+0x00B2B1D4|?$TSS0@?1??Get@?$SkinSingleton@VV7PurpleGradientButtonSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7PurpleGradientButtonSkin@v7@45@XZ@4HA
+0x00B2B260|?$TSS0@?1??Get@?$SkinSingleton@VV7PurpleGradientPictureButtonSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7PurpleGradientPictureButtonSkin@v7@45@XZ@
+0x00B2B2FA|?$TSS0@?1??Get@?$SkinSingleton@VV7PurpleGradientPictureTextButtonSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7PurpleGradientPictureTextButtonSkin@v
+0x00B2B39C|?$TSS0@?1??Get@?$SkinSingleton@VV7RadioButtonSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7RadioButtonSkin@v7@45@XZ@4HA
+0x00B2B416|?$TSS0@?1??Get@?$SkinSingleton@VV7RedPictureButtonSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7RedPictureButtonSkin@v7@45@XZ@4HA
+0x00B2B49A|?$TSS0@?1??Get@?$SkinSingleton@VV7RulerBaseSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7RulerBaseSkin@v7@45@XZ@4HA
+0x00B2B510|?$TSS0@?1??Get@?$SkinSingleton@VV7ScriptUIMultiColumnTreeHeaderRowSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7ScriptUIMultiColumnTreeHeaderRowSkin
+0x00B2B5B4|?$TSS0@?1??Get@?$SkinSingleton@VV7ScrollBarSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7ScrollBarSkin@v7@45@XZ@4HA
+0x00B2B62A|?$TSS0@?1??Get@?$SkinSingleton@VV7SearchBoxSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7SearchBoxSkin@v7@45@XZ@4HA
+0x00B2B6A0|?$TSS0@?1??Get@?$SkinSingleton@VV7SectionViewSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7SectionViewSkin@v7@45@XZ@4HA
+0x00B2B71A|?$TSS0@?1??Get@?$SkinSingleton@VV7SliderHotTextNumberSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7SliderHotTextNumberSkin@v7@45@XZ@4HA
+0x00B2B7A4|?$TSS0@?1??Get@?$SkinSingleton@VV7SliderSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7SliderSkin@v7@45@XZ@4HA
+0x00B2B814|?$TSS0@?1??Get@?$SkinSingleton@VV7SplitterViewSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7SplitterViewSkin@v7@45@XZ@4HA
+0x00B2B890|?$TSS0@?1??Get@?$SkinSingleton@VV7StarRatingSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7StarRatingSkin@v7@45@XZ@4HA
+0x00B2B908|?$TSS0@?1??Get@?$SkinSingleton@VV7StaticTextSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7StaticTextSkin@v7@45@XZ@4HA
+0x00B2B980|?$TSS0@?1??Get@?$SkinSingleton@VV7StatusLightSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7StatusLightSkin@v7@45@XZ@4HA
+0x00B2B9FA|?$TSS0@?1??Get@?$SkinSingleton@VV7StepperSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7StepperSkin@v7@45@XZ@4HA
+0x00B2BA6C|?$TSS0@?1??Get@?$SkinSingleton@VV7SwatchSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7SwatchSkin@v7@45@XZ@4HA
+0x00B2BADC|?$TSS0@?1??Get@?$SkinSingleton@VV7TabCloseButtonSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7TabCloseButtonSkin@v7@45@XZ@4HA
+0x00B2BB5C|?$TSS0@?1??Get@?$SkinSingleton@VV7TabContainerSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7TabContainerSkin@v7@45@XZ@4HA
+0x00B2BBD8|?$TSS0@?1??Get@?$SkinSingleton@VV7TabContainerWellItemSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7TabContainerWellItemSkin@v7@45@XZ@4HA
+0x00B2BC64|?$TSS0@?1??Get@?$SkinSingleton@VV7TabContainerWellSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7TabContainerWellSkin@v7@45@XZ@4HA
+0x00B2BCE8|?$TSS0@?1??Get@?$SkinSingleton@VV7TabPopupSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7TabPopupSkin@v7@45@XZ@4HA
+0x00B2BD5C|?$TSS0@?1??Get@?$SkinSingleton@VV7TabStopSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7TabStopSkin@v7@45@XZ@4HA
+0x00B2BDCE|?$TSS0@?1??Get@?$SkinSingleton@VV7TabWellFlyoutSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7TabWellFlyoutSkin@v7@45@XZ@4HA
+0x00B2BE4C|?$TSS0@?1??Get@?$SkinSingleton@VV7TabWellItemSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7TabWellItemSkin@v7@45@XZ@4HA
+0x00B2BEC6|?$TSS0@?1??Get@?$SkinSingleton@VV7TabWellOverflowPopupSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7TabWellOverflowPopupSkin@v7@45@XZ@4HA
+0x00B2BF52|?$TSS0@?1??Get@?$SkinSingleton@VV7TabWellOverflowSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7TabWellOverflowSkin@v7@45@XZ@4HA
+0x00B2BFD4|?$TSS0@?1??Get@?$SkinSingleton@VV7TabWellSingleTabSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7TabWellSingleTabSkin@v7@45@XZ@4HA
+0x00B2C058|?$TSS0@?1??Get@?$SkinSingleton@VV7TabWellSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7TabWellSkin@v7@45@XZ@4HA
+0x00B2C0CA|?$TSS0@?1??Get@?$SkinSingleton@VV7TagSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7TagSkin@v7@45@XZ@4HA
+0x00B2C134|?$TSS0@?1??Get@?$SkinSingleton@VV7TextButtonSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7TextButtonSkin@v7@45@XZ@4HA
+0x00B2C1AC|?$TSS0@?1??Get@?$SkinSingleton@VV7TextEditSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7TextEditSkin@v7@45@XZ@4HA
+0x00B2C220|?$TSS0@?1??Get@?$SkinSingleton@VV7ToastManagerSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7ToastManagerSkin@v7@45@XZ@4HA
+0x00B2C29C|?$TSS0@?1??Get@?$SkinSingleton@VV7ToolBarSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7ToolBarSkin@v7@45@XZ@4HA
+0x00B2C30E|?$TSS0@?1??Get@?$SkinSingleton@VV7ToolTipSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7ToolTipSkin@v7@45@XZ@4HA
+0x00B2C380|?$TSS0@?1??Get@?$SkinSingleton@VV7URLEditSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7URLEditSkin@v7@45@XZ@4HA
+0x00B2C3F2|?$TSS0@?1??Get@?$SkinSingleton@VV7UnitNumberEditSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7UnitNumberEditSkin@v7@45@XZ@4HA
+0x00B2C472|?$TSS0@?1??Get@?$SkinSingleton@VV7UnitTextEditPopupSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7UnitTextEditPopupSkin@v7@45@XZ@4HA
+0x00B2C4F8|?$TSS0@?1??Get@?$SkinSingleton@VV7UnitTextEditPopupSliderSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7UnitTextEditPopupSliderSkin@v7@45@XZ@4HA
+0x00B2C58A|?$TSS0@?1??Get@?$SkinSingleton@VV7UtilitiesSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7UtilitiesSkin@v7@45@XZ@4HA
+0x00B2C600|?$TSS0@?1??Get@?$SkinSingleton@VV7WelledTogglePictureButtonSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7WelledTogglePictureButtonSkin@v7@45@XZ@4HA
+0x00B2C696|?$TSS0@?1??Get@?$SkinSingleton@VV7YellowPictureButtonSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7YellowPictureButtonSkin@v7@45@XZ@4HA
+0x00B2C720|?$TSS0@?1??Get@?$SkinSingleton@VV7ZoomBarSkin@v7@skins@dvaui@@@core@skins@dvaui@@SAPEAVV7ZoomBarSkin@v7@45@XZ@4HA
+0x00B2C792|?$TSS0@?1??GetUnknownStateText@?$SkinInterface@VUI_HotText@controls@dvaui@@@core@skins@dvaui@@UEBAAEAV?$basic_string@_WU?$char_traits@_W@std@@U?$STLAl
+0x00B2C853|??$HSBtoRGB@M@drawbot@dvaui@@YA?AVColorRGBA@01@MMMM@Z
+0x00B2C889|??$HSBtoRGB@N@drawbot@dvaui@@YA?AVColorRGBA@01@NNNM@Z
+0x00B2C8BF|??$RGBtoHSB@M@drawbot@dvaui@@YAXAEBVColorRGBA@01@AEAM11_N@Z
+0x00B2C8FB|??$RGBtoHSB@N@drawbot@dvaui@@YAXAEBVColorRGBA@01@AEAN11_N@Z
+0x00B2C937|??$inplace_swizzle@$03$04@drawbot@dvaui@@YAXPEAX_K@Z
+0x00B2C96C|??$inplace_swizzle@$03$05@drawbot@dvaui@@YAXPEAX_K@Z
+0x00B2C9A1|??$inplace_swizzle@$04$03@drawbot@dvaui@@YAXPEAX_K@Z
+0x00B2C9D6|??$inplace_swizzle@$05$03@drawbot@dvaui@@YAXPEAX_K@Z
+0x00B2CA0B|??0?$DefaultGroup@VDynamicGroup@arrange@dvaui@@@arrange@dvaui@@QEAA@AEBV012@@Z
+0x00B2CA5A|??0?$DefaultGroup@VDynamicGroup@arrange@dvaui@@@arrange@dvaui@@QEAA@PEAVIArrangeable@12@@Z
+0x00B2CAB5|??0?$MessageT@$$CBVUI_Node@ui@dvaui@@@ui@dvaui@@QEAA@AEBVUI_Node@12@@Z
+0x00B2CAFC|??0?$MessageT@VUI_Node@ui@dvaui@@@ui@dvaui@@QEAA@AEAVUI_Node@12@@Z
+0x00B2CB3F|??0?$OS_EditTextT@VOS_Window@ui@dvaui@@@controls@dvaui@@QEAA@V?$Flags@I@utility@dvacore@@@Z
+0x00B2CB9B|??0?$SkinInterface@VAppearanceCustomizer@appearancecustomizer@sharedui@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2CC0F|??0?$SkinInterface@VAppearanceCustomizer@appearancecustomizer@sharedui@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2CC81|??0?$SkinInterface@VAppearanceCustomizer@appearancecustomizer@sharedui@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2CCEA|??0?$SkinInterface@VArrows@core@skins@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2CD3B|??0?$SkinInterface@VArrows@core@skins@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2CD83|??0?$SkinInterface@VBasicFlyoutMenuItem@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2CDE1|??0?$SkinInterface@VBasicFlyoutMenuItem@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2CE3D|??0?$SkinInterface@VBasicFlyoutMenuItem@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2CE90|??0?$SkinInterface@VToolTip@core@skins@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2CEE2|??0?$SkinInterface@VToolTip@core@skins@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2CF2B|??0?$SkinInterface@VUI_AnglePicker@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2CF84|??0?$SkinInterface@VUI_AnglePicker@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2CFDB|??0?$SkinInterface@VUI_AnglePicker@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2D029|??0?$SkinInterface@VUI_Button@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2D07D|??0?$SkinInterface@VUI_Button@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2D0CF|??0?$SkinInterface@VUI_Button@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2D118|??0?$SkinInterface@VUI_ButtonBar@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2D16F|??0?$SkinInterface@VUI_ButtonBar@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2D1C4|??0?$SkinInterface@VUI_ButtonBar@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2D210|??0?$SkinInterface@VUI_Checkbox@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2D266|??0?$SkinInterface@VUI_Checkbox@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2D2BA|??0?$SkinInterface@VUI_Checkbox@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2D305|??0?$SkinInterface@VUI_CircleLoader@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2D35D|??0?$SkinInterface@VUI_CircleLoader@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2D3AC|??0?$SkinInterface@VUI_ClearButtonTextEdit@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2D40B|??0?$SkinInterface@VUI_ClearButtonTextEdit@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2D461|??0?$SkinInterface@VUI_ColorSpectrum@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2D4BA|??0?$SkinInterface@VUI_ColorSpectrum@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2D50A|??0?$SkinInterface@VUI_ColorSwatchPair@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2D565|??0?$SkinInterface@VUI_ColorSwatchPair@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2D5B7|??0?$SkinInterface@VUI_DisclosureTriangleButton@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2D61B|??0?$SkinInterface@VUI_DisclosureTriangleButton@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2D676|??0?$SkinInterface@VUI_Divider@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2D6C9|??0?$SkinInterface@VUI_Divider@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2D713|??0?$SkinInterface@VUI_FontPopup@sharedui@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2D76A|??0?$SkinInterface@VUI_FontPopup@sharedui@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2D7BF|??0?$SkinInterface@VUI_FontPopup@sharedui@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2D80B|??0?$SkinInterface@VUI_HotText@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2D860|??0?$SkinInterface@VUI_HotText@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2D8B3|??0?$SkinInterface@VUI_HotText@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2D8FD|??0?$SkinInterface@VUI_IconFlyoutMenu@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2D957|??0?$SkinInterface@VUI_IconFlyoutMenu@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2D9A8|??0?$SkinInterface@VUI_IconFlyoutMenuItemText@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2DA0C|??0?$SkinInterface@VUI_IconFlyoutMenuItemText@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2DA6E|??0?$SkinInterface@VUI_IconFlyoutMenuItemText@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2DAC7|??0?$SkinInterface@VUI_LevelMeter@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2DB1F|??0?$SkinInterface@VUI_LevelMeter@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2DB75|??0?$SkinInterface@VUI_LevelMeter@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2DBC2|??0?$SkinInterface@VUI_LevelMeterView@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2DC1E|??0?$SkinInterface@VUI_LevelMeterView@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2DC78|??0?$SkinInterface@VUI_LevelMeterView@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2DCC9|??0?$SkinInterface@VUI_LinkButton@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2DD1F|??0?$SkinInterface@VUI_LinkButton@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2DD6C|??0?$SkinInterface@VUI_ListBox@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2DDC1|??0?$SkinInterface@VUI_ListBox@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2DE14|??0?$SkinInterface@VUI_ListBox@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2DE5E|??0?$SkinInterface@VUI_ListBoxItem@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2DEB7|??0?$SkinInterface@VUI_ListBoxItem@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2DF0E|??0?$SkinInterface@VUI_ListBoxItem@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2DF5C|??0?$SkinInterface@VUI_LockButton@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2DFB2|??0?$SkinInterface@VUI_LockButton@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2DFFF|??0?$SkinInterface@VUI_MessageBox@dialogs@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2E054|??0?$SkinInterface@VUI_MessageBox@dialogs@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2E0A0|??0?$SkinInterface@VUI_MultiColumnTree@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2E0FD|??0?$SkinInterface@VUI_MultiColumnTree@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2E158|??0?$SkinInterface@VUI_MultiColumnTree@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2E1AA|??0?$SkinInterface@VUI_MultiColumnTreeHeaderRow@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2E20E|??0?$SkinInterface@VUI_MultiColumnTreeHeaderRow@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2E269|??0?$SkinInterface@VUI_OutlineBox@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2E2BF|??0?$SkinInterface@VUI_OutlineBox@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2E30C|??0?$SkinInterface@VUI_PathBar@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2E361|??0?$SkinInterface@VUI_PathBar@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2E3B4|??0?$SkinInterface@VUI_PathBar@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2E3FE|??0?$SkinInterface@VUI_PictureButton@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2E459|??0?$SkinInterface@VUI_PictureButton@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2E4B2|??0?$SkinInterface@VUI_PictureButton@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2E502|??0?$SkinInterface@VUI_PicturePopup@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2E55A|??0?$SkinInterface@VUI_PicturePopup@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2E5A9|??0?$SkinInterface@VUI_PictureTextButton@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2E608|??0?$SkinInterface@VUI_PictureTextButton@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2E665|??0?$SkinInterface@VUI_PictureTextButton@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2E6B9|??0?$SkinInterface@VUI_PinSelector@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2E710|??0?$SkinInterface@VUI_PinSelector@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2E75E|??0?$SkinInterface@VUI_Popup@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2E7B1|??0?$SkinInterface@VUI_Popup@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2E802|??0?$SkinInterface@VUI_Popup@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2E84A|??0?$SkinInterface@VUI_PopupSlider@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2E8A3|??0?$SkinInterface@VUI_PopupSlider@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2E8FA|??0?$SkinInterface@VUI_PopupSlider@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2E948|??0?$SkinInterface@VUI_ProgressBar@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2E9A1|??0?$SkinInterface@VUI_ProgressBar@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2E9F8|??0?$SkinInterface@VUI_ProgressBar@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2EA46|??0?$SkinInterface@VUI_RadioButton@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2EA9F|??0?$SkinInterface@VUI_RadioButton@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2EAF6|??0?$SkinInterface@VUI_RadioButton@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2EB44|??0?$SkinInterface@VUI_ScrollBar@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2EB9B|??0?$SkinInterface@VUI_ScrollBar@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2EBF0|??0?$SkinInterface@VUI_ScrollBar@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2EC3C|??0?$SkinInterface@VUI_SearchBox@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2EC91|??0?$SkinInterface@VUI_SearchBox@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2ECDD|??0?$SkinInterface@VUI_Slider@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2ED31|??0?$SkinInterface@VUI_Slider@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2ED83|??0?$SkinInterface@VUI_Slider@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2EDCC|??0?$SkinInterface@VUI_StarRating@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2EE22|??0?$SkinInterface@VUI_StarRating@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2EE6F|??0?$SkinInterface@VUI_StaticText@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2EEC5|??0?$SkinInterface@VUI_StaticText@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2EF12|??0?$SkinInterface@VUI_Swatch@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2EF64|??0?$SkinInterface@VUI_Swatch@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2EFAD|??0?$SkinInterface@VUI_TabContainer@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2F007|??0?$SkinInterface@VUI_TabContainer@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2F05F|??0?$SkinInterface@VUI_TabContainer@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2F0AE|??0?$SkinInterface@VUI_TabItem@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2F103|??0?$SkinInterface@VUI_TabItem@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2F156|??0?$SkinInterface@VUI_TabItem@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2F1A0|??0?$SkinInterface@VUI_TabWell@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2F1F5|??0?$SkinInterface@VUI_TabWell@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2F248|??0?$SkinInterface@VUI_TabWell@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2F292|??0?$SkinInterface@VUI_TabWellOverflowPopup@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2F2F4|??0?$SkinInterface@VUI_TabWellOverflowPopup@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2F354|??0?$SkinInterface@VUI_TabWellOverflowPopup@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2F3AB|??0?$SkinInterface@VUI_Tag@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2F3FC|??0?$SkinInterface@VUI_Tag@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2F44B|??0?$SkinInterface@VUI_Tag@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2F491|??0?$SkinInterface@VUI_TextButton@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2F4E9|??0?$SkinInterface@VUI_TextButton@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2F53F|??0?$SkinInterface@VUI_TextButton@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2F58C|??0?$SkinInterface@VUI_TextEdit@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2F5E2|??0?$SkinInterface@VUI_TextEdit@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2F636|??0?$SkinInterface@VUI_TextEdit@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2F681|??0?$SkinInterface@VUI_ToastManager@sharedui@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2F6D9|??0?$SkinInterface@VUI_ToastManager@sharedui@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2F728|??0?$SkinInterface@VUI_ToolBar@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2F77B|??0?$SkinInterface@VUI_ToolBar@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2F7C5|??0?$SkinInterface@VUI_UnitNumberEdit@controls@dvaui@@@core@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B2F821|??0?$SkinInterface@VUI_UnitNumberEdit@controls@dvaui@@@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2F87B|??0?$SkinInterface@VUI_UnitNumberEdit@controls@dvaui@@@core@skins@dvaui@@QEAA@XZ
+0x00B2F8CC|??0?$TabContainerWellItemSkinBase@VV5TabWellItemSkin@v5@skins@dvaui@@@csnext@skins@dvaui@@IEAA@XZ
+0x00B2F92E|??0?$TabContainerWellItemSkinBase@VV5TabWellItemSkin@v5@skins@dvaui@@@csnext@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B2F999|??0?$UI_ButtonBarT@$00@controls@dvaui@@QEAA@XZ
+0x00B2F9C8|??0?$UI_ButtonBarT@$0A@@controls@dvaui@@QEAA@XZ
+0x00B2F9F8|??0?$UI_ComboBaseSliderInterfaceT@VUI_HotTextUnitNumber@controls@dvaui@@@controls@dvaui@@QEAA@$$QEAV012@@Z
+0x00B2FA63|??0?$UI_ComboBaseSliderInterfaceT@VUI_HotTextUnitNumber@controls@dvaui@@@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B2FACC|??0?$UI_ComboBaseSliderInterfaceT@VUI_HotTextUnitNumber@controls@dvaui@@@controls@dvaui@@QEAA@XZ
+0x00B2FB2D|??0?$UI_ComboBaseSliderInterfaceT@VUI_UnitNumberEdit@controls@dvaui@@@controls@dvaui@@QEAA@$$QEAV012@@Z
+0x00B2FB95|??0?$UI_ComboBaseSliderInterfaceT@VUI_UnitNumberEdit@controls@dvaui@@@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B2FBFB|??0?$UI_ComboBaseSliderInterfaceT@VUI_UnitNumberEdit@controls@dvaui@@@controls@dvaui@@QEAA@XZ
+0x00B2FC59|??0?$UI_ComboBaseSliderT@VUI_ColorRamp@controls@dvaui@@VUI_HotTextUnitNumber@23@@controls@dvaui@@QEAA@W4SliderDirection@12@@Z
+0x00B2FCD7|??0?$UI_ComboBaseSliderT@VUI_ColorRamp@controls@dvaui@@VUI_UnitNumberEdit@23@@controls@dvaui@@QEAA@W4SliderDirection@12@@Z
+0x00B2FD52|??0?$UI_ComboBaseSliderT@VUI_Slider@controls@dvaui@@VUI_HotTextUnitNumber@23@@controls@dvaui@@QEAA@W4SliderDirection@12@@Z
+0x00B2FDCD|??0?$UI_ComboBaseSliderT@VUI_Slider@controls@dvaui@@VUI_UnitNumberEdit@23@@controls@dvaui@@QEAA@W4SliderDirection@12@@Z
+0x00B2FE45|??0?$UI_ComboSliderT@$00@controls@dvaui@@QEAA@W4SliderDirection@12@@Z
+0x00B2FE8B|??0?$UI_ComboSliderT@$0A@@controls@dvaui@@QEAA@W4SliderDirection@12@@Z
+0x00B2FED2|??0?$UI_DetailedToolBoxT@F@controls@dvaui@@QEAA@XZ
+0x00B2FF05|??0?$UI_HotEditControlBaseT@VUI_NumberEdit@controls@dvaui@@@controls@dvaui@@QEAA@XZ
+0x00B2FF59|??0?$UI_HotEditControlBaseT@VUI_TextEdit@controls@dvaui@@@controls@dvaui@@QEAA@XZ
+0x00B2FFAB|??0?$UI_HotEditControlBaseT@VUI_UnitNumberEdit@controls@dvaui@@@controls@dvaui@@QEAA@XZ
+0x00B30003|??0?$UI_HotTextNumberBaseT@VUI_NumberEdit@controls@dvaui@@@controls@dvaui@@QEAA@AEBVUI_NumberData@12@@Z
+0x00B3006B|??0?$UI_HotTextNumberBaseT@VUI_NumberEdit@controls@dvaui@@@controls@dvaui@@QEAA@XZ
+0x00B300BE|??0?$UI_HotTextNumberBaseT@VUI_UnitNumberEdit@controls@dvaui@@@controls@dvaui@@QEAA@AEBVUI_NumberData@12@@Z
+0x00B3012A|??0?$UI_HotTextNumberBaseT@VUI_UnitNumberEdit@controls@dvaui@@@controls@dvaui@@QEAA@XZ
+0x00B30181|??0?$UI_HotTextNumberT@VUI_NumberEdit@controls@dvaui@@@controls@dvaui@@QEAA@AEBVUI_NumberData@12@@Z
+0x00B301E5|??0?$UI_HotTextNumberT@VUI_NumberEdit@controls@dvaui@@@controls@dvaui@@QEAA@XZ
+0x00B30234|??0?$UI_HotTextNumberT@VUI_UnitNumberEdit@controls@dvaui@@@controls@dvaui@@QEAA@AEBVUI_NumberData@12@@Z
+0x00B3029C|??0?$UI_HotTextNumberT@VUI_UnitNumberEdit@controls@dvaui@@@controls@dvaui@@QEAA@XZ
+0x00B302EF|??0?$UI_ImageHandling@VUI_Button@controls@dvaui@@@controls@dvaui@@QEAA@XZ
+0x00B30339|??0?$UI_ImageHandling@VUI_ControlView@controls@dvaui@@@controls@dvaui@@QEAA@XZ
+0x00B30388|??0?$UI_ImageHandling@VUI_TextButton@controls@dvaui@@@controls@dvaui@@QEAA@XZ
+0x00B303D6|??0?$UI_NumberEditBaseT@VUI_NumberData@controls@dvaui@@@controls@dvaui@@QEAA@AEBVUI_NumberData@12@V?$Flags@I@utility@dvacore@@W4EditTextAlignment@12@@
+0x00B3046E|??0?$UI_NumberEditBaseT@VUI_NumberData@controls@dvaui@@@controls@dvaui@@QEAA@V?$Flags@I@utility@dvacore@@@Z
+0x00B304DA|??0?$UI_SegmentSupport@M@controls@dvaui@@IEAA@XZ
+0x00B3050B|??0?$UI_SegmentSupport@M@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B30544|??0?$UI_SegmentSupport@N@controls@dvaui@@IEAA@XZ
+0x00B30575|??0?$UI_SegmentSupport@N@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B305AE|??0?$UI_SliderT@M@controls@dvaui@@QEAA@_N@Z
+0x00B305DA|??0?$UI_SliderT@N@controls@dvaui@@QEAA@_N@Z
+0x00B30606|??0?$UI_ToolBoxItemT@F@controls@dvaui@@QEAA@XZ
+0x00B30635|??0?$UI_ToolBoxT@F@controls@dvaui@@QEAA@XZ
+0x00B30660|??0?$UI_UnitNumberBaseT@V?$UI_HotTextNumberT@VUI_UnitNumberEdit@controls@dvaui@@@controls@dvaui@@@controls@dvaui@@QEAA@AEBVUI_NumberData@12@V?$Flags@I
+0x00B3070B|??0?$UI_UnitNumberBaseT@V?$UI_HotTextNumberT@VUI_UnitNumberEdit@controls@dvaui@@@controls@dvaui@@@controls@dvaui@@QEAA@V?$Flags@I@utility@dvacore@@@Z
+0x00B307A1|??0?$UI_UnitNumberBaseT@VUI_NumberEdit@controls@dvaui@@@controls@dvaui@@QEAA@AEBVUI_NumberData@12@V?$Flags@I@utility@dvacore@@@Z
+0x00B30822|??0?$UI_UnitNumberBaseT@VUI_NumberEdit@controls@dvaui@@@controls@dvaui@@QEAA@V?$Flags@I@utility@dvacore@@@Z
+0x00B3088E|??0?$_Non_trivial_copy@U?$_Variant_destroy_layer_@V?$IntrusivePtr@VUI_Node@ui@dvaui@@@RefCountedInterface@utility@dvacore@@PEAUHWND__@@@std@@@std@@QEA
+0x00B30930|??0?$_Non_trivial_copy@U?$_Variant_destroy_layer_@V?$IntrusivePtr@VUI_Node@ui@dvaui@@@RefCountedInterface@utility@dvacore@@PEAUHWND__@@@std@@@std@@QEA
+0x00B309CB|??0?$_Non_trivial_copy_assign@U?$_Variant_destroy_layer_@V?$IntrusivePtr@VUI_Node@ui@dvaui@@@RefCountedInterface@utility@dvacore@@PEAUHWND__@@@std@@V?
+0x00B30ACB|??0?$_Non_trivial_copy_assign@U?$_Variant_destroy_layer_@V?$IntrusivePtr@VUI_Node@ui@dvaui@@@RefCountedInterface@utility@dvacore@@PEAUHWND__@@@std@@V?
+0x00B30BC9|??0?$_Non_trivial_copy_assign@U?$_Variant_destroy_layer_@V?$IntrusivePtr@VUI_Node@ui@dvaui@@@RefCountedInterface@utility@dvacore@@PEAUHWND__@@@std@@V?
+0x00B30CC0|??0?$_Non_trivial_move@U?$_Variant_destroy_layer_@V?$IntrusivePtr@VUI_Node@ui@dvaui@@@RefCountedInterface@utility@dvacore@@PEAUHWND__@@@std@@V?$Intrus
+0x00B30DB9|??0?$_Non_trivial_move@U?$_Variant_destroy_layer_@V?$IntrusivePtr@VUI_Node@ui@dvaui@@@RefCountedInterface@utility@dvacore@@PEAUHWND__@@@std@@V?$Intrus
+0x00B30EB0|??0?$_Non_trivial_move@U?$_Variant_destroy_layer_@V?$IntrusivePtr@VUI_Node@ui@dvaui@@@RefCountedInterface@utility@dvacore@@PEAUHWND__@@@std@@V?$Intrus
+0x00B30FA0|??0?$_Non_trivial_move_assign@U?$_Variant_destroy_layer_@V?$IntrusivePtr@VUI_Node@ui@dvaui@@@RefCountedInterface@utility@dvacore@@PEAUHWND__@@@std@@V?
+0x00B310A0|??0?$_Non_trivial_move_assign@U?$_Variant_destroy_layer_@V?$IntrusivePtr@VUI_Node@ui@dvaui@@@RefCountedInterface@utility@dvacore@@PEAUHWND__@@@std@@V?
+0x00B3119E|??0?$_Non_trivial_move_assign@U?$_Variant_destroy_layer_@V?$IntrusivePtr@VUI_Node@ui@dvaui@@@RefCountedInterface@utility@dvacore@@PEAUHWND__@@@std@@V?
+0x00B31295|??0?$_Variant_base@V?$IntrusivePtr@VUI_Node@ui@dvaui@@@RefCountedInterface@utility@dvacore@@PEAUHWND__@@@std@@QEAA@XZ
+0x00B3130B|??0?$_Variant_destroy_layer_@V?$IntrusivePtr@VUI_Node@ui@dvaui@@@RefCountedInterface@utility@dvacore@@PEAUHWND__@@@std@@QEAA@XZ
+0x00B3138B|??0?$_Variant_storage_@$0A@V?$IntrusivePtr@VUI_Node@ui@dvaui@@@RefCountedInterface@utility@dvacore@@PEAUHWND__@@@std@@QEAA@XZ
+0x00B31409|??0?$enable_shared_from_this@VProgressCategoryContainerViewController@utility@dvaui@@@std@@IEAA@AEBV01@@Z
+0x00B31473|??0?$enable_shared_from_this@VProgressCategoryContainerViewController@utility@dvaui@@@std@@IEAA@XZ
+0x00B314D6|??0?$enable_shared_from_this@VProgressCategoryViewController@utility@dvaui@@@std@@IEAA@AEBV01@@Z
+0x00B31537|??0?$enable_shared_from_this@VProgressCategoryViewController@utility@dvaui@@@std@@IEAA@XZ
+0x00B31591|??0?$enable_shared_from_this@VProgressItemViewController@utility@dvaui@@@std@@IEAA@AEBV01@@Z
+0x00B315EE|??0?$enable_shared_from_this@VProgressItemViewController@utility@dvaui@@@std@@IEAA@XZ
+0x00B31644|??0?$enable_shared_from_this@VUI_Animator@ui@dvaui@@@std@@IEAA@AEBV01@@Z
+0x00B3168D|??0?$enable_shared_from_this@VUI_Animator@ui@dvaui@@@std@@IEAA@XZ
+0x00B316CF|??0?$variant@V?$IntrusivePtr@VUI_Node@ui@dvaui@@@RefCountedInterface@utility@dvacore@@PEAUHWND__@@@std@@QEAA@AEBV01@@Z
+0x00B31746|??0AbstractArrangeableGroup@impl@arrange@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B31789|??0AbstractArrangeableGroup@impl@arrange@dvaui@@QEAA@AEBV0123@@Z
+0x00B317CA|??0AbstractArrangeableGroup@impl@arrange@dvaui@@QEAA@PEAVIArrangeable@23@@Z
+0x00B31816|??0AbstractColor@drawbot@dvaui@@QEAA@AEBV012@@Z
+0x00B31846|??0AbstractColor@drawbot@dvaui@@QEAA@XZ
+0x00B3186E|??0AbstractImage@drawbot@dvaui@@QEAA@AEBV012@@Z
+0x00B3189E|??0AbstractImage@drawbot@dvaui@@QEAA@XZ
+0x00B318C6|??0AbstractVisual@drawbot@dvaui@@QEAA@AEBV012@@Z
+0x00B318F7|??0AbstractVisual@drawbot@dvaui@@QEAA@XZ
+0x00B31920|??0AccentColorDNA@dna@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3194F|??0AccentColorDNA@dna@dvaui@@QEAA@AEBV012@@Z
+0x00B3197C|??0AccentColorDNA@dna@dvaui@@QEAA@XZ
+0x00B319A1|??0AccessibilityHandler@accessibility@dvaui@@QEAA@PEAVAccessibleObject@12@@Z
+0x00B319EE|??0AccessibleObject@accessibility@dvaui@@QEAA@XZ
+0x00B31A1F|??0Action@automateui@dvaui@@QEAA@$$QEAV012@@Z
+0x00B31A4D|??0Action@automateui@dvaui@@QEAA@AEBV012@@Z
+0x00B31A79|??0Action@automateui@dvaui@@QEAA@XZ
+0x00B31A9D|??0ActionButtonDNAImpl@spectrum@v7@skins@dvaui@@QEAA@AEBV01234@@Z
+0x00B31ADF|??0ActionButtonDNAImpl@spectrum@v7@skins@dvaui@@QEAA@AEBVDrawButtonParameters@controls@4@@Z
+0x00B31B3B|??0ActionInfo@ksv@dvaui@@QEAA@AEBV012@@Z
+0x00B31B64|??0ActionInfo@ksv@dvaui@@QEAA@AEBV?$vector@U?$pair@V?$Flags@E@utility@dvacore@@VKeyboardCode@ui@dvaui@@@std@@U?$STLAllocator@U?$pair@V?$Flags@E@utilit
+0x00B31CED|??0ActionListener@automateui@dvaui@@IEAA@XZ
+0x00B31D19|??0ActionPlayer@automateui@dvaui@@IEAA@XZ
+0x00B31D43|??0ActionRecorder@automateui@dvaui@@IEAA@XZ
+0x00B31D6F|??0ActionSerializer@automateui@dvaui@@QEAA@XZ
+0x00B31D9D|??0AddAndRemoveKeyboardEventFilterNode@ui@dvaui@@QEAA@PEAVUI_NodeManager@12@PEAVUI_Node@12@_N@Z
+0x00B31DFD|??0AddAndRemoveMouseEventFilterNode@ui@dvaui@@QEAA@PEAVUI_NodeManager@12@PEAVUI_Node@12@@Z
+0x00B31E58|??0AlignHorizontallyCentered@layout@dvaui@@QEAA@$$QEAV012@@Z
+0x00B31E95|??0AlignHorizontallyCentered@layout@dvaui@@QEAA@AEBV012@@Z
+0x00B31ED0|??0AlignHorizontallyCentered@layout@dvaui@@QEAA@V?$IntrusivePtr@VSmartLayout@layout@dvaui@@@RefCountedInterface@utility@dvacore@@@Z
+0x00B31F54|??0AlignVerticallyCentered@layout@dvaui@@QEAA@$$QEAV012@@Z
+0x00B31F8F|??0AlignVerticallyCentered@layout@dvaui@@QEAA@AEBV012@@Z
+0x00B31FC8|??0AlignVerticallyCentered@layout@dvaui@@QEAA@V?$IntrusivePtr@VSmartLayout@layout@dvaui@@@RefCountedInterface@utility@dvacore@@@Z
+0x00B3204A|??0AppearanceCustomizer@appearancecustomizer@sharedui@dvaui@@AEAA@XZ
+0x00B3208F|??0AppearanceCustomizerListener@appearancecustomizer@sharedui@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B320E7|??0AppearanceCustomizerListener@appearancecustomizer@sharedui@dvaui@@QEAA@AEBV0123@@Z
+0x00B3213D|??0AppearanceCustomizerListener@appearancecustomizer@sharedui@dvaui@@QEAA@XZ
+0x00B3218A|??0ApplicationDNAModel@ui@dvaui@@QEAA@$$QEAV012@@Z
+0x00B321BD|??0ApplicationDNAModel@ui@dvaui@@QEAA@AEBV012@@Z
+0x00B321EE|??0ApplicationDNAModel@ui@dvaui@@QEAA@PEBVResourceManager@utility@2@AEBVImmutableString@4dvacore@@@Z
+0x00B32253|??0Arrows@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B32280|??0Arrows@core@skins@dvaui@@QEAA@XZ
+0x00B322A4|??0AsianTypesUnitHandler@controls@dvaui@@QEAA@$$QEAV012@@Z
+0x00B322DF|??0AsianTypesUnitHandler@controls@dvaui@@QEAA@AEBUUnitHandlerData@12@@Z
+0x00B32327|??0AsianTypesUnitHandler@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B32360|??0BaseCheckboxSkin@csnext@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B3239B|??0BaseCheckboxSkin@csnext@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B323D4|??0BaseCheckboxSkin@csnext@skins@dvaui@@QEAA@XZ
+0x00B32404|??0BaseParameters@ui@dvaui@@QEAA@AEBV012@@Z
+0x00B32430|??0BaseParameters@ui@dvaui@@QEAA@PEBVUI_Node@12@@Z
+0x00B32463|??0BaseParameters@ui@dvaui@@QEAA@XZ
+0x00B32487|??0BasePicturePopupSkin@csnext@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B324C6|??0BasePicturePopupSkin@csnext@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B32503|??0BasePicturePopupSkin@csnext@skins@dvaui@@QEAA@XZ
+0x00B32537|??0BaseRadioButtonSkin@csnext@skins@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B32575|??0BaseRadioButtonSkin@csnext@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B325B1|??0BaseRadioButtonSkin@csnext@skins@dvaui@@QEAA@XZ
+0x00B325E4|??0BaseSpectrumDNAImpl@dna@dvaui@@QEAA@AEBV012@@Z
+0x00B32616|??0BaseSpectrumDNAImpl@dna@dvaui@@QEAA@W4SizeVariation@controls@2@V?$Flags@I@utility@dvacore@@@Z
+0x00B32677|??0BaseStaticTextSkin@csnext@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B326B2|??0BaseStaticTextSkin@csnext@skins@dvaui@@QEAA@XZ
+0x00B326E4|??0BaseSwatchSkin@csnext@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B3271B|??0BaseSwatchSkin@csnext@skins@dvaui@@QEAA@XZ
+0x00B32749|??0BasicFlyoutMenuItem@controls@dvaui@@QEAA@AEBVResourceManager@utility@2@AEBVDrawbotImageResourceCache@42@@Z
+0x00B327B7|??0BasicFlyoutMenuItem@controls@dvaui@@QEAA@_NAEBVResourceManager@utility@2@AEBVDrawbotImageResourceCache@42@@Z
+0x00B32827|??0BasicMenuItem@controls@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3285A|??0BasicMenuItem@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B3288B|??0BasicMenuItem@controls@dvaui@@QEAA@HAEBV?$basic_string@EU?$char_traits@E@std@@U?$STLAllocator@E@allocator@dvacore@@@std@@0@Z
+0x00B3290B|??0BasicSurfaceReferenceInterface@drawbot@dvaui@@QEAA@AEBV012@@Z
+0x00B3294C|??0BasicSurfaceReferenceInterface@drawbot@dvaui@@QEAA@PEBUSupplierInterface@12@PEAUSurfaceInterface@12@_NPEBV?$RectT@H@geom@dvacore@@@Z
+0x00B329D4|??0BitmapCacheInterface@drawbot@dvaui@@QEAA@AEBUSurfaceInterface@12@AEBV?$RectT@M@geom@dvacore@@@Z
+0x00B32A37|??0BrushInterface@drawbot@dvaui@@QEAA@AEBU012@@Z
+0x00B32A68|??0BrushInterface@drawbot@dvaui@@QEAA@XZ
+0x00B32A91|??0ButtonComponents@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B32AC5|??0ButtonComponents@controls@dvaui@@QEAA@PEBVUI_Button@12@@Z
+0x00B32B02|??0ButtonComponents@controls@dvaui@@QEAA@W4Variant@012@_N@Z
+0x00B32B3E|??0ButtonComponents@controls@dvaui@@QEAA@XZ
+0x00B32B6A|??0ButtonDNAImpl@spectrum@v7@skins@dvaui@@QEAA@AEBV01234@@Z
+0x00B32BA6|??0ButtonDNAImpl@spectrum@v7@skins@dvaui@@QEAA@AEBVDrawButtonParameters@controls@4@@Z
+0x00B32BFC|??0ButtonTouchBarItem@touchbar@dvaui@@IEAA@AEBV?$basic_string@EU?$char_traits@E@std@@U?$STLAllocator@E@allocator@dvacore@@@std@@V?$Flags@E@utility@dva
+0x00B32C9D|??0CMYKRampImage@controls@dvaui@@QEAA@$$QEAV012@@Z
+0x00B32CD0|??0CMYKRampImage@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B32D01|??0CMYKRampImage@controls@dvaui@@QEAA@_NMMMM@Z
+0x00B32D30|??0CSSDataCache@utility@dvaui@@QEAA@XZ
+0x00B32D57|??0CSS_SuppressBgColorReplacement@utilities@skins@dvaui@@QEAA@XZ
+0x00B32D98|??0CacheInterface@drawbot@dvaui@@QEAA@AEBU012@@Z
+0x00B32DC9|??0CacheInterface@drawbot@dvaui@@QEAA@XZ
+0x00B32DF2|??0CellDragCapture@controls@dvaui@@QEAA@PEAVUI_Node@ui@2@AEBVMouseEvent@42@@Z
+0x00B32E40|??0CellView@controls@dvaui@@QEAA@PEAVUI_MultiColumnTreeRow@12@@Z
+0x00B32E81|??0CheckboxDNAImpl@spectrum@v7@skins@dvaui@@QEAA@AEBV01234@@Z
+0x00B32EBF|??0CheckboxDNAImpl@spectrum@v7@skins@dvaui@@QEAA@AEBVDrawCheckBoxParams@controls@4@@Z
+0x00B32F15|??0ChildIdentifier@automateui@dvaui@@QEAA@AEBV012@@Z
+0x00B32F4A|??0ChildIdentifier@automateui@dvaui@@QEAA@AEBW4ChildType@012@AEBV?$basic_string@EU?$char_traits@E@std@@U?$STLAllocator@E@allocator@dvacore@@@std@@H@Z
+0x00B32FE0|??0ClearButtonDNAImpl@spectrum@v7@skins@dvaui@@QEAA@$$QEAV01234@@Z
+0x00B33023|??0ClearButtonDNAImpl@spectrum@v7@skins@dvaui@@QEAA@AEBV01234@@Z
+0x00B33064|??0ClearButtonDNAImpl@spectrum@v7@skins@dvaui@@QEAA@_NW4SizeVariation@controls@4@V?$Flags@I@utility@dvacore@@@Z
+0x00B330D4|??0ClickableString@ksv@dvaui@@QEAA@XZ
+0x00B330FA|??0ClickableStringPayload@ksv@dvaui@@QEAA@$$QEAU012@@Z
+0x00B33131|??0ClickableStringPayload@ksv@dvaui@@QEAA@AEBU012@@Z
+0x00B33166|??0ClickableStringPayload@ksv@dvaui@@QEAA@AEBV?$basic_string@_WU?$char_traits@_W@std@@U?$STLAllocator@_W@allocator@dvacore@@@std@@I@Z
+0x00B331EC|??0CoachmarkDNAImpl@spectrum@v7@skins@dvaui@@QEAA@$$QEAV01234@@Z
+0x00B3322D|??0CoachmarkDNAImpl@spectrum@v7@skins@dvaui@@QEAA@AEBV01234@@Z
+0x00B3326C|??0CoachmarkDNAImpl@spectrum@v7@skins@dvaui@@QEAA@XZ
+0x00B332A1|??0ColorDestinationProfile@drawbot@dvaui@@QEAA@AEBU012@@Z
+0x00B332DB|??0ColorDestinationProfile@drawbot@dvaui@@QEAA@XZ
+0x00B3330D|??0ColorFlyoutMenuItem@controls@dvaui@@QEAA@V?$IntrusivePtr@VColorMenuItem@controls@dvaui@@@RefCountedInterface@utility@dvacore@@_NAEBVResourceManager
+0x00B333CB|??0ColorInterface@sharedui@dvaui@@QEAA@AEBV012@@Z
+0x00B333FD|??0ColorInterface@sharedui@dvaui@@QEAA@PEBUSupplierInterface@drawbot@2@PEAVUI_Node@ui@2@_N@Z
+0x00B3345A|??0ColorInterface@sharedui@dvaui@@QEAA@XZ
+0x00B33484|??0ColorMenuItem@controls@dvaui@@QEAA@$$QEAV012@@Z
+0x00B334B7|??0ColorMenuItem@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B334E8|??0ColorMenuItem@controls@dvaui@@QEAA@HAEBV?$basic_string@EU?$char_traits@E@std@@U?$STLAllocator@E@allocator@dvacore@@@std@@AEBVColorRGBA@drawbot@2@0@
+0x00B33580|??0ColorPickerDialog@sharedui@dvaui@@QEAA@PEBUSupplierInterface@drawbot@2@PEAVUI_Node@ui@2@_N@Z
+0x00B335E0|??0ColorPickerModel@sharedui@dvaui@@QEAA@AEBV012@@Z
+0x00B33614|??0ColorPickerModel@sharedui@dvaui@@QEAA@XZ
+0x00B33640|??0ColorPickerTouchBarItem@touchbar@dvaui@@IEAA@AEBV?$basic_string@EU?$char_traits@E@std@@U?$STLAllocator@E@allocator@dvacore@@@std@@V?$Flags@E@utilit
+0x00B336E6|??0ColumnArrangement@impl@arrange@dvaui@@QEAA@AEAVAbstractArrangeableGroup@123@AEBV?$vector@V?$IntrusivePtr@VIArrangement@impl@arrange@dvaui@@@RefCoun
+0x00B3386F|??0CommonUnitHandler@controls@dvaui@@QEAA@$$QEAV012@@Z
+0x00B338A6|??0CommonUnitHandler@controls@dvaui@@QEAA@AEBUUnitHandlerData@12@@Z
+0x00B338EA|??0CommonUnitHandler@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B3391F|??0CompactComponent@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B33953|??0CompactComponent@controls@dvaui@@QEAA@_N@Z
+0x00B33981|??0ConsoleView@sharedui@dvaui@@QEAA@PEBUSupplierInterface@drawbot@2@V?$shared_ptr@V?$function@$$A6AXV?$IntrusivePtr@USupplierInterface@drawbot@dvaui@@
+0x00B33A4E|??0ConstMessage@ui@dvaui@@QEAA@AEBVUI_Node@12@@Z
+0x00B33A7F|??0ContextMenuItemAction@automateui@dvaui@@QEAA@$$QEAV012@@Z
+0x00B33ABC|??0ContextMenuItemAction@automateui@dvaui@@QEAA@AEBV012@@Z
+0x00B33AF7|??0ContextMenuItemAction@automateui@dvaui@@QEAA@XZ
+0x00B33B2A|??0ContributedConsoleEntry@sharedui@dvaui@@QEAA@AEBU012@@Z
+0x00B33B65|??0ContributedConsoleEntry@sharedui@dvaui@@QEAA@VImmutableString@utility@dvacore@@V?$shared_ptr@V?$function@$$A6A?AV?$IntrusivePtr@VLayoutSubView@shar
+0x00B33C3F|??0ContributedSubview_CodeProfiler@sharedui@dvaui@@QEAA@XZ
+0x00B33C7A|??0ContributedSubview_Console@sharedui@dvaui@@QEAA@XZ
+0x00B33CB0|??0ContributedSubview_Signpost@sharedui@dvaui@@QEAA@XZ
+0x00B33CE7|??0ContributedSubview_TraceVolume@sharedui@dvaui@@QEAA@XZ
+0x00B33D21|??0ControlProperties@core@skins@dvaui@@QEAA@AEBV0123@@Z
+0x00B33D59|??0ControlProperties@core@skins@dvaui@@QEAA@XZ
+0x00B33D88|??0ControlRegistry@factory@dvaui@@QEAA@$$QEAV012@@Z
+0x00B33DBC|??0ControlRegistry@factory@dvaui@@QEAA@AEBV012@@Z
+0x00B33DEE|??0ControlRegistry@factory@dvaui@@QEAA@XZ
+0x00B33E18|??0CornerRoundingComponent@controls@dvaui@@QEAA@XZ
+0x00B33E4B|??0CustomIconImageHandler@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B33E85|??0CustomIconImageHandler@controls@dvaui@@QEAA@V?$shared_ptr@V?$function@$$A6AXPEAVUI_PictureSupplyMessage@controls@dvaui@@H@Z@std@@@std@@@Z
+0x00B33F12|??0CustomIconMenuItem@controls@dvaui@@QEAA@$$QEAV012@@Z
+0x00B33F4A|??0CustomIconMenuItem@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B33F80|??0CustomIconMenuItem@controls@dvaui@@QEAA@HAEBV?$basic_string@EU?$char_traits@E@std@@U?$STLAllocator@E@allocator@dvacore@@@std@@V?$shared_ptr@V?$func
+0x00B3405D|??0CustomIconMenuItem@controls@dvaui@@QEAA@HAEBV?$basic_string@EU?$char_traits@E@std@@U?$STLAllocator@E@allocator@dvacore@@@std@@V?$shared_ptr@VUI_Ima
+0x00B3411D|??0CustomSettingsManager@ui@dvaui@@QEAA@XZ
+0x00B34148|??0CustomToolBarItem@controls@dvaui@@QEAA@AEBV?$basic_string@EU?$char_traits@E@std@@U?$STLAllocator@E@allocator@dvacore@@@std@@PEAVResourceManager@uti
+0x00B342D3|??0DVAAboutDlog@sharedui@dvaui@@QEAA@PEBVResourceManager@utility@2@AEBV?$basic_string@_WU?$char_traits@_W@std@@U?$STLAllocator@_W@allocator@dvacore@@@
+0x00B34471|??0DVAAboutDlog@sharedui@dvaui@@QEAA@PEBVResourceManager@utility@2@AEBV?$basic_string@_WU?$char_traits@_W@std@@U?$STLAllocator@_W@allocator@dvacore@@@
+0x00B34614|??0DVAWelcomeDlog@sharedui@dvaui@@QEAA@PEBVResourceManager@utility@2@PEAVOS_Window@ui@2@AEBV?$basic_string@_WU?$char_traits@_W@std@@U?$STLAllocator@_W
+0x00B346E6|??0DataDeleter@drawbot@dvaui@@QEAA@AEBU012@@Z
+0x00B34714|??0DataDeleter@drawbot@dvaui@@QEAA@PEAXV?$function@$$A6AXPEAX@Z@std@@@Z
+0x00B3475C|??0DebugHelper@drawbot@dvaui@@QEAA@XZ
+0x00B34782|??0DecibelRuler@utility@dvaui@@QEAA@XZ
+0x00B347A9|??0DefaultImageHandler@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B347E0|??0DefaultImageHandler@controls@dvaui@@QEAA@V?$shared_ptr@V?$function@$$A6AXPEAVConstMessage@ui@dvaui@@@Z@std@@@std@@@Z
+0x00B34858|??0DensityComponent@controls@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3488E|??0DensityComponent@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B348C2|??0DensityComponent@controls@dvaui@@QEAA@XZ
+0x00B348EE|??0DialogFactory@uiplayground@dvaui@@QEAA@$$QEAU012@@Z
+0x00B34925|??0DialogFactory@uiplayground@dvaui@@QEAA@AEBU012@@Z
+0x00B3495A|??0DialogFactory@uiplayground@dvaui@@QEAA@PEBDP6AXPEBUSupplierInterface@drawbot@2@PEAVUI_Node@ui@2@@Z@Z
+0x00B349C2|??0DialogFactoryRegistry@uiplayground@dvaui@@AEAA@XZ
+0x00B349F7|??0DialogFactoryRegistry@uiplayground@dvaui@@QEAA@AEBV012@@Z
+0x00B34A34|??0DividerDNAImpl@spectrum@v7@skins@dvaui@@QEAA@$$QEAV01234@@Z
+0x00B34A73|??0DividerDNAImpl@spectrum@v7@skins@dvaui@@QEAA@AEBV01234@@Z
+0x00B34AB0|??0DividerDNAImpl@spectrum@v7@skins@dvaui@@QEAA@AEBVDrawDividerParameters@controls@4@@Z
+0x00B34B08|??0DrawAnglePickerParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B34B45|??0DrawAnglePickerParameters@controls@dvaui@@QEAA@PEBVUI_AnglePicker@12@@Z
+0x00B34B90|??0DrawAnglePickerParameters@controls@dvaui@@QEAA@XZ
+0x00B34BC5|??0DrawButtonParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B34BFD|??0DrawButtonParameters@controls@dvaui@@QEAA@PEBVUI_Button@12@@Z
+0x00B34C3E|??0DrawButtonParameters@controls@dvaui@@QEAA@XZ
+0x00B34C6E|??0DrawCheckBoxParams@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B34CA4|??0DrawCheckBoxParams@controls@dvaui@@QEAA@PEBVUI_Checkbox@12@@Z
+0x00B34CE5|??0DrawCheckBoxParams@controls@dvaui@@QEAA@XZ
+0x00B34D13|??0DrawColorRampParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B34D4E|??0DrawColorRampParameters@controls@dvaui@@QEAA@PEBVUI_ColorRamp@12@@Z
+0x00B34D95|??0DrawColorRampParameters@controls@dvaui@@QEAA@XZ
+0x00B34DC8|??0DrawColorSpectrumParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B34E07|??0DrawColorSpectrumParameters@controls@dvaui@@QEAA@PEBVUI_ColorSpectrum@12@@Z
+0x00B34E56|??0DrawColorSpectrumParameters@controls@dvaui@@QEAA@XZ
+0x00B34E8D|??0DrawFaderThumbParameters@controls@dvaui@@QEAA@$$QEAV012@@Z
+0x00B34ECB|??0DrawFaderThumbParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B34F07|??0DrawFaderThumbParameters@controls@dvaui@@QEAA@XZ
+0x00B34F3B|??0DrawGenericArrowParameters@controls@dvaui@@QEAA@$$QEAV012@@Z
+0x00B34F7B|??0DrawGenericArrowParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B34FB9|??0DrawGenericArrowParameters@controls@dvaui@@QEAA@XZ
+0x00B34FEF|??0DrawHotTextParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B35028|??0DrawHotTextParameters@controls@dvaui@@QEAA@PEBVUI_HotText@12@@Z
+0x00B3506B|??0DrawHotTextParameters@controls@dvaui@@QEAA@XZ
+0x00B3509C|??0DrawHotTextURLParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B350D8|??0DrawHotTextURLParameters@controls@dvaui@@QEAA@PEBVUI_HotTextURL@12@@Z
+0x00B35121|??0DrawHotTextURLParameters@controls@dvaui@@QEAA@XZ
+0x00B35155|??0DrawIconFlyoutItemParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B35195|??0DrawIconFlyoutItemParameters@controls@dvaui@@QEAA@PEBVBasicFlyoutMenuItem@12@@Z
+0x00B351E8|??0DrawIconFlyoutItemParameters@controls@dvaui@@QEAA@XZ
+0x00B35220|??0DrawImageCheckboxParams@controls@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3525D|??0DrawImageCheckboxParams@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B35298|??0DrawImageCheckboxParams@controls@dvaui@@QEAA@PEBVUI_ImageCheckbox@12@@Z
+0x00B352E3|??0DrawImageCheckboxParams@controls@dvaui@@QEAA@XZ
+0x00B35316|??0DrawImageRadioParams@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B3534E|??0DrawImageRadioParams@controls@dvaui@@QEAA@PEBVUI_ImageRadioButton@12@@Z
+0x00B35399|??0DrawImageRadioParams@controls@dvaui@@QEAA@XZ
+0x00B353C9|??0DrawOutlineBoxParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B35405|??0DrawOutlineBoxParameters@controls@dvaui@@QEAA@PEBVUI_OutlineBox@12@@Z
+0x00B3544E|??0DrawOutlineBoxParameters@controls@dvaui@@QEAA@XZ
+0x00B35482|??0DrawParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B354B4|??0DrawParameters@controls@dvaui@@QEAA@PEBVUI_ControlView@12@@Z
+0x00B354F4|??0DrawParameters@controls@dvaui@@QEAA@XZ
+0x00B3551E|??0DrawPathAtomParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B35558|??0DrawPathAtomParameters@controls@dvaui@@QEAA@PEBVUI_PathAtomButton@12@@Z
+0x00B355A3|??0DrawPathAtomParameters@controls@dvaui@@QEAA@XZ
+0x00B355D5|??0DrawPictureButtonParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B35614|??0DrawPictureButtonParameters@controls@dvaui@@QEAA@PEBVUI_PictureButton@12@@Z
+0x00B35663|??0DrawPictureButtonParameters@controls@dvaui@@QEAA@XZ
+0x00B3569A|??0DrawPicturePopupParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B356D8|??0DrawPicturePopupParameters@controls@dvaui@@QEAA@PEBVUI_PicturePopup@12@@Z
+0x00B35725|??0DrawPicturePopupParameters@controls@dvaui@@QEAA@XZ
+0x00B3575B|??0DrawPictureTextButtonParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B3579E|??0DrawPictureTextButtonParameters@controls@dvaui@@QEAA@PEBVUI_PictureTextButton@12@@Z
+0x00B357F5|??0DrawPictureTextButtonParameters@controls@dvaui@@QEAA@XZ
+0x00B35830|??0DrawPopup@controls@dvaui@@QEAA@$$QEAU012@@Z
+0x00B3585F|??0DrawPopup@controls@dvaui@@QEAA@AEBU012@@Z
+0x00B3588C|??0DrawPopup@controls@dvaui@@QEAA@_N000PEB_WPEBUImageInterface@drawbot@2@HMW4TextAlignment@42@W4TextTruncation@42@00AEBVColorRGBA@42@AEBV?$PointT@M@ge
+0x00B3594D|??0DrawPopupParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B35984|??0DrawPopupParameters@controls@dvaui@@QEAA@PEBVUI_Popup@12@@Z
+0x00B359C3|??0DrawPopupParameters@controls@dvaui@@QEAA@XZ
+0x00B359F2|??0DrawProgressBarParameters@controls@dvaui@@QEAA@$$QEAV012@@Z
+0x00B35A31|??0DrawProgressBarParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B35A6E|??0DrawProgressBarParameters@controls@dvaui@@QEAA@PEBVUI_ProgressBar@12@@Z
+0x00B35AB9|??0DrawProgressBarParameters@controls@dvaui@@QEAA@XZ
+0x00B35AEE|??0DrawRadioButtonParams@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B35B27|??0DrawRadioButtonParams@controls@dvaui@@QEAA@PEBVUI_RadioButton@12@@Z
+0x00B35B6E|??0DrawRadioButtonParams@controls@dvaui@@QEAA@XZ
+0x00B35B9F|??0DrawRoundedColorRampParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B35BE1|??0DrawRoundedColorRampParameters@controls@dvaui@@QEAA@PEBVUI_ColorRamp@12@@Z
+0x00B35C2F|??0DrawRoundedColorRampParameters@controls@dvaui@@QEAA@XZ
+0x00B35C69|??0DrawScrollBarThumbParams@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B35CA5|??0DrawScrollBarThumbParams@controls@dvaui@@QEAA@XZ
+0x00B35CD9|??0DrawSectionViewParameters@controls@dvaui@@QEAA@$$QEAV012@@Z
+0x00B35D18|??0DrawSectionViewParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B35D55|??0DrawSectionViewParameters@controls@dvaui@@QEAA@PEBVUI_SectionView@12@@Z
+0x00B35DA0|??0DrawSectionViewParameters@controls@dvaui@@QEAA@XZ
+0x00B35DD5|??0DrawSliderParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B35E0D|??0DrawSliderParameters@controls@dvaui@@QEAA@PEBVUI_Slider@12@@Z
+0x00B35E4E|??0DrawSliderParameters@controls@dvaui@@QEAA@XZ
+0x00B35E7E|??0DrawSliderThumbParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B35EBB|??0DrawSliderThumbParameters@controls@dvaui@@QEAA@PEBVUI_SliderThumb@12@@Z
+0x00B35F06|??0DrawSliderThumbParameters@controls@dvaui@@QEAA@XZ
+0x00B35F3B|??0DrawStaticTextParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B35F77|??0DrawStaticTextParameters@controls@dvaui@@QEAA@PEBVUI_StaticText@12@@Z
+0x00B35FC0|??0DrawStaticTextParameters@controls@dvaui@@QEAA@XZ
+0x00B35FF4|??0DrawStatusLightParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B36031|??0DrawStatusLightParameters@controls@dvaui@@QEAA@PEBVUI_StatusLight@12@@Z
+0x00B3607C|??0DrawStepper@controls@dvaui@@QEAA@$$QEAV012@@Z
+0x00B360AD|??0DrawStepper@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B360DC|??0DrawStepper@controls@dvaui@@QEAA@W4StepperDirection@012@@Z
+0x00B3611A|??0DrawStepperParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B36153|??0DrawStepperParameters@controls@dvaui@@QEAA@PEBVUI_StepperUpDownButton@UI_Stepper@12@@Z
+0x00B361AD|??0DrawStepperParameters@controls@dvaui@@QEAA@XZ
+0x00B361DE|??0DrawSwatchParameters@controls@dvaui@@QEAA@$$QEAV012@@Z
+0x00B36218|??0DrawSwatchParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B36250|??0DrawSwatchParameters@controls@dvaui@@QEAA@PEBVUI_Swatch@12@@Z
+0x00B36291|??0DrawSwatchParameters@controls@dvaui@@QEAA@XZ
+0x00B362C1|??0DrawTabItemParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B362FA|??0DrawTabItemParameters@controls@dvaui@@QEAA@PEBVUI_TabItemBase@12@@Z
+0x00B36341|??0DrawTabItemParameters@controls@dvaui@@QEAA@XZ
+0x00B36372|??0DrawTabWellParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B363AB|??0DrawTabWellParameters@controls@dvaui@@QEAA@PEBVUI_TabWell@12@@Z
+0x00B363EE|??0DrawTabWellParameters@controls@dvaui@@QEAA@XZ
+0x00B3641F|??0DrawTableParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B36456|??0DrawTableParameters@controls@dvaui@@QEAA@XZ
+0x00B36485|??0DrawTextButtonParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B364C1|??0DrawTextButtonParameters@controls@dvaui@@QEAA@PEBVUI_TextButton@12@@Z
+0x00B3650A|??0DrawTextButtonParameters@controls@dvaui@@QEAA@XZ
+0x00B3653E|??0DrawTextControlBaseParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B3657F|??0DrawTextControlBaseParameters@controls@dvaui@@QEAA@PEBVUI_TextControlBase@12@@Z
+0x00B365D2|??0DrawTextControlBaseParameters@controls@dvaui@@QEAA@XZ
+0x00B3660B|??0DrawTextCrawlParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B36646|??0DrawTextCrawlParameters@controls@dvaui@@QEAA@PEBVUI_TextCrawl@12@@Z
+0x00B3668D|??0DrawTextCrawlParameters@controls@dvaui@@QEAA@XZ
+0x00B366C0|??0DrawTextEditParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B366FA|??0DrawTextEditParameters@controls@dvaui@@QEAA@PEBVUI_TextEdit@12@_N@Z
+0x00B36741|??0DrawTextEditParameters@controls@dvaui@@QEAA@XZ
+0x00B36773|??0DrawTrianglePicture@controls@dvaui@@QEAA@$$QEAU012@@Z
+0x00B367AC|??0DrawTrianglePicture@controls@dvaui@@QEAA@AEBU012@@Z
+0x00B367E3|??0DrawTrianglePicture@controls@dvaui@@QEAA@PEBUSupplierInterface@drawbot@2@AEBV?$PointT@M@geom@dvacore@@_NNN222@Z
+0x00B36856|??0DrawbotImageResourceCache@utility@dvaui@@QEAA@XZ
+0x00B3688A|??0DrawbotRegistry@drawbot@dvaui@@AEAA@XZ
+0x00B368B4|??0DrawbotRegistry@drawbot@dvaui@@QEAA@AEBV012@@Z
+0x00B368E6|??0DrawbotTestCache@uiplayground@dvaui@@QEAA@AEBV012@@Z
+0x00B3691E|??0DrawbotTestCache@uiplayground@dvaui@@QEAA@XZ
+0x00B3694E|??0DynamicGroup@arrange@dvaui@@QEAA@AEBV012@@Z
+0x00B3697D|??0DynamicGroup@arrange@dvaui@@QEAA@PEAVIArrangeable@12@W4GroupArrangementType@12@@Z
+0x00B369D2|??0DynamicSection@uiplayground@dvaui@@QEAA@XZ
+0x00B36A00|??0EdgeToTextDNA@dna@dvaui@@QEAA@$$QEAV012@@Z
+0x00B36A2E|??0EdgeToTextDNA@dna@dvaui@@QEAA@AEBV012@@Z
+0x00B36A5A|??0EdgeToTextDNA@dna@dvaui@@QEAA@XZ
+0x00B36A7E|??0EdgeToVisualDNA@dna@dvaui@@QEAA@$$QEAV012@@Z
+0x00B36AAE|??0EdgeToVisualDNA@dna@dvaui@@QEAA@AEBV012@@Z
+0x00B36ADC|??0EdgeToVisualDNA@dna@dvaui@@QEAA@XZ
+0x00B36B02|??0EdgeToVisualOnlyDNA@dna@dvaui@@QEAA@$$QEAV012@@Z
+0x00B36B36|??0EdgeToVisualOnlyDNA@dna@dvaui@@QEAA@AEBV012@@Z
+0x00B36B68|??0EdgeToVisualOnlyDNA@dna@dvaui@@QEAA@XZ
+0x00B36B92|??0EmphasizedComponent@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B36BC9|??0EmphasizedComponent@controls@dvaui@@QEAA@XZ
+0x00B36BF8|??0EmptyLayout@layout@dvaui@@QEAA@$$QEAV012@@Z
+0x00B36C27|??0EmptyLayout@layout@dvaui@@QEAA@AEBV012@@Z
+0x00B36C54|??0EmptyLayout@layout@dvaui@@QEAA@XZ
+0x00B36C79|??0ExtraSpaceAlgorithm@layout@dvaui@@QEAA@$$QEAV012@@Z
+0x00B36CB0|??0ExtraSpaceAlgorithm@layout@dvaui@@QEAA@AEBV012@@Z
+0x00B36CE5|??0ExtraSpaceAlgorithm@layout@dvaui@@QEAA@XZ
+0x00B36D12|??0ExtraSpace_Keep@layout@dvaui@@QEAA@$$QEAV012@@Z
+0x00B36D45|??0ExtraSpace_Keep@layout@dvaui@@QEAA@AEBV012@@Z
+0x00B36D76|??0ExtraSpace_Keep@layout@dvaui@@QEAA@XZ
+0x00B36D9F|??0ExtraSpace_Pass@layout@dvaui@@QEAA@$$QEAV012@@Z
+0x00B36DD2|??0ExtraSpace_Pass@layout@dvaui@@QEAA@AEBV012@@Z
+0x00B36E03|??0ExtraSpace_Pass@layout@dvaui@@QEAA@XZ
+0x00B36E2C|??0FactorySingleton@factory@dvaui@@AEAA@XZ
+0x00B36E57|??0FactorySingleton@factory@dvaui@@QEAA@$$QEAV012@@Z
+0x00B36E8C|??0FactorySingleton@factory@dvaui@@QEAA@AEBV012@@Z
+0x00B36EBF|??0FamilyMappingData@UI_FontPopup@sharedui@dvaui@@IEAA@XZ
+0x00B36EF9|??0FamilyMappingData@UI_FontPopup@sharedui@dvaui@@QEAA@AEBV0123@@Z
+0x00B36F3C|??0FeetInchPairUnitHandler@controls@dvaui@@QEAA@$$QEAV012@@Z
+0x00B36F79|??0FeetInchPairUnitHandler@controls@dvaui@@QEAA@AEBUUnitHandlerData@12@@Z
+0x00B36FC3|??0FeetInchPairUnitHandler@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B36FFE|??0FeetUnitHandler@controls@dvaui@@QEAA@$$QEAV012@@Z
+0x00B37033|??0FeetUnitHandler@controls@dvaui@@QEAA@AEBUUnitHandlerData@12@@Z
+0x00B37075|??0FeetUnitHandler@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B370A8|??0FocusRingColorDNA@dna@dvaui@@QEAA@$$QEAV012@@Z
+0x00B370DA|??0FocusRingColorDNA@dna@dvaui@@QEAA@AEBV012@@Z
+0x00B3710A|??0FocusRingColorDNA@dna@dvaui@@QEAA@XZ
+0x00B37132|??0FocusRingDNA@dna@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3715F|??0FocusRingDNA@dna@dvaui@@QEAA@AEBV012@@Z
+0x00B3718A|??0FocusRingDNA@dna@dvaui@@QEAA@XZ
+0x00B371AD|??0FontCacheInterface@drawbot@dvaui@@QEAA@XZ
+0x00B371DA|??0FontInterface@drawbot@dvaui@@QEAA@AEBU012@@Z
+0x00B3720A|??0FontInterface@drawbot@dvaui@@QEAA@XZ
+0x00B37232|??0FontItem@config@dvaui@@QEAA@$$QEAU012@@Z
+0x00B3725E|??0FontItem@config@dvaui@@QEAA@AEBU012@@Z
+0x00B37288|??0FontItem@config@dvaui@@QEAA@V?$basic_string@_WU?$char_traits@_W@std@@U?$STLAllocator@_W@allocator@dvacore@@@std@@0W4ResourceFontDefaultStyle@12@0@Z
+0x00B3731F|??0FontNameDNA@dna@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3734B|??0FontNameDNA@dna@dvaui@@QEAA@AEBV012@@Z
+0x00B37375|??0FontNameDNA@dna@dvaui@@QEAA@XZ
+0x00B37397|??0FontSizeDNA@dna@dvaui@@QEAA@$$QEAV012@@Z
+0x00B373C3|??0FontSizeDNA@dna@dvaui@@QEAA@AEBV012@@Z
+0x00B373ED|??0FontSizeDNA@dna@dvaui@@QEAA@XZ
+0x00B3740F|??0FontStyleDNA@dna@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3743C|??0FontStyleDNA@dna@dvaui@@QEAA@AEBV012@@Z
+0x00B37467|??0FontStyleDNA@dna@dvaui@@QEAA@XZ
+0x00B3748A|??0FreeformInputCapture@UI_FreeformView@sharedui@dvaui@@QEAA@V?$IntrusivePtr@VUI_FreeformView@sharedui@dvaui@@@RefCountedInterface@utility@dvacore@@V?
+0x00B37571|??0FreeformInputCapture@UI_FreeformView@sharedui@dvaui@@QEAA@V?$IntrusivePtr@VUI_Node@ui@dvaui@@@RefCountedInterface@utility@dvacore@@V?$IntrusivePtr@
+0x00B37680|??0FuzzyPropertyManager@automateui@dvaui@@QEAA@AEBV012@@Z
+0x00B376BA|??0FuzzyPropertyManager@automateui@dvaui@@QEAA@AEBV?$basic_string@EU?$char_traits@E@std@@U?$STLAllocator@E@allocator@dvacore@@@std@@@Z
+0x00B37741|??0FuzzyPropertyManager@automateui@dvaui@@QEAA@XZ
+0x00B37773|??0GenericPointerEvent@ui@dvaui@@QEAA@$$QEAV012@@Z
+0x00B377A6|??0GenericPointerEvent@ui@dvaui@@QEAA@AEBV012@@Z
+0x00B377D7|??0GenericPointerEvent@ui@dvaui@@QEAA@W4Action@PointerEvent@12@AEBV?$PointT@M@geom@dvacore@@AEBV?$Flags@E@utility@7@AEBVOS_Event@12@W4SubType@412@H_N5
+0x00B37891|??0GestureCapture@ui@dvaui@@QEAA@V?$IntrusivePtr@VUI_Node@ui@dvaui@@@RefCountedInterface@utility@dvacore@@AEBVGestureEvent@12@@Z
+0x00B37912|??0GestureEvent@ui@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3793E|??0GestureEvent@ui@dvaui@@QEAA@AEBV012@@Z
+0x00B37968|??0GestureEvent@ui@dvaui@@QEAA@W4Action@PointerEvent@12@AEBV?$PointT@M@geom@dvacore@@AEBV?$Flags@E@utility@7@AEBVOS_Event@12@W4SubType@412@@Z
+0x00B379F6|??0GesturePadTouchBarItem@touchbar@dvaui@@IEAA@AEBV?$basic_string@EU?$char_traits@E@std@@U?$STLAllocator@E@allocator@dvacore@@@std@@V?$Flags@E@utility
+0x00B37A9B|??0GlobalMouseAction@automateui@dvaui@@QEAA@$$QEAV012@@Z
+0x00B37AD4|??0GlobalMouseAction@automateui@dvaui@@QEAA@AEBV012@@Z
+0x00B37B0B|??0GlobalMouseAction@automateui@dvaui@@QEAA@XZ
+0x00B37B3A|??0GrayBackgroundColorDNA@dna@dvaui@@QEAA@$$QEAV012@@Z
+0x00B37B71|??0GrayBackgroundColorDNA@dna@dvaui@@QEAA@AEBV012@@Z
+0x00B37BA6|??0GrayBackgroundColorDNA@dna@dvaui@@QEAA@XZ
+0x00B37BD3|??0GrayBorderColorDNA@dna@dvaui@@QEAA@$$QEAV012@@Z
+0x00B37C06|??0GrayBorderColorDNA@dna@dvaui@@QEAA@AEBV012@@Z
+0x00B37C37|??0GrayBorderColorDNA@dna@dvaui@@QEAA@XZ
+0x00B37C60|??0GrayscaleRampImage@controls@dvaui@@QEAA@$$QEAV012@@Z
+0x00B37C98|??0GrayscaleRampImage@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B37CCE|??0GrayscaleRampImage@controls@dvaui@@QEAA@_N0@Z
+0x00B37CFF|??0GridLayout@layout@dvaui@@QEAA@$$QEAV012@@Z
+0x00B37D2D|??0GridLayout@layout@dvaui@@QEAA@AEBV012@@Z
+0x00B37D59|??0GridLayout@layout@dvaui@@QEAA@IIMM@Z
+0x00B37D81|??0GroupTouchBarItem@touchbar@dvaui@@IEAA@AEBV?$basic_string@EU?$char_traits@E@std@@U?$STLAllocator@E@allocator@dvacore@@@std@@V?$Flags@E@utility@dvac
+0x00B37E21|??0GroupingFocusChanges@UI_NodeManager@ui@dvaui@@QEAA@PEAV123@_N@Z
+0x00B37E64|??0HSBRampImage@controls@dvaui@@QEAA@$$QEAV012@@Z
+0x00B37E96|??0HSBRampImage@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B37EC6|??0HSBRampImage@controls@dvaui@@QEAA@_NMMM@Z
+0x00B37EF3|??0HSBSpectrumImage@controls@dvaui@@QEAA@$$QEAV012@@Z
+0x00B37F29|??0HSBSpectrumImage@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B37F5D|??0HSBSpectrumImage@controls@dvaui@@QEAA@MMMW4ColorComponent@012@@Z
+0x00B37FA1|??0HeaderSection@uiplayground@dvaui@@QEAA@XZ
+0x00B37FCE|??0HeaderTextFlyoutMenuItem@controls@dvaui@@QEAA@V?$IntrusivePtr@VBasicMenuItem@controls@dvaui@@@RefCountedInterface@utility@dvacore@@AEBVResourceMana
+0x00B3808F|??0HierarchyModel@uiplayground@dvaui@@QEAA@XZ
+0x00B380BD|??0HoldIconComponent@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B380F2|??0HoldIconComponent@controls@dvaui@@QEAA@XZ
+0x00B3811F|??0IArrangeable@arrange@dvaui@@QEAA@AEBV012@@Z
+0x00B3814E|??0IArrangeable@arrange@dvaui@@QEAA@PEAV012@@Z
+0x00B3817D|??0IButtonDNAImpl@spectrum@v7@skins@dvaui@@QEAA@AEBV01234@@Z
+0x00B381BA|??0IButtonDNAImpl@spectrum@v7@skins@dvaui@@QEAA@AEBVDrawButtonParameters@controls@4@@Z
+0x00B38211|??0IDNAModel@ui@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3823A|??0IDNAModel@ui@dvaui@@QEAA@AEBV012@@Z
+0x00B38261|??0IDNAModel@ui@dvaui@@QEAA@XZ
+0x00B38280|??0IDNAProvider@dna@dvaui@@QEAA@$$QEAV012@@Z
+0x00B382AD|??0IDNAProvider@dna@dvaui@@QEAA@AEBV012@@Z
+0x00B382D8|??0IDNAProvider@dna@dvaui@@QEAA@XZ
+0x00B382FB|??0IMEEvent@ui@dvaui@@QEAA@$$QEAV012@@Z
+0x00B38323|??0IMEEvent@ui@dvaui@@QEAA@AEBV012@@Z
+0x00B38349|??0IMEEvent@ui@dvaui@@QEAA@XZ
+0x00B38367|??0IValidatedDNAProvider@dna@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3839D|??0IValidatedDNAProvider@dna@dvaui@@QEAA@AEBV012@@Z
+0x00B383D1|??0IValidatedDNAProvider@dna@dvaui@@QEAA@XZ
+0x00B383FD|??0IconComponent@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B3842E|??0IconComponent@controls@dvaui@@QEAA@XZ
+0x00B38457|??0IconFlyoutMenuChangedMessage@controls@dvaui@@QEAA@AEAVUI_IconFlyoutMenu@12@W4ChangeMessage@UI_InteractiveControlChangedMessage@12@H@Z
+0x00B384E0|??0IconFlyoutMenuItem@controls@dvaui@@QEAA@V?$IntrusivePtr@VCustomIconMenuItem@controls@dvaui@@@RefCountedInterface@utility@dvacore@@_NAEBVResourceMan
+0x00B385A2|??0IconFlyoutMenuItem@controls@dvaui@@QEAA@V?$IntrusivePtr@VIconMenuItem@controls@dvaui@@@RefCountedInterface@utility@dvacore@@_NAEBVResourceManager@5
+0x00B3865E|??0IconFlyoutMenuItemBase@controls@dvaui@@QEAA@AEBVResourceManager@utility@2@AEBVDrawbotImageResourceCache@42@@Z
+0x00B386CF|??0IconFlyoutMenuItemBase@controls@dvaui@@QEAA@_NAEBVResourceManager@utility@2@AEBVDrawbotImageResourceCache@42@@Z
+0x00B38742|??0IconMenuItem@controls@dvaui@@QEAA@$$QEAV012@@Z
+0x00B38774|??0IconMenuItem@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B387A4|??0IconMenuItem@controls@dvaui@@QEAA@HAEBV?$basic_string@EU?$char_traits@E@std@@U?$STLAllocator@E@allocator@dvacore@@@std@@00@Z
+0x00B38824|??0ImageDestinationProfile@drawbot@dvaui@@QEAA@$$QEAU012@@Z
+0x00B38860|??0ImageDestinationProfile@drawbot@dvaui@@QEAA@AEBU012@@Z
+0x00B3889A|??0ImageDestinationProfile@drawbot@dvaui@@QEAA@XZ
+0x00B388CC|??0ImageHandler@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B388FC|??0ImageHandler@controls@dvaui@@QEAA@AEBV?$vector@UImageInfo@controls@dvaui@@V?$allocator@UImageInfo@controls@dvaui@@@std@@@std@@@Z
+0x00B38980|??0ImageInterface@drawbot@dvaui@@QEAA@AEBU012@@Z
+0x00B389B1|??0ImageInterface@drawbot@dvaui@@QEAA@XZ
+0x00B389DA|??0ImageProvider@utility@dvaui@@QEAA@PEBVResourceManager@12@PEBUSupplierInterface@drawbot@2@PEBVDrawbotImageResourceCache@12@@Z
+0x00B38A5A|??0InkStrokePoint@IDirectInkPort@ui@dvaui@@QEAA@XZ
+0x00B38A8D|??0InputCapture@ui@dvaui@@QEAA@V?$IntrusivePtr@VUI_Node@ui@dvaui@@@RefCountedInterface@utility@dvacore@@AEBVMouseEvent@12@@Z
+0x00B38B0A|??0InteractionRegistry@utility@dvaui@@QEAA@XZ
+0x00B38B38|??0InvalidateComponent@ui@dvaui@@QEAA@$$QEAV012@@Z
+0x00B38B6B|??0InvalidateComponent@ui@dvaui@@QEAA@AEBV012@@Z
+0x00B38B9C|??0InvalidateComponent@ui@dvaui@@QEAA@XZ
+0x00B38BC5|??0IterateAndDrawCells@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B38BFC|??0IterateAndDrawCells@controls@dvaui@@QEAA@V?$IntrusivePtr@VUI_CellsContentView@controls@dvaui@@@RefCountedInterface@utility@dvacore@@PEAVDrawbot@dra
+0x00B38C9C|??0IterateOpenedRows@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B38CD1|??0IterateOpenedRows@controls@dvaui@@QEAA@V?$IntrusivePtr@VUI_MultiColumnTreeInnerView@controls@dvaui@@@RefCountedInterface@utility@dvacore@@PEAVDrawb
+0x00B38D79|??0IterateOpenedRows@controls@dvaui@@QEAA@V?$IntrusivePtr@VUI_MultiColumnTreeInnerView@controls@dvaui@@@RefCountedInterface@utility@dvacore@@V?$Intrus
+0x00B38E47|??0IterateOpenedRows@controls@dvaui@@QEAA@V?$IntrusivePtr@VUI_MultiColumnTreeInnerView@controls@dvaui@@@RefCountedInterface@utility@dvacore@@V?$PointT
+0x00B38EED|??0IterateOpenedRows@controls@dvaui@@QEAA@V?$IntrusivePtr@VUI_MultiColumnTreeInnerView@controls@dvaui@@@RefCountedInterface@utility@dvacore@@V?$RectT@
+0x00B38F92|??0IterateOpenedRows@controls@dvaui@@QEAA@V?$IntrusivePtr@VUI_MultiColumnTreeInnerView@controls@dvaui@@@RefCountedInterface@utility@dvacore@@_N@Z
+0x00B39024|??0KeyFocusLock@utility@dvaui@@QEAA@AEBV012@@Z
+0x00B39053|??0KeyFocusLock@utility@dvaui@@QEAA@XZ
+0x00B3907A|??0KeyModifiers@ui@dvaui@@QEAA@$$QEAV012@@Z
+0x00B390A6|??0KeyModifiers@ui@dvaui@@QEAA@AEBV012@@Z
+0x00B390D0|??0KeyModifiers@ui@dvaui@@QEAA@V?$Flags@E@utility@dvacore@@@Z
+0x00B3910E|??0KeyModifiers@ui@dvaui@@QEAA@XZ
+0x00B39130|??0KeyValue@KeyframeThemeEditor@ui@dvaui@@QEAA@MMMM_N@Z
+0x00B39168|??0KeyValue@KeyframeThemeEditor@ui@dvaui@@QEAA@XZ
+0x00B3919A|??0KeyboardAction@automateui@dvaui@@QEAA@$$QEAV012@@Z
+0x00B391D0|??0KeyboardAction@automateui@dvaui@@QEAA@AEBV012@@Z
+0x00B39204|??0KeyboardAction@automateui@dvaui@@QEAA@W4ActionType@012@F@Z
+0x00B39242|??0KeyboardAction@automateui@dvaui@@QEAA@XZ
+0x00B3926E|??0KeyboardCode@ui@dvaui@@QEAA@I@Z
+0x00B39291|??0KeyboardCode@ui@dvaui@@QEAA@XZ
+0x00B392B3|??0KeyboardEvent@ui@dvaui@@QEAA@AEBV012@@Z
+0x00B392DE|??0KeyboardEvent@ui@dvaui@@QEAA@AEBV?$vector@_WV?$allocator@_W@std@@@std@@V?$Flags@E@utility@dvacore@@_NAEBVOS_Event@12@@Z
+0x00B39359|??0KeyboardEvent@ui@dvaui@@QEAA@AEBVOS_Event@12@@Z
+0x00B3938C|??0KeyboardEvent@ui@dvaui@@QEAA@W4Action@012@_WFV?$Flags@E@utility@dvacore@@_NAEBVOS_Event@12@@Z
+0x00B393ED|??0KeyframeThemeEditor@ui@dvaui@@QEAA@AEBV012@@Z
+0x00B3941E|??0KeyframeThemeEditor@ui@dvaui@@QEAA@_K0@Z
+0x00B3944A|??0KeyframeThemeParser@ui@dvaui@@QEAA@AEAVKeyframeThemeEditor@12@@Z
+0x00B3948E|??0LabelComponent@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B394C0|??0LabelComponent@controls@dvaui@@QEAA@XZ
+0x00B394EA|??0LabelTouchBarItem@touchbar@dvaui@@IEAA@AEBV?$basic_string@EU?$char_traits@E@std@@U?$STLAllocator@E@allocator@dvacore@@@std@@V?$Flags@E@utility@dvac
+0x00B3958A|??0LayoutCheckboxParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B395C6|??0LayoutCheckboxParameters@controls@dvaui@@QEAA@AEBVDrawCheckBoxParams@12@@Z
+0x00B39614|??0LayoutCheckboxParameters@controls@dvaui@@QEAA@PEBVUI_Checkbox@12@@Z
+0x00B3965B|??0LayoutCheckboxParameters@controls@dvaui@@QEAA@XZ
+0x00B3968F|??0LayoutComponent@layout@dvaui@@QEAA@AEBV012@@Z
+0x00B396C0|??0LayoutComponent@layout@dvaui@@QEAA@XZ
+0x00B396E9|??0LayoutDecorator@layout@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3971C|??0LayoutDecorator@layout@dvaui@@QEAA@AEBV012@@Z
+0x00B3974D|??0LayoutDecorator@layout@dvaui@@QEAA@AEBV?$PointT@M@geom@dvacore@@V?$IntrusivePtr@VSmartLayout@layout@dvaui@@@RefCountedInterface@utility@5@@Z
+0x00B397DD|??0LayoutJoiner@layout@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3980D|??0LayoutJoiner@layout@dvaui@@QEAA@AEBV012@@Z
+0x00B3983B|??0LayoutJoiner@layout@dvaui@@QEAA@V?$IntrusivePtr@VSmartLayout@layout@dvaui@@@RefCountedInterface@utility@dvacore@@0V?$IntrusivePtr@VLayoutPlacementA
+0x00B39928|??0LayoutNotifier@layout@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3995A|??0LayoutNotifier@layout@dvaui@@QEAA@AEBV012@@Z
+0x00B3998A|??0LayoutNotifier@layout@dvaui@@QEAA@V?$function@$$A6AXAEBV?$RectT@M@geom@dvacore@@@Z@std@@V?$IntrusivePtr@VSmartLayout@layout@dvaui@@@RefCountedInter
+0x00B39A39|??0LayoutParameters@ui@dvaui@@QEAA@AEBV012@@Z
+0x00B39A67|??0LayoutParameters@ui@dvaui@@QEAA@PEBVUI_SubView@12@@Z
+0x00B39A9F|??0LayoutParameters@ui@dvaui@@QEAA@XZ
+0x00B39AC5|??0LayoutPlacementAlgorithm@layout@dvaui@@QEAA@$$QEAV012@@Z
+0x00B39B01|??0LayoutPlacementAlgorithm@layout@dvaui@@QEAA@AEBV012@@Z
+0x00B39B3B|??0LayoutPlacementAlgorithm@layout@dvaui@@QEAA@XZ
+0x00B39B6D|??0LayoutPlacement_AboveDO@layout@dvaui@@QEAA@$$QEAV012@@Z
+0x00B39BA8|??0LayoutPlacement_AboveDO@layout@dvaui@@QEAA@AEBV012@@Z
+0x00B39BE1|??0LayoutPlacement_AboveDO@layout@dvaui@@QEAA@XZ
+0x00B39C12|??0LayoutPlacement_BelowDO@layout@dvaui@@QEAA@$$QEAV012@@Z
+0x00B39C4D|??0LayoutPlacement_BelowDO@layout@dvaui@@QEAA@AEBV012@@Z
+0x00B39C86|??0LayoutPlacement_BelowDO@layout@dvaui@@QEAA@XZ
+0x00B39CB7|??0LayoutPlacement_LeftOfDO@layout@dvaui@@QEAA@$$QEAV012@@Z
+0x00B39CF3|??0LayoutPlacement_LeftOfDO@layout@dvaui@@QEAA@AEBV012@@Z
+0x00B39D2D|??0LayoutPlacement_LeftOfDO@layout@dvaui@@QEAA@XZ
+0x00B39D5F|??0LayoutPlacement_RightOfDO@layout@dvaui@@QEAA@$$QEAV012@@Z
+0x00B39D9C|??0LayoutPlacement_RightOfDO@layout@dvaui@@QEAA@AEBV012@@Z
+0x00B39DD7|??0LayoutPlacement_RightOfDO@layout@dvaui@@QEAA@XZ
+0x00B39E0A|??0LayoutRadioButtonParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B39E49|??0LayoutRadioButtonParameters@controls@dvaui@@QEAA@AEBVDrawRadioButtonParams@12@@Z
+0x00B39E9D|??0LayoutRadioButtonParameters@controls@dvaui@@QEAA@PEBVUI_RadioButton@12@@Z
+0x00B39EEA|??0LayoutRadioButtonParameters@controls@dvaui@@QEAA@XZ
+0x00B39F21|??0LayoutSubView@sharedui@dvaui@@QEAA@XZ
+0x00B39F4A|??0LayoutTabItemParameters@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B39F85|??0LayoutTabItemParameters@controls@dvaui@@QEAA@PEBVUI_TabItemBase@12@@Z
+0x00B39FCE|??0LayoutTabItemParameters@controls@dvaui@@QEAA@XZ
+0x00B3A001|??0LevelMeterSettings@UI_LevelMeterView@controls@dvaui@@QEAA@XZ
+0x00B3A041|??0LinearRuler@utility@dvaui@@QEAA@XZ
+0x00B3A067|??0LinearShaderInterface@drawbot@dvaui@@QEAA@AEBU012@@Z
+0x00B3A09F|??0LinearShaderInterface@drawbot@dvaui@@QEAA@XZ
+0x00B3A0CF|??0LogRuler@utility@dvaui@@QEAA@XZ
+0x00B3A0F2|??0ManagedImage@drawbot@dvaui@@QEAA@AEBV012@@Z
+0x00B3A121|??0ManagedImage@drawbot@dvaui@@QEAA@XZ
+0x00B3A148|??0ManipulationData@ui@dvaui@@QEAA@XZ
+0x00B3A16E|??0ManipulationEventData@ui@dvaui@@QEAA@XZ
+0x00B3A199|??0MarqueeInputCapture@UI_FreeformView@sharedui@dvaui@@QEAA@V?$IntrusivePtr@VUI_FreeformView@sharedui@dvaui@@@RefCountedInterface@utility@dvacore@@AEB
+0x00B3A243|??0MarqueeInputCapture@UI_FreeformView@sharedui@dvaui@@QEAA@V?$IntrusivePtr@VUI_Node@ui@dvaui@@@RefCountedInterface@utility@dvacore@@V?$IntrusivePtr@V
+0x00B3A315|??0MemBuffer@drawbot@dvaui@@QEAA@AEBV012@@Z
+0x00B3A341|??0MemBuffer@drawbot@dvaui@@QEAA@FFFG@Z
+0x00B3A369|??0MenuAction@automateui@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3A39B|??0MenuAction@automateui@dvaui@@QEAA@AEBV012@@Z
+0x00B3A3CB|??0MenuAction@automateui@dvaui@@QEAA@XZ
+0x00B3A3F3|??0MenuCheckboxDNAImpl@spectrum@v7@skins@dvaui@@QEAA@AEBV01234@@Z
+0x00B3A435|??0MenuCheckboxDNAImpl@spectrum@v7@skins@dvaui@@QEAA@AEBVDrawCheckBoxParams@controls@4@@Z
+0x00B3A48F|??0MenuItemAction@automateui@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3A4C5|??0MenuItemAction@automateui@dvaui@@QEAA@AEBV012@@Z
+0x00B3A4F9|??0MenuItemAction@automateui@dvaui@@QEAA@XZ
+0x00B3A525|??0MenuItemCommandId@automateui@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3A55E|??0MenuItemCommandId@automateui@dvaui@@QEAA@AEBV012@@Z
+0x00B3A595|??0MenuItemCommandId@automateui@dvaui@@QEAA@I@Z
+0x00B3A5C5|??0MenuItemId@automateui@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3A5F7|??0MenuItemId@automateui@dvaui@@QEAA@AEBV012@@Z
+0x00B3A627|??0MenuItemId@automateui@dvaui@@QEAA@XZ
+0x00B3A64F|??0MenuItemIndexId@automateui@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3A686|??0MenuItemIndexId@automateui@dvaui@@QEAA@AEBV012@@Z
+0x00B3A6BB|??0MenuItemIndexId@automateui@dvaui@@QEAA@I@Z
+0x00B3A6E9|??0MenuItemStringId@automateui@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3A721|??0MenuItemStringId@automateui@dvaui@@QEAA@AEBV012@@Z
+0x00B3A757|??0MenuItemStringId@automateui@dvaui@@QEAA@AEBV?$basic_string@_WU?$char_traits@_W@std@@U?$STLAllocator@_W@allocator@dvacore@@@std@@@Z
+0x00B3A7DD|??0Message@ui@dvaui@@QEAA@AEAVUI_Node@12@@Z
+0x00B3A809|??0ModuleInfo@ui@dvaui@@QEAA@AEBV012@@Z
+0x00B3A831|??0ModuleInfo@ui@dvaui@@QEAA@XZ
+0x00B3A851|??0MonitorInfo@utility@dvaui@@QEAA@_N@Z
+0x00B3A879|??0MouseAction@automateui@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3A8AC|??0MouseAction@automateui@dvaui@@QEAA@AEBV012@@Z
+0x00B3A8DD|??0MouseAction@automateui@dvaui@@QEAA@XZ
+0x00B3A906|??0MouseEvent@ui@dvaui@@QEAA@AEBV012@@Z
+0x00B3A92E|??0MouseEvent@ui@dvaui@@QEAA@W4Action@PointerEvent@12@HHAEBV?$PointT@M@geom@dvacore@@V?$Flags@E@utility@7@AEBVOS_Event@12@1W4SubType@412@W4Direction@0
+0x00B3A9CA|??0MultiMenuItemId@automateui@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3AA01|??0MultiMenuItemId@automateui@dvaui@@QEAA@AEBV012@@Z
+0x00B3AA36|??0MultiMenuItemId@automateui@dvaui@@QEAA@AEBV?$deque@V?$IntrusivePtr@VMenuItemId@automateui@dvaui@@@RefCountedInterface@utility@dvacore@@V?$allocator
+0x00B3AB30|??0MultiMenuItemId@automateui@dvaui@@QEAA@XZ
+0x00B3AB5D|??0MultiTouchEvent@ui@dvaui@@QEAA@AEBV012@@Z
+0x00B3AB8A|??0MultiTouchEvent@ui@dvaui@@QEAA@AEBVTouchEvent@12@@Z
+0x00B3ABC1|??0MultiTouchEvent@ui@dvaui@@QEAA@AEBVTouchEvent@12@AEBV?$map@HVTouchEvent@ui@dvaui@@U?$less@H@std@@V?$allocator@U?$pair@$$CBHVTouchEvent@ui@dvaui@@@s
+0x00B3AC67|??0NegativeColorDNA@dna@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3AC98|??0NegativeColorDNA@dna@dvaui@@QEAA@AEBV012@@Z
+0x00B3ACC7|??0NegativeColorDNA@dna@dvaui@@QEAA@XZ
+0x00B3ACEE|??0NeutralContentColorDNA@dna@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3AD25|??0NeutralContentColorDNA@dna@dvaui@@QEAA@AEBV012@@Z
+0x00B3AD5A|??0NeutralContentColorDNA@dna@dvaui@@QEAA@XZ
+0x00B3AD87|??0NodeAdapterManager@automateui@dvaui@@QEAA@AEBV012@@Z
+0x00B3ADBF|??0NodeAdapterManager@automateui@dvaui@@QEAA@XZ
+0x00B3ADEF|??0NotifyInDrawRequest@UI_NodeManager@ui@dvaui@@QEAA@PEAV123@@Z
+0x00B3AE2F|??0NotifyUserResizing@UI_NodeManager@ui@dvaui@@QEAA@PEAV123@PEAVUI_Node@23@@Z
+0x00B3AE7D|??0OSAccessibilityHandler@accessibility@dvaui@@QEAA@PEAVAccessibleObject@12@@Z
+0x00B3AECC|??0OSSupplier@d2d@drawbot@dvaui@@QEAA@AEBV0123@@Z
+0x00B3AEFE|??0OSSupplier@d2d@drawbot@dvaui@@QEAA@AEBV?$CComPtr@UID2D1Factory2@@@ATL@@_N@Z
+0x00B3AF4D|??0OSSurfaceP@drawbot@dvaui@@QEAA@PEBUSupplierInterface@12@PEAUHDC__@@PEAUHRGN__@@@Z
+0x00B3AFA2|??0OSSurfaceP@drawbot@dvaui@@QEAA@XZ
+0x00B3AFC7|??0OS_ApplicationBar@controls@dvaui@@QEAA@AEBV?$basic_string@_WU?$char_traits@_W@std@@U?$STLAllocator@_W@allocator@dvacore@@@std@@@Z
+0x00B3B04C|??0OS_ApplicationBar@controls@dvaui@@QEAA@XZ
+0x00B3B079|??0OS_ApplicationBarControlContainer@controls@dvaui@@QEAA@XZ
+0x00B3B0B6|??0OS_ColorPicker@sharedui@dvaui@@QEAA@AEBV012@@Z
+0x00B3B0E8|??0OS_ColorPicker@sharedui@dvaui@@QEAA@AEBV?$PointT@H@geom@dvacore@@AEBVColorRGBA@drawbot@2@1PEAVUI_Node@ui@2@@Z
+0x00B3B159|??0OS_ColorPicker@sharedui@dvaui@@QEAA@XZ
+0x00B3B183|??0OS_Dialog@ui@dvaui@@QEAA@AEBV?$basic_string@_WU?$char_traits@_W@std@@U?$STLAllocator@_W@allocator@dvacore@@@std@@V?$PointT@M@geom@dvacore@@AEBV567@
+0x00B3B28C|??0OS_DialogUtils@ui@dvaui@@QEAA@XZ
+0x00B3B2B0|??0OS_DropTarget@datatransfer@dvaui@@QEAA@XZ
+0x00B3B2DD|??0OS_EditText@controls@dvaui@@QEAA@V?$Flags@I@utility@dvacore@@@Z
+0x00B3B320|??0OS_EditTextItem_WIN@controls@dvaui@@QEAA@PEAVOS_Window@ui@2@V?$Flags@I@utility@dvacore@@W4EditTextAlignment@12@@Z
+0x00B3B395|??0OS_EditText_WIN@controls@dvaui@@QEAA@V?$Flags@I@utility@dvacore@@W4EditTextAlignment@12@@Z
+0x00B3B3F3|??0OS_Event@ui@dvaui@@QEAA@AEBV012@@Z
+0x00B3B419|??0OS_Event@ui@dvaui@@QEAA@PEAUHWND__@@I_K_J@Z
+0x00B3B448|??0OS_Event@ui@dvaui@@QEAA@XZ
+0x00B3B466|??0OS_EventBase@ui@dvaui@@QEAA@AEBV012@@Z
+0x00B3B490|??0OS_EventBase@ui@dvaui@@QEAA@XZ
+0x00B3B4B2|??0OS_FileDialog@dialogs@dvaui@@IEAA@XZ
+0x00B3B4DA|??0OS_FileDialog@dialogs@dvaui@@QEAA@AEBV012@@Z
+0x00B3B50A|??0OS_FileOpenDialog@dialogs@dvaui@@QEAA@AEBV012@@Z
+0x00B3B53E|??0OS_FileOpenDialog@dialogs@dvaui@@QEAA@QEAVUI_Node@ui@2@AEBV?$vector@UFileDialogFilterInfo@dialogs@dvaui@@V?$allocator@UFileDialogFilterInfo@dialogs
+0x00B3B60C|??0OS_FileOpenDialog@dialogs@dvaui@@QEAA@XZ
+0x00B3B638|??0OS_FileSaveAsDialog@dialogs@dvaui@@QEAA@AEBV012@@Z
+0x00B3B66E|??0OS_FileSaveAsDialog@dialogs@dvaui@@QEAA@QEAVUI_Node@ui@2@AEBV?$vector@UFileDialogFilterInfo@dialogs@dvaui@@V?$allocator@UFileDialogFilterInfo@dialo
+0x00B3B793|??0OS_FileSaveAsDialog@dialogs@dvaui@@QEAA@XZ
+0x00B3B7C1|??0OS_FolderChooserDialog@dialogs@dvaui@@QEAA@AEBV012@@Z
+0x00B3B7FA|??0OS_FolderChooserDialog@dialogs@dvaui@@QEAA@QEAVUI_Node@ui@2@AEBV?$Flags@I@utility@dvacore@@@Z
+0x00B3B85B|??0OS_FolderChooserDialog@dialogs@dvaui@@QEAA@XZ
+0x00B3B88C|??0OS_GIFPlayer@controls@dvaui@@QEAA@PEAVOS_Window@ui@2@@Z
+0x00B3B8C7|??0OS_GIFPlayer_WIN@controls@dvaui@@QEAA@PEAVOS_Window@ui@2@@Z
+0x00B3B906|??0OS_Menu@utility@dvaui@@QEAA@XZ
+0x00B3B928|??0OS_Menu_WIN@utility@dvaui@@QEAA@PEAUHMENU__@@@Z
+0x00B3B95B|??0OS_Menu_WIN@utility@dvaui@@QEAA@XZ
+0x00B3B981|??0OS_MonitorInfo@utility@dvaui@@QEAA@_N@Z
+0x00B3B9AC|??0OS_NavigationDialog@dialogs@dvaui@@IEAA@XZ
+0x00B3B9DA|??0OS_NavigationDialog@dialogs@dvaui@@QEAA@AEBV012@@Z
+0x00B3BA10|??0OS_NodeManager@ui@dvaui@@IEAA@XZ
+0x00B3BA34|??0OS_OpenGLView@ui@dvaui@@QEAA@XZ
+0x00B3BA57|??0OS_OpenGLViewBase@ui@dvaui@@QEAA@XZ
+0x00B3BA7E|??0OS_PopupViewContainer@ui@dvaui@@QEAA@_N0@Z
+0x00B3BAAC|??0OS_PopupWindow@ui@dvaui@@QEAA@PEBUSupplierInterface@drawbot@2@PEBVUI_Window@12@_N22PEAVUI_Node@12@QEAUHWND__@@2@Z
+0x00B3BB21|??0OS_Preferences@ui@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3BB4F|??0OS_Preferences@ui@dvaui@@QEAA@AEBV012@@Z
+0x00B3BB7B|??0OS_Preferences@ui@dvaui@@QEAA@XZ
+0x00B3BB9F|??0OS_Preferences_WIN@ui@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3BBD1|??0OS_Preferences_WIN@ui@dvaui@@QEAA@AEBV012@@Z
+0x00B3BC01|??0OS_Preferences_WIN@ui@dvaui@@QEAA@XZ
+0x00B3BC29|??0OS_ReceiveData@datatransfer@dvaui@@QEAA@PEAUIDataObject@@_N@Z
+0x00B3BC6A|??0OS_ReceiveData@datatransfer@dvaui@@QEAA@XZ
+0x00B3BC98|??0OS_ResourceManager@utility@dvaui@@QEAA@AEBV012@@Z
+0x00B3BCCD|??0OS_ResourceManager@utility@dvaui@@QEAA@PEAUHINSTANCE__@@@Z
+0x00B3BD0B|??0OS_ScaledView@ui@dvaui@@QEAA@XZ
+0x00B3BD2E|??0OS_SendData@datatransfer@dvaui@@QEAA@AEBVOS_Event@ui@2@@Z
+0x00B3BD6B|??0OS_SendData@datatransfer@dvaui@@QEAA@XZ
+0x00B3BD96|??0OS_TextInputPanel@touch@controls@dvaui@@QEAA@AEBV0123@@Z
+0x00B3BDD2|??0OS_TextInputPanel@touch@controls@dvaui@@QEAA@XZ
+0x00B3BE05|??0OS_TextInputPanelInterface@touch@controls@dvaui@@QEAA@$$QEAV0123@@Z
+0x00B3BE4C|??0OS_TextInputPanelInterface@touch@controls@dvaui@@QEAA@AEBV0123@@Z
+0x00B3BE91|??0OS_TextInputPanelInterface@touch@controls@dvaui@@QEAA@XZ
+0x00B3BECD|??0OS_Time@utility@dvaui@@QEAA@XZ
+0x00B3BEEF|??0OS_ToolTip_WIN@ui@dvaui@@QEAA@AEBV012@@Z
+0x00B3BF1B|??0OS_ToolTip_WIN@ui@dvaui@@QEAA@AEBV?$basic_string@EU?$char_traits@E@std@@U?$STLAllocator@E@allocator@dvacore@@@std@@PEBVUI_Node@12@AEBV?$PointT@M@ge
+0x00B3BFC1|??0OS_ToolTip_WIN@ui@dvaui@@QEAA@AEBV?$basic_string@EU?$char_traits@E@std@@U?$STLAllocator@E@allocator@dvacore@@@std@@PEBVUI_Node@12@H@Z
+0x00B3C04A|??0OS_TopLevelViewContainer@ui@dvaui@@QEAA@_N@Z
+0x00B3C07A|??0OS_TouchKeyboardManager@touch@ui@dvaui@@AEAA@XZ
+0x00B3C0AD|??0OS_TouchKeyboardManager@touch@ui@dvaui@@QEAA@AEBV0123@@Z
+0x00B3C0E9|??0OS_ViewContainer@ui@dvaui@@QEAA@_N@Z
+0x00B3C111|??0OS_Window@ui@dvaui@@QEAA@XZ
+0x00B3C130|??0OpaqueApplicationData@drawbot@dvaui@@QEAA@AEBU012@@Z
+0x00B3C168|??0OpaqueApplicationData@drawbot@dvaui@@QEAA@XZ
+0x00B3C198|??0OrientedComponent@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B3C1CD|??0OrientedComponent@controls@dvaui@@QEAA@XZ
+0x00B3C1FA|??0OverBackgroundComponent@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B3C235|??0OverBackgroundComponent@controls@dvaui@@QEAA@XZ
+0x00B3C268|??0PaletteView@controls@dvaui@@QEAA@AEBV?$basic_string@EU?$char_traits@E@std@@U?$STLAllocator@E@allocator@dvacore@@@std@@PEAVResourceManager@utility@2
+0x00B3C51F|??0ParentChildLayoutJoiner@layout@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3C55A|??0ParentChildLayoutJoiner@layout@dvaui@@QEAA@AEBV012@@Z
+0x00B3C593|??0ParentChildLayoutJoiner@layout@dvaui@@QEAA@V?$IntrusivePtr@VSmartLayout@layout@dvaui@@@RefCountedInterface@utility@dvacore@@0@Z
+0x00B3C616|??0ParentToChildIdContainer@automateui@dvaui@@QEAA@$$QEAV?$deque@VChildIdentifier@automateui@dvaui@@V?$allocator@VChildIdentifier@automateui@dvaui@@@s
+0x00B3C6B9|??0ParentToChildIdContainer@automateui@dvaui@@QEAA@AEBV012@@Z
+0x00B3C6F7|??0ParentToChildIdContainer@automateui@dvaui@@QEAA@V?$IntrusivePtr@VUI_Node@ui@dvaui@@@RefCountedInterface@utility@dvacore@@0@Z
+0x00B3C777|??0ParentToChildIdContainer@automateui@dvaui@@QEAA@XZ
+0x00B3C7AD|??0PathInterface@drawbot@dvaui@@QEAA@AEBU012@@Z
+0x00B3C7DD|??0PathInterface@drawbot@dvaui@@QEAA@XZ
+0x00B3C805|??0PenCapture@ui@dvaui@@QEAA@V?$IntrusivePtr@VUI_Node@ui@dvaui@@@RefCountedInterface@utility@dvacore@@AEBVPenEvent@12@@Z
+0x00B3C87E|??0PenEvent@ui@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3C8A6|??0PenEvent@ui@dvaui@@QEAA@AEBV012@@Z
+0x00B3C8CC|??0PenEvent@ui@dvaui@@QEAA@W4Action@PointerEvent@12@IHAEBV?$PointT@M@geom@dvacore@@AEBV?$Flags@E@utility@7@AEBVOS_Event@12@W4SubType@412@IW4Proximity@
+0x00B3C96E|??0PenInterface@drawbot@dvaui@@QEAA@AEBU012@@Z
+0x00B3C99D|??0PenInterface@drawbot@dvaui@@QEAA@XZ
+0x00B3C9C4|??0PercentUnitHandler@controls@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3C9FC|??0PercentUnitHandler@controls@dvaui@@QEAA@AEBUUnitHandlerData@12@@Z
+0x00B3CA41|??0PercentUnitHandler@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B3CA77|??0PicaUnitHandler@controls@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3CAAC|??0PicaUnitHandler@controls@dvaui@@QEAA@AEBUUnitHandlerData@12@@Z
+0x00B3CAEE|??0PicaUnitHandler@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B3CB21|??0PickerDNAImpl@spectrum@v7@skins@dvaui@@QEAA@AEBV01234@@Z
+0x00B3CB5D|??0PickerDNAImpl@spectrum@v7@skins@dvaui@@QEAA@AEBVDrawPopupParameters@controls@4@@Z
+0x00B3CBB2|??0PictureToolBarItem@controls@dvaui@@QEAA@AEBV?$basic_string@EU?$char_traits@E@std@@U?$STLAllocator@E@allocator@dvacore@@@std@@PEAVResourceManager@ut
+0x00B3CC74|??0PlaceholderComponent@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B3CCAC|??0PlaceholderComponent@controls@dvaui@@QEAA@XZ
+0x00B3CCDC|??0PointerCapture@ui@dvaui@@QEAA@V?$IntrusivePtr@VUI_Node@ui@dvaui@@@RefCountedInterface@utility@dvacore@@@Z
+0x00B3CD49|??0PointerEvent@ui@dvaui@@IEAA@AEBV012@@Z
+0x00B3CD73|??0PointerEvent@ui@dvaui@@IEAA@W4Action@012@AEBV?$PointT@M@geom@dvacore@@AEBV?$Flags@E@utility@6@AEBVOS_Event@12@W4SubType@012@@Z
+0x00B3CDF5|??0PopoverTouchBarItem@touchbar@dvaui@@IEAA@AEBV?$basic_string@EU?$char_traits@E@std@@U?$STLAllocator@E@allocator@dvacore@@@std@@V?$Flags@E@utility@dv
+0x00B3CE97|??0PopupButtonGenericViewContainer@controls@dvaui@@QEAA@_N0@Z
+0x00B3CED5|??0PopupSliderViewContainer@controls@dvaui@@QEAA@PEAVUI_PopupSlider@12@_N1@Z
+0x00B3CF22|??0PopupToggler@controls@dvaui@@QEAA@XZ
+0x00B3CF4A|??0PrefManager@ui@dvaui@@AEAA@AEBV?$basic_string@_WU?$char_traits@_W@std@@U?$STLAllocator@_W@allocator@dvacore@@@std@@_N@Z
+0x00B3CFC5|??0PrefManager@ui@dvaui@@QEAA@AEBV012@@Z
+0x00B3CFEE|??0ProgressCategoryContainerViewController@utility@dvaui@@QEAA@PEBUSupplierInterface@drawbot@2@AEBV?$basic_string@_WU?$char_traits@_W@std@@U?$STLAlloc
+0x00B3D0BD|??0ProgressCategoryViewController@utility@dvaui@@QEAA@AEBV012@@Z
+0x00B3D0FE|??0ProgressCategoryViewController@utility@dvaui@@QEAA@PEBUSupplierInterface@drawbot@2@AEBV?$shared_ptr@VProgressCategory@utility@dvaappsupport@@@std@@
+0x00B3D197|??0ProgressItemViewController@utility@dvaui@@QEAA@AEBV012@@Z
+0x00B3D1D4|??0ProgressItemViewController@utility@dvaui@@QEAA@PEBUSupplierInterface@drawbot@2@@Z
+0x00B3D229|??0QuietComponent@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B3D25B|??0QuietComponent@controls@dvaui@@QEAA@XZ
+0x00B3D285|??0RGBARampImage@controls@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3D2B8|??0RGBARampImage@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B3D2E9|??0RGBARampImage@controls@dvaui@@QEAA@_NMMMM@Z
+0x00B3D318|??0RGBASpectrumImage@controls@dvaui@@QEAA@$$QEAV012@@Z
+0x00B3D34F|??0RGBASpectrumImage@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B3D384|??0RGBASpectrumImage@controls@dvaui@@QEAA@MMMMW4ColorComponent@012@@Z
+0x00B3D3CA|??0RadialShaderInterface@drawbot@dvaui@@QEAA@AEBU012@@Z
+0x00B3D402|??0RadialShaderInterface@drawbot@dvaui@@QEAA@XZ
+0x00B3D432|??0RadioButtonDNAImpl@spectrum@v7@skins@dvaui@@QEAA@$$QEAV01234@@Z
+0x00B3D475|??0RadioButtonDNAImpl@spectrum@v7@skins@dvaui@@QEAA@AEBV01234@@Z
+0x00B3D4B6|??0RadioButtonDNAImpl@spectrum@v7@skins@dvaui@@QEAA@AEBVDrawRadioButtonParams@controls@4@@Z
+0x00B3D512|??0RasterizerParametersInterface@svg@dvaui@@QEAA@AEBV012@@Z
+0x00B3D54E|??0RasterizerParametersInterface@svg@dvaui@@QEAA@XZ
+0x00B3D582|??0ReadOnlyComponent@controls@dvaui@@QEAA@AEBV012@@Z
+0x00B3D5B7|??0ReadOnlyComponent@controls@dvaui@@QEAA@XZ
+0x00B3D5E4|??0ResourceManager@utility@dvaui@@IEAA@XZ
+0x00B3D60E|??0ResourceManager@utility@dvaui@@QEAA@AEBV012@@Z
+0x00B3D640|??0RowArrangement@impl@arrange@dvaui@@QEAA@AEAVAbstractArrangeableGroup@123@AEBV?$vector@V?$IntrusivePtr@VIArrangement@impl@arrange@dvaui@@@RefCounted
+0x00B3D7C6|??0RulerBase@utility@dvaui@@QEAA@XZ
+0x00B3D7EA|??0SVGDocumentCacheKey@utility@dvaui@@QEAA@AEBV012@@Z
+0x00B3D820|??0SVGDocumentCacheKey@utility@dvaui@@QEAA@AEBV?$basic_string@EU?$char_traits@E@std@@U?$STLAllocator@E@allocator@dvacore@@@std@@AEBVImmutableString@1d
+0x00B3D90D|??0SVGImage@drawbot@dvaui@@QEAA@AEBV012@@Z
+0x00B3D938|??0SVGImage@drawbot@dvaui@@QEAA@AEBVSVGDocumentCacheKey@utility@2@V?$IntrusivePtr@VICSSData@svg@dvaui@@@RefCountedInterface@4dvacore@@@Z
+0x00B3D9C1|??0SVGImage@drawbot@dvaui@@QEAA@PEBX_KV?$IntrusivePtr@VICSSData@svg@dvaui@@@RefCountedInterface@utility@dvacore@@AEBVSVGDocumentCacheKey@52@@Z
+0x00B3DA50|??0SVGImage@drawbot@dvaui@@QEAA@V?$IntrusivePtr@VISVGDocument@svg@dvaui@@@RefCountedInterface@utility@dvacore@@V?$IntrusivePtr@VICSSData@svg@dvaui@@@4
+0x00B3DAEC|??0SVGImage@drawbot@dvaui@@QEAA@XZ
+0x00B3DB0F|??0SVGSupplier@svg@drawbot@dvaui@@QEAA@V?$basic_string@_WU?$char_traits@_W@std@@U?$STLAllocator@_W@allocator@dvacore@@@std@@V?$IntrusivePtr@VUI_Node@u
+0x00B3DBE6|??0SVGSurface@svg@drawbot@dvaui@@QEAA@AEBV0123@@Z
+0x00B3DC18|??0SVGSurface@svg@drawbot@dvaui@@QEAA@PEBUSupplierInterface@23@V?$RectT@M@geom@dvacore@@PEAVDrawbot@23@@Z
+0x00B3DC82|??0ScAcquireSurfaceHDC@drawbot@dvaui@@QEAA@AEBV012@@Z
+0x00B3DCB8|??0ScAcquireSurfaceHDC@drawbot@dvaui@@QEAA@PEAUSurfaceInterface@12@@Z
+0x00B3DCFE|??0ScAllowAccelerators@utility@dvaui@@QEAA@AEBV012@@Z
+0x00B3DD34|??0ScAllowAccelerators@utility@dvaui@@QEAA@V?$IntrusivePtr@VOS_Menu@utility@dvaui@@@RefCountedInterface@1dvacore@@_N@Z
+0x00B3DDAB|??0ScAllowShortcuts@utility@dvaui@@QEAA@AEBV012@@Z
+0x00B3DDDE|??0ScAllowShortcuts@utility@dvaui@@QEAA@V?$IntrusivePtr@VOS_Menu@utility@dvaui@@@RefCountedInterface@1dvacore@@_N@Z
+0x00B3DE52|??0ScBeginAndEndInteractiveChange@UI_InteractiveControlView@controls@dvaui@@QEAA@PEAV123@@Z
+0x00B3DEAE|??0ScDeferLayoutForOpenAndCloseRow@UI_MultiColumnTree@controls@dvaui@@QEAA@AEBV0123@@Z
+0x00B3DF05|??0ScDeferLayoutForOpenAndCloseRow@UI_MultiColumnTree@controls@dvaui@@QEAA@V?$IntrusivePtr@VUI_MultiColumnTree@controls@dvaui@@@RefCountedInterface@ut
+0x00B3DFAD|??0ScDestroyWindow@utility@dvaui@@QEAA@PEAUHWND__@@@Z
+0x00B3DFE3|??0ScEnableEraseBackgroundDrawing@OS_NodeManager@ui@dvaui@@QEAA@PEAV123@AEBVColorRGBA@drawbot@3@@Z
+0x00B3E046|??0ScLockAndUnlock@OS_OpenGLViewBase@ui@dvaui@@QEAA@AEBV0123@@Z
+0x00B3E086|??0ScLockAndUnlock@OS_OpenGLViewBase@ui@dvaui@@QEAA@V?$IntrusivePtr@VOS_OpenGLViewBase@ui@dvaui@@@RefCountedInterface@utility@dvacore@@@Z

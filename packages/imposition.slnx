@@ -3,6 +3,7 @@
     <Project Path="imposition-core/src/Imposition.Core/Imposition.Core.csproj" />
     <Project Path="imposition-core/tests/Imposition.Core.Tests/Imposition.Core.Tests.csproj" />
   </Folder>
+  <Folder Name="/imposition-core/src/" />
   <Folder Name="/imposition-grid-cli/">
     <Project Path="imposition-grid-cli/Imposition.GridCli.csproj" />
   </Folder>
@@ -10,6 +11,13 @@
     <Project Path="../sidecars/AutoImposerCLI/AutoImposerCLI.csproj" />
     <Project Path="../sidecars/IllustratorImposerCLI/IllustratorImposerCLI.csproj" />
     <Project Path="../sidecars/ImpositorKonica/ImpositorKonica.csproj" />
+  </Folder>
+  <Folder Name="/imposition-pdf/" />
+  <Folder Name="/imposition-pdf/src/">
+    <Project Path="imposition-pdf/src/Imposition.Pdf/Imposition.Pdf.csproj" />
+  </Folder>
+  <Folder Name="/imposition-pdf/tests/">
+    <Project Path="imposition-pdf/tests/Imposition.Pdf.Tests/Imposition.Pdf.Tests.csproj" />
   </Folder>
   <Folder Name="/sidecars-tests/">
     <Project Path="../sidecars/AutoImposerCLI/tests/AutoImposerCLI.Tests/AutoImposerCLI.Tests.csproj" />

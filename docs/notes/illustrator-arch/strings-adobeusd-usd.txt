@@ -1,0 +1,402 @@
+# strings adobeusd_usd.dll
+
+Arquivo: D:\Programas\Adobe Illustrator 2026\Support Files\Contents\Windows\adobeusd_usd.dll
+Filtros: AGM|PDFL|AdobePIE|UXP|CEP|ExtendScript|AMPS|svg|impos|prepress|csep|imposition|moire|rook|nebula|plugin|aip|GPU|DXGI|D3D|DirectX|Vulkan|OpenGL|adobeusd|usd|C2PA|cai|Content Credentials|sensei|neural|onnx|winml|tensorflow|dva|UI|panel (case-insensitive)
+Total unicos: 395
+Formato: offset_hex|snippet
+
+0x0034FE91|D$UI
+0x0056CC05|GP;Gpu
+0x0058B54B|D$uI
+0x0065AA1A|5!Ui
+0x0091C2D6|GpH9GPu
+0x00A55F20|Unknown exception
+0x00A560E0|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\object.h
+0x00A567A0|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\attribute.cpp
+0x00A56CD0|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\sdf\declareHandles.h
+0x00A56E70|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\base\tf\weakPtrFacade.h
+0x00A56ED0|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\base\tf\refPtr.h
+0x00A573A0|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\sdf\listProxy.h
+0x00A57520|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\sdf\listEditorProxy.h
+0x00A57E60|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\attributeQuery.cpp
+0x00A5DBD0|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\clip.cpp
+0x00A5F200|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\base\vt\array.h
+0x00A5F510|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\clipCache.cpp
+0x00A60B60|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\clipSet.cpp
+0x00A61ED0|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\clipSetDefinition.cpp
+0x00A61FA0|Invalid %s '%s' for prim <%s>. It must be of the form path/basename.###.usd or path/basename.###.###.usd. Note that the number of hash marks is variab
+0x00A62900|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\base\vt\dictionary.h
+0x00A63100|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\clipsAPI.cpp
+0x00A65980|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\prim.h
+0x00A65B80|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\collectionAPI.cpp
+0x00A67530|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\primRange.h
+0x00A67A60|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\collectionMembershipQuery.cpp
+0x00A685F0|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\sdf\predicateProgram.h
+0x00A68940|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\sdf\predicateLibrary.h
+0x00A6B1E0|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\colorSpaceAPI.cpp
+0x00A6B8D0|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\primData.h
+0x00A6C050|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\colorSpaceDefinitionAPI.cpp
+0x00A6CDF0|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\crateData.cpp
+0x00A6CE50|Saving usd binary file @%s@
+0x00A6E138|Opening usd binary asset @%s@
+0x00A6E400|When writing new Usd Crate files, write them as this version.  This must have the same major version as the software and have less or equal minor and 
+0x00A6F150|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\crateFile.cpp
+0x00A70AB0|Corrupt asset <%s>: exception thrown unpacking a value, returning an empty VtValue
+0x00A70F00|Usd crate bootstrap section corrupt
+0x00A70F30|Usd crate file version mismatch -- file is %s, software supports %s
+0x00A70F90|Usd crate file corrupt, possibly truncated: table of contents at offset %lld but file size is %lld
+0x00A7E4D0|SdfUnregisteredValue in crate file contains invalid type '%s' = '%s'; expected string, VtDictionary or SdfUnregisteredValueListOp; returning empty
+0x00A7E580|class pxrInternal_v0_25__pxrReserved__::SdfUnregisteredValue __cdecl pxrInternal_v0_25__pxrReserved__::Usd_CrateFile::CrateFile::_Reader<struct pxrInt
+0x00A7E6E0|class pxrInternal_v0_25__pxrReserved__::SdfUnregisteredValue __cdecl pxrInternal_v0_25__pxrReserved__::Usd_CrateFile::CrateFile::_Reader<struct pxrInt
+0x00A7E8A0|class pxrInternal_v0_25__pxrReserved__::SdfUnregisteredValue __cdecl pxrInternal_v0_25__pxrReserved__::Usd_CrateFile::CrateFile::_Reader<struct pxrInt
+0x00A81940|Corrupt asset <%s>: exception thrown unpacking a %s, returning a value-initialized object
+0x00A860A0|class std::vector<class pxrInternal_v0_25__pxrReserved__::SdfUnregisteredValue,class std::allocator<class pxrInternal_v0_25__pxrReserved__::SdfUnregis
+0x00A86330|class std::vector<class pxrInternal_v0_25__pxrReserved__::SdfUnregisteredValue,class std::allocator<class pxrInternal_v0_25__pxrReserved__::SdfUnregis
+0x00A86630|class std::vector<class pxrInternal_v0_25__pxrReserved__::SdfUnregisteredValue,class std::allocator<class pxrInternal_v0_25__pxrReserved__::SdfUnregis
+0x00A877D0|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\crateInfo.cpp
+0x00A87A68|USD API schema auto application details
+0x00A87A98|USD change processing
+0x00A87AB8|USD clip details
+0x00A87AD0|USD composition details
+0x00A87AF0|USD instancing diagnostics
+0x00A87B10|USD path resolution diagnostics
+0x00A87B38|USD payload load/unload messages
+0x00A87B60|USD prim ctor/dtor messages
+0x00A87B88|USD schema registration details.
+0x00A87BB0|USD stage cache details
+0x00A87BD0|USD stage ctor/dtor messages
+0x00A87BF8|USD stage opening details
+0x00A87C18|USD stage instantiation timing
+0x00A87C40|USD attribute variability validation
+0x00A87C70|USD trace of layers inspected as values are resolved
+0x00A881E0|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\editContext.cpp
+0x00A88B20|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\editTarget.cpp
+0x00A892C0|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\flattenUtils.cpp
+0x00A8AD50|class pxrInternal_v0_25__pxrReserved__::VtValue __cdecl pxrInternal_v0_25__pxrReserved__::_Reduce<class pxrInternal_v0_25__pxrReserved__::SdfUnregiste
+0x00A8B650|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\listEditImpl.h
+0x00A8B830|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\inherits.cpp
+0x00A8C730|bool __cdecl pxrInternal_v0_25__pxrReserved__::Usd_InstanceCache::RegisterInstancePrimIndex(const class pxrInternal_v0_25__pxrReserved__::PcpPrimIndex
+0x00A8C890|RegisterInstancePrimIndex
+0x00A8C8B0|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\instanceCache.cpp
+0x00A8C980|void __cdecl pxrInternal_v0_25__pxrReserved__::Usd_InstanceCache::UnregisterInstancePrimIndexesUnder(const class pxrInternal_v0_25__pxrReserved__::Sdf
+0x00A8CA40|UnregisterInstancePrimIndexesUnder
+0x00A8CD40|_prototypeToSourcePrimIndexMap.erase(prototypePath)
+0x00A8D470|prototypeToSourceIt != _prototypeToSourcePrimIndexMap.end()
+0x00A8D8A0|class pxrInternal_v0_25__pxrReserved__::SdfPath __cdecl pxrInternal_v0_25__pxrReserved__::Usd_InstanceCache::GetPathInPrototypeForInstancePath(const c
+0x00A8D998|GetPathInPrototypeForInstancePath
+0x00A8ED10|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\interpolators.cpp
+0x00A8F4A0|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\modelAPI.cpp
+0x00A8F540|UsdModelAPI::KindValidationNone
+0x00A8F568|UsdModelAPI::KindValidationModelHierarchy
+0x00A8FB40|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\namespaceEditor.cpp
+0x00A93D40|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\prim.cpp
+0x00A96820|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\primCompositionQuery.cpp
+0x00A988E0|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\primData.cpp
+0x00A989F0|const class pxrInternal_v0_25__pxrReserved__::PcpPrimIndex &__cdecl pxrInternal_v0_25__pxrReserved__::Usd_PrimData::GetSourcePrimIndex(void) const
+0x00A98AA0|GetSourcePrimIndex
+0x00A99200|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\primDefinition.cpp
+0x00A9A400|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\primFlags.cpp
+0x00A9A8F0|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\primRange.cpp
+0x00A9AD40|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\primTypeInfoCache.cpp
+0x00A9B270|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\property.cpp
+0x00A9CD30|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\relationship.cpp
+0x00A9DE30|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\resolveTarget.cpp
+0x00A9E360|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\resolver.cpp
+0x00A9EEC0|_GetMetadataFromPlugin
+0x00A9EEE0|class std::map<class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >,class pxrInternal_v0_25__pxrReserved__::JsValue
+0x00A9F190|Invalid schema kind name '%s' found for plugin metadata key '%s'.
+0x00A9F4C0|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\schemaRegistry.cpp
+0x00A9F810|Looking up generated schema for plugin %s at path %s. Generated schema %s.
+0x00A9F870|Failed to open schema layer at path '%s'. Any schemas defined in plugin library '%s' will not have valid prim definitions.
+0x00A9F910|class pxrInternal_v0_25__pxrReserved__::TfRefPtr<class pxrInternal_v0_25__pxrReserved__::SdfLayer> __cdecl pxrInternal_v0_25__pxrReserved__::_GetGener
+0x00A9FA70|Plugin metadata value for key '%s' does not hold a string array
+0x00A9FE58|CollectAddtionalAutoApplyAPISchemasFromPlugins
+0x00A9FE90|void __cdecl pxrInternal_v0_25__pxrReserved__::UsdSchemaRegistry::CollectAddtionalAutoApplyAPISchemasFromPlugins(class std::unordered_map<class pxrInt
+0x00AA01D0|Collecting additional auto apply API schemas from 'AutoApplyAPISchemas' metadata in plugin '%s' at path '%s'.
+0x00AA0260|Plugin '%s' is adding automatic application of API schema '%s' to the following schema types: [%s].
+0x00AA03E8|_InitializePrimDefsAndSchematicsForPluginSchemas
+0x00AA0430|void __cdecl pxrInternal_v0_25__pxrReserved__::UsdSchemaRegistry::_SchemaDefInitHelper::_InitializePrimDefsAndSchematicsForPluginSchemas(void)
+0x00AA18A8|Failed to find plugin for schema type '%s'
+0x00AA18E0|void __cdecl pxrInternal_v0_25__pxrReserved__::Usd_GetAPISchemaPluginApplyToInfoForType(const class pxrInternal_v0_25__pxrReserved__::TfType &,const c
+0x00AA2288|Usd_GetAPISchemaPluginApplyToInfoForType
+0x00AA2320|Metadata value for key '%s' for API schema type '%s' is not holding a dictionary. PlugInfo may need to be regenerated.
+0x00AA23B0|%s value for instance name '%s' for API schema type '%s' is not holding a dictionary. PlugInfo may need to be regenerated.
+0x00AA2450|class pxrInternal_v0_25__pxrReserved__::PlugPlugin *__cdecl pxrInternal_v0_25__pxrReserved__::TfWeakPtrFacade<class pxrInternal_v0_25__pxrReserved__::
+0x00AA2840|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\base\tf\instantiateSingleton.h
+0x00AA4110|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\stage.cpp
+0x00AA4278|UsdVariantFallbacks
+0x00AA4290|%s[UsdVariantFallbacks] was not a dictionary.
+0x00AA4740|%s[UsdVariantFallbacks] value for %s must be an arrays.
+0x00AAA740|Detected usd threading violation.  Concurrent changes to layer(s) composed in stage %p rooted at @%s@.  (serial=%zu, lastSerial=%zu).
+0x00AAD8E0|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\base\tf\iterator.h
+0x00AAFFD0|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\stage.h
+0x00AB2190|bool __cdecl pxrInternal_v0_25__pxrReserved__::_SetMappedValueForEditTarget<class pxrInternal_v0_25__pxrReserved__::UsdStage::_SetEditTargetMappedMeta
+0x00AB23F0|_SetMappedValueForEditTarget
+0x00AB3290|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\base\tf\notice.h
+0x00AB44B0|void __cdecl pxrInternal_v0_25__pxrReserved__::UsdStage::_GetAttrTypeImpl<struct pxrInternal_v0_25__pxrReserved__::`anonymous-namespace'::UntypedValue
+0x00AB46A0|void __cdecl pxrInternal_v0_25__pxrReserved__::UsdStage::_GetAttrVariabilityImpl<struct pxrInternal_v0_25__pxrReserved__::`anonymous-namespace'::Untyp
+0x00AB4850|void __cdecl pxrInternal_v0_25__pxrReserved__::UsdStage::_GetPropCustomImpl<struct pxrInternal_v0_25__pxrReserved__::`anonymous-namespace'::UntypedVal
+0x00AB4A00|void __cdecl pxrInternal_v0_25__pxrReserved__::_GetPrimTypeNameImpl<struct pxrInternal_v0_25__pxrReserved__::`anonymous-namespace'::UntypedValueCompos
+0x00AB4BA0|bool __cdecl pxrInternal_v0_25__pxrReserved__::_GetPrimSpecifierImpl<struct pxrInternal_v0_25__pxrReserved__::`anonymous-namespace'::UntypedValueCompo
+0x00AB73B0|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\base\ts\valueTypeDispatch.h
+0x00AE9A70|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\stageCache.cpp
+0x00AEB150|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\stagePopulationMask.cpp
+0x00AEBE90|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\typed.cpp
+0x00AEBF10|Default file format for new .usd files; either 'usda' or 'usdc'.
+0x00AEC1A0|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\usdFileFormat.cpp
+0x00AEDA20|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\usdcFileFormat.cpp
+0x00AEE5C0|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\usdzFileFormat.cpp
+0x00AEE900|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\usdzResolver.cpp
+0x00AEEB00|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\ar\threadLocalScopedCache.h
+0x00AEF1A0|class pxrInternal_v0_25__pxrReserved__::UsdEditTarget __cdecl pxrInternal_v0_25__pxrReserved__::UsdVariantSet::GetVariantEditTarget(const class pxrInt
+0x00AEF2F0|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\variantSets.cpp
+0x00AEF350|class pxrInternal_v0_25__pxrReserved__::UsdVariantSet __cdecl pxrInternal_v0_25__pxrReserved__::UsdVariantSets::GetVariantSet(const class std::basic_s
+0x00AEF940|C:\BFS\BFSAll\META\dist\git\adobe\thirdparty\USD\pxr\usd\usd\zipFile.cpp
+0x00B0C704|C:\BFS\BFSAll\META\dist\Spec_Desktop\msvs_win32\Release\x64\build\usd\modules_usd_usd\usdlib\adobeusd_usd.pdb
+0x00C126C2|adobeusd_usd.dll
+0x00C1EC27|?AddVariant@UsdVariantSet@pxrInternal_v0_25__pxrReserved__@@QEAA_NAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@W4UsdListPosition@2
+0x00C1ECC1|?AddVariantSet@UsdVariantSets@pxrInternal_v0_25__pxrReserved__@@QEAA?AVUsdVariantSet@2@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std
+0x00C1F136|?BlockVariantSelection@UsdVariantSet@pxrInternal_v0_25__pxrReserved__@@QEAA_NXZ
+0x00C201F2|?ClearVariantSelection@UsdVariantSet@pxrInternal_v0_25__pxrReserved__@@QEAA_NXZ
+0x00C20242|?CollectAddtionalAutoApplyAPISchemasFromPlugins@UsdSchemaRegistry@pxrInternal_v0_25__pxrReserved__@@SAXPEAV?$unordered_map@VTfToken@pxrInternal_v0_25_
+0x00C2592C|?GetAllVariantSelections@UsdVariantSets@pxrInternal_v0_25__pxrReserved__@@QEBA?AV?$map@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V
+0x00C2A631|?GetNames@UsdVariantSets@pxrInternal_v0_25__pxrReserved__@@QEBA?AV?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@
+0x00C2A711|?GetNames@UsdVariantSets@pxrInternal_v0_25__pxrReserved__@@QEBA_NPEAV?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocat
+0x00C2D277|?GetSourcePrimIndex@Usd_PrimData@pxrInternal_v0_25__pxrReserved__@@QEBAAEBVPcpPrimIndex@2@XZ
+0x00C2E640|?GetVariantEditContext@UsdVariantSet@pxrInternal_v0_25__pxrReserved__@@QEBA?AU?$pair@V?$TfWeakPtr@VUsdStage@pxrInternal_v0_25__pxrReserved__@@@pxrInte
+0x00C2E74A|?GetVariantEditTarget@UsdVariantSet@pxrInternal_v0_25__pxrReserved__@@QEBA?AVUsdEditTarget@2@AEBV?$TfWeakPtr@VSdfLayer@pxrInternal_v0_25__pxrReserved_
+0x00C2E7E9|?GetVariantNames@UsdVariantSet@pxrInternal_v0_25__pxrReserved__@@QEBA?AV?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allo
+0x00C2E8CF|?GetVariantSelection@UsdVariantSet@pxrInternal_v0_25__pxrReserved__@@QEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ
+0x00C2E95B|?GetVariantSelection@UsdVariantSets@pxrInternal_v0_25__pxrReserved__@@QEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEBV34@@Z
+0x00C2E9EF|?GetVariantSet@UsdPrim@pxrInternal_v0_25__pxrReserved__@@QEBA?AVUsdVariantSet@2@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z
+0x00C2EA83|?GetVariantSet@UsdVariantSets@pxrInternal_v0_25__pxrReserved__@@QEBA?AVUsdVariantSet@2@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std
+0x00C2EB1E|?GetVariantSets@UsdPrim@pxrInternal_v0_25__pxrReserved__@@QEBA?AVUsdVariantSets@2@XZ
+0x00C2F91D|?HasAuthoredValue@UsdAttribute@pxrInternal_v0_25__pxrReserved__@@QEBA_NXZ
+0x00C2F967|?HasAuthoredValue@UsdAttributeQuery@pxrInternal_v0_25__pxrReserved__@@QEBA_NXZ
+0x00C2F9B6|?HasAuthoredValueOpinion@UsdAttribute@pxrInternal_v0_25__pxrReserved__@@QEBA_NXZ
+0x00C2FA07|?HasAuthoredValueOpinion@UsdAttributeQuery@pxrInternal_v0_25__pxrReserved__@@QEBA_NXZ
+0x00C2FA5D|?HasAuthoredVariant@UsdVariantSet@pxrInternal_v0_25__pxrReserved__@@QEBA_NAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z
+0x00C2FAEB|?HasAuthoredVariantSelection@UsdVariantSet@pxrInternal_v0_25__pxrReserved__@@QEBA_NPEAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z
+0x00C3028D|?HasVariantSet@UsdVariantSets@pxrInternal_v0_25__pxrReserved__@@QEBA_NAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z
+0x00C31353|?IsKind@UsdModelAPI@pxrInternal_v0_25__pxrReserved__@@QEBA_NAEBVTfToken@2@W4KindValidation@12@@Z
+0x00C36C8E|?SetSelection@UsdVariantSets@pxrInternal_v0_25__pxrReserved__@@QEAA_NAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@0@Z
+0x00C3703B|?SetVariantSelection@UsdVariantSet@pxrInternal_v0_25__pxrReserved__@@QEAA_NAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z
+0x00C38603|?UsdFlattenLayerStackResolveAssetPathAdvanced@pxrInternal_v0_25__pxrReserved__@@YA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEBV
+0x00C45330|.?AVexception@std@@
+0x00C487B0|.?AVSdfUnregisteredValue@pxrInternal_v0_25__pxrReserved__@@
+0x00C48810|.?AV?$SdfListOp@VSdfUnregisteredValue@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C48C10|.?AV<lambda_94b98207595a74623af92c3ecded3d97>@@
+0x00C493E0|.?AV<lambda_12c7aa4957153b8d0eb6bda0aeeed3df>@@
+0x00C4D6F0|.?AV<lambda_e070731159495d2fa0c68a5e498d3d27>@@
+0x00C4DF60|.?AW4KindValidation@UsdModelAPI@pxrInternal_v0_25__pxrReserved__@@
+0x00C4E8D0|.?AV?$TfWeakPtr@VPlugPlugin@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C4F930|.?AV?$SdfAbstractDataConstTypedValue@VTfToken@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C4F9D0|.?AV?$SdfAbstractDataConstTypedValue@W4SdfVariability@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C4FA80|.?AV?$SdfAbstractDataTypedValue@VTfToken@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C4FE60|.?AV?$SdfAbstractDataTypedValue@USdfValueBlock@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C4FF00|.?AV?$SdfAbstractDataTypedValue@_N@pxrInternal_v0_25__pxrReserved__@@
+0x00C4FF70|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@_N@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C50010|.?AV?$SdfAbstractDataTypedValue@E@pxrInternal_v0_25__pxrReserved__@@
+0x00C50080|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@E@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C50120|.?AV?$SdfAbstractDataTypedValue@H@pxrInternal_v0_25__pxrReserved__@@
+0x00C50190|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@H@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C50230|.?AV?$SdfAbstractDataTypedValue@I@pxrInternal_v0_25__pxrReserved__@@
+0x00C502A0|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@I@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C50340|.?AV?$SdfAbstractDataTypedValue@_J@pxrInternal_v0_25__pxrReserved__@@
+0x00C503B0|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@_J@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C50450|.?AV?$SdfAbstractDataTypedValue@_K@pxrInternal_v0_25__pxrReserved__@@
+0x00C504C0|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@_K@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C50560|.?AV?$SdfAbstractDataTypedValue@Vhalf@pxr_half@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C50600|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@Vhalf@pxr_half@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxr
+0x00C506E0|.?AV?$SdfAbstractDataTypedValue@M@pxrInternal_v0_25__pxrReserved__@@
+0x00C50750|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@M@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C507F0|.?AV?$SdfAbstractDataTypedValue@N@pxrInternal_v0_25__pxrReserved__@@
+0x00C50860|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@N@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C50900|.?AV?$SdfAbstractDataTypedValue@VSdfTimeCode@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C509A0|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@VSdfTimeCode@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrRe
+0x00C50A80|.?AV?$SdfAbstractDataTypedValue@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C50B30|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@pxrInternal_v0_25__pxrReserved__@@@pxrIntern
+0x00C50C20|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@VTfToken@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserv
+0x00C50CF0|.?AV?$SdfAbstractDataTypedValue@VSdfAssetPath@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C50D90|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@VSdfAssetPath@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrR
+0x00C50E70|.?AV?$SdfAbstractDataTypedValue@VSdfOpaqueValue@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C50F10|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@VSdfOpaqueValue@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__px
+0x00C50FF0|.?AV?$SdfAbstractDataTypedValue@VSdfPathExpression@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C510A0|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@VSdfPathExpression@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25_
+0x00C51180|.?AV?$SdfAbstractDataTypedValue@VGfMatrix2d@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C51220|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@VGfMatrix2d@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrRes
+0x00C51300|.?AV?$SdfAbstractDataTypedValue@VGfMatrix3d@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C513A0|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@VGfMatrix3d@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrRes
+0x00C51480|.?AV?$SdfAbstractDataTypedValue@VGfMatrix4d@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C51520|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@VGfMatrix4d@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrRes
+0x00C51600|.?AV?$SdfAbstractDataTypedValue@VGfQuath@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C516A0|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@VGfQuath@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserv
+0x00C51770|.?AV?$SdfAbstractDataTypedValue@VGfQuatf@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C51810|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@VGfQuatf@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserv
+0x00C518E0|.?AV?$SdfAbstractDataTypedValue@VGfQuatd@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C51980|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@VGfQuatd@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserv
+0x00C51A50|.?AV?$SdfAbstractDataTypedValue@VGfVec2i@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C51AF0|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@VGfVec2i@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserv
+0x00C51BC0|.?AV?$SdfAbstractDataTypedValue@VGfVec2h@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C51C60|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@VGfVec2h@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserv
+0x00C51D30|.?AV?$SdfAbstractDataTypedValue@VGfVec2f@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C51DD0|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@VGfVec2f@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserv
+0x00C51EA0|.?AV?$SdfAbstractDataTypedValue@VGfVec2d@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C51F40|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@VGfVec2d@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserv
+0x00C52010|.?AV?$SdfAbstractDataTypedValue@VGfVec3i@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C520B0|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@VGfVec3i@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserv
+0x00C52180|.?AV?$SdfAbstractDataTypedValue@VGfVec3h@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C52220|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@VGfVec3h@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserv
+0x00C522F0|.?AV?$SdfAbstractDataTypedValue@VGfVec3f@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C52390|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@VGfVec3f@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserv
+0x00C52460|.?AV?$SdfAbstractDataTypedValue@VGfVec3d@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C52500|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@VGfVec3d@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserv
+0x00C525D0|.?AV?$SdfAbstractDataTypedValue@VGfVec4i@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C52670|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@VGfVec4i@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserv
+0x00C52740|.?AV?$SdfAbstractDataTypedValue@VGfVec4h@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C527E0|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@VGfVec4h@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserv
+0x00C528B0|.?AV?$SdfAbstractDataTypedValue@VGfVec4f@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C52950|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@VGfVec4f@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserv
+0x00C52A20|.?AV?$SdfAbstractDataTypedValue@VGfVec4d@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C52AC0|.?AV?$SdfAbstractDataTypedValue@V?$VtArray@VGfVec4d@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserv
+0x00C52C40|.?AV?$SdfAbstractDataTypedValue@W4SdfVariability@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C52CF0|.?AV?$SdfAbstractDataConstTypedValue@USdfValueBlock@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C531B0|.?AV?$SdfAbstractDataTypedValue@VVtDictionary@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C53250|.?AV?$SdfAbstractDataTypedValue@V?$SdfListOp@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@pxrInternal_v0_25__pxrReserved__@@@pxrInte
+0x00C53340|.?AV?$SdfAbstractDataConstTypedValue@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C53400|.?AV?$SdfAbstractDataConstTypedValue@_N@pxrInternal_v0_25__pxrReserved__@@
+0x00C53470|.?AV?$SdfAbstractDataConstTypedValue@V?$SdfListOp@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@pxrInternal_v0_25__pxrReserved__@@@px
+0x00C53560|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@VSdfAssetPath@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25_
+0x00C53640|.?AV?$SdfAbstractDataConstTypedValue@VSdfAssetPath@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C536F0|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@VGfVec2d@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrR
+0x00C537D0|.?AV?$SdfAbstractDataConstTypedValue@N@pxrInternal_v0_25__pxrReserved__@@
+0x00C557E0|.?AVTfBaseException@pxrInternal_v0_25__pxrReserved__@@
+0x00C60550|.?AV?$_Func_impl_no_alloc@V<lambda_12c7aa4957153b8d0eb6bda0aeeed3df>@@XUValueRep@Usd_CrateFile@pxrInternal_v0_25__pxrReserved__@@PEAVVtValue@4@@std@@
+0x00C619A0|.?AV?$_Func_impl_no_alloc@V<lambda_94b98207595a74623af92c3ecded3d97>@@XUValueRep@Usd_CrateFile@pxrInternal_v0_25__pxrReserved__@@PEAVVtValue@4@@std@@
+0x00C64990|.?AV?$_Func_impl_no_alloc@V<lambda_e070731159495d2fa0c68a5e498d3d27>@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEBVUsdFlattenReso
+0x00C66800|.?AV?$SdfAbstractDataTypedValue@V?$SdfListOp@VSdfPath@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrRese
+0x00C668E0|.?AV?$SdfAbstractDataTypedValue@V?$vector@VTfToken@pxrInternal_v0_25__pxrReserved__@@V?$allocator@VTfToken@pxrInternal_v0_25__pxrReserved__@@@std@@@st
+0x00C67E80|.?AV?$for_each_root_task@V?$_Vector_const_iterator@V?$_Vector_val@U?$_Simple_types@VSdfPath@pxrInternal_v0_25__pxrReserved__@@@std@@@std@@@std@@V<lamb
+0x00C67FE0|.?AV?$for_each_root_task_base@V?$_Vector_const_iterator@V?$_Vector_val@U?$_Simple_types@VSdfPath@pxrInternal_v0_25__pxrReserved__@@@std@@@std@@@std@@V
+0x00C68970|.?AU?$start_for@V?$blocked_range@_K@d1@detail@tbb@@V?$parallel_for_body_wrapper@V?$_Vector_const_iterator@V?$_Vector_val@U?$_Simple_types@VSdfPath@pxr
+0x00C692D0|.?AV?$SdfAbstractDataTypedValue@V?$SdfListOp@VTfToken@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrRese
+0x00C69730|.?AV?$SdfAbstractDataTypedValue@V?$map@NVVtValue@pxrInternal_v0_25__pxrReserved__@@U?$less@N@std@@V?$allocator@U?$pair@$$CBNVVtValue@pxrInternal_v0_25
+0x00C69850|.?AV?$SdfAbstractDataTypedValue@VTsSpline@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C698F0|.?AV?$SdfAbstractDataTypedValue@W4SdfSpecifier@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C69990|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@_N@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C69A40|.?AV?$SdfAbstractDataConstTypedValue@E@pxrInternal_v0_25__pxrReserved__@@
+0x00C69AB0|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@E@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C69B60|.?AV?$SdfAbstractDataConstTypedValue@H@pxrInternal_v0_25__pxrReserved__@@
+0x00C69BD0|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@H@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C69C80|.?AV?$SdfAbstractDataConstTypedValue@I@pxrInternal_v0_25__pxrReserved__@@
+0x00C69CF0|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@I@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C69DA0|.?AV?$SdfAbstractDataConstTypedValue@_J@pxrInternal_v0_25__pxrReserved__@@
+0x00C69E10|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@_J@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C69EC0|.?AV?$SdfAbstractDataConstTypedValue@_K@pxrInternal_v0_25__pxrReserved__@@
+0x00C69F30|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@_K@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C69FE0|.?AV?$SdfAbstractDataConstTypedValue@Vhalf@pxr_half@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C6A090|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@Vhalf@pxr_half@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25
+0x00C6A170|.?AV?$SdfAbstractDataConstTypedValue@M@pxrInternal_v0_25__pxrReserved__@@
+0x00C6A1E0|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@M@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C6A290|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@N@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C6A340|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@pxrInternal_v0_25__pxrReserved__@@@pxrI
+0x00C6A430|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@VTfToken@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrR
+0x00C6A510|.?AV?$SdfAbstractDataConstTypedValue@VSdfOpaqueValue@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C6A5C0|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@VSdfOpaqueValue@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_2
+0x00C6A6A0|.?AV?$SdfAbstractDataConstTypedValue@VGfMatrix2d@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C6A750|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@VGfMatrix2d@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__p
+0x00C6A830|.?AV?$SdfAbstractDataConstTypedValue@VGfMatrix3d@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C6A8E0|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@VGfMatrix3d@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__p
+0x00C6A9C0|.?AV?$SdfAbstractDataConstTypedValue@VGfMatrix4d@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C6AA70|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@VGfMatrix4d@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__p
+0x00C6AB50|.?AV?$SdfAbstractDataConstTypedValue@VGfQuath@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C6ABF0|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@VGfQuath@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrR
+0x00C6ACD0|.?AV?$SdfAbstractDataConstTypedValue@VGfQuatf@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C6AD70|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@VGfQuatf@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrR
+0x00C6AE50|.?AV?$SdfAbstractDataConstTypedValue@VGfQuatd@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C6AEF0|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@VGfQuatd@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrR
+0x00C6AFD0|.?AV?$SdfAbstractDataConstTypedValue@VGfVec2i@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C6B070|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@VGfVec2i@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrR
+0x00C6B150|.?AV?$SdfAbstractDataConstTypedValue@VGfVec2h@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C6B1F0|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@VGfVec2h@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrR
+0x00C6B2D0|.?AV?$SdfAbstractDataConstTypedValue@VGfVec2f@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C6B370|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@VGfVec2f@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrR
+0x00C6B450|.?AV?$SdfAbstractDataConstTypedValue@VGfVec2d@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C6B4F0|.?AV?$SdfAbstractDataConstTypedValue@VGfVec3i@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C6B590|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@VGfVec3i@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrR
+0x00C6B670|.?AV?$SdfAbstractDataConstTypedValue@VGfVec3h@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C6B710|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@VGfVec3h@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrR
+0x00C6B7F0|.?AV?$SdfAbstractDataConstTypedValue@VGfVec3f@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C6B890|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@VGfVec3f@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrR
+0x00C6B970|.?AV?$SdfAbstractDataConstTypedValue@VGfVec3d@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C6BA10|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@VGfVec3d@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrR
+0x00C6BAF0|.?AV?$SdfAbstractDataConstTypedValue@VGfVec4i@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C6BB90|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@VGfVec4i@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrR
+0x00C6BC70|.?AV?$SdfAbstractDataConstTypedValue@VGfVec4h@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C6BD10|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@VGfVec4h@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrR
+0x00C6BDF0|.?AV?$SdfAbstractDataConstTypedValue@VGfVec4f@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C6BE90|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@VGfVec4f@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrR
+0x00C6BF70|.?AV?$SdfAbstractDataConstTypedValue@VGfVec4d@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C6C010|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@VGfVec4d@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrR
+0x00C6C840|.?AV?$SdfAbstractDataConstTypedValue@VSdfTimeCode@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C6C8F0|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@VSdfTimeCode@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__
+0x00C6C9D0|.?AV?$SdfAbstractDataConstTypedValue@VSdfPathExpression@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C6CA80|.?AV?$SdfAbstractDataConstTypedValue@V?$VtArray@VSdfPathExpression@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v
+0x00C6CB70|.?AV?$SdfAbstractDataConstTypedValue@V?$map@NVVtValue@pxrInternal_v0_25__pxrReserved__@@U?$less@N@std@@V?$allocator@U?$pair@$$CBNVVtValue@pxrInternal_
+0x00C6CC90|.?AV?$SdfAbstractDataConstTypedValue@VVtDictionary@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C6CD40|.?AV?$SdfAbstractDataConstTypedValue@VTsSpline@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C6FA40|.?AV?$SdfAbstractDataConstTypedValue@W4SdfSpecifier@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C705B0|.?AV?$SdfAbstractDataTypedValue@V?$SdfListOp@H@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C70650|.?AV?$SdfAbstractDataTypedValue@V?$SdfListOp@_J@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C706F0|.?AV?$SdfAbstractDataTypedValue@V?$SdfListOp@I@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00C70790|.?AV?$SdfAbstractDataTypedValue@V?$SdfListOp@_K@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@
+0x00CEC5C6|?throw_exception@r1@detail@tbb@@YAXW4exception_id@d0@23@@Z
+0x00CF1F66|adobeusd_pcp.dll
+0x00CF306C|?ReplacePrefix@SdfPath@pxrInternal_v0_25__pxrReserved__@@QEBA?AV12@AEBV12@0_N@Z
+0x00CF75AC|??0SdfUnregisteredValue@pxrInternal_v0_25__pxrReserved__@@QEAA@XZ
+0x00CF75F0|??0SdfUnregisteredValue@pxrInternal_v0_25__pxrReserved__@@QEAA@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z
+0x00CF7676|??0SdfUnregisteredValue@pxrInternal_v0_25__pxrReserved__@@QEAA@AEBVVtDictionary@1@@Z
+0x00CF76CE|??0SdfUnregisteredValue@pxrInternal_v0_25__pxrReserved__@@QEAA@AEBV?$SdfListOp@VSdfUnregisteredValue@pxrInternal_v0_25__pxrReserved__@@@1@@Z
+0x00CF775E|??8SdfUnregisteredValue@pxrInternal_v0_25__pxrReserved__@@QEBA_NAEBV01@@Z
+0x00CF77AA|??6pxrInternal_v0_25__pxrReserved__@@YAAEAV?$basic_ostream@DU?$char_traits@D@std@@@std@@AEAV12@AEBVSdfUnregisteredValue@0@@Z
+0x00CFB19A|??0?$SdfListOp@VSdfUnregisteredValue@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@QEAA@XZ
+0x00CFB20E|?Swap@?$SdfListOp@VSdfUnregisteredValue@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@QEAAXAEAV12@@Z
+0x00CFB28C|?SetExplicitItems@?$SdfListOp@VSdfUnregisteredValue@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@QEAA_NAEBV?$vector@VSdfUnregi
+0x00CFB3E4|?SetPrependedItems@?$SdfListOp@VSdfUnregisteredValue@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@QEAA_NAEBV?$vector@VSdfUnreg
+0x00CFB53E|?SetAppendedItems@?$SdfListOp@VSdfUnregisteredValue@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@QEAA_NAEBV?$vector@VSdfUnregi
+0x00CFB696|?SetDeletedItems@?$SdfListOp@VSdfUnregisteredValue@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@QEAA_NAEBV?$vector@VSdfUnregis
+0x00CFB7EE|?ClearAndMakeExplicit@?$SdfListOp@VSdfUnregisteredValue@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@QEAAXXZ
+0x00CFB876|?SetAddedItems@?$SdfListOp@VSdfUnregisteredValue@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@QEAAXAEBV?$vector@VSdfUnregister
+0x00CFB98C|?SetOrderedItems@?$SdfListOp@VSdfUnregisteredValue@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@QEAAXAEBV?$vector@VSdfUnregist
+0x00CFBF12|??$?6VSdfUnregisteredValue@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@YAAEAV?$basic_ostream@DU?$char_traits@D@std@@@std@@AEA
+0x00CFD806|?ApplyOperations@?$SdfListOp@VSdfUnregisteredValue@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_v0_25__pxrReserved__@@QEBA?AV?$optional@V?$SdfListOp
+0x00D03DC6|?AppendVariantSelection@SdfPath@pxrInternal_v0_25__pxrReserved__@@QEBA?AV12@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@0@Z
+0x00D042EC|adobeusd_sdf.dll
+0x00D04904|?IsSupportedValueType@TsSpline@pxrInternal_v0_25__pxrReserved__@@SA_NVTfType@2@@Z
+0x00D04AA0|adobeusd_ts.dll
+0x00D04E0E|adobeusd_kind.dll
+0x00D0572E|adobeusd_ar.dll
+0x00D05740|?GetMetadata@PlugPlugin@pxrInternal_v0_25__pxrReserved__@@QEAA?AV?$map@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@VJsValue@pxrInter
+0x00D058D0|?GetMetadataForType@PlugPlugin@pxrInternal_v0_25__pxrReserved__@@QEAA?AV?$map@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@VJsValue@p
+0x00D05C5E|?GetPluginForType@PlugRegistry@pxrInternal_v0_25__pxrReserved__@@QEBA?AV?$TfWeakPtr@VPlugPlugin@pxrInternal_v0_25__pxrReserved__@@@2@VTfType@2@@Z
+0x00D05CF2|?GetAllPlugins@PlugRegistry@pxrInternal_v0_25__pxrReserved__@@QEBA?AV?$vector@V?$TfWeakPtr@VPlugPlugin@pxrInternal_v0_25__pxrReserved__@@@pxrInternal_
+0x00D05E18|adobeusd_plug.dll
+0x00D0613A|adobeusd_work.dll
+0x00D0FD34|adobeusd_vt.dll
+0x00D0FDEA|adobeusd_trace.dll
+0x00D101BE|adobeusd_js.dll
+0x00D112D0|adobeusd_gf.dll
+0x00D1293E|??1TfBaseException@pxrInternal_v0_25__pxrReserved__@@UEAA@XZ
+0x00D12C44|?what@TfBaseException@pxrInternal_v0_25__pxrReserved__@@UEBAPEBDXZ
+0x00D12DF4|??0TfBaseException@pxrInternal_v0_25__pxrReserved__@@QEAA@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z
+0x00D12E74|?_ThrowImpl@TfBaseException@pxrInternal_v0_25__pxrReserved__@@CAXAEBVTfCallContext@2@AEAV12@V?$TfFunctionRef@$$A6AXXZ@2@H@Z
+0x00D1439E|adobeusd_tf.dll
+0x00D14B58|adobeusd_arch.dll
+0x00D14C32|?uncaught_exception@std@@YA_NXZ
+0x00D15C54|__std_exception_copy
+0x00D15C6C|__std_exception_destroy
+0x00D15C86|_CxxThrowException
+0x00D15D36|__current_exception
+0x00D15D4C|__current_exception_context
+0x00D161AE|UnhandledExceptionFilter
+0x00D161CA|SetUnhandledExceptionFilter

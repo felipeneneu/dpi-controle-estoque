@@ -1,0 +1,152 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- PALETA -->
+    <SolidColorBrush x:Key="Chrome" Color="#F0F0F0" />
+    <SolidColorBrush x:Key="Painel" Color="#F5F5F5" />
+    <SolidColorBrush x:Key="FundoConteudo" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="CanvasBg" Color="#F5F1D6" />
+    <SolidColorBrush x:Key="HeaderSecao" Color="#E8E8E8" />
+    <SolidColorBrush x:Key="BordaPadrao" Color="#C0C0C0" />
+    <SolidColorBrush x:Key="BordaForte" Color="#8A8A8A" />
+    <SolidColorBrush x:Key="TextoPrimario" Color="#1E1E1E" />
+    <SolidColorBrush x:Key="TextoSecundario" Color="#6E6E6E" />
+    <SolidColorBrush x:Key="TextoDesabilitado" Color="#A0A0A0" />
+    <SolidColorBrush x:Key="Accent" Color="#1473E6" />
+    <SolidColorBrush x:Key="AccentHover" Color="#0D66D0" />
+    <SolidColorBrush x:Key="AccentSoft" Color="#D6E4F5" />
+    <SolidColorBrush x:Key="BrandMagenta" Color="#EC008C" />
+    <SolidColorBrush x:Key="Erro" Color="#D7373F" />
+    <SolidColorBrush x:Key="Sucesso" Color="#2D9D78" />
+
+    <!-- ESTILOS GERAIS (Zero CornerRadius, Sem Sombras) -->
+    <Style TargetType="Button" x:Key="FlatButton">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource TextoPrimario}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="8,2"/>
+        <Setter Property="Height" Value="26"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{StaticResource HeaderSecao}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Background" Value="{StaticResource BordaPadrao}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{StaticResource TextoDesabilitado}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Button" x:Key="PrimaryActionBtn">
+        <Setter Property="Background" Value="{StaticResource TextoPrimario}"/>
+        <Setter Property="Foreground" Value="{StaticResource FundoConteudo}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Height" Value="28"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#000000"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Background" Value="#9A9A9A"/>
+                            <Setter Property="Foreground" Value="#E0E0E0"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Button" x:Key="ToolBtn">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource TextoPrimario}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="Width" Value="32"/>
+        <Setter Property="Height" Value="32"/>
+        <Setter Property="Margin" Value="0,0,0,1"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#E0E0E0"/>
+                        </Trigger>
+                        <!-- Active state handled in DataTriggers on the element -->
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="TextBox">
+        <Setter Property="Background" Value="{StaticResource FundoConteudo}"/>
+        <Setter Property="Foreground" Value="{StaticResource TextoPrimario}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BordaPadrao}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Height" Value="24"/>
+        <Setter Property="Padding" Value="4"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                        <ScrollViewer x:Name="PART_ContentHost"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="DataGrid">
+        <Setter Property="Background" Value="{StaticResource FundoConteudo}"/>
+        <Setter Property="RowBackground" Value="{StaticResource FundoConteudo}"/>
+        <Setter Property="AlternatingRowBackground" Value="#FAFAFA"/>
+        <Setter Property="GridLinesVisibility" Value="None"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BordaPadrao}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="RowHeight" Value="22"/>
+        <Setter Property="HeadersVisibility" Value="Column"/>
+    </Style>
+
+    <Style TargetType="DataGridColumnHeader">
+        <Setter Property="Background" Value="{StaticResource HeaderSecao}"/>
+        <Setter Property="Foreground" Value="{StaticResource TextoPrimario}"/>
+        <Setter Property="Height" Value="22"/>
+        <Setter Property="FontSize" Value="10"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Padding" Value="4,0"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BordaPadrao}"/>
+        <Setter Property="BorderThickness" Value="0,0,1,1"/>
+    </Style>
+
+</ResourceDictionary>

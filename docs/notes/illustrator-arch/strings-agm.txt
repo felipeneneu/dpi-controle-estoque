@@ -1,0 +1,2007 @@
+# strings AGM.dll
+
+Arquivo: D:\Programas\Adobe Illustrator 2026\Support Files\Contents\Windows\AGM.dll
+Filtros: AGM|PDFL|AdobePIE|UXP|CEP|ExtendScript|AMPS|svg|impos|prepress|csep|imposition|moire|rook|nebula|plugin|aip|GPU|DXGI|D3D|DirectX|Vulkan|OpenGL|adobeusd|usd|C2PA|cai|Content Credentials|sensei|neural|onnx|winml|tensorflow|dva|UI|panel (case-insensitive)
+Total unicos: 2000
+Formato: offset_hex|snippet
+
+0x00040FA7|HcEpH
+0x0033C095|L9*usD
+0x00434604|gH9O ui
+0x00584BC8|McEPL
+0x00584C48|McEPC
+0x005B2121|{ UI
+0x006230F8|AGMPrint
+0x00623168|AGMPrintDeviceControllerImpl
+0x006231D0|AGMPrintDeviceController::FindPSResource - not a PSDeviceController
+0x00623220|AGMPrintDeviceController::RegisterPSResource - not a PSDeviceController
+0x00623270|AGMPrintDeviceController::QueryPrinterRes - not a PSDeviceController
+0x006232C0|AGMPrintDeviceController::FontResStatusChng - not a PSDeviceController
+0x00623348|AGMPrintDeviceControllerMakePSVMAvail
+0x00623380|AGMPrintDeviceControllerMakePSVMAvailV2
+0x006233B8|AGMPrintDeviceControllerFindPSResource
+0x006233F8|AGMPrintDeviceControllerRegisterPSResource
+0x00623438|AGMPrintDeviceControllerGetASCIIStream
+0x00623470|AGMPrintDeviceControllerGetBinaryStream
+0x006234A8|AGMPrintDeviceControllerGetCanDoBinary
+0x006234E0|AGMPrintDeviceControllerSetCanDoBinary
+0x00623520|AGMPrintDeviceControllerGetTTFontDownload
+0x00623568|AGMPrintDeviceControllerGetTTCIDFontAsType2
+0x006235B0|AGMPrintDeviceControllerGetDownloadAsianFonts
+0x006235F8|AGMPrintDeviceControllerGetPSFontDownload
+0x00623640|AGMPrintDeviceControllerGetPSSupportLevel
+0x00623688|AGMPrintDeviceControllerSetPSSupportLevel
+0x006236C8|AGMPrintDeviceControllerGetPSVersion
+0x00623700|AGMPrintDeviceControllerQueryPrinterResV2
+0x00623748|AGMPrintDeviceControllerFontResStatusChng
+0x00623790|AGMPrintDeviceControllerFontResStatusChngV2
+0x006237D0|AGMPrintDeviceControllerGetProgress
+0x00623808|AGMPrintDeviceControllerAbortJob
+0x00623850|AGMPrintDeviceControllerGetFontSubstitutionPolicy
+0x006238A0|AGMPrintDeviceControllerEmitType3GlyphDesc
+0x006238F8|AGMPrintMarksInterface
+0x006239B8|AGMPrintMarksImpl
+0x00623A60|AGMPrintMarksNewProc
+0x00623A80|AGMPrintMarksNewV2Proc
+0x00623AA8|AGMPrintMarksMarkInfoProc
+0x00623AD0|AGMPrintMarksDrawProc
+0x00623AF0|AGMPrintMarksDrawV2Proc
+0x00623B40|Exception occurred while allocating memory in BIBLazyObjectPointer
+0x00623BC0|AGMPrintPSResInfoInterface
+0x00623BE0|AGMNewPrintPSResInfoInterface
+0x00623C40|Unknown exception
+0x00623E08|AGM internal:  
+0x00623E28|AGMPrintPSResInfoClientImpl
+0x00623E70|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\print\inc\PSResInfoClientObj.h
+0x00623F08|AGMPrintPSResInfoFontNeeded
+0x00623F38|AGMPrintPSResInfoFontSupplied
+0x00623F68|AGMPrintPSResInfoProcNeeded
+0x00623F98|AGMPrintPSResInfoProcSupplied
+0x00623FC0|AGMPrintPSResInfoInk
+0x00623FE0|AGMPrintPSResInfoNInk
+0x00624008|AGMPrintPSResInfoRGBColor
+0x00624038|AGMPrintPSResInfoCMYKCustomColor
+0x00624078|AGMPrintPSResInfoCMYKProcessColor
+0x006240B8|AGMPrintPSResInfoProcessColorsUsed
+0x006240F0|AGMPrintPSResInfoGetClient
+0x00624128|AGMNewPrintPSResInfoClientProc
+0x00624148|AGMGDIPortInterface
+0x00624190|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\edge\win\WinPort.h
+0x00624220|AGMGDIPortNewColorSpaceWinGDIPortProc
+0x00624258|AGMGDIPortIsWinGDIPortProc
+0x00624280|AGMGDIPortSetHDCProc
+0x006242A8|AGMGDIPortSetColorSpaceProc
+0x006242E8|AGMGDIPortSetSmoothShadeResolutionProc
+0x00624320|AGMGDIPortSetProgressProc
+0x00624390|AGMPrintRecordInterface
+0x006243F8|AGMPrintRecordImpl
+0x00624558|AGMPrintRecordGetPrintRecordDictProc
+0x00624598|AGMPrintRecordUpdatePrintRecordDictProc
+0x006245C8|AGMPrintRecordFlattenProc
+0x00624608|AGMPrintRecordGetPrintEnvironmentVariablesProc
+0x00624660|AGMPrintRecordUpdateDynamicPassthroughKeyInDevModeProc
+0x00624B08|AGMPrintSessionInterface
+0x00624B58|AGMPrintParamsFactoryInterface
+0x00624B78|AGMPPDFactoryInterface
+0x00624BB8|Math overflow exception
+0x00624CA0|AGMPrintSessionImpl
+0x00624CB8|GetAGMPrintSession
+0x00624CD0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\bibimpl\AGMPrintSessionImpl.h
+0x00624E38|AGMPrintSessionNewProc
+0x00624E68|AGMPrintSessionShowOSPrintDialogProc
+0x00624EA8|AGMPrintSessionBeginPrintPrintRecProcV1
+0x00624EE8|AGMPrintSessionNewDefaultPrintRecordProc
+0x00624F28|AGMPrintSessionBeginPrintProcV1
+0x00624F60|AGMPrintSessionSetPrintPageParamsProcV1
+0x00624FA0|AGMPrintSessionGetNextPrintEventProc
+0x00624FD8|AGMPrintSessionNewPrintRecordProc
+0x00625010|AGMPrintSessionNewPrintRecordProcV1
+0x00625050|AGMPrintSessionNewPrintRecordDCProcV1
+0x00625090|AGMPrintSessionNewPrintRecordDCProcV2
+0x006250D0|AGMPrintSessionEnablePDFPortPrintProc
+0x00625110|AGMPrintSessionRestorePrintRecordProc
+0x00625158|AGMPrintSessionGetExportFeatureAvailDictProc
+0x006251A8|AGMPrintSessionGetDirectFeatureAvailDictProc
+0x006251F0|AGMPrintSessionGetAvailablePPDFilesProc
+0x00625230|AGMPrintSessionGetAvailablePPDFilesProcV2
+0x00625278|AGMPrintSessionCreatePrinterListDictProc
+0x006252C0|AGMPrintSessionPreflightPrintRecProc
+0x006252F8|AGMPrintSessionPreflightProc
+0x00625330|AGMPrintSessionRegisterResourcesProc
+0x00625370|AGMPrintSessionIsPrinterPostScriptWProc
+0x006253B0|AGMPrintSessionShowOSPageSetUpDialogProc
+0x006253F0|AGMPrintSessionIsPrinterXingWProc
+0x00625428|AGMPrintSessionCanConsumePDFProcV2
+0x00625478|AGMPrintSessionIsUniversalPassthroughFlagEnabledProc
+0x006254D0|AGMPrintSessionDoIPPPDFPassthroughPrintingProc
+0x00625520|AGMPrintSessionGetIPPPrinterPDFSupportLevelProc
+0x00625560|AGMPrintSessionIsPDFDriverProc
+0x00625590|AGMPrintSessionIsPDFDriverProcV2
+0x006255C8|AGMPrintSessionCanConsumePDFProc
+0x00625608|AGMPrintSessionIsPrinterPostScriptUtf8Proc
+0x00625650|AGMPrintSessionIsPrinterXingUtf8Proc
+0x00625690|AGMPrintSessionCanConsumePDFUtf8ProcV2
+0x006256E0|AGMPrintSessionIsPrinterIPPPDLPassthroughEnabledProc
+0x00625728|AGMPrintSessionIsPDFDriverUtf8Proc
+0x00625768|AGMPrintSessionIsPDFDriverUtf8ProcV2
+0x00625790|AGMPrintSessionNewPrintRecordDCProc
+0x006257B8|AGMPrintSessionSetPrintPageParamsProc
+0x00625800|AGMPrintParamsFactoryCreateDefaultPrintJobParamsProc
+0x00625860|AGMPrintParamsFactoryCreateDefaultPrintJobParamsNonPSProc
+0x006258C0|AGMPrintParamsFactoryCreateDefaultPrintPageParamsProc
+0x00625910|AGMPPDFactoryCreatePPDFromPPDFileProc
+0x00625950|AGMPPDFactoryCreatePPDFileInfoProc
+0x00625A47|CAGMPrintTrapPreviewerInterface
+0x00625AB8|AGMPrintTrapPreviewerNewTrapGeneratorProc
+0x00625B00|AGMPrintTrapPreviewerGetTrapRecorderForPage
+0x00625B48|AGMPrintTrapPreviewerComputeAndInjectTraps
+0x00625BE0|MapColorSpaceAndValue
+0x00625BF8|GPInkMgrUtilsMapColorSpaceAndValueProc
+0x00625D18|GPInkMgrUtilsValidateNChannelColorSpaceProc
+0x00627ED0|UsesAGMColorConversion
+0x00627EE8|GPColorConvSegmentUsesAGMColorConversion
+0x00628498|InstallInAGMPort
+0x006284B0|GPLineMgrInstallInAGMPort
+0x006288E6|@@AGMTrapRecorderPortInterface
+0x00628930|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\trapping\inc\TrapRecorderPort.h
+0x006289C8|AGMTrapRecorderPortNewPortProcV4
+0x00628A08|AGMTrapRecorderPortGetTrapDisplayListProc
+0x00628A58|AGMTrapRecorderPortGetATRTransParencyTrappingDataProc
+0x00628A90|AGMTrapRecorderPortNewPortProc
+0x00628AB0|AGMTrapRecorderPortNewPortProcV2
+0x00628AD8|AGMTrapRecorderPortNewPortProcV3
+0x00628B18|AGMKill called
+0x00628B28|AGMInitialize called
+0x00628B68|AGMTerminate called
+0x00628BA0|StartAGMCompositingTime
+0x00628BB8|EndAGMCompositingTime
+0x00628BE0|AGM bad param:  
+0x00628BF8|AGM_ENABLE_LOGS
+0x00628C50|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\ImageObj.h
+0x00628D48|Unknown GPU exception
+0x00628D60|AGMGPU
+0x00628D68|AI_AGM_ENABLE_EXCEPTION_LOGS
+0x00628D88|AGMGPU eom:  
+0x00628DB0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\Compositor.h
+0x00629800|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\ports\CompositorGE.cpp
+0x00629940|AGM Logs
+0x00629FD8|#define computeAndEmitVertex(candidateVertex, candidateVertexIndex, candidateVertexUserSpacePos) gl_Position = candidateVertex; computeAreas; varying_
+0x0062A1D0|#define computeVaryingsFast(isLineSegOrDegenerate, sourceVertexIndex, sourceVertexUserSpacePos) computeVaryingFastCommon(isLineSegOrDegenerate, indexT
+0x0062BDE2|#define computeVaryingsFast(isLineSegOrDegenerate, sourceVertexIndex, sourceVertexUserSpacePos) computeVaryingFastCommon(isLineSegOrDegenerate, radial
+0x0062DA0E|#define computeVaryingsFast(isLineSegOrDegenerate, sourceVertexIndex, sourceVertexUserSpacePos) computeVaryingFastCommon(isLineSegOrDegenerate, radial
+0x0062F768|#define computeVaryingsFast(isLineSegOrDegenerate, sourceVertexIndex, sourceVertexUserSpacePos) varying_core_texCoord1.s = dot(g_mTexture13, sourceVer
+0x00631552|#define computeVaryingsFast(isLineSegOrDegenerate, sourceVertexIndex, sourceVertexUserSpacePos) varying_core_texCoord1.s = dot(g_mTexture13, sourceVer
+0x006332EA|#define computeVaryingsFast(isLineSegOrDegenerate, sourceVertexIndex, sourceVertexUserSpacePos) varying_core_texCoord1.s = dot(g_mTexture13, sourceVer
+0x0063508E|#define computeVaryingsFast(isLineSegOrDegenerate, sourceVertexIndex, sourceVertexUserSpacePos) varying_core_texCoord1.s = dot(g_mTexture13, sourceVer
+0x00638C6A|#define computeVaryingsFast(isLineSegOrDegenerate, sourceVertexIndex, sourceVertexUserSpacePos) varying_core_texCoord1.s = dot(g_mTexture13, sourceVer
+0x0063AAB5|#define computeVaryingsFast(isLineSegOrDegenerate, sourceVertexIndex, sourceVertexUserSpacePos) computeVaryingFastCommon(isLineSegOrDegenerate, varyin
+0x0063C909|#define computeVaryingsFast(isLineSegOrDegenerate, sourceVertexIndex, sourceVertexUserSpacePos) computeVaryingFastCommon(isLineSegOrDegenerate, varyin
+0x0063E63A|#define computeVaryingsFast(isLineSegOrDegenerate, sourceVertexIndex, sourceVertexUserSpacePos) computeVaryingFastCommon(isLineSegOrDegenerate, varyin
+0x006403DB|#define computeVaryingsFast(isLineSegOrDegenerate, sourceVertexIndex, sourceVertexUserSpacePos) computeVaryingFastCommon(isLineSegOrDegenerate, varyin
+0x00641A40|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\InternalTypes.h
+0x00641AF0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\Graphic.h
+0x00641B68|fMetadataType == kAGMGraphicMetadataDict
+0x00641BC0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\StackUtils.h
+0x00641CA0|AGMGPU internal:  
+0x00641CB8|AGMGPU not supported:  
+0x00641DE8|AGMGLWrapper::AGMGL_glLoadMatrixf(matrix)
+0x00642270|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\GraphixGPUPort.h
+0x006429B8|AGMGLWrapper::AGMGL_glActiveTexture(GL_TEXTURE0_GLENUM)
+0x00642A20|::glTexSubImage2D(target, 0, 0, 0, lockWidth, lockHeight, AGPU_Device<AGPU_OGL>::IsUsingOpenGLCoreProfile() ? GL_RED : GL_LUMINANCE, GL_UNSIGNED_BYTE,
+0x00642B50|AGMGLWrapper::AGMGL_glUniform4fv(GLSL_LEGACY_UNIFORM_LOCATION_NCHANNEL_COLOR, CurGPUContext()->m_numColorPlanes, &colorData[0])
+0x00642BE0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\ports\GraphixGEPort.cpp
+0x00642CC0|GPU port does not support After Effects blend modes
+0x00642F00|GraphixGEPort<TApi>::AttemptStartKnockoutElementInternal:curGPUCtxt is NULL
+0x00642F50|GraphixGEPort<TApi>::AttemptStartKnockoutElementInternal:prevGPUCtxt is NULL
+0x00643230|GPUAtlasTextureAlloc
+0x00643250|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\ports\GEAtlasTexture.cpp
+0x00643310|::glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA8, m_texWidth, 0, AGPU_ARGB_FORMAT, AGPU_ARGB_TYPE, NULL)
+0x006436A0|::glTexSubImage1D(target, 0, xoffset, width, AGPU_ARGB_FORMAT, AGPU_ARGB_TYPE, m_buffer.GetBuffer() )
+0x00643748|AGMGLWrapper::AGMGL_glActiveTexture(GL_TEXTURE0_GLENUM + unit)
+0x006437D8|AGMGLWrapper::AGMGL_glActiveTexture(GL_TEXTURE0_GLENUM + u)
+0x00643910|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\GraphixPort.h
+0x00643C30|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\ports\GraphixPort.cpp
+0x00644030|AI_GPU_AUTOMATION
+0x00644050|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\ports\Compositor.cpp
+0x00644398|StartAGMCompositing
+0x006443B0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\ports\CompositorCPU.cpp
+0x00644410|CompositorCPU::StartAGMCompositing failed to StartDrawing
+0x00644450|GetEmptyGPUImage
+0x00644468|Cannot create GPUImage from CPU Compositor
+0x00644688|GetGPUTextureName
+0x006446A0|Function valid only for ImageGPU, check for IsGPUImage & if it is implemented for the platform before calling 
+0x00644730|AGMGLWrapper::AGMGL_glUniformMatrix3fv((GLint)param, 1, false, m.data)
+0x00644780|AGMGLWrapper::AGMGL_glUniformMatrix4fv((GLint)param, 1, false, m.data)
+0x006447C8|AGMGLWrapper::AGMGL_glUniform1i((GLint)param, v)
+0x00644800|AGMGLWrapper::AGMGL_glUniform1f((GLint)param, v)
+0x00644838|AGMGLWrapper::AGMGL_glUniform2f((GLint)param, v[0], v[1])
+0x00644880|AGMGLWrapper::AGMGL_glUniform4f((GLint)param, v[0], v[1], v[2], v[3])
+0x006448C8|AGMGLWrapper::AGMGL_glUniform4fv((GLint)param, count, v)
+0x006449E0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\OpenGLVBO.h
+0x00644E10|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\ports\CompositorOGL.cpp
+0x00644E98|Unsupported OpenGL
+0x00644EB0|Can't initalize OpenGL context with null HWND
+0x00644F28|CompositorOGL::InitializeDevice Could not initialize OpenGL
+0x00644F68|AGMGLWrapper::AGMGL_glUseProgram(0)
+0x00644F90|AI_AGM_MSAA_SAMPLES
+0x00644FB8|OpenGL Error
+0x00644FC8|GetGPUCompositorImage
+0x00645140|Refresh Image must be GPU Image
+0x00645180|::glReadPixels(srcBounds.xMin, y, Width(srcBounds), 1, AGPU_ARGB_FORMAT, AGPU_ARGB_TYPE, ptr)
+0x006455C0|::glReadPixels(0, 0, w, h, AGPU_ARGB_FORMAT, AGPU_ARGB_TYPE, buf.GetBuffer())
+0x00646790|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\GEShaderRegistry.h
+0x006471E8|CAIMDictionary::SetValue(), Received NULL fVTab
+0x00647680|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\ports\GStateToGraphixPort.cpp
+0x00647750|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\image\AVRegionWin.cpp
+0x006477F0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\paths\TessellatorVertexFormat.cpp
+0x00647910|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\GeometryCache.h
+0x00647AD0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\Reducer.h
+0x00647C00|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\paths\Reducer.cpp
+0x00647CC0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\general\AGMThreads.cpp
+0x00647E50|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\edge\win\WindowsMarker.cpp
+0x00648030|CAGMPort::NewPath(), Received NULL fVTab
+0x00648118|GetAGMPort
+0x00648130|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\BasePort.h
+0x00648580|AGM_WINGLOBAL_DATA
+0x006485A0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\edge\win\WinPort.cpp
+0x00648610|WPSetWindowsPolyFillModeFromAGMPolyFillMode
+0x00648670|WPAGMLineCapToNTLineCap
+0x00648698|WPAGMLineJoinToNTLineJoin
+0x006487E0|PatternFillPath:Unexpected Byte Order - requires BGRA kAGMCsSwapComponents
+0x00648890|(fOwner->GetDstColorSpace()->GetFamily() == kAGMCsRGB) || (fOwner->GetDstColorSpace()->GetFamily() == kAGMCsGray)
+0x00648A38|RasterizePathWithAGM
+0x00648B38|AGMWinCompareRect
+0x00648B50|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\edge\win\AGMWindo.cpp
+0x00648BB8|AGMWinGetWindowsRegionFromMask
+0x00648C40|DoDCImage:Unexpected Byte Order - requires BGRA kAGMCsSwapComponents
+0x00648E20|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\image\GPUConvertImage.cpp
+0x00649278|ACEParameterProc
+0x006492E0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\image\GPUImage.cpp
+0x00649470|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\image\GPUImageRenderer.cpp
+0x006495F0|MTLImageTODO: Unsupported DrawImageGeneral::kGPUMarkImageAttrib_MarkToXYZ
+0x00649640|MTLImageTODO: Unsupported DrawImageGeneral::kGPUMarkImageAttrib_IsGPUOPP
+0x00649880|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\Tessellator.h
+0x00649A90|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\ports\GraphixGPUPort.cpp
+0x00649BB8|AI_AGM_ENABLE_CSR
+0x00649D40|GraphixGPUPort::StartClipGroupInternal : No path provided to start clip
+0x00649D90| GraphixGPUPort::StartClipGroupInternal : No path provided to start clip
+0x00649DE0|Unsupported GraphixGPUPort::AttemptStartKnockoutElementNV
+0x00649E40|GraphixGPUPort::AttemptStartKnockoutElement:prevCtxt is NULL
+0x00649E80|Shape alpha not supported by AGM GPU
+0x00649EE8|GetAdvancedPort
+0x0064A2C0|AGMGLWrapper::AGMGL_glBindFramebuffer(GL_READ_FRAMEBUFFER_GLENUM, _fbo->GetName())
+0x0064A320|AGMGLWrapper::AGMGL_glBlitFramebuffer(x, y, x + width, y + height, xoffset, yoffset, xoffset + width, yoffset + height, GL_COLOR_BUFFER_BIT, GL_NEARES
+0x0064A690|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\ports\GraphixOpenGLPort.cpp
+0x0064A728|CPU Image not supported in OpenGL port
+0x0064A750|Layer Image must be GPU Image
+0x0064A870|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\ScratchBuffer.h
+0x0064A8C8|Head of checkpoint and AGMScratchBuffer mismatch!
+0x0064AC90|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\GECaches.h
+0x0064AF80|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\paths\GPUPath.cpp
+0x0064B090|GPUPath::GetUniformMatrix portType did not match
+0x0064B350|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\paths\GPUQueue.cpp
+0x0064B3B0|GPUQueueTessellate::Consolidate() - unsupported kTessellateItemAttrib_CanDoNVPath attribute used
+0x0064B5D8|UpdateTextureCache(): GraphixGPUPort can't be null
+0x0064B880|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\InstanceMarkInfo.h
+0x0064BA10|AGMGLWrapper::AGMGL_glDrawArraysInstanced(primitiveType, startingIndex, numIndices, numInstancesToDraw)
+0x0064BC60|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\paths\OpenGLVBO.cpp
+0x0064BFE0|AGMGLWrapper::AGMGL_glDrawArraysInstanced(m_PrimitiveType, 0, verticesInOneInstance, numInstancesToDraw)
+0x0064C050|AGMGLWrapper::AGMGL_glDrawArraysInstanced(m_PrimitiveType, 0, verticesInOneInstance, GetVertexCount())
+0x0064C138|::glBindBuffer( GL_ARRAY_BUFFER, _pVertexBufferD3D )
+0x0064C208|::glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _pIndexBufferD3D )
+0x0064C2F8|::glGenBuffers( 1, &_pVertexBufferD3D )
+0x0064C320|::glDeleteBuffers(1, &_pVertexBufferD3D)
+0x0064C350|::glGenBuffers( 1, &_pIndexBufferD3D )
+0x0064C378|::glDeleteBuffers(1, &_pIndexBufferD3D)
+0x0064C3A0|::glBufferSubData(GL_ARRAY_BUFFER, 0, (_nPrimCount + 2) * OpenGLApi::VFSize(eVertexFormat), vertexData)
+0x0064C410|AGMGLWrapper::AGMGL_glDrawArraysInstanced(primType, 0, verticesInOneInstance, _nPrimCount)
+0x0064C660|AGMGLWrapper::AGMGL_glDrawElementsInstanced(primitiveType, indexCount, indexFormat, indices, numInstancesToDraw)
+0x0064C720|AGMGLWrapper::AGMGL_glDrawArraysInstanced(_ePrimitiveType, 0, verticesInOneInstance, GetVertexCount())
+0x0064C9E0|::glBufferData( 0x8892, AGPU_Device<AGPU_OGL>::VFSize(_eVertexFormat) * _nVertexCount, _pVertices, 0x88E4)
+0x0064CA50|::glBufferData( 0x8893, GetIndexFormatSize() * _nIndexCount, AGPU_Device<AGPU_OGL>::VFSize(_eVertexFormat) * GetVertexCount() + _pVertices, 0x88E4)
+0x0064CB60|glBufferData(GL_ARRAY_BUFFER, AGPU_Device<AGPU_OGL>::VFSize(GetVertexFormat()) * _nVertexCount, _pVertices, GL_STATIC_DRAW)
+0x0064CC40|AGMGLWrapper::AGMGL_glDrawArraysInstanced(_ePrimitiveType, 0, 3, numInstancesToDraw)
+0x0064CCA0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\paths\OpenGLVertexArray.cpp
+0x0064CF60|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\paths\TriangleMesh_OGL.cpp
+0x0064DC80|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\paths\GPUBatchMatricesCache.cpp
+0x0064DD60|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\paths\GPUNonOpaqueBatchDataCache.cpp
+0x0064E1B0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\GPUUploadContext.cpp
+0x0064E2B8|GPU_DISABLE_DYNAMIC_MEMORY_CLEANUP
+0x0064E300|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpusdk\source\GPUBufferProvider.cpp
+0x0064E3F0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\DXApi.h
+0x0064E460|GetGPUTextureType
+0x0064E490|GetGPUPixelFormat
+0x0064E4B8|GPUUploadThread
+0x0064E4E0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpusdk\source\GPUTexture.cpp
+0x0064E5A0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\GPUUploadStrategy.h
+0x0064E630|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\AGMTaskThread.h
+0x0064E7D0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpusdk\source\GPUTextureCache.cpp
+0x0064E838|GPUTextureProvider::GetCachedTexture failed to return texture
+0x0064E888|GPUTextureProvider::GetTexture failed to return texture
+0x0064E8F0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpusdk\include\ModernCGMTextureImpl.h
+0x0064E9B0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpusdk\source\ModernCGMTextureImpl.cpp
+0x0064EA40|glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB, GL_MAX_PROGRAM_NATIVE_INSTRUCTIONS_ARB, &maxInstructions)
+0x0064EAB0|glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB, GL_MAX_PROGRAM_NATIVE_ALU_INSTRUCTIONS_ARB, &maxALUInstructions)
+0x0064EB20|glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB, GL_MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB, &maxTexInstructions)
+0x0064EB90|glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB, GL_MAX_PROGRAM_TEMPORARIES_ARB, &maxTempRegisters)
+0x0064EBF0|OGL_Core_AGPU_Vertex_V6
+0x0064EC08|Unimplemented OGL_Core_AGPU_Vertex_V6T3
+0x0064ED68|OGL_Core_AGPU_Vertex_V6T3
+0x0064EF68|OGL_AGPU_Vertex_V2D2
+0x0064EF80|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpusdk\source\ogl\AGPU_OGLDevice.cpp
+0x0064EFE8|Unimplemented OGL_AGPU_Vertex_V2D2
+0x0064F190|OGL_AGPU_Vertex_V6
+0x0064F1A8|Unimplemented OGL_AGPU_Vertex_V6
+0x0064F250|OGL_AGPU_Vertex_V6T3
+0x0064F268|Unimplemented OGL_AGPU_Vertex_V6T3
+0x0064F8A0|::glBlendFuncSeparate(blendState->m_blendstate._SrcBlend, blendState->m_blendstate._DestBlend, blendState->m_blendstate._SrcBlendAlpha, blendState->m_
+0x0064FAE0|AGMGLWrapper::AGMGL_glPolygonMode(GL_FRONT_AND_BACK, rasterizerState->m_rasterizerstate._FillMode)
+0x00650240|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpusdk\source\ogl\AGPU_OGLExtensionManager.cpp
+0x006509E0|glMultiTexCoord1dvARB
+0x00650AA0|glMultiTexCoord2dvARB
+0x00650B48|glMultiTexCoord3dARB
+0x00650B60|glMultiTexCoord3dvARB
+0x00650C20|glMultiTexCoord4dvARB
+0x00651260|glWeightdvARB
+0x00651440|glGetProgramEnvParameterdvARB
+0x00651480|glGetProgramLocalParameterdvARB
+0x00651510|glGetVertexAttribdvARB
+0x00651588|glProgramEnvParameter4dvARB
+0x00651608|glProgramLocalParameter4dvARB
+0x00651698|glVertexAttrib1dvARB
+0x00651728|glVertexAttrib2dvARB
+0x006517B8|glVertexAttrib3dvARB
+0x00651908|glVertexAttrib4dvARB
+0x00651A60|glWindowPos2dvARB
+0x00651B20|glWindowPos3dvARB
+0x00651CA0|glAlphaFragmentOp1ATI
+0x00651CB8|glAlphaFragmentOp2ATI
+0x00651CD0|glAlphaFragmentOp3ATI
+0x00651CE8|glBeginFragmentShaderATI
+0x00651D08|glBindFragmentShaderATI
+0x00651D20|glColorFragmentOp1ATI
+0x00651D38|glColorFragmentOp2ATI
+0x00651D50|glColorFragmentOp3ATI
+0x00651D68|glDeleteFragmentShaderATI
+0x00651D88|glEndFragmentShaderATI
+0x00651DA0|glGenFragmentShadersATI
+0x00651DE0|glSetFragmentShaderConstantATI
+0x00651E78|glStencilFuncSeparateATI
+0x00652130|glVertexStream2dvATI
+0x006521F0|glVertexStream3dvATI
+0x006522B0|glVertexStream4dvATI
+0x006523A0|glNormalStream3dvATI
+0x00652438|glBlendFuncSeparateEXT
+0x006528C0|glFragmentColorMaterialEXT
+0x006528E0|glFragmentLightModelfEXT
+0x00652900|glFragmentLightModelfvEXT
+0x00652920|glFragmentLightModeliEXT
+0x00652940|glFragmentLightModelivEXT
+0x00652960|glFragmentLightfEXT
+0x00652978|glFragmentLightfvEXT
+0x00652990|glFragmentLightiEXT
+0x006529A8|glFragmentLightivEXT
+0x006529C0|glFragmentMaterialfEXT
+0x006529D8|glFragmentMaterialfvEXT
+0x006529F0|glFragmentMaterialiEXT
+0x00652A08|glFragmentMaterialivEXT
+0x00652A20|glGetFragmentLightfvEXT
+0x00652A38|glGetFragmentLightivEXT
+0x00652A50|glGetFragmentMaterialfvEXT
+0x00652A70|glGetFragmentMaterialivEXT
+0x00655E28|glFragmentColorMaterialSGIX
+0x00655E48|glFragmentLightModelfSGIX
+0x00655E68|glFragmentLightModelfvSGIX
+0x00655E88|glFragmentLightModeliSGIX
+0x00655EA8|glFragmentLightModelivSGIX
+0x00655EC8|glFragmentLightfSGIX
+0x00655EE0|glFragmentLightfvSGIX
+0x00655EF8|glFragmentLightiSGIX
+0x00655F10|glFragmentLightivSGIX
+0x00655F28|glFragmentMaterialfSGIX
+0x00655F40|glFragmentMaterialfvSGIX
+0x00655F60|glFragmentMaterialiSGIX
+0x00655F78|glFragmentMaterialivSGIX
+0x00655F98|glGetFragmentLightfvSGIX
+0x00655FB8|glGetFragmentLightivSGIX
+0x00655FD8|glGetFragmentMaterialfvSGIX
+0x00655FF8|glGetFragmentMaterialivSGIX
+0x00656040|glReferencePlaneSGIX
+0x00656B58|glMultiTexCoord3d
+0x00656B70|glMultiTexCoord3dv
+0x00656F60|glBlendFuncSeparate
+0x00657210|glStencilFuncSeparate
+0x00657A70|GL_NV_blend_equation_advanced
+0x00657AD8|GL_INTEL_fragment_shader_ordering
+0x00657D90|GL_ARB_fragment_program
+0x00657DA8|GL_ARB_fragment_program_shadow
+0x00657DC8|GL_ARB_fragment_shader
+0x00658138|GL_ATI_fragment_shader
+0x006581A0|GL_ATI_text_fragment_shader
+0x00658568|GL_EXT_fragment_lighting
+0x00658610|GL_EXT_gpu_shader4
+0x00658EF0|GL_NV_fragment_program
+0x00658F08|GL_NV_fragment_program2
+0x00658F20|GL_NV_fragment_program4
+0x00658F38|GL_NV_fragment_program_option
+0x00658F98|GL_NV_gpu_program4
+0x00659648|GL_SGIX_fragment_specular_lighting
+0x0065A600|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpusdk\source\ogl\AGPU_OGLWindow.cpp
+0x0065A6E0|AGMGLWrapper::AGMGL_glGenFramebuffers(1, &fFrameBuffer)
+0x0065A730|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpusdk\source\ogl\cgm\CGMFBOImpl.cpp
+0x0065A7B0|AGMGLWrapper::AGMGL_glBindFramebuffer(GL_FRAMEBUFFER_GLENUM, fFrameBuffer)
+0x0065A800|AGMGLWrapper::AGMGL_glGenRenderbuffers(1, &fColorBuffer)
+0x0065A860|AGMGLWrapper::AGMGL_glBindRenderbuffer(GL_RENDERBUFFER_GLENUM, fColorBuffer)
+0x0065A8B0|AGMGLWrapper::AGMGL_glRenderbufferStorageMultisample(GL_RENDERBUFFER_GLENUM, samples, fmt, width, height)
+0x0065A920|AGMGLWrapper::AGMGL_glRenderbufferStorage(GL_RENDERBUFFER_GLENUM, fmt, width, height)
+0x0065A980|AGMGLWrapper::AGMGL_glFramebufferRenderbuffer(GL_FRAMEBUFFER_GLENUM, GL_COLOR_ATTACHMENT0_GLENUM, GL_RENDERBUFFER_GLENUM, fColorBuffer)
+0x0065AA30|AGMGLWrapper::AGMGL_glBindFramebuffer(GL_FRAMEBUFFER_GLENUM, 0)
+0x0065AA70|AGMGLWrapper::AGMGL_glBindRenderbuffer(GL_RENDERBUFFER_GLENUM, 0)
+0x0065AAB8|AGMGLWrapper::AGMGL_glDeleteRenderbuffers(1, &fDepthBuffer)
+0x0065AAF8|AGMGLWrapper::AGMGL_glDeleteRenderbuffers(1, &fColorBuffer)
+0x0065AB38|AGMGLWrapper::AGMGL_glDeleteRenderbuffers(1, &fStencilBuffer)
+0x0065AB78|AGMGLWrapper::AGMGL_glDeleteFramebuffers(1, &fFrameBuffer)
+0x0065ABF0|AGMGLWrapper::AGMGL_glFramebufferTextureLayer(GL_FRAMEBUFFER_GLENUM, GL_COLOR_ATTACHMENT0_GLENUM + index, tex->GetName(), 0, index)
+0x0065ACB0|AGMGLWrapper::AGMGL_glFramebufferTexture2D(GL_FRAMEBUFFER_GLENUM, GL_COLOR_ATTACHMENT0_GLENUM, tex->GetTarget(), tex->GetName(), 0)
+0x0065AD38|AGMGLWrapper::AGMGL_glGenRenderbuffers(1, &fDepthBuffer)
+0x0065ADA0|AGMGLWrapper::AGMGL_glBindRenderbuffer(GL_RENDERBUFFER_GLENUM, fDepthBuffer)
+0x0065ADF0|AGMGLWrapper::AGMGL_glRenderbufferStorageMultisample(GL_RENDERBUFFER_GLENUM, samples, depthStencil ? GL_DEPTH24_STENCIL8_GLENUM : GL_DEPTH_COMPONENT24
+0x0065AEA0|AGMGLWrapper::AGMGL_glRenderbufferStorage(GL_RENDERBUFFER_GLENUM, depthStencil ? GL_DEPTH24_STENCIL8_GLENUM : GL_DEPTH_COMPONENT24, fWidth, fHeight)
+0x0065AF40|AGMGLWrapper::AGMGL_glFramebufferRenderbuffer(GL_FRAMEBUFFER_GLENUM, GL_DEPTH_ATTACHMENT_GLENUM, GL_RENDERBUFFER_GLENUM, fDepthBuffer)
+0x0065AFD0|AGMGLWrapper::AGMGL_glFramebufferRenderbuffer(GL_FRAMEBUFFER_GLENUM, GL_STENCIL_ATTACHMENT_GLENUM, GL_RENDERBUFFER_GLENUM, fDepthBuffer)
+0x0065B060|AGMGLWrapper::AGMGL_glGenRenderbuffers(1, &fStencilBuffer)
+0x0065B0C0|AGMGLWrapper::AGMGL_glBindRenderbuffer(GL_RENDERBUFFER_GLENUM, fStencilBuffer)
+0x0065B110|AGMGLWrapper::AGMGL_glRenderbufferStorageMultisample(GL_RENDERBUFFER_GLENUM, samples, GL_STENCIL_INDEX8_GLENUM, fWidth, fHeight)
+0x0065B1A0|AGMGLWrapper::AGMGL_glRenderbufferStorage(GL_RENDERBUFFER_GLENUM, GL_STENCIL_INDEX8_GLENUM, fWidth, fHeight)
+0x0065B210|AGMGLWrapper::AGMGL_glFramebufferRenderbuffer(GL_FRAMEBUFFER_GLENUM, GL_STENCIL_ATTACHMENT_GLENUM, GL_RENDERBUFFER_GLENUM, fStencilBuffer)
+0x0065B2B0|AGMGLWrapper::AGMGL_glFramebufferTexture2D(GL_FRAMEBUFFER_GLENUM, GL_COLOR_ATTACHMENT0_GLENUM, tex->GetTarget(), 0, 0)
+0x0065B350|AGMGLWrapper::AGMGL_glFramebufferRenderbuffer(GL_FRAMEBUFFER_GLENUM, GL_DEPTH_ATTACHMENT_GLENUM, GL_RENDERBUFFER_GLENUM, depthStencil->GetName())
+0x0065B3F0|AGMGLWrapper::AGMGL_glFramebufferRenderbuffer(GL_FRAMEBUFFER_GLENUM, GL_STENCIL_ATTACHMENT_GLENUM, GL_RENDERBUFFER_GLENUM, depthStencil->GetName())
+0x0065B490|AGMGLWrapper::AGMGL_glFramebufferTextureLayer(GL_FRAMEBUFFER_GLENUM, GL_COLOR_ATTACHMENT0_GLENUM + ii, color->GetName(), 0, ii)
+0x0065B510|AGMGLWrapper::AGMGL_glFramebufferTexture2D(GL_FRAMEBUFFER_GLENUM, GL_COLOR_ATTACHMENT0_GLENUM + index, color->GetTarget(), color->GetName(), 0)
+0x0065B5A0|AGMGLWrapper::AGMGL_glFramebufferTexture2D(GL_FRAMEBUFFER_GLENUM, GL_COLOR_ATTACHMENT1_GLENUM + index, color->GetTarget(), 0, 0)
+0x0065B680|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpusdk\source\ogl\cgm\CGMPBufferImpl.cpp
+0x0065B758|Couldn't create OpenGL context.
+0x0065B778|Couldn't make OpenGL context current.
+0x0065B8A0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpusdk\source\ogl\cgm\CGMTextureImpl_OGL.cpp
+0x0065B980|AGMGLWrapper::AGMGL_glGetTexLevelParameteriv(fTexType, 0, GL_TEXTURE_HEIGHT, &height)
+0x0065BA30|AGMGLWrapper::AGMGL_glTexImage1D(fTexType, fLevel, fInternalFormat, fWidthActual, 0, fBorder, fTexFormat, fTexDataType, texels, fNumSamples, GL_TRUE)
+0x0065BE10|AGMGLWrapper::AGMGL_glTexStorage1D(fTexType, fNumMipmapLevels, fInternalFormat, fWidthActual, 0)
+0x0065BE80|AGMGLWrapper::AGMGL_glTexStorage2D(fTexType, fNumMipmapLevels, fInternalFormat, fWidthActual, fHeightActual)
+0x0065BEF0|AGMGLWrapper::AGMGL_glTexStorage2D(fTexType, fLevel, fInternalFormat, fWidthActual, fNumColorPlanes)
+0x0065BF60|AGMGLWrapper::AGMGL_glTexStorage3D(fTexType, fLevel, fInternalFormat, fWidthActual, fHeightActual, fNumColorPlanes)
+0x0065BFE0|AGMGLWrapper::AGMGL_glTexStorage3D(fTexType, fNumMipmapLevels, fInternalFormat, fWidthActual, fHeightActual, fDepthActual)
+0x0065C108|AGMGLWrapper::AGMGL_glGenRenderbuffers(1, &rb)
+0x0065C180|AGMGLWrapper::AGMGL_glBindRenderbuffer(GL_RENDERBUFFER_GLENUM, rb)
+0x0065C1D0|AGMGLWrapper::AGMGL_glRenderbufferStorageMultisample(GL_RENDERBUFFER_GLENUM, samples, GL_DEPTH24_STENCIL8_GLENUM, width, height)
+0x0065C260|AGMGLWrapper::AGMGL_glRenderbufferStorage(GL_RENDERBUFFER_GLENUM, GL_DEPTH24_STENCIL8_GLENUM, width, height)
+0x0065C2D0|AGMGLWrapper::AGMGL_glGetRenderbufferParameteriv(GL_RENDERBUFFER_GLENUM, GL_RENDERBUFFER_SAMPLES_GLENUM, &query)
+0x0065C370|AGMGLWrapper::AGMGL_glDeleteRenderbuffers(1, &fName)
+0x0065C3B0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpusdk\source\ogl\cgm\CGMWindowImpl.cpp
+0x0065C488|wglCreateContextAttribsARB() failed for OpenGL context
+0x0065C7F0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\image\ogl\GERenderImage_OGL.cpp
+0x0065C858|GraphixGPUPort can't be nullptr.
+0x0065C940|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\image\GECreateImageProcess.cpp
+0x0065CA20|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\image\GEImageProcessCache.cpp
+0x0065CA80|GPUMarkImageInfo is NULL
+0x0065CAB0|GEImageTextureInfo<class AGPU::DXApi>::InitializeTextureInfo
+0x0065CB20|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\image\GEImageTextureUploader_OGL.cpp
+0x0065CC20|::glTexParameteri(texture->GetTarget(), GL_TEXTURE_MAX_LEVEL, GPUImageUtils::MipmapLevelCount(texWidth, texHeight))
+0x0065CFE0|AGMGLWrapper::AGMGL_glGenerateMipmap(target)
+0x0065D180|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\image\GERenderImageProcess.cpp
+0x0065D2A0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\image\GPUImageUtils.cpp
+0x0065D300|GPURenderImage::TransformAndNudgeRectV2T2:needsNudge
+0x0065D358|GPURenderImage::TransformAndNudgeRectV6T2:needsNudge
+0x0065D3F0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\image\GPUMarkImage.cpp
+0x0065D4B0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpusdk\source\DX\AGPU_DXTypes.cpp
+0x0065D518|UniformUVMatrix<AGPU_MTL>::bNormalize
+0x0065D5E0|GPUStorageMode not supported
+0x0065D628|ResourceUsageToD3D12RESOURCEFLAGS
+0x0065D650|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpusdk\source\DX\CGMTextureImpl_DX.cpp
+0x0065DB00|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpusdk\include\DX\DXResourceAllocation.h
+0x0065E188|DXApi::GetDXBufferOptions: GPUResourceOption not supported
+0x0065E200|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpusdk\source\DX\DXBuffer.cpp
+0x0065E2C0|GPUBuffer
+0x0065E2D0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpusdk\include\GPUBuffer.h
+0x0065E360|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpusdk\source\DX\DXStateManager.cpp
+0x0065E440|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpusdk\source\DX\DXStateTransitionEncoder.cpp
+0x0065E668|GPUCleanupThread
+0x0065E690|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\AdvancedGPUDevice_DX.cpp
+0x0065E6F8|GPUDeviceUtils::GetDeviceID() D3D12Device is null
+0x0065E750|CreateDXGIFactory2(createFactoryFlags, IID_PPV_ARGS(&dxgiFactory))
+0x0065E7A8|AdvancedGPUDevice::GetAdapter() D3D12Device is null
+0x0065E7E0|AdvancedGPUDevice::GetAdapter() DXGIFactory is null
+0x0065E820|dxgiFactory->EnumAdapterByLuid(uniqueIdentifier, IID_PPV_ARGS(&dxgiAdapter))
+0x0065E870|D3D12MA::CreateAllocator(&allocatorDesc, &allocator)
+0x0065E938|DXDevice::DXDevice() D3D12Adapter is null
+0x0065E970|fDXGIAdapter->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &videoMemoryInfo)
+0x0065EA60|D3D12MA: allocator not available
+0x0065EA90|[D3D12MA] VRAM: %u heaps, %u resources (%u placed in %u heaps, %u committed), %llu/%llu MB used (%.1f%% util), %llu MB fragmented | GPU total: %llu/%l
+0x0065ECA0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\CompositorAdvancedGPU_DX.cpp
+0x0065EDA8|CopyTexture: Exception while copying textures
+0x0065F2B0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\DXApi.cpp
+0x0065F364|GPU:
+0x0065F4A8|GPUExecuteCompletionThread
+0x0065F548|DX12 GPU execution failed
+0x0065F568|DX12 GPU execution encountered an exception
+0x0065F5B0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\DXCommandAllocator.cpp
+0x0065F9A0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\DXCommandAllocatorPool.cpp
+0x0065FB80|device3->EnqueueMakeResident(D3D12_RESIDENCY_FLAG_NONE, 1, pageableArray, fence, value)
+0x0065FBF0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\DXResidencyManager.cpp
+0x0065FCA0|ID3D12Device3 required for EnqueueMakeResident
+0x0065FD80|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\DescriptorHeap.cpp
+0x0065FE50|GPUDescriptorHeapUtils::GetAvailableHandles Trying to get handles from a null descriptor heap
+0x0065FEB0|GPUDescriptorHeapUtils::GetAvailableHandles Trying to get N handles greater than the capacity of one descriptor heap
+0x0065FF88|FenceSignal: signalVal:%llu completedVal:%llu deviceRemoved:%d
+0x0065FFE0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\Fence_DX.cpp
+0x00660048|WaitForGPUCompletion
+0x00660060|WaitForGPUCompletion: Unable to signal fence
+0x00660090|WaitForGPUCompletion: Invalid command queue
+0x006600EE|Zvdevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fFence))
+0x006602D0|SetGPUAttachment
+0x00660300|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\GPUAttachmentHolder_DX.cpp
+0x00660370|GPUAttachmentHolder<DXApi>::GPUAttachmentHolderImpl::AddTextureAttachment: Attempting to attach null texture
+0x00660420|GPUAttachmentHolder<DXApi>::GPUAttachmentHolderImpl::AddBufferAttachment: Attempting to attach null buffer
+0x006604C0|GPUAttachmentHolder<DXApi>::GPUAttachmentHolderImpl::AddVertexBuffer: Attempting to attach null buffer
+0x00660610|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\GPUBufferUploaderStaged_DX.cpp
+0x006607C8|GetGPUHandle
+0x006607E0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\GPUCommandContext_DX.cpp
+0x00660848|DXAttachmentHolderUtils::GetGPUHandle: null handle
+0x00660880|DXCommandContext::SetDescriptorHandle: Failed to get GPU Handle for Attachment
+0x006609F0|device->GetDevice()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, fCommandAllocator->Get(), nullptr, IID_PPV_ARGS(&fPlatformContext))
+0x00660CB0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\GPUDescriptorHeapManager.cpp
+0x00660D20|GPUDescriptorHeapManager::GetNSVHandlesFromHeapList: Not able to allocate handles in SRV, UAV, CBV Descriptor Heap
+0x00660E30|GPUDescriptorHeapManager::GetNSVDescriptorHeapList: Invalid handle type
+0x00660F00|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\GPUDeviceCapabilities_DX.cpp
+0x00660F70|GPUDeviceCapabilitiesUtils::GetMaxBufferLength() - Failed to query gpu virtual address support
+0x0069897E|0D3d
+0x006AFA46|csVg
+0x006B2B6B|vConstantBlendCMYKFragment_ROV\
+0x006B825F|NPassThroughFragment\
+0x006BC82C|TexturedQuadFragmentUncalCMYKtoRGB\
+0x006BE8BE|jInstallClipCoverAAFragment\
+0x006C032E|rUnInstallClipCoverAAFragment\
+0x006C32AB|SoftMaskCMYKGrayAlphaOutColorFragment\
+0x006CE43B|^PassThroughCMYKFragment\
+0x006E3B51|bXORBlendOutColorFragment\
+0x006EE5ED|bAxialNoneShadingFragment\
+0x006F05BD|^AxialMinShadingFragment\
+0x006F258D|^AxialMaxShadingFragment\
+0x006F455D|jAxialMinMaxShadingFragment\
+0x00712521|rAxialNoneShadingCMYKFragment\
+0x00714631|nAxialMinShadingCMYKFragment\
+0x00716751|nAxialMaxShadingCMYKFragment\
+0x00718871|zAxialMinMaxShadingCMYKFragment\
+0x00775E31|RadialConcentricNoneShadingBlendCMYKFragment_ROV\
+0x007803D1|RadialConcentricMinShadingBlendCMYKFragment_ROV\
+0x0078A941|RadialConcentricMaxShadingBlendCMYKFragment_ROV\
+0x00794E41|RadialConcentricMinMaxShadingBlendCMYKFragment_ROV\
+0x007A66A5|RadialOffsetNoneShadingBlendFragment_ROV\
+0x007ADCE5|RadialOffsetMinShadingBlendFragment_ROV\
+0x007B5325|RadialOffsetMaxShadingBlendFragment_ROV\
+0x007BC985|RadialOffsetMinMaxShadingBlendFragment_ROV\
+0x00801D9E|vTexturedQuadFragmentRGBToCMYK\
+0x008038B8|TexturedQuadFragmentUncalRGBToCMYK\
+0x008127EE|PassThroughSVGGlyphGrayCMYKFragment\
+0x008A0481|bConstantGeometryFragment\
+0x008A5221|rConstantCMYKGeometryFragment\
+0x008B69F0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\GPUDeviceContext.h
+0x008B6BF0|AcquirePlatformGPUDevice
+0x008B6C10|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\GPUDeviceContext_DX.cpp
+0x008B6C90|Failed to obtain ID3D12Device from host-provided device pointer
+0x008B6FA0|SVGGlyphRGBPipeline
+0x008B6FB8|SVGGlyphGrayRGBPipeline
+0x008B78E8|QuadPremulDualSourcePipeline
+0x008B7B50|SVGGlyphCMYKPipeline
+0x008B7B68|SVGGlyphGrayCMYKPipeline
+0x008B8500|QuadPremulCMYKDualSourcePipeline
+0x008B8528|D3DCreateBlob(shaderSize, &shaderBlob)
+0x008B8588|AGM_ENABLE_LOGS_EXTENDED
+0x008B86E0|GPU_MEMORY_USAGE
+0x008B8728|GPUDeviceContext
+0x008B8740|GPUDeviceContext<DXApi>::GPUDeviceContext() The device shared pointer is null
+0x008B8C50|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\GPUDocumentContext_DX.cpp
+0x008B8CF8|GPUDocumentContext
+0x008B8D10|GPUDocumentContext<DXApi>::GPUDocumentContext() Device pointer is not valid
+0x008B8D60|GPUDocumentContext<DXApi>::Reset: Invalid Device Context
+0x008B8FC0|SC[%ux%u]|SCFlags:0x%x|SwapEffect:%d|HWNDValid:%d|Minimized:%d|ClientRect:[%dx%d]|PresentFlags:0x%x|SyncInterval:%u|BackBufIdx:%u
+0x008B9050|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\GPUDrawableScope_DX.cpp
+0x008B90E0|m_swapChain->Present(GPUDrawableConstants::kSyncInterval, presentFlags)
+0x008B9158|GPUDrawable
+0x008B9170|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\GPUDrawable_DX.cpp
+0x008B9200|dxgiFactory->CreateSwapChainForHwnd(commandQueue.Get(), m_HWND, &swapChainDesc, nullptr, nullptr, &swapChain1)
+0x008B92C8|GPUDrawable<class AGPU::DXApi>::AcquireCPUStagingBackBuffer
+0x008B9310|m_swapChain->ResizeBuffers(0, subBounds.xMax - subBounds.xMin, subBounds.yMax - subBounds.yMin, DXGI_FORMAT_UNKNOWN, GPUDrawableConstants::kSwapChainF
+0x008B9430|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\GPUGraphicState_DX.cpp
+0x008B9560|GPUGraphicStateUtils::UseStructureBufferAttachment: Null pipeline returned
+0x008B95D0|GPUGraphicStateUtils::GetAlignmentForBufferRing: Null pipeline returned
+0x008B9630|GPUGraphicStateUtils::UseROVPipeline: Invalid device capabilities
+0x008B9688|GPUGraphicState<DXApi>::SetVertexBytes: Null pipeline returned
+0x008B96C8|SetFragmentBytes
+0x008B96E0|GPUGraphicState<DXApi>::SetFragmentBytes: Null pipeline returned
+0x008B9740|GPUGraphicState<DXApi>::SetVertexBuffer: Null pipeline returned
+0x008B97A0|GPUGraphicState<DXApi>::SetGeometryBuffer: Null pipeline returned
+0x008B97E8|SetFragmentBuffer
+0x008B9800|GPUGraphicState<DXApi>::SetFragmentBuffer: Null pipeline returned
+0x008B9848|SetFragmentTexture
+0x008B9860|GPUGraphicState<DXApi>::SetFragmentTexture: Null pipeline returned
+0x008B98C0|GPUGraphicStateUtils::SetInputVertexBuffer: Null pipeline returned
+0x008B9920|GPUGraphicStateUtils::SetToDeviceMatrix: Null pipeline returned
+0x008B9980|GPUGraphicState<DXApi>::DrawPrimitivesGeneral: Invalid document context
+0x008B99F0|GPUGraphicState<DXApi>::DrawInstancedPrimitivesGeneral: Invalid document context
+0x008B9A90|GPUGraphicStateUtils::SetRenderAttachment: Null pipeline returned
+0x008B9B40|GPUGraphicState<DXApi>::SetPipelineState GPUPipeline is not setup
+0x008B9BA0|GPUGraphicState<DXApi>::SetDepthStencilState: Null pipeline returned
+0x008B9C00|GPUGraphicState::SetPipeLine fCompositor or CurrentSurface is NULL
+0x008B9C48|GPUGraphicState::SetPipeLine::gpuDeviceContext = NULL
+0x008B9CE0|GPUGraphicState::SetPipeLine() kAxialNoneShadingBlendPipeline not tested for DX
+0x008B9D30|GPUGraphicState::SetPipeLine() kAxialMinShadingBlendPipeline not tested for DX
+0x008B9D80|GPUGraphicState::SetPipeLine() kAxialMaxShadingBlendPipeline not tested for DX
+0x008B9DD0|GPUGraphicState::SetPipeLine() kRadialConcentricNoneShadingBlendPipeline not tested for DX
+0x008B9E30|GPUGraphicState::SetPipeLine() kRadialConcentricMinShadingBlendPipeline not tested for DX
+0x008B9E90|GPUGraphicState::SetPipeLine() kRadialConcentricMaxShadingBlendPipeline not tested for DX
+0x008B9EF0|GPUGraphicState::SetPipeLine() kRadialOffsetNoneShadingBlendPipeline not tested for DX
+0x008B9F50|GPUGraphicState::SetPipeLine() kRadialOffsetMinShadingBlendPipeline not tested for DX
+0x008B9FB0|GPUGraphicState::SetPipeLine() kRadialOffsetMaxShadingBlendPipeline not tested for DX
+0x008BA060|GPUDeviceContext<DXApi>::SetPipeLine - kColorZonePipeline is not tested
+0x008BA130|GPUGraphicState::SetPipeLine() kKnockoutBlendAxialNonePipeline not tested for DX
+0x008BA190|GPUGraphicState::SetPipeLine() kKnockoutBlendAxialMinPipeline not tested for DX
+0x008BA1E0|GPUGraphicState::SetPipeLine() kKnockoutBlendAxialMaxPipeline not tested for DX
+0x008BA230|GPUGraphicState::SetPipeLine() kKnockoutBlendRadialConcentricNonePipeline not tested for DX
+0x008BA290|GPUGraphicState::SetPipeLine() kKnockoutBlendRadialConcentricMinPipeline not tested for DX
+0x008BA2F0|GPUGraphicState::SetPipeLine() kKnockoutBlendRadialConcentricMaxPipeline not tested for DX
+0x008BA350|GPUGraphicState::SetPipeLine() kKnockoutBlendRadialOffsetNonePipeline not tested for DX
+0x008BA3B0|GPUGraphicState::SetPipeLine() kKnockoutBlendRadialOffsetMinPipeline not tested for DX
+0x008BA410|GPUGraphicState::SetPipeLine() kKnockoutBlendRadialOffsetMaxPipeline not tested for DX
+0x008BA478|kMapGPUBuffer
+0x008BA488|kUnMapGPUBuffer
+0x008BA498|GPUMappedBuffer
+0x008BA4B0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\GPUMappedBuffer_DX.cpp
+0x008BA510|GPUBuffer is NULL
+0x008BA528|GPUMappedBuffer created with default options
+0x008BA688|GPUSetupPipelineThread
+0x008BA720|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\GPUPipeline_DX.cpp
+0x008BA890|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\GPUSurface_DX.cpp
+0x008BAA60|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\GPUSyncControllerUtils_DX.cpp
+0x008BAB00|GPUSyncControllerScope
+0x008BABA0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\GPUUploadManager_DX.cpp
+0x008BAD10|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\GPUUploadStrategy_DX.cpp
+0x008BAD80|GPUAsyncUploadStrategyV1Impl::GetStagingBuffer cannot return null
+0x008BADD0|Does not support Async GPU execution
+0x008BAE00|GPUAsyncUploadStrategyV1Impl::Begin() Failed to wait for command context execution
+0x008BAE80|GPUAsyncUploadStrategyV2Impl::GetStagingBuffer() UBO slot cannot be null for this case
+0x008BB050|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\GPUUploadUtils_DX.cpp
+0x008BB620|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\GPUWorkloadManager_DX.cpp
+0x008BB6E0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\GraphixAdvancedGPUPort.h
+0x008BB740|GraphixAdvancedGPUPort::StartDrawingCopyCompositor() not implemented
+0x008BB798|Unsupported GraphixAdvancedGPUPort::ScrollInternal
+0x008BB7D8|Unsupported Refresh API on Advanced Port
+0x008BB810|Unsupported Erase API on Advanced Port
+0x008BB840|GraphixAdvancedGPUPort<class AGPU::DXApi>::AttachFeedbackTextureWithCopy
+0x008BB8B0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\ManagedDXCommandAllocator.cpp
+0x008BB950|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\NSVDescriptorHandle.cpp
+0x008BBA30|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\NSVDescriptorHandleCache.cpp
+0x008BBB90|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\dx\PipelineSetupUtils_DX.cpp
+0x008BBCC0|D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, version, &signature, &error)
+0x008BBED0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\AdvancedGPUBatchMatricesCache.cpp
+0x008BBF60|AdvancedGPUBatchMatricesCache<TApi>::InitializeBuffers not implemented for DX12.
+0x008BC010|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\AdvancedGPUColorConvertUtils.cpp
+0x008BC0B8|AdvancedGPUColorConvertUtils::GetColorConvertTexture
+0x008BC220|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\AdvancedGPUInstanceMarkInfo.cpp
+0x008BC290|AdvancedGPUInstanceMarkInfo: Invalid Port
+0x008BC2C0|AdvancedGPUInstanceMarkInfo: Invalid Port Type
+0x008BC370|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\AdvancedGPUNonOpaqueBatchDataCache.cpp
+0x008BC3F0|AdvancedGPUNonOpaqueBatchDataCache<TApi>::InitializeBuffers not implemented for DX12.
+0x008BC480|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\AdvancedGPURenderer.cpp
+0x008BC520|GetAdvancedGPUPort
+0x008BC538|Bad port passed to GetAdvancedGPUPort()
+0x008BC5C0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\AdvancedGPUSubPathCache_Glyph.cpp
+0x008BC630|Null gpuPort passed in AdvancedGPUSubPathCache_Glyph<TApi>::Emit()
+0x008BC6D0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\AdvancedGPUSubPathCache_Texture.cpp
+0x008BC740|Null gpuPort passed in AdvancedGPUSubPathCache_Texture<TApi>::Emit()
+0x008BC880|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\AdvancedGPU_SubPathCache_Geometry.cpp
+0x008BCAD0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\CompositorAdvancedGPU.h
+0x008BCC98|Unsupported API on Advanced Port
+0x008BCCD8|CompositorAdvancedGPU
+0x008BCCF0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\CompositorAdvancedGPU.cpp
+0x008BCE00|agm::CompositorAdvancedGPU<class AGPU::DXApi>::GetTexture1bTable
+0x008BCE50|agm::CompositorAdvancedGPU<class AGPU::DXApi>::GetTexture1bTable2
+0x008BCEA0|Start AGM Compositing failed to start drawing on compositor port
+0x008BCEE8|CompositorAdvancedGPU::EndCompositing:NULL commandBuffer
+0x008BCF38|Ghosting not supported on Advanced Port
+0x008BCF78|agm::CompositorAdvancedGPU<class AGPU::DXApi>::MakeSurface
+0x008BCFC8|Non Isolated Compositor unsupported on Advanced Port
+0x008BD000|CPU Port requested from Advanced compositor
+0x008BD050|Command Buffer must be NULL inside GetCPUPixels(), AGM Advanced
+0x008BD090|Source Colorspace is NULL inside GetCPUPixels(), AGM Advanced
+0x008BD0D0|Source colorspace family is not CMYK inside GetCPUPixels(), AGM Advanced
+0x008BD1E0|CompositorAdvancedGPU<TApi>::ExtractCMYKA() function not implemented for DX12
+0x008BD240|CompositorAdvancedGPU<TApi>::ExtractRGB() function not implemented for DX12
+0x008BD350|agm::CompositorAdvancedGPU<class AGPU::DXApi>::GetGPUCompositorImage
+0x008BD3A0|CompositorAdvancedGPU::GetCPUCompositorImage compositorCS is nullptr
+0x008BD660|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\CompositorAdvancedGPUDisplay.h
+0x008BD6E0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\CompositorAdvancedGPUDisplay.cpp
+0x008BD750|CompositorAdvancedGPUDisplay::StartCompositing: Command queue is null during active resize
+0x008BD7B0|CompositorAdvancedGPUDisplay::EndCompositing:NULL commandContext
+0x008BD800|CompositorAdvancedGPUDisplay::EndCompositing: Invalid offscreen image case
+0x008BD8B0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\GPUBufferRing.cpp
+0x008BD958|GPUBufferRing::ReplaceBuffer called with slots available
+0x008BD9C0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\GPUBufferUploader.cpp
+0x008BDAA8|GPUBufferUploader
+0x008BDB48|GPUBufferUploaderStaged
+0x008BDB60|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\GPUBufferUploaderStaged.cpp
+0x008BDC20|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\GPUDeviceContext.cpp
+0x008BDC90|GPUDeviceContextMap::GetDeviceContext Unable to insert new GPUDeviceContext<TApi>
+0x008BDEC0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\GPUFrameBuffer.cpp
+0x008BDF20|GPUFrameBuffer::isCMYK::RenderTexture NULL
+0x008BDF60|GPUFunctionTable<class AGPU::DXApi>::GPUFunctionTable
+0x008BDF98|CreateGPUFuncTable
+0x008BDFB0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\GPUFunctionTable.cpp
+0x008BE070|GPUGlyphCache<class AGPU::DXApi>::GPUGlyphCache
+0x008BE0B0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\GPUGlyphCache.cpp
+0x008BE110|Null compositor passed to GPUGlyphCache<TApi>::updateTexture
+0x008BE150|_idGlyphTexture is null in GPUGlyphCache<TApi>::updateTexture
+0x008BE1A0|Unhandled cache type in GPUGlyphCache<TApi>::drawGlyphShader()
+0x008BE1E0|GPUGlyphCache::drawGlyphShader:ddr
+0x008BE228|GPUGlyphCache<class AGPU::DXApi>::drawGlyphShader
+0x008BE2C8|UpdateGammaTable not required for SVG fonts
+0x008BE2F8|GPUGlyphCache<class AGPU::DXApi>::resetGlyphTexture
+0x008BE390|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\GPUGraphicState.cpp
+0x008BE430|GPUGraphicState::GetRenderCommandAdapter() RenderCommandEncoder is null
+0x008BE4D0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\GPUIndexedVBO.cpp
+0x008BE530|GPUVBO<TApi>::UpdateIBO() Unable to create new buffer
+0x008BE5F0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\GPUIndexedVertexArray.cpp
+0x008BE948|GPUSurface
+0x008BE960|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\GPUSurface.cpp
+0x008BE9C0|Texture0 can not be NULL for Color Attachment 0 in GPUSurface::GPUSurface
+0x008BEA10|Texture1 can not be NULL for Color Attachment 1 in GPUSurface::GPUSurface
+0x008BEA60|Clip Texture can not be NULL for Color Attachment 2 in GPUSurface::GPUSurface
+0x008BEAB0|Depth-Stencil Texture can not be NULL in GPUSurface::GPUSurface
+0x008BEB50|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\GPUUploadUtils.cpp
+0x008BEBE0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\GPUVBO.cpp
+0x008BECC8|GPUVBO<TApi>::UpdateVBO() Unable to create new buffer
+0x008BED10|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\GPUVertexArray.cpp
+0x008BEDC0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\GPUWorkloadManager.cpp
+0x008BEE40|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\GPUWorkloadManager.h
+0x008BEEA0|~GPUMemoryUsage
+0x008BEEC8|GPUMemoryUsage
+0x008BEF80|GPUWorldViewProjStack
+0x008BEFA0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\GPUProjectionState.h
+0x008BF3C0|GraphixAdvancedGPUPort
+0x008BF3E0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\GraphixAdvancedGPUPort.cpp
+0x008BF488|Unsupported SetMultiSampleOff() on Advanced Port
+0x008BF4E0|Unsupported SetDefaultRasterizationState() on Advanced Port
+0x008BF520|Null path passed to GraphixAdvancedGPUPort<TApi>::XORBlendMode()
+0x008BF710|GraphixAdvancedGPUPort<class AGPU::DXApi>::CachePortImage
+0x008BF750|GraphixAdvancedGPUPort::DrawGraphicInfo() : No path provided to start clip
+0x008BF7D0|GraphixAdvancedGPUPort::DrawGraphicInternal:paintType == kAGMCompositePaintServer
+0x008BF860|GraphixAdvancedGPUPort::AttemptStartKnockoutElementInternal:curGPUCtxt is NULL
+0x008BF8B0|GraphixAdvancedGPUPort<class AGPU::DXApi>::StartInstanceGroupInternal
+0x008BF918|AdvancedGPU Texture Creation Error !!!
+0x008BF958|GraphixAdvancedGPUPort::Blend1PBufferKnockout():srcTex is NULL
+0x008BF9B0|GraphixAdvancedGPUPort::FastDrawGraphicPattern , pColorCache can not be null
+0x008BFA00|GraphixAdvancedGPUPort<TApi>::EndInstanceGroupInternal: Texture stack is empty
+0x008BFAA0|GraphixAdvancedGPUPort<class AGPU::DXApi>::RenderInstancesAsRaster
+0x008BFB88|CPU Image not supported in Advanced GPU port
+0x008BFC20|GraphixAdvancedGPUPort<class AGPU::DXApi>::DrawImageQuad_ColorConvertInternal
+0x008BFCA0|GraphixAdvancedGPUPort<TApi>::DrawImageQuad_ColorConvertInternal() not yet tested for Generic shader conversion part for DX
+0x008BFDA0|GraphixAdvancedGPUPort::Blend1PBufferGray fCompositor or CurrentSurface is NULL
+0x008BFDF0|GraphixAdvancedGPUPort<class AGPU::DXApi>::HandleColorConversion
+0x008BFE40|GraphixAdvancedGPUPort<class AGPU::DXApi>::GetSubTextureFromScratchTexture
+0x008BFF90|GraphixAdvancedGPUPort::SetUpSolidGeometryCachePipeline:isNChannel:useColorForOutlining
+0x008BFFF0|GraphixAdvancedGPUPort::SetUpSolidGeometryCachePipeline:useColorForOutlining
+0x008C00B0|GraphixAdvancedGPUPort::SetUpSolidGeometryCachePipeline, invalid cache type.
+0x008C0100|GraphixAdvancedGPUPort::SetUpSolidGeometryCachePipeline:gePath.IsStrokeAA() || gePath.IsNonAA() Blend not supported
+0x008C0250|GraphixAdvancedGPUPort::SetUpAxialShadingPipeline , pColorCache can not be null
+0x008C02C0|GraphixAdvancedGPUPort<class AGPU::DXApi>::UpdateLayerImage
+0x008C0300|GraphixAdvancedGPUPort<class AGPU::DXApi>::MakeLayerImage
+0x008C0350|GraphixAdvancedGPUPort::MakeLayerImage layerCS is nullptr
+0x008C04D0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\ImageObjGPU.cpp
+0x008C0530|agm::ImageGE<class AGPU::DXApi>::GetCPUImage::<lambda_0825fcb74bdd25f6840bb479f013387f>::operator ()
+0x008C0628|agm::ImageGE<class AGPU::DXApi>::GetCPUImage
+0x008C0710|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\gpu\common\TriangleMeshVBO_GPU.cpp
+0x008C0778|TriangleMeshVBO_GPU<TApi>::draw() pGPUPort is nullptr
+0x008C08A0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\image\common\GERenderImageProcess_Advanced.cpp
+0x008C0910|GPUImageTODO: GERenderImageProcess<TApi>::SetupColorConvShader:ACE_ShaderFamily_OptCMYKtoRGB
+0x008C0970|GPUImageTODO: GERenderImageProcess<TApi>::SetupColorConvShader:ACE_ShaderFamily_OptRGBtoCMYK:fTexAlphaId
+0x008C09E0|GPUImageTODO: GERenderImageProcess<TApi>::SetupColorConvShader:ACE_ShaderFamily_OptCMYKtoCMYK:fTexAlphaId
+0x008C0A50|GPUImageTODO: GERenderImageProcess<TApi>::SetupColorConvShader:ACE_ShaderFamily_Null:kAGMCsCMYK:fIsGPUImage
+0x008C0AC0|GPUImageTODO: GERenderImageProcess<TApi>::SetupColorConvShader:ACE_ShaderFamily_Null:kAGMCsCMYK:!fIsGPUImage
+0x008C0B30|GPUImageTODO: GERenderImageProcess<TApi>::SetupColorConvShader:ACE_ShaderFamily_Null:kAGMCsCMYK:!useAAPathShaders
+0x008C0BB0|GPUImageTODO: GERenderImageProcess<TApi>::SetupColorConvShader:ACE_ShaderFamily_OptXYZtoMatrixRGB
+0x008C0C20|GPUImageTODO: GERenderImageProcess<TApi>::SetupColorConvShader:ACE_ShaderFamily_OptXYZtoRGB
+0x008C0C80|Unsupported ACEGPU
+0x008C0CB0|GPUImageTODO: GERenderImageProcess<TApi>::SetupDrawingState:UseTextureSwizzle()
+0x008C0D40|GPUImageTODO: GERenderImageProcess<TApi>::SetupDrawingState:ACE_ShaderFamily_Generic:packing.GetACEGPU() != ACE_ShaderFamily_Generic
+0x008C0DD0|GPUImageTODO: GERenderImageProcess<TApi>::SetupDrawingState:fTexAlphaId
+0x008C0E20|GPUImageTODO: Unsupported GERenderImageProcess<TApi>::SetupDrawingState
+0x008C0E80|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\image\common\GERenderImage_Advanced.cpp
+0x008C0F00|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\image\common\GEUploadImageProcess_Advanced.cpp
+0x008C0F70|GPUImageTODO: GEUploadImageProcess<TApi>::UploadTexture::UseTextureSwizzle()
+0x008E2F7C|float4 blendVal = tex2D(spotTexSampler, gl_TexCoord[1].st);
+0x008E2FB9|fgColor *= blendVal;
+0x00909B9B|/*if(fgColor.w == 0.0) discard; Path rendering needs the fragment for stencil update*/
+0x00959CDE|vec4 fragmentPosition = vec4(vertex_buffer[vertexOffset], vertex_buffer[vertexOffset + 1], 0.0f, 1.0f);
+0x00959D53|newpos.x = dot(g_mCurveToPixelProjection1, fragmentPosition);
+0x00959D91|newpos.y = dot(g_mCurveToPixelProjection2, fragmentPosition);
+0x00959DE4|fragmentPosition = vec4(vertex_buffer[vertexOffset + 2], vertex_buffer[vertexOffset + 3], 0.0f, 1.0f);
+0x00959EDC|fragmentPosition = vec4(vertex_buffer[vertexOffset + 4], vertex_buffer[vertexOffset + 5], 0.0f, 1.0f);
+0x0095B1C5|vec4 fragmentPosition = vec4(in_core_vertex_0.xy, 0.0f, 1.0f);
+0x0095B2A2|fragmentPosition = vec4(in_core_vertex_1.xy, 0.0f, 1.0f);
+0x0095B36D|fragmentPosition = vec4(in_core_vertex_2.xy, 0.0f, 1.0f);
+0x0097BCDD|float4 blendVal = tex2D(spotTexSampler, varying_core_texCoord1.st);
+0x00A62298|float getSignedDistance(vec2 p, vec2 varying_core_base_vertex0_geom, vec2 varying_core_base_vertex1_geom,vec2 varying_core_base_vertex2_geom, float fr
+0x00A629B6|    return fragmentTexture_Z * implicitSign * length(distanceVector);
+0x00A629FE|float funcCustomAACoverage(vec2 fragmentPosition, vec2 vertex0_fragmentPostion, vec2 vertex1_fragmentPostion, vec2 vertex2_fragmentPostion, float shap
+0x00A62B4E|    if (fragmentTexture_Z == 0.0)
+0x00A62B89|    float sd = getSignedDistance(fragmentPosition.xy, vertex0_fragmentPostion, vertex1_fragmentPostion, vertex2_fragmentPostion, fragmentTexture_Z, fr
+0x00A62C59|    if ((fragmentPremitive_isLine == 0 || fragmentPremitive_notDegenerate == 0) && sd > 1e-3 && (fragmentBarycentricCoords.x < -1e-1 || fragmentBaryce
+0x00AA3AAE|        // The CAGMImage constructed for this has color components swapped
+0x00AA474A|       float normalIntercept0 = coordsArray[0].y - normalSlope * coordsArray[0].x;
+0x00AA479D|       float normalIntercept1 = coordsArray[3].y - normalSlope * coordsArray[3].x;
+0x00AA48D2|       y0 = normalSlope * x0 + normalIntercept0;
+0x00AA4903|       y1 = normalSlope * x1 + normalIntercept0;
+0x00AA4934|       y2 = normalSlope * x2 + normalIntercept1;
+0x00AA4965|       y3 = normalSlope * x3 + normalIntercept1;
+0x00AA9C5C|#define computeVaryingsFast(isLineSegOrDegenerate, sourceVertexIndex, sourceVertexUserSpacePos) 
+0x00AB5B06|float4 blendVal = tex2D(blendTexSampler, blendCoord);
+0x00AD9058|beginFragmentShaderOrderingINTEL();
+0x00AD9080|//beginFragmentShaderOrderingINTEL();
+0x00AD90A8|#extension GL_INTEL_fragment_shader_ordering  : enable
+0x00AD90E0|//#extension GL_INTEL_fragment_shader_ordering  : enable
+0x00AD9140|AGMGLWrapper::AGMGL_glUniform1i(GetColorPlaneUniformLocation(), rState.GetNumColorPlanes())
+0x00AD91B0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\shaders\GEShaderProgram.cpp
+0x00AD9240|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\GEShaderProgram.h
+0x00ADAE30|AGMGLWrapper::AGMGL_glUseProgram(glProgram)
+0x00ADAE60|AGMGLWrapper::AGMGL_glUniform1i((GLint)param, unit)
+0x00ADAEC0|AGMGLWrapper::AGMGL_glShaderSource(object, 1, &shaderSource, &length)
+0x00ADAF08|AGMGLWrapper::AGMGL_glCompileShader(object)
+0x00ADB020|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\shaders\ShadingEffect_GLSL.cpp
+0x00ADB160|AGMGLWrapper::AGMGL_glLinkProgram(m_glprogram)
+0x00ADB460|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\filters\A85DataFilter.cpp
+0x00ADB7A0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\filters\RLDataFilter.cpp
+0x00ADB9D0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\trapping\OnHostTrapSink.cpp
+0x00ADD647|< category bindata oneof [ AGMFontServer ] > FontList < category array membertype string > JobFontList < category array membertype bibobjref > FontDic
+0x00ADE4E8|OPIHandlerDict  > >PrintWhatEnum             < category string oneof [ Document DocumentAndComments DocumentAndStamps FormFieldsOnly ] > PageSizeDict 
+0x00ADED83|< category real min 0 > DevicePixelSize
+0x00ADF5A2|DevicePixelSize ConvertAllDashes
+0x00ADF63F|DevicePixelSize TrueTypeThreshold
+0x00ADF663|DevicePixelSize CIDThreshold
+0x00ADF683|DevicePixelSize ATCThreshold
+0x00ADF6A3|DevicePixelSize > > DrawPageFilterParams
+0x00ADF71A|TextToFillParams > > ColorSpaceEnum < category string oneof [ Gray RGB CMYK ] > ColorSpaceParams
+0x00ADF808|ColorSpaceParams DestinationColorSpace
+0x00ADF82F|ColorSpaceParams UnusedInks
+0x00ADF84E|NameList > optional < PreferDestColorSpaceWhenUsingDIC bool HasOutputIntent bool PageLevelBlendingCS ColorSpaceParams > > ArrayofRects
+0x00AE0060|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\trapping\OnHostTrappingObjects.cpp
+0x00AE01B0|AGMATRFileStream::downcast: Bad downcast
+0x00AE01E0|AGMATRFileStream tried to act on a closed file
+0x00AE0210|AGMATRFileStream::fseek: bad origin
+0x00AE0238|AGMATRMemSys::downcast: Bad downcast
+0x00AE0260|AGMATRFileSys::downcast: Bad downcast
+0x00AE0710|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\trapping\TrapEngineWrapper.cpp
+0x00AE07AF|?D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\trapping\TrapRecorderImage.cpp
+0x00AE1418|GetAGMTrapRecorderPort
+0x00AE1500|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\trapping\TrapRecorderPort.cpp
+0x00AE15E8|Unknown AGMEPSClientInjectionType
+0x00AE17C0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\trapping\inc\TrapShadeSink.h
+0x00AE1CC0|colorSpaceAndValuesToATRColor
+0x00AE1F50|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\trapping\TrapShadeColorMgr.cpp
+0x00AE2050|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\trapping\TrapShadeFlattenPatch.cpp
+0x00AE2290|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\trapping\TrapShadeFlattenQuad.cpp
+0x00AE2350|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\trapping\TrapShadeMark.cpp
+0x00AE26A1|//Adobe_AGM_Core/AGMCORE_SpotAliasAry xddf
+0x00AE2701|/AGMCORE_SpotAliasAry where{pop AGMCORE_SpotAliasAry length add}if
+0x00AE2751|//Adobe_AGM_Core/AGMCORE_SpotAliasAry2 xddf
+0x00AE2781|/AGMCORE_SpotAliasAry where{
+0x00AE27A2|AGMCORE_SpotAliasAry2 0 AGMCORE_SpotAliasAry putinterval
+0x00AE27E2|AGMCORE_SpotAliasAry length
+0x00AE2811|AGMCORE_SpotAliasAry2 3 1 roll exch putinterval
+0x00AE28C1|/AGMCORE_SpotAliasAry2 where{
+0x00AE28E2|/AGMCORE_current_spot_alias 3 -1 roll put
+0x00AE292A|/AGMCORE_current_spot_alias get
+0x00AE2963|/AGMCORE_name xdf
+0x00AE298B|AGMCORE_SpotAliasAry2{
+0x00AE29AC|dup/Name get AGMCORE_name eq{
+0x00AE2A39|/AGMCORE_&setcustomcolor AGMCORE_key_known not{
+0x00AE2A72|//Adobe_AGM_Core/AGMCORE_&setcustomcolor/setcustomcolor load put
+0x00AE2AB9|//Adobe_AGM_Core begin
+0x00AE2AD2|dup/customcolor_tint exch AGMCORE_gput
+0x00AE2BAB|/sep_colorspace_dict AGMCORE_gget null ne
+0x00AE2BE3|{/sep_colorspace_dict AGMCORE_gget/ForeignContent known not}{false}ifelse
+0x00AE2C4C|exch pop/sep_tint AGMCORE_gget exch
+0x00AE2CD3|not{/sep_tint 1.0 AGMCORE_gput/sep_colorspace_dict AGMCORE_gget/ForeignContent true put}if
+0x00AE2D4B|AGMCORE_&setcustomcolor
+0x00AE2D79|Adobe_AGM_Core/AGMCORE_feature_dictCount countdictstack put
+0x00AE2DB9|count Adobe_AGM_Core/AGMCORE_feature_opCount 3 -1 roll put
+0x00AE2E01|{Adobe_AGM_Core/AGMCORE_feature_ctm matrix currentmatrix put}if
+0x00AE2ED1|count Adobe_AGM_Core/AGMCORE_feature_opCount get sub dup 0 gt{{pop}repeat}{pop}ifelse
+0x00AE2F31|countdictstack Adobe_AGM_Core/AGMCORE_feature_dictCount get sub dup 0 gt{{end}repeat}{pop}ifelse
+0x00AE2F99|{Adobe_AGM_Core/AGMCORE_feature_ctm get setmatrix}if
+0x00AE2FE1|/AGMCORE_inverting exch def
+0x00AE3002|currentpagedevice/NegativePrint known AGMCORE_distilling not and{
+0x00AE3053|currentpagedevice/NegativePrint get//Adobe_AGM_Core/AGMCORE_inverting get ne{
+0x00AE30D6|<</NegativePrint//Adobe_AGM_Core/AGMCORE_inverting get>>setpagedevice
+0x00AE313B|/AGMCORE_inverting false def
+0x00AE3159|AGMCORE_inverting{
+0x00AE31BB|AGMCORE_distilling{
+0x00AE324C|/AGMIRS_&fill where{pop AGMIRS_&fill}{fill}ifelse grestore
+0x00AE3511|Adobe_AGM_Core/AGMCORE_Default_CTM matrix currentmatrix put
+0x00AE3562|{Adobe_AGM_Core/AGMCORE_Default_PageSize currentpagedevice/PageSize get put}if
+0x00AE3623|Adobe_AGM_Core/save_mysetup Pscript_Win_Data/mysetup get put
+0x00AE367B|Adobe_AGM_Core/save_mysetup known{
+0x00AE36A4|Pscript_Win_Data/mysetup Adobe_AGM_Core/save_mysetup get put
+0x00AE36EC|Adobe_AGM_Core/save_mysetup undef
+0x00AE3762|Adobe_AGM_Core/AGMCORE_Default_CTM get matrix currentmatrix ne
+0x00AE37B2|Adobe_AGM_Core/AGMCORE_Default_PageSize get type/arraytype eq
+0x00AE37F3|Adobe_AGM_Core/AGMCORE_Default_PageSize get 0 get currentpagedevice/PageSize get 0 get eq and
+0x00AE3863|Adobe_AGM_Core/AGMCORE_Default_PageSize get 1 get currentpagedevice/PageSize get 1 get eq and
+0x00AE38CB|Adobe_AGM_Core/AGMCORE_Default_CTM get setmatrix
+0x00AE3900|AGMCORE_err_strings begin
+0x00AE3921|/AGMCORE_bad_environ(Environment not satisfactory for this job. Ensure that the PPD is correct or that the PostScript level requested is supported by 
+0x00AE39D1|/AGMCORE_color_space_onhost_seps(This job contains colors that will not separate with on-host methods. )def
+0x00AE3A41|/AGMCORE_invalid_color_space(This job contains an invalid color space. )def
+0x00AE3AA8|{AGMCORE_def_ht sethalftone}def
+0x00AE3AD8|{AGMCORE_Default_flatness setflat}def
+0x00AE3B20|%%BeginResource: procset Adobe_AGM_Core 2.0 0
+0x00AE3C08|userdict/Adobe_AGM_Core 209 dict dup begin put
+0x00AE3C38|/Adobe_AGM_Core_Id/Adobe_AGM_Core_2.0_0 def
+0x00AE3C68|/AGMCORE_str256 256 string def
+0x00AE3C88|/AGMCORE_save nd
+0x00AE3CA0|/AGMCORE_graphicsave nd
+0x00AE3CB8|/AGMCORE_c 0 def
+0x00AE3CD0|/AGMCORE_m 0 def
+0x00AE3CE8|/AGMCORE_y 0 def
+0x00AE3D00|/AGMCORE_k 0 def
+0x00AE3D18|/AGMCORE_cmykbuf 4 array def
+0x00AE3D38|/AGMCORE_screen[currentscreen]cvx def
+0x00AE3D60|/AGMCORE_tmp 0 def
+0x00AE3D78|/AGMCORE_&setgray nd
+0x00AE3D90|/AGMCORE_&setcolor nd
+0x00AE3DA8|/AGMCORE_&setcolorspace nd
+0x00AE3DC8|/AGMCORE_&setcmykcolor nd
+0x00AE3DE8|/AGMCORE_cyan_plate nd
+0x00AE3E00|/AGMCORE_magenta_plate nd
+0x00AE3E20|/AGMCORE_yellow_plate nd
+0x00AE3E40|/AGMCORE_black_plate nd
+0x00AE3E58|/AGMCORE_plate_ndx nd
+0x00AE3E70|/AGMCORE_get_ink_data nd
+0x00AE3E90|/AGMCORE_is_cmyk_sep nd
+0x00AE3EA8|/AGMCORE_host_sep nd
+0x00AE3EC0|/AGMCORE_avoid_L2_sep_space nd
+0x00AE3EE0|/AGMCORE_distilling nd
+0x00AE3EF8|/AGMCORE_composite_job nd
+0x00AE3F18|/AGMCORE_producing_seps nd
+0x00AE3F38|/AGMCORE_ps_level -1 def
+0x00AE3F58|/AGMCORE_ps_version -1 def
+0x00AE3F78|/AGMCORE_environ_ok nd
+0x00AE3F90|/AGMCORE_CSD_cache 0 dict def
+0x00AE3FB0|/AGMCORE_currentoverprint false def
+0x00AE3FD8|/AGMCORE_deltaX nd
+0x00AE3FF0|/AGMCORE_deltaY nd
+0x00AE4008|/AGMCORE_name nd
+0x00AE4020|/AGMCORE_sep_special nd
+0x00AE4038|/AGMCORE_err_strings 4 dict def
+0x00AE4058|/AGMCORE_cur_err nd
+0x00AE4070|/AGMCORE_current_spot_alias false def
+0x00AE40B8|/AGMCORE_feature_dictCount nd
+0x00AE40D8|/AGMCORE_feature_opCount nd
+0x00AE40F8|/AGMCORE_feature_ctm nd
+0x00AE4110|/AGMCORE_ConvertToProcess false def
+0x00AE4138|/AGMCORE_Default_CTM matrix def
+0x00AE4158|/AGMCORE_Default_PageSize nd
+0x00AE4178|/AGMCORE_Default_flatness nd
+0x00AE4198|/AGMCORE_currentbg nd
+0x00AE41B0|/AGMCORE_currentucr nd
+0x00AE41C8|/AGMCORE_pattern_paint_type 0 def
+0x00AE42C0|/AGMCORE_key_known
+0x00AE42E2|/Adobe_AGM_Core_Id known
+0x00AE4489|AGMCORE_screen exch pop exch pop
+0x00AE46B9|/AGMCORE_graphicsave save store
+0x00AE4781|//Adobe_AGM_Core/spot_alias gx
+0x00AE47A1|/Adobe_AGM_Image where{
+0x00AE47CA|Adobe_AGM_Image/spot_alias 2 copy known{
+0x00AE4811|/sep_colorspace_dict null AGMCORE_gput
+0x00AE48C9|AGMCORE_graphicsave restore
+0x00AE4951|/AGMCORE_deltaY 100 def
+0x00AE4971|/AGMCORE_deltaX 310 def
+0x00AE49D1|0 AGMCORE_deltaY rlineto AGMCORE_deltaX 0 rlineto
+0x00AE4A11|0 AGMCORE_deltaY neg rlineto AGMCORE_deltaX neg 0 rlineto closepath
+0x00AE4A59|0 AGMCORE_&setgray
+0x00AE4A71|gsave 1 AGMCORE_&setgray fill grestore 
+0x00AE4AC9|currentpoint AGMCORE_deltaY 15 sub add exch 8 add exch moveto
+0x00AE4B09|/AGMCORE_deltaY 12 def
+0x00AE4B39|AGMCORE_err_strings exch get
+0x00AE4B7B|AGMCORE_str256 0 AGMCORE_tmp getinterval
+0x00AE4BB3|stringwidth pop currentpoint pop add AGMCORE_deltaX 28 add gt
+0x00AE4BFC|currentpoint AGMCORE_deltaY sub exch pop
+0x00AE4C6B|AGMCORE_str256 0 AGMCORE_tmp getinterval show( )show
+0x00AE4CA3|0 1 AGMCORE_str256 length 1 sub
+0x00AE4CCC|AGMCORE_str256 exch 0 put
+0x00AE4D14|AGMCORE_str256 exch AGMCORE_tmp xpt
+0x00AE4D3C|/AGMCORE_tmp AGMCORE_tmp 1 add def
+0x00AE4D70|/AGMCORE_CMYKDeviceNColorspaces[
+0x00AE5121|Adobe_AGM_Core begin
+0x00AE51D9|/AGMCORE_ps_version xdf
+0x00AE51F9|/AGMCORE_ps_level xdf
+0x00AE5211|errordict/AGM_handleerror known not{
+0x00AE523A|errordict/AGM_handleerror errordict/handleerror get put
+0x00AE52B3|$error/newerror get AGMCORE_cur_err null ne and{
+0x00AE530C|AGMCORE_cur_err compose_error_msg
+0x00AE5363|errordict/AGM_handleerror get exec
+0x00AE53A1|/AGMCORE_environ_ok 
+0x00AE53BA|ps_level AGMCORE_ps_level ge
+0x00AE53DA|ps_version AGMCORE_ps_version ge and 
+0x00AE5402|AGMCORE_ps_level -1 eq or
+0x00AE5429|AGMCORE_environ_ok not
+0x00AE5442|{/AGMCORE_cur_err/AGMCORE_bad_environ def}if
+0x00AE5471|/AGMCORE_&setgray systemdict/setgray get def
+0x00AE54B2|/AGMCORE_&setcolor systemdict/setcolor get def
+0x00AE54EA|/AGMCORE_&setcolorspace systemdict/setcolorspace get def
+0x00AE5529|/AGMCORE_currentbg currentblackgeneration def
+0x00AE5559|/AGMCORE_currentucr currentundercolorremoval def
+0x00AE5591|/AGMCORE_Default_flatness currentflat def
+0x00AE55C1|/AGMCORE_distilling
+0x00AE5659|/AGMCORE_GSTATE AGMCORE_key_known not{
+0x00AE5682|/AGMCORE_GSTATE 21 dict def
+0x00AE56A2|/AGMCORE_tmpmatrix matrix def
+0x00AE56C2|/AGMCORE_gstack 64 array def
+0x00AE56E2|/AGMCORE_gstackptr 0 def
+0x00AE5702|/AGMCORE_gstacksaveptr 0 def
+0x00AE5722|/AGMCORE_gstackframekeys 14 def
+0x00AE574A|/AGMCORE_&gsave/gsave ldf
+0x00AE576A|/AGMCORE_&grestore/grestore ldf
+0x00AE5792|/AGMCORE_&grestoreall/grestoreall ldf
+0x00AE57BA|/AGMCORE_&save/save ldf
+0x00AE57DA|/AGMCORE_&setoverprint/setoverprint ldf
+0x00AE580A|/AGMCORE_gdictcopy{
+0x00AE584A|/AGMCORE_gput{
+0x00AE5863|AGMCORE_gstack AGMCORE_gstackptr get
+0x00AE58A2|/AGMCORE_gget{
+0x00AE58DB|AGMCORE_&gsave
+0x00AE58F3|AGMCORE_gstackptr 1 add
+0x00AE5933|/AGMCORE_gstackptr exch store
+0x00AE595B|AGMCORE_gdictcopy
+0x00AE5983|AGMCORE_&grestore
+0x00AE599B|AGMCORE_gstackptr 1 sub
+0x00AE59BB|dup AGMCORE_gstacksaveptr lt{1 add}if
+0x00AE59F3|dup AGMCORE_gstack exch get dup/AGMCORE_currentoverprint known
+0x00AE5A3C|{/AGMCORE_currentoverprint get setoverprint}{pop}ifelse
+0x00AE5A8B|AGMCORE_&grestoreall
+0x00AE5AA3|/AGMCORE_gstackptr AGMCORE_gstacksaveptr store 
+0x00AE5AEB|AGMCORE_&save
+0x00AE5B03|/AGMCORE_gstacksaveptr AGMCORE_gstackptr store
+0x00AE5B53|dup/AGMCORE_currentoverprint exch AGMCORE_gput AGMCORE_&setoverprint
+0x00AE5BA2|0 1 AGMCORE_gstack length 1 sub{
+0x00AE5BCC|AGMCORE_gstack exch AGMCORE_gstackframekeys dict put
+0x00AE5C11|level3/AGMCORE_&sysshfill AGMCORE_key_known not and
+0x00AE5C4A|/AGMCORE_&sysshfill systemdict/shfill get def
+0x00AE5C7A|/AGMCORE_&sysmakepattern systemdict/makepattern get def
+0x00AE5CBA|/AGMCORE_&usrmakepattern/makepattern load def
+0x00AE5CE9|/currentcmykcolor[0 0 0 0]AGMCORE_gput
+0x00AE5D11|/currentstrokeadjust false AGMCORE_gput
+0x00AE5D41|/currentcolorspace[/DeviceGray]AGMCORE_gput
+0x00AE5D71|/sep_tint 0 AGMCORE_gput
+0x00AE5D91|/devicen_tints[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]AGMCORE_gput
+0x00AE5DF1|/devicen_colorspace_dict null AGMCORE_gput
+0x00AE5E21|/indexed_colorspace_dict null AGMCORE_gput
+0x00AE5E51|/currentcolor_intent()AGMCORE_gput
+0x00AE5E79|/customcolor_tint 1 AGMCORE_gput
+0x00AE5EA1|/absolute_colorimetric_crd null AGMCORE_gput
+0x00AE5ED1|/relative_colorimetric_crd null AGMCORE_gput
+0x00AE5F01|/saturation_crd null AGMCORE_gput
+0x00AE5F29|/perceptual_crd null AGMCORE_gput
+0x00AE5F51|currentcolortransfer cvlit/AGMCore_gray_xfer xdf cvlit/AGMCore_b_xfer xdf
+0x00AE5FA2| cvlit/AGMCore_g_xfer xdf cvlit/AGMCore_r_xfer xdf
+0x00AE6052|Adobe_AGM_Core/AGMCORE_&setcmykcolor/setcmykcolor load put
+0x00AE60A2|4 copy AGMCORE_cmykbuf astore/currentcmykcolor exch AGMCORE_gput
+0x00AE6182|/currentcmykcolor AGMCORE_gget aload pop
+0x00AE61F9|/AGMCORE_cyan_plate 1 0 0 0 test_cmyk_color_plate def
+0x00AE6231|/AGMCORE_magenta_plate 0 1 0 0 test_cmyk_color_plate def
+0x00AE6271|/AGMCORE_yellow_plate 0 0 1 0 test_cmyk_color_plate def
+0x00AE62B1|/AGMCORE_black_plate 0 0 0 1 test_cmyk_color_plate def
+0x00AE62E9|/AGMCORE_plate_ndx 
+0x00AE6302|AGMCORE_cyan_plate{
+0x00AE6323|AGMCORE_magenta_plate{
+0x00AE634C|AGMCORE_yellow_plate{
+0x00AE637D|AGMCORE_black_plate{
+0x00AE63C1|/AGMCORE_have_reported_unsupported_color_space false def
+0x00AE6401|/AGMCORE_report_unsupported_color_space
+0x00AE6432|AGMCORE_have_reported_unsupported_color_space false eq
+0x00AE6513|Adobe_AGM_Core/AGMCORE_have_reported_unsupported_color_space true ddf
+0x00AE6569|/AGMCORE_composite_job
+0x00AE6582|AGMCORE_cyan_plate AGMCORE_magenta_plate and AGMCORE_yellow_plate and AGMCORE_black_plate and def
+0x00AE65E9|/AGMCORE_in_rip_sep
+0x00AE6602|/AGMCORE_in_rip_sep where{
+0x00AE6623|pop AGMCORE_in_rip_sep
+0x00AE6643|AGMCORE_distilling 
+0x00AE666C|userdict/Adobe_AGM_OnHost_Seps known{
+0x00AE6751|/AGMCORE_producing_seps AGMCORE_composite_job not AGMCORE_in_rip_sep or def
+0x00AE67A1|/AGMCORE_host_sep AGMCORE_producing_seps AGMCORE_in_rip_sep not and def
+0x00AE67F1|/AGM_preserve_spots 
+0x00AE680A|/AGM_preserve_spots where{
+0x00AE682B|pop AGM_preserve_spots
+0x00AE684B|AGMCORE_distilling AGMCORE_producing_seps or
+0x00AE6879|/AGM_is_distiller_preserving_spotimages
+0x00AE6A9C|AGMCORE_host_sep
+0x00AE6C9D|AGMCORE_distilling
+0x00AE6CB6|pop AGM_is_distiller_preserving_spotimages not
+0x00AE6CEE|//Adobe_AGM_Core/AGMCORE_name xddf
+0x00AE6D1E|//Adobe_AGM_Core/AGMCORE_pattern_paint_type get 0 eq
+0x00AE6D5E|AGMUTIL_cpd/OverrideSeparations known and
+0x00AE6D97|AGMUTIL_cpd/OverrideSeparations get
+0x00AE6E67|AGMCORE_name/HqnSpots/ProcSet findresource/TestSpot gx not
+0x00AE6EC7|[/Separation AGMCORE_name/DeviceGray{}]AGMCORE_&setcolorspace
+0x00AE6F1F|AGMUTIL_cpd/SeparationColorNames 2 copy known
+0x00AE6F68|{AGMCORE_name eq or}forall
+0x00AE72E9|/AGMCORE_avoid_L2_sep_space 
+0x00AE7332|AGMCORE_producing_seps not and
+0x00AE7359|/AGMCORE_is_cmyk_sep
+0x00AE7372|AGMCORE_cyan_plate AGMCORE_magenta_plate or AGMCORE_yellow_plate or AGMCORE_black_plate or
+0x00AE73D1|/AGM_avoid_0_cmyk where{
+0x00AE73F2|pop AGM_avoid_0_cmyk
+0x00AE740A|AGM_preserve_spots 
+0x00AE7422|userdict/Adobe_AGM_OnHost_Seps known 
+0x00AE744A|userdict/Adobe_AGM_InRip_Seps known or
+0x00AE74FB|/AGMCORE_&setcmykcolor load dup type/operatortype ne{
+0x00AE7559|/AGMCORE_IsSeparationAProcessColor
+0x00AE75D1|AGMCORE_host_sep{
+0x00AE771A|/AGMCORE_get_ink_data
+0x00AE77AA|/AGMCORE_RemoveProcessColorNames
+0x00AE797B|/AGMCORE_IsCurrentColor
+0x00AE799C|dup AGMCORE_IsSeparationAProcessColor
+0x00AE79CD|AGMCORE_plate_ndx 0 eq
+0x00AE7A15|AGMCORE_plate_ndx 1 eq
+0x00AE7A65|AGMCORE_plate_ndx 2 eq
+0x00AE7AB5|AGMCORE_plate_ndx 3 eq
+0x00AE7AFD|AGMCORE_plate_ndx 4 eq
+0x00AE7BEB|/AGMCORE_filter_functiondatasource
+0x00AE7EC3|/AGMCORE_separateShadingFunction
+0x00AE7F76|/DataSource channel Range length 2 idiv DataSource AGMCORE_filter_functiondatasource def
+0x00AE8166|/Functions[Functions{channel paint? AGMCORE_separateShadingFunction}forall]def
+0x00AE8225|channel get 0 paint? AGMCORE_separateShadingFunction
+0x00AE8263|/AGMCORE_separateShading
+0x00AE8335|Function 3 1 roll AGMCORE_separateShadingFunction/Function xdf
+0x00AE8436|ColorSpace dup 1 get AGMCORE_RemoveProcessColorNames 1 exch put
+0x00AE865B|/AGMCORE_separateShadingDict
+0x00AE86FD|AGMCORE_cyan_plate
+0x00AE872D|AGMCORE_magenta_plate
+0x00AE8765|AGMCORE_yellow_plate
+0x00AE879D|AGMCORE_black_plate
+0x00AE8816|{/AGMCORE_ignoreshade true def}if
+0x00AE883D|AGMCORE_separateShading
+0x00AE88E6|ColorSpace 1 get AGMCORE_IsCurrentColor AGMCORE_plate_ndx 4 lt and ColorSpace 1 get AGMCORE_IsSeparationAProcessColor not and
+0x00AE8A72|4 AGMCORE_plate_ndx sub -1/roll cvx
+0x00AE8B38|AGMCORE_report_unsupported_color_space
+0x00AE8B68|AGMCORE_black_plate not
+0x00AE8B99|currentdict 0 false AGMCORE_separateShading
+0x00AE8BEF|currentdict ColorSpace 1 get AGMCORE_IsCurrentColor
+0x00AE8FAF|AGMCORE_IsCurrentColor
+0x00AE9364|dup/AGMCORE_ignoreshade known
+0x00AE93EC|AGMCORE_separateShadingDict 
+0x00AE9425|{AGMCORE_&sysshfill}ifelse
+0x00AE9495|/Shading Shading AGMCORE_separateShadingDict def
+0x00AE94CD|Shading/AGMCORE_ignoreshade known
+0x00AE957D|exch AGMCORE_&sysmakepattern
+0x00AE95A5|exch AGMCORE_&usrmakepattern
+0x00AE95C9|AGMCORE_in_rip_sep{
+0x00AE96CD|/AGMCORE_k xdf/AGMCORE_y xdf/AGMCORE_m xdf/AGMCORE_c xdf
+0x00AE9734|{dup AGMCORE_c mul exch dup AGMCORE_m mul exch dup AGMCORE_y mul exch AGMCORE_k mul}
+0x00AE9833|AGMCORE_&setgray
+0x00AE990B|AGMCORE_producing_seps{
+0x00AE9AEA|level2/setcolorspace AGMCORE_key_known not and{
+0x00AE9B23|/AGMCORE_&&&setcolorspace/setcolorspace ldf
+0x00AE9B53|/AGMCORE_ReplaceMappedColor
+0x00AE9D01|/sep_colorspace_dict currentdict AGMCORE_gput
+0x00AEA037|AGMCORE_ReplaceMappedColor
+0x00AEA0A4|DeviceN_PS2_inRip_seps{AGMCORE_&&&setcolorspace}if
+0x00AEA1EB|/currentstrokeadjust AGMCORE_gget
+0x00AEA22B|/currentstrokeadjust exch AGMCORE_gput
+0x00AEA273|/currentcolorspace exch AGMCORE_gput
+0x00AEA2B3|/currentcolorspace AGMCORE_gget
+0x00AEA540|/AGMCORE_cur_err/AGMCORE_invalid_color_space def
+0x00AEA580|AGMCORE_invalid_color_space
+0x00AEA6A2|/currentcolorspace[/DeviceCMYK]/AGMCORE_gput cvx
+0x00AEA729|level3 AGMCORE_host_sep not and{
+0x00AEA863|AGMCORE_CMYKDeviceNColorspaces sum get setcolorspace
+0x00AEAAF1|/AGMCORE_def_ht currenthalftone def
+0x00AEAB19|/clonedict Adobe_AGM_Utils begin/clonedict load end def
+0x00AEAB59|/clonearray Adobe_AGM_Utils begin/clonearray load end def
+0x00AEC911|//Adobe_AGM_Core/AGMCORE_save save put
+0x00AEC941|//Adobe_AGM_Core/AGMCORE_save get restore
+0x00AECAA9|dup//Adobe_AGM_Core/AGMCORE_name xddf
+0x00AECC21|/sep_colorspace_dict AGMCORE_gget begin
+0x00AECC52|dup/sep_tint exch AGMCORE_gput
+0x00AECCA1|/devicen_colorspace_dict AGMCORE_gget begin
+0x00AECD0B|/devicen_tints AGMCORE_gget 3 1 roll xpt
+0x00AECD51|/AGMCORE_tmp exch store
+0x00AECDC3|2{AGMCORE_tmp mul NComponents 1 roll}repeat
+0x00AECDF3|LMax sub AGMCORE_tmp mul LMax add NComponents 1 roll
+0x00AECE65|AGMCORE_tmp mul NComponents 1 roll
+0x00AECE9D|1 sub AGMCORE_tmp mul 1 add NComponents 1 roll
+0x00AECED2|ColorLookup AGMCORE_tmp ColorLookup length 1 sub mul round cvi get
+0x00AECF51|GrayLookup AGMCORE_tmp GrayLookup length 1 sub mul round cvi get
+0x00AED0C9|dup/sep_colorspace_dict exch AGMCORE_gput
+0x00AED109|/AGMCORE_sep_special Name dup()eq exch(All)eq or store
+0x00AED141|AGMCORE_avoid_L2_sep_space{
+0x00AED26A|AGMCORE_sep_special not and{
+0x00AED30C|AGMCORE_host_sep Name(All)eq and{
+0x00AED384|AGMCORE_in_rip_sep MappedCSA 0 get/DeviceCMYK eq and 
+0x00AED3C4|AGMCORE_host_sep or
+0x00AED485|AGMCORE_producing_seps MappedCSA 0 get dup/DeviceCMYK eq exch/DeviceGray eq or and AGMCORE_sep_special not and{
+0x00AED5F8|AGMCORE_is_cmyk_sep
+0x00AED630|/AGMCORE_IsSeparationAProcessColor load/exec cvx
+0x00AEDB11|/devicen_tints AGMCORE_gget names_index get setcustomcolor
+0x00AEE389|dup/devicen_colorspace_dict exch AGMCORE_gput
+0x00AEE9CC|AGMCORE_is_cmyk_sep{
+0x00AEE9ED|dup(Cyan)eq AGMCORE_cyan_plate and exch
+0x00AEEA1D|dup(Magenta)eq AGMCORE_magenta_plate and exch
+0x00AEEA55|dup(Yellow)eq AGMCORE_yellow_plate and exch
+0x00AEEA8D|(Black)eq AGMCORE_black_plate and or or or{
+0x00AEEAC6|/devicen_colorspace_dict AGMCORE_gget/TintProc[
+0x00AEECE4|/devicen_colorspace_dict AGMCORE_gget/names_index names_index put
+0x00AEEE6B|/TintProc level3 not AGMCORE_in_rip_sep and{
+0x00AEEF31|dup/indexed_colorspace_dict exch AGMCORE_gput
+0x00AEF4D3|AGMCORE_host_sep level2 not and{
+0x00AEF607|/indexed_colorspace_dict AGMCORE_gget begin
+0x00AEF7B2|/indexed_colorspace_dict AGMCORE_gget
+0x00AEF8C2|level3 not AGMCORE_in_rip_sep and/indexed_colorspace_dict AGMCORE_gget/CSDBase known and{
+0x00AEF923|/indexed_colorspace_dict AGMCORE_gget/CSDBase get/CSD get_res begin
+0x00AEFAEA|/AGMCORE_CSD_cache load 3 1 roll put
+0x00AEFB6B|{//Adobe_AGM_Core/AGMCORE_CSD_cache get exch undef}forall
+0x00AEFC1B|AGMCORE_CSD_cache exch get
+0x00AF049B|/absolute_colorimetric_crd AGMCORE_gget dup null eq
+0x00AF04FC|/relative_colorimetric_crd AGMCORE_gget dup null eq
+0x00AF0555|/saturation_crd AGMCORE_gget dup null eq
+0x00AF058D|/perceptual_crd AGMCORE_gget dup null eq
+0x00AF074D|/absolute_colorimetric_crd exch AGMCORE_gput
+0x00AF07AE|/relative_colorimetric_crd exch AGMCORE_gput
+0x00AF0807|/saturation_crd exch AGMCORE_gput
+0x00AF0837|Intent/Perceptual eq
+0x00AF0858|/perceptual_crd exch AGMCORE_gput
+0x00AF0DC9|AGMCORE_host_sep not level2 and{
+0x00AF0F2C|{/UCR}{/AGMCORE_currentucr}ifelse
+0x00AF0F94|{/BG}{/AGMCORE_currentbg}ifelse
+0x00AF0FF1|dup null eq {pop /AGMCORE_currentbg load}{/Procedure get_res}ifelse
+0x00AF1081|dup null eq {pop /AGMCORE_currentucr load}{/Procedure get_res}ifelse
+0x00AF11F1|convert_to_process//Adobe_AGM_Core/AGMCORE_ConvertToProcess xddf
+0x00AF1239|//Adobe_AGM_Core/AGMCORE_ConvertToProcess get not
+0x00AF12A1|//Adobe_AGM_Core/AGMCORE_ConvertToProcess get
+0x00AF1308|%%BeginResource: procset Adobe_AGM_InRip_Seps 1.0 0
+0x00AF13A8|userdict/Adobe_AGM_InRip_Seps 117 dict dup begin put
+0x00AF1599|Adobe_AGM_InRip_Seps{
+0x00AF15B1|Adobe_AGM_InRip_Seps begin
+0x00AF15E1|Adobe_AGM_InRip_Seps/AGMIRS_inkArray xddf
+0x00AF1611|Adobe_AGM_InRip_Seps/AGMIRS_inkArray[AGMIRS_inkArray{map_reserved_ink_name}forall]put
+0x00AF16BA|/SeparationColorNames AGMIRS_inkArray
+0x00AF16E2|/SeparationOrder[AGMIRS_inkArray 0 get]
+0x00AF1712|Adobe_AGM_Core/AGMCORE_colorantDetails known{
+0x00AF1774|/ColorantDetails Adobe_AGM_Core/AGMCORE_colorantDetails get
+0x00AF17B4|/TrappingOrder[AGMIRS_inkArray 0 get]
+0x00AF1891|/AGMIRS_inkArray xdf
+0x00AF18C2|/SeparationOrder AGMIRS_inkArray
+0x00AF1921|[/Separation/All/DeviceCMYK{dup dup dup}]AGMIRS_&setcolorspace
+0x00AF1961|0 setcolor AGMIRS_&fill
+0x00AF1992|dup/DeviceGray eq AGMIRS_isDCS? and{
+0x00AF1ADB|DeviceN_PS2_inRip_seps{AGMIRS_&setcolorspace}if
+0x00AF1B19|currentdict Adobe_AGM_InRip_Seps eq{
+0x00AF1B40|/AGMIRS_inkdict nd
+0x00AF1B58|/AGMIRS_halftonedict nd
+0x00AF1B70|/AGMIRS_cname nd
+0x00AF1B88|/AGMIRS_c nd
+0x00AF1B98|/AGMIRS_m nd
+0x00AF1BA8|/AGMIRS_y nd
+0x00AF1BB8|/AGMIRS_k nd
+0x00AF1BC8|/AGMIRS_tint nd
+0x00AF1BD8|/AGMIRS_h nd
+0x00AF1BE8|/AGMIRS_w nd
+0x00AF1BF8|/AGMIRS_bits nd
+0x00AF1C08|/AGMIRS_datasrc nd
+0x00AF1C20|/AGMIRS_sepMX matrix def
+0x00AF1C40|/AGMIRS_isDCS? false def
+0x00AF1C60|/AGMIRS_args 6 array def
+0x00AF1C80|/AGMIRS_inkArray nd
+0x00AF1C98|/AGMIRS_&stroke/stroke ldf
+0x00AF1CB8|/AGMIRS_&fill/fill ldf
+0x00AF1CD0|/AGMIRS_&eofill/eofill ldf
+0x00AF1CF0|/AGMIRS_&show/show ldf
+0x00AF1D08|/AGMIRS_&ashow/ashow ldf
+0x00AF1D28|/AGMIRS_&widthshow/widthshow ldf
+0x00AF1D50|/AGMIRS_&awidthshow/awidthshow ldf
+0x00AF1D78|/AGMIRS_&kshow/kshow ldf
+0x00AF1D98|/AGMIRS_&xshow/xshow ldf
+0x00AF1DB8|/AGMIRS_&yshow/yshow ldf
+0x00AF1DD8|/AGMIRS_&xyshow/xyshow ldf
+0x00AF1DF8|/AGMIRS_&cshow/cshow ldf
+0x00AF1E18|/AGMIRS_&glyphshow/glyphshow ldf
+0x00AF1E40|/AGMIRS_&imagemask/imagemask ldf
+0x00AF1E68|/AGMIRS_&image/image ldf
+0x00AF1E88|/AGMIRS_&setcolorspace/setcolorspace ldf
+0x00AF1EB8|/AGMIRS_&ustroke/ustroke ldf
+0x00AF1ED8|/AGMIRS_&ufill/ufill ldf
+0x00AF1EF8|/AGMIRS_&ueofill/ueofill ldf
+0x00AF1F18|/AGMIRS_&rectstroke/rectstroke ldf
+0x00AF1F40|/AGMIRS_&rectfill/rectfill ldf
+0x00AF1F60|/AGMIRS_&sethsbcolor/sethsbcolor ldf
+0x00AF1F88|/AGMIRS_&currentpagedevice/currentpagedevice ldf
+0x00AF1FC9|/AGMIRS_&shfill/shfill ldf
+0x00AF1FE8|/AGMIRS_&makepattern/makepattern ldf
+0x00AF2021|/AGMIRS_args[3 -1 roll
+0x00AF2049|Adobe_AGM_InRip_Seps 3 1 roll ddf
+0x00AF2078|/AGMIRS_toprocess?
+0x00AF20BA|AGMIRS_inkdict exch known not
+0x00AF2639|AGMIRS_inkdict exch 2 copy known{
+0x00AF2984|/AGMIRS_k xdf/AGMIRS_y xdf/AGMIRS_m xdf/AGMIRS_c xdf
+0x00AF29C3|AGMIRS_k 0 ne
+0x00AF2A2C|{pop AGMIRS_c AGMIRS_m AGMIRS_y AGMIRS_k}]setcolorspace
+0x00AF2A6C|AGMIRS_k setcolor
+0x00AF2AAB|AGMIRS_y 0 ne
+0x00AF2AEC|AGMIRS_y setcolor
+0x00AF2B03|AGMIRS_m 0 ne
+0x00AF2B44|AGMIRS_m setcolor
+0x00AF2B5B|AGMIRS_c 0 eq
+0x00AF2BAC|AGMIRS_c setcolor
+0x00AF2C41|Adobe_AGM_Core/AGMCORE_tmp 0 ddf
+0x00AF2C69|/currentcolorspace AGMCORE_gget 1 get
+0x00AF2CD2|/devicen_tints AGMCORE_gget AGMCORE_tmp get setcolor
+0x00AF2D0A|AGMCORE_tmp 0 ne{true setoverprint}if
+0x00AF2D32|AGMIRS_args length 0 ne{AGMIRS_args aload length index}{dup}ifelse load exec
+0x00AF2D82|Adobe_AGM_Core/AGMCORE_tmp AGMCORE_tmp 1 add ddf
+0x00AF2E2C|AGMIRS_args aload length index load exec
+0x00AF2E83|AGMIRS_c 0 ne
+0x00AF2E9B|AGMIRS_args aload length 1 add -1 roll load exec
+0x00AF2F34| AGMIRS_k setcolor
+0x00AF2F5C| AGMIRS_y setcolor
+0x00AF2F74| AGMIRS_m setcolor
+0x00AF2F8C|AGMIRS_sepMX currentmatrix nulldevice setmatrix
+0x00AF3158|{AGMIRS_&sethsbcolor currentrgbcolor setrgbcolor}def
+0x00AF31B1|dup 7 1 roll AGMIRS_toprocess?
+0x00AF32C2|{dup AGMIRS_c mul exch dup AGMIRS_m mul exch dup AGMIRS_y mul exch AGMIRS_k mul}]
+0x00AF3369|/AGMIRS_&fill
+0x00AF33D9|/AGMIRS_&eofill
+0x00AF33F9|/AGMIRS_&stroke
+0x00AF3419|/AGMIRS_&show 
+0x00AF3461|/AGMIRS_&ashow
+0x00AF3481|/AGMIRS_&widthshow
+0x00AF34B9|/AGMIRS_&awidthshow
+0x00AF34E9|/AGMIRS_&kshow
+0x00AF3501|/AGMIRS_&xshow
+0x00AF3519|/AGMIRS_&yshow
+0x00AF3531|/AGMIRS_&xyshow
+0x00AF3559|/AGMIRS_&glyphshow
+0x00AF3579|/AGMIRS_&cshow
+0x00AF3591|/AGMIRS_&ufill 
+0x00AF35D9|/AGMIRS_&ueofill
+0x00AF3621|/AGMIRS_&ustroke
+0x00AF3661|/AGMIRS_&rectfill
+0x00AF36A1|/AGMIRS_&rectstroke
+0x00AF372B|/AGMIRS_k xdf 
+0x00AF3743|/AGMIRS_y xdf 
+0x00AF375B|/AGMIRS_m xdf 
+0x00AF3773|/AGMIRS_c xdf
+0x00AF378B|AGMIRS_m 0 eq and
+0x00AF37A3|AGMIRS_y 0 eq and
+0x00AF37BB|AGMIRS_k 0 eq and{
+0x00AF37E4|AGMIRS_&imagemask
+0x00AF381D|AGMIRS_c 0 ne{/Cyan}if
+0x00AF383D|AGMIRS_m 0 ne{/Magenta}if
+0x00AF385D|AGMIRS_y 0 ne{/Yellow}if
+0x00AF387D|AGMIRS_k 0 ne{/Black}if
+0x00AF38B6|AGMIRS_k 0 eq{0}{AGMIRS_k mul}ifelse
+0x00AF38E6|AGMIRS_y 0 eq{0}{exch AGMIRS_y mul}ifelse exch
+0x00AF391E|AGMIRS_m 0 eq{0}{3 -1 roll AGMIRS_m mul}ifelse 3 1 roll
+0x00AF3966|AGMIRS_c 0 eq{0}{4 -1 roll AGMIRS_c mul}ifelse 4 1 roll
+0x00AF39C5|AGMIRS_c 0 ne{AGMIRS_c}if
+0x00AF39E5|AGMIRS_m 0 ne{AGMIRS_m}if
+0x00AF3A05|AGMIRS_y 0 ne{AGMIRS_y}if
+0x00AF3A25|AGMIRS_k 0 ne{AGMIRS_k}if
+0x00AF3B26|AGMIRS_k 0 ne{
+0x00AF3BAF|/AGMIRS_&imagemask exch
+0x00AF3BE6|AGMIRS_y 0 ne{
+0x00AF3C6E|AGMIRS_m 0 ne{
+0x00AF3CEE|AGMIRS_c 0 ne{
+0x00AF3E01|/AGMIRS_cname xdf
+0x00AF3E59|AGMIRS_cname AGMIRS_toprocess? not{
+0x00AF3EB3|currentcolorspace 1 get AGMIRS_cname eq
+0x00AF3F13|[/Separation AGMIRS_cname/DeviceCMYK{dup AGMIRS_c mul exch dup AGMIRS_m mul exch dup AGMIRS_y mul exch AGMIRS_k mul}]
+0x00AF3FB2|/AGMIRS_tint exch def
+0x00AF3FCC|[AGMIRS_tint 0]makeimagedict
+0x00AF41F0|AGMIRS_k mul
+0x00AF4240|AGMIRS_y mul
+0x00AF4270|AGMIRS_m mul
+0x00AF42A0|AGMIRS_c mul
+0x00AF42F5|AGMIRS_&image
+0x00AF4347|/Cyan{AGMIRS_c mul 1 AGMIRS_c sub add}modify_halftone_xfer
+0x00AF43B7|/Magenta{AGMIRS_m mul 1 AGMIRS_m sub add}modify_halftone_xfer
+0x00AF4407|/Yellow{AGMIRS_y mul 1 AGMIRS_y sub add}modify_halftone_xfer
+0x00AF4457|/Black{AGMIRS_k mul 1 AGMIRS_k sub add}modify_halftone_xfer
+0x00AF45A9|AGMIRS_isDCS?{
+0x00AF4A72|AGMIRS_&shfill
+0x00AF4AD9|AGMIRS_&makepattern
+0x00AF4B58|/AGMIRS_inverse_map_reserved_ink_name
+0x00AF4C81|AGMIRS_&currentpagedevice
+0x00AF4CF3|/SeparationColorNames[SeparationColorNames{AGMIRS_inverse_map_reserved_ink_name}forall]def
+0x00AF4D91|dict Adobe_AGM_InRip_Seps/AGMIRS_inkdict xddf
+0x00AF4E01|AGMIRS_inkdict begin def end
+0x00AF4E49|Adobe_AGM_InRip_Seps/AGMIRS_halftonedict xddf
+0x00AF4E79|AGMIRS_halftonedict begin
+0x00AF4FF1|AGMIRS_halftonedict sethalftone
+0x00AF5029|Adobe_AGM_InRip_Seps/AGMIRS_isDCS? true ddf
+0x00AF50B9|Adobe_AGM_InRip_Seps/AGMIRS_isDCS? false ddf
+0x00AF50E8|%%BeginResource: procset Adobe_AGM_Image 1.0 0
+0x00AF5170|userdict/Adobe_AGM_Image 71 dict dup begin put
+0x00AF51A0|/Adobe_AGM_Image_Id/Adobe_AGM_Image_1.0_0 def
+0x00AF51F8|/AGMIMG_&image nd
+0x00AF5210|/AGMIMG_&colorimage nd
+0x00AF5228|/AGMIMG_&imagemask nd
+0x00AF5240|/AGMIMG_mbuf()def
+0x00AF5258|/AGMIMG_ybuf()def
+0x00AF5270|/AGMIMG_kbuf()def
+0x00AF5288|/AGMIMG_c 0 def
+0x00AF5298|/AGMIMG_m 0 def
+0x00AF52A8|/AGMIMG_y 0 def
+0x00AF52B8|/AGMIMG_k 0 def
+0x00AF52C8|/AGMIMG_tmp nd
+0x00AF52D8|/AGMIMG_imagestring0 nd
+0x00AF52F0|/AGMIMG_imagestring1 nd
+0x00AF5308|/AGMIMG_imagestring2 nd
+0x00AF5320|/AGMIMG_imagestring3 nd
+0x00AF5338|/AGMIMG_imagestring4 nd
+0x00AF5350|/AGMIMG_imagestring5 nd
+0x00AF5368|/AGMIMG_cnt nd
+0x00AF5378|/AGMIMG_fsave nd
+0x00AF5390|/AGMIMG_colorAry nd
+0x00AF53A8|/AGMIMG_override nd
+0x00AF53C0|/AGMIMG_name nd
+0x00AF53D0|/AGMIMG_maskSource nd
+0x00AF53E8|/AGMIMG_flushfilters nd
+0x00AF5479|Adobe_AGM_Image begin
+0x00AF5491|/AGMIMG_&image systemdict/image get def
+0x00AF54C1|/AGMIMG_&imagemask systemdict/imagemask get def
+0x00AF5512|/AGMIMG_&colorimage/colorimage ldf
+0x00AF5539|/AGMIMG_ccimage_exists{/customcolorimage where 
+0x00AF5573|/Adobe_AGM_OnHost_Seps where
+0x00AF55A3|/Adobe_AGM_InRip_Seps where
+0x00AF55FB|Adobe_AGM_Image/AGMIMG_tmp Decode length ddf
+0x00AF57B8|/AGMIMG_flushfilters
+0x00AF58C8|/AGMIMG_init_common
+0x00AF5E92|AGMIMG_init_common
+0x00AF5EEC|AGMIMG_&imagemask
+0x00AF5F15|process_mask AGMIMG_&image
+0x00AF5F35|AGMIMG_&image
+0x00AF5FFA|currentdict/_Filters known{_Filters AGMIMG_flushfilters}if
+0x00AF60A4|pop AGMCORE_black_plate not
+0x00AF60C5|AGMCORE_is_cmyk_sep not
+0x00AF60F4| AGMOHS_sepink eq or
+0x00AF634C|/DataSource Adobe_AGM_Core/AGMIMG_maskSource get def
+0x00AF643B|level2 AGMCORE_host_sep not and{
+0x00AF64A5|AGMCORE_in_rip_sep currentoverprint and currentcolorspace 0 get/DeviceGray eq and{
+0x00AF6596|DeviceN_NoneName DeviceN_PS2 Indexed_DeviceN level3 not and or or AGMCORE_in_rip_sep and 
+0x00AF696D|/Adobe_AGM_OnHost_Seps where{
+0x00AF6A10|1 AGMCORE_&setgray
+0x00AF6CE3|/AGMCORE_get_ink_data cvx
+0x00AF6D2B|DataSource aload pop AGMCORE_get_ink_data
+0x00AF7048|MultipleDataSources NComponents AGMIMG_&colorimage
+0x00AF7149|AGMCORE_black_plate not Operator/imagemask ne and{
+0x00AF741B|AGMIMG_ccimage_exists 
+0x00AF762B|AGMCORE_producing_seps not{
+0x00AF7666|//Adobe_AGM_Core/AGMCORE_pattern_paint_type get 2 ne AGMCORE_avoid_L2_sep_space not and currentcolorspace 0 get/Separation ne and{
+0x00AF778E|/sep_tint AGMCORE_gget setcolor
+0x00AF78B0|AGMCORE_is_cmyk_sep Name(All)ne and{
+0x00AF78FA|Name AGMCORE_IsSeparationAProcessColor 
+0x00AF796C|//Adobe_AGM_Core/AGMCORE_pattern_paint_type get 2 ne{
+0x00AF79BD|/sep_tint AGMCORE_gget 1 exch sub AGMCORE_&setcolor
+0x00AF7AF5|sep_colorspace_proc AGMCORE_get_ink_data
+0x00AF7B5B|]AGMCORE_&setcolorspace
+0x00AF7B83|/sep_tint AGMCORE_gget AGMCORE_&setcolor
+0x00AF7F95|Name AGMCORE_IsSeparationAProcessColor not and
+0x00AF7FD5|//Adobe_AGM_Core/AGMCORE_pattern_paint_type get 2 ne{Name inRip_spot_has_ink not and}{false}ifelse 
+0x00AF8976|colorSpaceElemCnt/devicen_colorspace_dict AGMCORE_gget/TintTransform get 
+0x00AF8BF7|4/devicen_colorspace_dict AGMCORE_gget/TintTransform get 
+0x00AF8DD8|CSA get_csa_by_name 0 get/DeviceRGB eq{3}{1}ifelse/devicen_colorspace_dict AGMCORE_gget/TintTransform get
+0x00AF8F6D|/devicen_colorspace_dict AGMCORE_gget/names_index known{
+0x00AF92A3|/AGMIMG_k xdf 
+0x00AF92BB|/AGMIMG_y xdf 
+0x00AF92D3|/AGMIMG_m xdf 
+0x00AF92EB|/AGMIMG_c xdf
+0x00AF9314|AGMIMG_c 0 ne{/Cyan}if
+0x00AF9334|AGMIMG_m 0 ne{/Magenta}if
+0x00AF9354|AGMIMG_y 0 ne{/Yellow}if
+0x00AF9374|AGMIMG_k 0 ne{/Black}if
+0x00AF93BC|AGMIMG_c 0 ne{AGMIMG_c}if
+0x00AF93DC|AGMIMG_m 0 ne{AGMIMG_m}if
+0x00AF93FC|AGMIMG_y 0 ne{AGMIMG_y}if
+0x00AF941C|AGMIMG_k 0 ne{AGMIMG_k}if
+0x00AF9557|AGMIMG_k 0 eq{0}if
+0x00AF9577|AGMIMG_y 0 eq{0 exch}if
+0x00AF9597|AGMIMG_m 0 eq{0 3 1 roll}if
+0x00AF95BF|AGMIMG_c 0 eq{0 4 1 roll}if
+0x00AF963E|AGMIMG_k 0 ne{
+0x00AF9657|/sep_tint AGMCORE_gget mul MappedCSA sep_proc_name exch pop load exec 4 1 roll pop pop pop
+0x00AF96DE|AGMIMG_y 0 ne{
+0x00AF96F7|/sep_tint AGMCORE_gget mul MappedCSA sep_proc_name exch pop load exec 4 2 roll pop pop pop
+0x00AF975E|AGMIMG_m 0 ne{
+0x00AF9777|/sep_tint AGMCORE_gget mul MappedCSA sep_proc_name exch pop load exec 4 3 roll pop pop pop
+0x00AF97DE|AGMIMG_c 0 ne{
+0x00AF97F7|/sep_tint AGMCORE_gget mul MappedCSA sep_proc_name exch pop load exec pop pop pop
+0x00AF9933|[{1 exch sub/sep_tint AGMCORE_gget mul}/exec cvx MappedCSA sep_proc_name cvx exch pop{4 1 roll pop pop pop 1 exch sub}/exec cvx]
+0x00AF9A53|[{1 exch sub/sep_tint AGMCORE_gget mul}/exec cvx MappedCSA sep_proc_name cvx exch pop{4 2 roll pop pop pop 1 exch sub}/exec cvx]
+0x00AF9B23|[{1 exch sub/sep_tint AGMCORE_gget mul}/exec cvx MappedCSA sep_proc_name cvx exch pop{4 3 roll pop pop pop 1 exch sub}/exec cvx]
+0x00AF9BF3|[{1 exch sub/sep_tint AGMCORE_gget mul}/exec cvx MappedCSA sep_proc_name cvx exch pop{pop pop pop 1 exch sub}/exec cvx]
+0x00AF9CFC|/indexed_colorspace_dict AGMCORE_gget dup/CSA known{
+0x00AF9DC5|/devicen_colorspace_dict AGMCORE_gget dup/names_index known exch/Names get convert_to_process or{
+0x00AF9FAD|/indexed_colorspace_dict AGMCORE_gget dup null ne
+0x00AFA08E|AGMCORE_in_rip_sep and{
+0x00AFA243|0 1 2 3 AGMCORE_get_ink_data 4 currentcolorspace 3 get length 1 sub
+0x00AFA5B2|/sep_colorspace_dict AGMCORE_gget null eq{
+0x00AFA894|/Decode[/customcolor_tint AGMCORE_gget 0]def
+0x00AFA94A|Adobe_AGM_Image/AGMIMG_colorAry xddf
+0x00AFA972|/customcolor_tint AGMCORE_gget
+0x00AFA9A3|/Name AGMIMG_colorAry 4 get
+0x00AFAA43|/Components[AGMIMG_colorAry aload pop pop]
+0x00AFAAB1|Adobe_AGM_Image/AGMIMG_&customcolorimage/customcolorimage load put
+0x00AFAAFA|Adobe_AGM_Image/AGMIMG_override false put
+0x00AFAB63|/customcolor_tint AGMCORE_gget exch setsepcolorspace
+0x00AFABBB|//Adobe_AGM_Image/AGMIMG_&customcolorimage get exec
+0x00AFACA2|1 1 dtransform 0 gt exch 0 gt/AGMIMG_xSign? exch def/AGMIMG_ySign? exch def
+0x00AFAD02|AGMIMG_ySign?{floor 0.1 sub}{ceiling 0.1 add}ifelse exch
+0x00AFAD42|AGMIMG_xSign?{floor 0.1 sub}{ceiling 0.1 add}ifelse exch
+0x00AFAD82|itransform/AGMIMG_llY exch def/AGMIMG_llX exch def
+0x00AFADCA|AGMIMG_ySign?{ceiling 0.1 add}{floor 0.1 sub}ifelse exch
+0x00AFAE0A|AGMIMG_xSign?{ceiling 0.1 add}{floor 0.1 sub}ifelse exch
+0x00AFAE4A|itransform/AGMIMG_urY exch def/AGMIMG_urX exch def
+0x00AFAE82|[AGMIMG_urX AGMIMG_llX sub 0 0 AGMIMG_urY AGMIMG_llY sub AGMIMG_llX AGMIMG_llY]concat
+0x00AFAFBB|/AGMIMG_mbuf 0 string def
+0x00AFAFDB|/AGMIMG_ybuf 0 string def
+0x00AFAFFB|/AGMIMG_kbuf 0 string def
+0x00AFB01C|colorbuf dup length AGMIMG_mbuf length ne
+0x00AFB065|/AGMIMG_mbuf exch string def
+0x00AFB08D|/AGMIMG_ybuf exch string def
+0x00AFB0B5|/AGMIMG_kbuf exch string def
+0x00AFB0DC|dup AGMIMG_mbuf copy AGMIMG_ybuf copy AGMIMG_kbuf copy pop
+0x00AFB12B|{AGMIMG_mbuf}{AGMIMG_ybuf}{AGMIMG_kbuf}true 4 colorimage
+0x00AFB244|/sep_colorspace_dict AGMCORE_gget/Components known{
+0x00AFB2F5|Adobe_AGM_Image/AGMIMG_k xddf 
+0x00AFB31D|Adobe_AGM_Image/AGMIMG_y xddf 
+0x00AFB345|Adobe_AGM_Image/AGMIMG_m xddf 
+0x00AFB36D|Adobe_AGM_Image/AGMIMG_c xddf 
+0x00AFB395|AGMIMG_y 0.0 eq AGMIMG_m 0.0 eq and AGMIMG_c 0.0 eq and{
+0x00AFB3D6|{AGMIMG_k mul 1 exch sub}currenttransfer addprocs settransfer
+0x00AFB43E|{AGMIMG_k mul 1 exch sub}exch addprocs 4 1 roll
+0x00AFB476|{AGMIMG_y mul 1 exch sub}exch addprocs 4 1 roll
+0x00AFB4AE|{AGMIMG_m mul 1 exch sub}exch addprocs 4 1 roll
+0x00AFB4E6|{AGMIMG_c mul 1 exch sub}exch addprocs 4 1 roll
+0x00AFBA04|{AGMIMG_c mul 1 exch sub}
+0x00AFBA24|{AGMIMG_m mul 1 exch sub}
+0x00AFBA44|{AGMIMG_y mul 1 exch sub}
+0x00AFBA64|{AGMIMG_k mul 1 exch sub}
+0x00AFBB83|AGMCORE_get_ink_data currenttransfer addprocs settransfer
+0x00AFC1C0|%%BeginResource: procset Adobe_AGM_OnHost_Seps 1.0 0
+0x00AFC1F8|userdict/Adobe_AGM_OnHost_Seps 149 dict dup begin put
+0x00AFC231|Adobe_AGM_OnHost_Seps begin
+0x00AFC251|0 1 AGMOHS_gstack length 1 sub{
+0x00AFC27B|AGMOHS_gstack exch AGMOHS_gstackframekeys dict put
+0x00AFC331|/AGMOHS_have_reported_unsupported_color_space false def
+0x00AFC4D0|/AGMOHS_inkdict nd
+0x00AFC4E8|/AGMOHS_sepink nd
+0x00AFC500|/AGMOHS_sep_plate nd
+0x00AFC518|/AGMOHS_sepMX matrix def
+0x00AFC538|/AGMOHS_isDCS? false def
+0x00AFC558|/AGMOHS_isDCSComposite? false def
+0x00AFC580|/AGMOHS_pattern nd
+0x00AFC598|/AGMOHS_gstack 64 array def
+0x00AFC5B8|/AGMOHS_gstackptr 0 def
+0x00AFC5D0|/AGMOHS_gstacksaveptr 0 def
+0x00AFC5F0|/AGMOHS_gstackframekeys 6 def
+0x00AFC610|/AGMOHS_image_dict 9 dict def
+0x00AFC630|/AGMOHS_colorspace_error
+0x00AFC651|/Adobe_AGM_Core where
+0x00AFC672|Adobe_AGM_Core/AGMCORE_cur_err/AGMCORE_color_space_onhost_seps put
+0x00AFC6BA|AGMCORE_color_space_onhost_seps
+0x00AFC6E0|/AGMOHS_report_unsupported_color_space
+0x00AFC709|AGMOHS_have_reported_unsupported_color_space false eq
+0x00AFC7E2|Adobe_AGM_OnHost_Seps/AGMOHS_have_reported_unsupported_color_space true ddf
+0x00AFC830|/AGMOHS_&gsave/gsave ldf
+0x00AFC850|/AGMOHS_&grestore/grestore ldf
+0x00AFC870|/AGMOHS_&grestoreall/grestoreall ldf
+0x00AFC898|/AGMOHS_&save/save ldf
+0x00AFC8B0|/AGMOHS_&setgray/setgray ldf
+0x00AFC8D0|/AGMOHS_&sethsbcolor/sethsbcolor ldf
+0x00AFC8F8|/AGMOHS_&setrgbcolor/setrgbcolor ldf
+0x00AFC920|/AGMOHS_&setcolor level2{/setcolor ldf}{/AGMOHS_colorspace_error ldf}ifelse
+0x00AFC970|/AGMOHS_&setcolorspace level2{/setcolorspace ldf}{/AGMOHS_colorspace_error ldf}ifelse
+0x00AFC9C8|/AGMOHS_&image[
+0x00AFCA02|/begin cvx/AGMIMG_init_common cvx/currentdict cvx/end cvx
+0x00AFCA98|/colorimage{AGMOHS_&image}ndf
+0x00AFCAB8|/AGMOHS_&colorimage/colorimage ldf
+0x00AFCAE0|/AGMOHS_&imagemask/imagemask ldf
+0x00AFCB08|/AGMOHS_&stroke/stroke ldf
+0x00AFCB28|/AGMOHS_&fill/fill ldf
+0x00AFCB40|/AGMOHS_&eofill/eofill ldf
+0x00AFCB60|/AGMOHS_&show/show ldf
+0x00AFCB78|/AGMOHS_&ashow/ashow ldf
+0x00AFCB98|/AGMOHS_&widthshow/widthshow ldf
+0x00AFCBC0|/AGMOHS_&awidthshow/awidthshow ldf
+0x00AFCBE8|/AGMOHS_&kshow/kshow ldf
+0x00AFCC11|/AGMOHS_&ustroke/ustroke ldf
+0x00AFCC31|/AGMOHS_&ufill/ufill ldf
+0x00AFCC51|/AGMOHS_&ueofill/ueofill ldf
+0x00AFCC71|/AGMOHS_&rectstroke/rectstroke ldf
+0x00AFCC99|/AGMOHS_&rectfill/rectfill ldf
+0x00AFCCB9|/AGMOHS_&xshow/xshow ldf
+0x00AFCCD9|/AGMOHS_&yshow/yshow ldf
+0x00AFCCF9|/AGMOHS_&xyshow/xyshow ldf
+0x00AFCD19|/AGMOHS_&glyphshow/glyphshow ldf
+0x00AFCD41|/AGMOHS_&cshow/cshow ldf
+0x00AFCF99|dict Adobe_AGM_OnHost_Seps/AGMOHS_inkdict xddf
+0x00AFCFD9|AGMOHS_inkdict begin def end
+0x00AFD009|dup/AGMOHS_sep_plate xdf
+0x00AFD039|/AGMOHS_sepink xdf
+0x00AFD051|/AGMOHS_get_ink_data
+0x00AFD06A|AGMOHS_sep_plate/c eq{
+0x00AFD0A3|AGMOHS_sep_plate/m eq{
+0x00AFD0E4|AGMOHS_sep_plate/y eq{
+0x00AFD141|/AGMOHS_&image_L2/AGMOHS_&image ldf
+0x00AFD169|/AGMOHS_invert_image_samples
+0x00AFD18A|Adobe_AGM_Core/AGMCORE_tmp Decode length ddf
+0x00AFD1E1|/AGMOHS_knockout_image_samples
+0x00AFD219|/AGMOHS_&image_L2
+0x00AFD272|AGMOHS_&image
+0x00AFD3C9|AGMOHS_&setcolorspace
+0x00AFD3E0|/AGMOHS_mapL2and3colorspace
+0x00AFD8C7|dup AGMOHS_onmask?
+0x00AFDA76|AGMOHS_report_unsupported_color_space
+0x00AFDAC6|AGMOHS_&setcolor
+0x00AFDADE|AGMOHS_sep_plate/k ne
+0x00AFDBD4|exch Adobe_AGM_OnHost_Seps exch/AGMOHS_pattern xpt
+0x00AFDC14|1 get base_colorspace_type 1 array dup 0 4 -1 roll put AGMOHS_mapL2and3colorspace
+0x00AFDC6C|currentgray[/Pattern/DeviceGray]AGMOHS_&setcolorspace
+0x00AFDCAC|AGMOHS_pattern
+0x00AFDCF3|dup 1 get AGMOHS_&setcolorspace
+0x00AFDEB4|Adobe_AGM_OnHost_Seps/AGMOHS_ncomps xddf
+0x00AFDEE4|AGMOHS_ncomps mul AGMOHS_ncomps getinterval{}forall
+0x00AFDF1C|AGMOHS_ncomps{
+0x00AFDF55|AGMOHS_ncomps 1 roll
+0x00AFDF9A|AGMOHS_mapL2and3colorspace
+0x00AFE0A1|AGMOHS_isDCS?
+0x00AFE0B2|AGMOHS_&setgray
+0x00AFE100|/AGMOHS_toprocess?
+0x00AFE12A|AGMOHS_inkdict exch known not
+0x00AFE148|/AGMOHS_onmask?
+0x00AFE159|dup AGMOHS_sepink eq exch/All eq or
+0x00AFE180|/AGMOHS_pure?
+0x00AFE248|/AGMOHS_overprintprocess
+0x00AFE269|dup AGMOHS_pure?
+0x00AFE35C|AGMOHS_inkoverprint?
+0x00AFE3C8|/AGMOHS_inkoverprint?
+0x00AFE3E1|AGMUTIL_str256 copy
+0x00AFE3F9|length Adobe_AGM_Utils/AGMUTIL_srcLen xddf
+0x00AFE431|AGMOHS_inkdict
+0x00AFE442|name AGMUTIL_str256 0 AGMUTIL_srcLen getinterval eq
+0x00AFE4B0|/AGMOHS_generateKOImage
+0x00AFE5A1|dup AGMOHS_toprocess?
+0x00AFE5FB|dup AGMOHS_inkoverprint? setinkoverprint
+0x00AFE63B|AGMOHS_onmask?
+0x00AFE654|{1 exch sub AGMOHS_&setgray}
+0x00AFE67C|{pop 1 AGMOHS_&setgray}
+0x00AFE698|{AGMOHS_&setgray true setregistration}def
+0x00AFE6E0|{/current_registration exch AGMOHS_gput}def
+0x00AFE728|{/current_registration AGMOHS_gget}def
+0x00AFE760|{/current_overprint exch AGMOHS_gput}def
+0x00AFE7A8|{/current_overprint AGMOHS_gget}def
+0x00AFE7E8|{/current_ink_overprint exch AGMOHS_gput}def
+0x00AFE830|{/current_ink_overprint AGMOHS_gget}def
+0x00AFE868|{/current_tint exch AGMOHS_gput}def
+0x00AFE8A0|{/current_tint AGMOHS_gget}def
+0x00AFE8D8|{/current_spot_colorant exch AGMOHS_gput}def
+0x00AFE920|{/current_spot_colorant AGMOHS_gget}def
+0x00AFE9A9|/current_colorspace exch AGMOHS_gput
+0x00AFE9E8|{/current_colorspace AGMOHS_gget}def
+0x00AFEA10|/AGMOHS_paint?
+0x00AFEA8A|currentspotcolorant AGMOHS_sepink eq or
+0x00AFEB01|AGMOHS_&setrgbcolor
+0x00AFEB41|AGMOHS_&sethsbcolor currentrgbcolor setrgbcolor
+0x00AFEB79|AGMOHS_paint?
+0x00AFEB8A|{AGMOHS_&stroke}
+0x00AFEBB2|{AGMOHS_&fill}
+0x00AFEBCA|{AGMOHS_&eofill}
+0x00AFEBE2|{AGMOHS_&show}
+0x00AFEC02|{gsave AGMOHS_sepMX currentmatrix nulldevice setmatrix AGMOHS_&show currentpoint grestore moveto}
+0x00AFEC6A|{AGMOHS_&ashow}
+0x00AFEC82|{gsave AGMOHS_sepMX currentmatrix nulldevice setmatrix AGMOHS_&ashow currentpoint grestore moveto}
+0x00AFECEA|{AGMOHS_&widthshow}
+0x00AFED02|{gsave AGMOHS_sepMX currentmatrix nulldevice setmatrix AGMOHS_&widthshow currentpoint grestore moveto}
+0x00AFED72|{AGMOHS_&awidthshow}
+0x00AFED92|{gsave AGMOHS_sepMX currentmatrix nulldevice setmatrix AGMOHS_&awidthshow currentpoint grestore moveto}
+0x00AFEE02|{AGMOHS_&kshow}
+0x00AFEE22|{gsave AGMOHS_sepMX currentmatrix nulldevice setmatrix AGMOHS_&kshow currentpoint grestore moveto}
+0x00AFEEAB|{AGMOHS_&ustroke}
+0x00AFEEC3|gsave nulldevice AGMOHS_&ustroke grestore
+0x00AFEF03|{AGMOHS_&ufill}
+0x00AFEF2B|{AGMOHS_&ueofill}
+0x00AFEF53|{AGMOHS_&rectstroke}
+0x00AFEF6B|gsave nulldevice AGMOHS_&rectstroke grestore
+0x00AFEFAB|{AGMOHS_&rectfill}
+0x00AFEFC3|gsave nulldevice AGMOHS_&rectfill grestore
+0x00AFEFFB|{AGMOHS_&xshow}
+0x00AFF013|{gsave AGMOHS_sepMX currentmatrix nulldevice setmatrix AGMOHS_&xshow currentpoint grestore moveto}
+0x00AFF083|{AGMOHS_&yshow}
+0x00AFF0A3|{gsave AGMOHS_sepMX currentmatrix nulldevice setmatrix AGMOHS_&yshow currentpoint grestore moveto}
+0x00AFF11B|{AGMOHS_&xyshow}
+0x00AFF133|{gsave AGMOHS_sepMX currentmatrix nulldevice setmatrix AGMOHS_&xyshow currentpoint grestore moveto}
+0x00AFF1AB|{AGMOHS_&glyphshow}
+0x00AFF1C3|{gsave AGMOHS_sepMX currentmatrix nulldevice setmatrix AGMOHS_&glyphshow currentpoint grestore moveto}
+0x00AFF23B|{AGMOHS_&cshow}
+0x00AFF253|{gsave AGMOHS_sepMX currentmatrix nulldevice setmatrix AGMOHS_&cshow currentpoint grestore moveto}
+0x00AFF2DA|AGMOHS_&imagemask
+0x00AFF2F3|{AGMOHS_&imagemask}
+0x00AFF30B|{gsave nulldevice AGMOHS_&imagemask grestore}
+0x00AFF341|AGMOHS_isDCS?{
+0x00AFF814|AGMOHS_image_dict begin
+0x00AFFBFD|Adobe_AGM_OnHost_Seps/current_image_decode Decode ddf
+0x00AFFCFD|Adobe_AGM_OnHost_Seps/current_image_decode[]ddf
+0x00AFFD4E|AGMOHS_sep_plate/k ne AGMOHS_isDCSComposite? or{
+0x00AFFDAF|0 AGMOHS_&setgray
+0x00AFFDCF|currentdict AGMOHS_&image_L2
+0x00B000F1|AGMCORE_plate_ndx 4 lt and
+0x00B001AA|AGMCORE_plate_ndx 4 CMYKTable length 1 sub
+0x00B003FB|AGMOHS_sepink eq{/DevNIndex DevNCand def exit}if
+0x00B004B3|nulldevice AGMOHS_&image
+0x00B00799|dup AGMOHS_toprocess?{
+0x00B007DA|AGMOHS_onmask? not{
+0x00B009A2|currenttint 1 exch sub AGMOHS_&setgray
+0x00B009D2|AGMOHS_paint?{
+0x00B00A62|AGMOHS_&image_L2
+0x00B00A90|/AGMOHS_begindcsplate
+0x00B00AA8|{Adobe_AGM_OnHost_Seps/AGMOHS_isDCS? true ddf}def
+0x00B00AE0|/AGMOHS_enddcsplate
+0x00B00AF8|{Adobe_AGM_OnHost_Seps/AGMOHS_isDCS? false ddf}def
+0x00B00B30|/AGMOHS_begindcscomposite
+0x00B00B50|{Adobe_AGM_OnHost_Seps/AGMOHS_isDCSComposite? true ddf}def
+0x00B00B90|/AGMOHS_enddcscomposite
+0x00B00BA8|{Adobe_AGM_OnHost_Seps/AGMOHS_isDCSComposite? false ddf}def
+0x00B00C01|1 AGMOHS_&setgray
+0x00B00D15|/AGMOHS_get_ink_data cvx
+0x00B00E2B|AGMOHS_sep_plate/spot ne{
+0x00B00E65|AGMOHS_invert_image_samples
+0x00B00E95|NComponents 1 eq AGMOHS_sep_plate/k ne AGMOHS_isDCSComposite? or and{
+0x00B0100E|MultipleDataSources NComponents AGMOHS_&colorimage
+0x00B0117E|currentdict AGMOHS_&image
+0x00B01282|4 makereadonlyarray AGMOHS_overprintprocess
+0x00B012B2|pop pop pop pop 1 AGMOHS_&setgray
+0x00B0132A|pop pop pop 1 exch sub AGMOHS_&setgray
+0x00B0135A|pop pop exch pop 1 exch sub AGMOHS_&setgray
+0x00B013AA|pop 3 1 roll pop pop 1 exch sub AGMOHS_&setgray
+0x00B013E2|4 1 roll pop pop pop 1 exch sub AGMOHS_&setgray
+0x00B01418|/AGMOHS_gdictcopy{
+0x00B01440|/AGMOHS_gput{
+0x00B01451| AGMOHS_gstack AGMOHS_gstackptr get
+0x00B01490|/AGMOHS_gget{
+0x00B014E2| AGMOHS_&gsave
+0x00B014FA| AGMOHS_gstackptr 1 add
+0x00B0153A| Adobe_AGM_OnHost_Seps exch
+0x00B0155A| /AGMOHS_gstackptr xpt
+0x00B0157A| AGMOHS_gdictcopy
+0x00B015A2| AGMOHS_&grestore
+0x00B015BA| AGMOHS_gstackptr 1 sub
+0x00B015DA| dup AGMOHS_gstacksaveptr lt{1 add}if
+0x00B01612| AGMOHS_&grestoreall
+0x00B0162A| Adobe_AGM_OnHost_Seps
+0x00B0164A|/AGMOHS_gstackptr AGMOHS_gstacksaveptr put 
+0x00B01682| AGMOHS_&save
+0x00B01692| Adobe_AGM_OnHost_Seps begin
+0x00B016B3|/AGMOHS_gstackptr exch def
+0x00B016D3|/AGMOHS_gstacksaveptr AGMOHS_gstackptr def
+0x00B01708|%%BeginResource: procset Adobe_AGM_Utils 1.0 0
+0x00B01760|userdict/Adobe_AGM_Utils 75 dict dup begin put
+0x00B01B40|/AGMUTIL_GSTATE 22 dict def
+0x00B01B71|AGMUTIL_GSTATE begin
+0x00B01B89|/AGMUTIL_GSTATE_clr_spc currentcolorspace def
+0x00B01BB9|/AGMUTIL_GSTATE_clr_indx 0 def
+0x00B01BD9|/AGMUTIL_GSTATE_clr_comps 12 array def
+0x00B01C22|{AGMUTIL_GSTATE_clr_comps AGMUTIL_GSTATE_clr_indx 3 -1 roll put
+0x00B01C72|/AGMUTIL_GSTATE_clr_indx AGMUTIL_GSTATE_clr_indx 1 add def}repeat pop
+0x00B01CB9|/AGMUTIL_GSTATE_fnt rootfont def
+0x00B01CE1|/AGMUTIL_GSTATE_lw currentlinewidth def
+0x00B01D11|/AGMUTIL_GSTATE_lc currentlinecap def
+0x00B01D39|/AGMUTIL_GSTATE_lj currentlinejoin def
+0x00B01D61|/AGMUTIL_GSTATE_ml currentmiterlimit def
+0x00B01D91|currentdash/AGMUTIL_GSTATE_do xdf/AGMUTIL_GSTATE_da xdf
+0x00B01DD1|/AGMUTIL_GSTATE_sa currentstrokeadjust def
+0x00B01E01|/AGMUTIL_GSTATE_clr_rnd currentcolorrendering def
+0x00B01E39|/AGMUTIL_GSTATE_op currentoverprint def
+0x00B01E69|/AGMUTIL_GSTATE_bg currentblackgeneration cvlit def
+0x00B01EA1|/AGMUTIL_GSTATE_ucr currentundercolorremoval cvlit def
+0x00B01EE1|currentcolortransfer cvlit/AGMUTIL_GSTATE_gy_xfer xdf cvlit/AGMUTIL_GSTATE_b_xfer xdf
+0x00B01F42|cvlit/AGMUTIL_GSTATE_g_xfer xdf cvlit/AGMUTIL_GSTATE_r_xfer xdf
+0x00B01F89|/AGMUTIL_GSTATE_ht currenthalftone def
+0x00B01FB1|/AGMUTIL_GSTATE_flt currentflat def
+0x00B01FE9|AGMUTIL_GSTATE_clr_spc setcolorspace
+0x00B02011|AGMUTIL_GSTATE_clr_indx{AGMUTIL_GSTATE_clr_comps AGMUTIL_GSTATE_clr_indx 1 sub get
+0x00B02071|/AGMUTIL_GSTATE_clr_indx AGMUTIL_GSTATE_clr_indx 1 sub def}repeat setcolor
+0x00B020C1|AGMUTIL_GSTATE_fnt setfont
+0x00B020E1|AGMUTIL_GSTATE_lw setlinewidth
+0x00B02101|AGMUTIL_GSTATE_lc setlinecap
+0x00B02121|AGMUTIL_GSTATE_lj setlinejoin
+0x00B02141|AGMUTIL_GSTATE_ml setmiterlimit
+0x00B02169|AGMUTIL_GSTATE_da AGMUTIL_GSTATE_do setdash
+0x00B02199|AGMUTIL_GSTATE_sa setstrokeadjust
+0x00B021C1|AGMUTIL_GSTATE_clr_rnd setcolorrendering
+0x00B021F1|AGMUTIL_GSTATE_op setoverprint
+0x00B02211|AGMUTIL_GSTATE_bg cvx setblackgeneration
+0x00B02241|AGMUTIL_GSTATE_ucr cvx setundercolorremoval
+0x00B02271|AGMUTIL_GSTATE_r_xfer cvx AGMUTIL_GSTATE_g_xfer cvx AGMUTIL_GSTATE_b_xfer cvx
+0x00B022C2|AGMUTIL_GSTATE_gy_xfer cvx setcolortransfer
+0x00B022F1|AGMUTIL_GSTATE_ht/HalftoneType get dup 9 eq exch 100 eq or
+0x00B02332|currenthalftone/HalftoneType get AGMUTIL_GSTATE_ht/HalftoneType get ne
+0x00B02383| mark AGMUTIL_GSTATE_ht{sethalftone}stopped cleartomark
+0x00B023C2|AGMUTIL_GSTATE_ht sethalftone
+0x00B023E1|AGMUTIL_GSTATE_flt setflat
+0x00B02419|/AGMUTIL_GSTATE_ctm matrix currentmatrix def
+0x00B02481|AGMUTIL_GSTATE_ctm setmatrix
+0x00B024A0|/AGMUTIL_str256 256 string def
+0x00B024C0|/AGMUTIL_src256 256 string def
+0x00B024E0|/AGMUTIL_dst64 64 string def
+0x00B02500|/AGMUTIL_srcLen nd
+0x00B02518|/AGMUTIL_ndx nd
+0x00B02528|/AGMUTIL_cpd nd
+0x00B02549|//Adobe_AGM_Utils/AGMUTIL_cpd currentpagedevice ddf
+0x00B02651|currentfile AGMUTIL_str256 readline pop
+0x00B026F2|AGMUTIL_src256 readstring pop
+0x00B02712|dup length/AGMUTIL_srcLen exch def
+0x00B0273A|/AGMUTIL_ndx 0 def
+0x00B02752|AGMCORE_plate_ndx 4 AGMUTIL_srcLen 1 sub{
+0x00B0279B|AGMUTIL_dst64 AGMUTIL_ndx 3 -1 roll put
+0x00B027CB|/AGMUTIL_ndx AGMUTIL_ndx 1 add def
+0x00B027F2|AGMUTIL_dst64 0 AGMUTIL_ndx getinterval
+0x00B028E3|/devicen_colorspace_dict/AGMCORE_gget cvx/begin cvx
+0x00B0297C|Adobe_AGM_Utils/AGMUTIL_ndx 0/ddf cvx
+0x00B02A25|currentdict/dstStr get/AGMUTIL_ndx/load cvx 3 -1/roll cvx/put cvx
+0x00B02A75|Adobe_AGM_Utils/AGMUTIL_ndx/AGMUTIL_ndx/load cvx 1/add cvx/ddf cvx
+0x00B02AC4|currentdict/dstStr get 0/AGMUTIL_ndx/load cvx/getinterval cvx
+0x00B02B48|/AGMUTIL_imagefile nd
+0x00B02B79|AGMUTIL_imagefile 0 setfileposition
+0x00B02DF3|imageDict/DataSource get imbufIdx[AGMUTIL_imagefile imbufs imbufIdx get/readstring cvx/pop cvx]cvx put
+0x00B02FF4|/DataSource[AGMUTIL_imagefile Decode BitsPerComponent false 1/filter_indexed_devn load dstDataStr srcDataStrs devn_alt_datasource/exec cvx]cvx def
+0x00B03093|imageDict/DataSource[1 string dup 0 AGMUTIL_imagefile Decode length 2 idiv string/readstring cvx/pop cvx names_index/get cvx/put cvx]cvx put
+0x00B03201|{(AGMUTIL_imagefile)(w+)file}stopped{
+0x00B0322A|Adobe_AGM_Utils/AGMUTIL_imagefile xddf 
+0x00B0343D|AGMUTIL_imagefile exch writestring
+0x00B03551|AGMUTIL_imagefile closefile(AGMUTIL_imagefile)deletefile
+0x00B03590|statusdict/product known userdict/AGMP_current_show known not and{
+0x00B03823|userdict/AGMP_current_show/show load put
+0x00B038B2| {AGMP_current_show}ifelse
+0x00B03F71|Adobe_AGM_Core/AGMCORE_tmp -1 ddf 
+0x00B03F99|Adobe_AGM_Core/AGMCORE_tmp 2 copy get 1 add ddf 
+0x00B03FEB|Adobe_AGM_Core/AGMCORE_tmp get
+0x00B04013|Adobe_AGM_Core/AGMCORE_tmp 4 -1 roll ddf 
+0x00B0405B|Adobe_AGM_Core/AGMCORE_tmp get exch
+0x00B040A1|Adobe_AGM_Core/AGMCORE_tmp get 4 -1 roll put
+0x00B04181|/currentcolorspace AGMCORE_gget 0 get/DeviceN eq level3 not and
+0x00B041E1|/indexed_colorspace_dict AGMCORE_gget dup null ne{
+0x00B042C1|/AGMCORE_in_rip_sep where
+0x00B04323|dup 0 get/DeviceN eq level3 not and AGMCORE_in_rip_sep and
+0x00B047B9|Adobe_AGM_Utils begin
+0x00B047D1|currentdict Adobe_AGM_Utils eq{
+0x00B04880|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\print\inc\PrintInstance.h
+0x00B05BA8|AGMPrtUnsupportedDriverErrMsg
+0x00B06008|RoOriginateLanguageException
+0x00B063D0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\print\edge\win\PrintSession_Win.cpp
+0x00B06460|Error : AGM - PDFPort Print :Current Windows do not support IPP pdf passthrough printing
+0x00B064C0|Error : AGM - PDFPort Print Exception occured inside IsPrinterIPPPDLPassthroughEnabled with error code :
+0x00B06A80|Error : AGM - PDFPort Print : DoIPPPDFPassthroughPrinting IPP Print Error code :
+0x00B071A0|userdict/Adobe_AGM_pgsv known {userdict/Adobe_AGM_pgsv get restore}if
+0x00B071E8|userdict/Adobe_AGM_pgsv save put
+0x00B07240|Adobe_AGM_Core/pscript_showpage_override get exec
+0x00B07910|PrintInstance::GetMapping - mPageToPaperMapping doesn't exist! AGMPrintSession::SetPrintPageParams most likely failed. Check the debugger's Output win
+0x00B07AA0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\print\PSImage2.cpp
+0x00B080D8| exec{consumeimagedata}{AGMOHS_&image}ifelse
+0x00B08130|AGMOHS_generateKOImage
+0x00B08158|Adobe_AGM_Core/AGMIMG_maskSource 
+0x00B085F0|AGMPrintInfoInterface
+0x00B08620|AGMPrintInfoImpl
+0x00B08650|AGMPrintInfoNewProc
+0x00B08670|AGMPrintInfoInfoProc
+0x00B08730|Exception in PrinterName: 
+0x00B08760|Exception in PortName: 
+0x00B0B450|Zip inflate exception: 
+0x00B11340|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\beztessellator\sources\includes\CSegment_T.h
+0x00B1198F|@D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\beztessellator\sources\CBezierShapesEngine.cpp
+0x00B11A20|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\beztessellator\sources\includes\CLMProcessor_T.h
+0x00B11AF0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\beztessellator\sources\includes\ASTSegmentV2_T.h
+0x00B11C10|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\print\inc\PSPort.h
+0x00B128A0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\print\DSCClientRegistry.cpp
+0x00B129D8|AGMPortStrokeProcV2
+0x00B129F8|AGMPortShowProcV5
+0x00B12A20|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\print\DrawPageFilter.cpp
+0x00B12AB8|AGMPortFillProcV2
+0x00B13110|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\print\FeatureAvailability.cpp
+0x00B13470|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\print\OPIWriter.cpp
+0x00B13740|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\print\POSHelpers.cpp
+0x00B13CC0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\print\inc\PPDDictBuilder.h
+0x00B13DA0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\print\PPDFeature.cpp
+0x00B13FC0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\ColorSpc.h
+0x00B14600|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\print\PSDeviceController.cpp
+0x00B15610|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\print\PSGState.cpp
+0x00B15810|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\print\PSPgMarksImpl.cpp
+0x00B15A98|AGMP_PS_Inj_a
+0x00B15AA8|AGMP_PS_Inj_b
+0x00B15E50|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\print\PSPort.cpp
+0x00B160C0|[/DeviceN /devicen_colorspace_dict AGMCORE_gget begin /Names load /MappedCSA load /TintTransform load end]
+0x00B16150|[/Separation /sep_colorspace_dict AGMCORE_gget dup /Name get exch /MappedCSA get /sep_colorspace_proc load]
+0x00B165E8|[/NamespacePush pdfmark_5
+0x00B16790|[/NamespacePop pdfmark_5
+0x00B167D8|currentdict Adobe_AGM_Utils eq {end} if
+0x00B16800|AGMCore_r_xfer cvx AGMCore_g_xfer cvx AGMCore_b_xfer cvx AGMCore_gray_xfer cvx
+0x00B16898|PDFL_MCMETA
+0x00B16900|Perceptual
+0x00B16940|OncePerDoc
+0x00B169B0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\inc\ResourcePort.h
+0x00B16A08|dont call ResourcePort SetNChannelCs
+0x00B16A30|dont call ResourcePort GetNChannelCs
+0x00B17100|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\print\PSShading.cpp
+0x00B171F8|Mesh emulation only supports kAGMPathFill
+0x00B17330|/DataSource Adobe_AGM_Utils/rdcmntline get /ASCII85Decode filter
+0x00B17930|Adobe_AGM_Core begin /AGMCORE_colorantDetails <<
+0x00B1CD90|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\print\PageMarks.cpp
+0x00B1D400|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\print\PageToPaperMapping.cpp
+0x00B1D570|/AGMCORE_pattern_paint_type 
+0x00B1D630|/AGMCORE_pattern_paint_type 0 put
+0x00B1D9D0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\print\PrintEventIterator.cpp
+0x00B1DE10|devicePort
+0x00B1DFDC|AGMPFC
+0x00B1E280|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\print\PrintInstance_Direct.cpp
+0x00B1E4A0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\print\PrintInstance_Export.cpp
+0x00B1F2C8|CAGMPrintRecord::GetPrintRecordDict Failed
+0x00B1F2F8|CAGMPrintRecord::UpdatePrintRecord Failed
+0x00B20118|AGMBrokerPrintCallback
+0x00B206F0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\print\PrintParams.cpp
+0x00B21CF8|CAGMPrintSession::IsPrinterXingW - Proc Table is NULL
+0x00B21D98|AGMStreamProc
+0x00B21DB0|D:\J\ws\ilst_rel_30_6\META\dist\projects\bravo\source\agm\source\print\psbibstream.cpp
+0x00B21E08|PSBIBStream::AGMStreamProc - Bad selector!
+0x00B21F98|Adobe_AGM_GradientMesh.ps
+0x00B21FB8|Adobe_AGM_Image.ps
+0x00B21FD0|Adobe_AGM_Core.ps
+0x00B21FE8|Adobe_AGM_OnHost_Seps.ps
+0x00B22008|Adobe_AGM_InRip_Seps.ps
+0x00B22020|Adobe_AGM_Patch_Before.ps
+0x00B22040|Adobe_AGM_Patch_After.ps
+0x00B22060|Adobe_AGM_Error_Handler.ps
+0x00B22080|Adobe_AGM_Utils.ps
+0x00B22098|Adobe_AGM_Core
+0x00B220B0|Adobe_AGM_OnHost_Seps
+0x00B220D0|Adobe_AGM_InRip_Seps
+0x00B220E8|Adobe_AGM_GradientMesh
+0x00B22100|Adobe_AGM_Image
+0x00B22110|Adobe_AGM_Utils
+0x00B22120|AGMCORE_tmpmatrix
+0x00B22278|AGMIMG_fl
+0x00B22488|AGMOHS_begindcsplate
+0x00B224A0|AGMOHS_enddcsplate
+0x00B224B8|AGMOHS_begindcscomposite
+0x00B224D8|AGMOHS_enddcscomposite
+0x00B225D8|AGMGraphicsPipelinerPort2
+0x00B225F8|AGMPortNewPathProc
+0x00B22618|AGMPortMoveToProc
+0x00B22630|AGMPortRMoveToProc
+0x00B22650|AGMPortLineToProc
+0x00B22668|AGMPortCurveToProc
+0x00B22680|AGMPortCurveToVProc
+0x00B226A8|AGMPortClosePathProc
+0x00B226D0|AGMPortRectProc
+0x00B226E8|AGMPortClipProcV2
+0x00B22708|AGMPortEOClipProcV2
+0x00B22728|AGMPortStartTransparencyGroupProcV2
+0x00B22750|AGMPortEndTransparencyGroupProcV2
+0x00B22790|AGMPortSetAlphaServerProcV4
+0x00B227C0|AGMPortRemoveAlphaServerProc
+0x00B227F8|AGMPortSetAlphaProc
+0x00B22820|AGMPortSetOverPrintProc
+0x00B22848|AGMPortSetBlendingModeProc
+0x00B22878|AGMPortSetRenderIntentProc
+0x00B228A8|AGMPortSetOverPrintModeProc
+0x00B228E0|AGMPortSetUnderColorRemovalProc
+0x00B22918|AGMPortSetBlackGenerationProc
+0x00B22950|AGMPortGSaveProc
+0x00B22970|AGMPortGRestoreProc

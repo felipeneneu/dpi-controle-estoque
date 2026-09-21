@@ -1,0 +1,493 @@
+# Imports de 1o nivel - Illustrator 2026 - analise estatica (somente leitura)
+
+Metodo: parse manual do PE - cadeia IMAGE_IMPORT_DESCRIPTOR (somente nomes de DLL de 1o nivel, nao funcoes).
+
+## Mapa
+
+- **AGM.dll** importa 56 DLL(s): api-ms-win-core-com-l1-1-0.dll, api-ms-win-core-datetime-l1-1-0.dll, api-ms-win-core-debug-l1-1-0.dll, api-ms-win-core-errorhandling-l1-1-0.dll, api-ms-win-core-file-l1-1-0.dll, api-ms-win-core-file-l1-2-0.dll, api-ms-win-core-file-l1-2-2.dll, api-ms-win-core-handle-l1-1-0.dll, api-ms-win-core-heap-l1-1-0.dll, api-ms-win-core-heap-l2-1-0.dll, api-ms-win-core-heap-obsolete-l1-1-0.dll, api-ms-win-core-interlocked-l1-1-0.dll, api-ms-win-core-kernel32-legacy-l1-1-1.dll, api-ms-win-core-libraryloader-l1-2-0.dll, api-ms-win-core-libraryloader-l1-2-1.dll, api-ms-win-core-localization-l1-2-0.dll, api-ms-win-core-processenvironment-l1-1-0.dll, api-ms-win-core-processthreads-l1-1-0.dll, api-ms-win-core-processthreads-l1-1-1.dll, api-ms-win-core-processthreads-l1-1-3.dll, api-ms-win-core-profile-l1-1-0.dll, api-ms-win-core-registry-l1-1-0.dll, api-ms-win-core-rtlsupport-l1-1-0.dll, api-ms-win-core-string-l1-1-0.dll, api-ms-win-core-string-l2-1-0.dll, api-ms-win-core-string-obsolete-l1-1-0.dll, api-ms-win-core-synch-ansi-l1-1-0.dll, api-ms-win-core-synch-l1-1-0.dll, api-ms-win-core-synch-l1-2-0.dll, api-ms-win-core-sysinfo-l1-1-0.dll, api-ms-win-core-sysinfo-l1-2-0.dll, api-ms-win-crt-convert-l1-1-0.dll, api-ms-win-crt-environment-l1-1-0.dll, api-ms-win-crt-filesystem-l1-1-0.dll, api-ms-win-crt-heap-l1-1-0.dll, api-ms-win-crt-math-l1-1-0.dll, api-ms-win-crt-runtime-l1-1-0.dll, api-ms-win-crt-stdio-l1-1-0.dll, api-ms-win-crt-string-l1-1-0.dll, api-ms-win-crt-time-l1-1-0.dll, api-ms-win-crt-utility-l1-1-0.dll, api-ms-win-ntuser-sysparams-l1-1-0.dll, COMDLG32.dll, d3d12.dll, D3DCOMPILER_47.dll, dxgi.dll, GDI32.dll, KERNEL32.dll, MSVCP140.dll, OLEAUT32.dll, OPENGL32.dll, SETUPAPI.dll, USER32.dll, VCRUNTIME140.dll, VCRUNTIME140_1.dll, WINSPOOL.DRV
+- **AdobePIE.dll** importa 45 DLL(s): ACE.dll, AdobePDFSettings.dll, AdobeSVGAGM.dll, AdobeXMP.dll, AdobeXMPFiles.dll, ADVAPI32.dll, AGM.dll, AIDE.dll, api-ms-win-crt-convert-l1-1-0.dll, api-ms-win-crt-environment-l1-1-0.dll, api-ms-win-crt-filesystem-l1-1-0.dll, api-ms-win-crt-heap-l1-1-0.dll, api-ms-win-crt-locale-l1-1-0.dll, api-ms-win-crt-math-l1-1-0.dll, api-ms-win-crt-runtime-l1-1-0.dll, api-ms-win-crt-stdio-l1-1-0.dll, api-ms-win-crt-string-l1-1-0.dll, api-ms-win-crt-time-l1-1-0.dll, api-ms-win-crt-utility-l1-1-0.dll, api-ms-win-shcore-scaling-l1-1-1.dll, AXE8SharedExpat.dll, AXEDOMCore.dll, bcrypt.dll, BIB.dll, BIBUtils.dll, CoolType.dll, dxgi.dll, GDI32.dll, icuuc77.dll, IMM32.dll, JP2KLib.dll, KERNEL32.dll, MSIMG32.dll, MSVCP140.dll, ole32.dll, OLEAUT32.dll, SHELL32.dll, SHLWAPI.dll, tbb12.dll, urlmon.dll, USER32.dll, VCRUNTIME140.dll, VCRUNTIME140_1.dll, VERSION.dll, WINHTTP.dll
+- **AILib.dll** importa 47 DLL(s): AdobeLinguistic.dll, AdobeSVGAGM.dll, AdobeXMP.dll, ADVAPI32.dll, AGM.dll, aifm.dll, api-ms-win-crt-convert-l1-1-0.dll, api-ms-win-crt-environment-l1-1-0.dll, api-ms-win-crt-filesystem-l1-1-0.dll, api-ms-win-crt-heap-l1-1-0.dll, api-ms-win-crt-locale-l1-1-0.dll, api-ms-win-crt-math-l1-1-0.dll, api-ms-win-crt-multibyte-l1-1-0.dll, api-ms-win-crt-runtime-l1-1-0.dll, api-ms-win-crt-stdio-l1-1-0.dll, api-ms-win-crt-string-l1-1-0.dll, api-ms-win-crt-time-l1-1-0.dll, api-ms-win-crt-utility-l1-1-0.dll, AXEDOMCore.dll, bcrypt.dll, BIB.dll, CloudAILib.dll, CoolType.dll, dbgeng.dll, GDI32.dll, gdiplus.dll, icuin77.dll, icuuc77.dll, imagehlp.dll, IMM32.dll, KERNEL32.dll, MPR.dll, MPS.dll, MSVCP140.dll, MSVCP140_ATOMIC_WAIT.dll, MSVCP140_CODECVT_IDS.dll, ole32.dll, SHELL32.dll, SHLWAPI.dll, SPBasic.dll, tbb12.dll, USER32.dll, uxtech.dll, VCRUNTIME140.dll, VCRUNTIME140_1.dll, VERSION.dll, wrservices.dll
+- **dvaui.dll** importa 32 DLL(s): api-ms-win-crt-convert-l1-1-0.dll, api-ms-win-crt-environment-l1-1-0.dll, api-ms-win-crt-filesystem-l1-1-0.dll, api-ms-win-crt-heap-l1-1-0.dll, api-ms-win-crt-locale-l1-1-0.dll, api-ms-win-crt-math-l1-1-0.dll, api-ms-win-crt-runtime-l1-1-0.dll, api-ms-win-crt-stdio-l1-1-0.dll, api-ms-win-crt-string-l1-1-0.dll, api-ms-win-crt-utility-l1-1-0.dll, api-ms-win-shcore-scaling-l1-1-1.dll, COMDLG32.dll, d2d1.dll, dvaappsupport.dll, dvacore.dll, dvascripting.dll, dwmapi.dll, DWrite.dll, GDI32.dll, gdiplus.dll, IMM32.dll, KERNEL32.dll, MSVCP140.dll, ole32.dll, OLEACC.dll, OLEAUT32.dll, OPENGL32.dll, SHELL32.dll, SHLWAPI.dll, USER32.dll, VCRUNTIME140.dll, VCRUNTIME140_1.dll
+- **dynamic-torqnative.dll** importa 40 DLL(s): act_tracing.dll, ADVAPI32.dll, api-ms-win-core-winrt-error-l1-1-0.dll, api-ms-win-crt-convert-l1-1-0.dll, api-ms-win-crt-environment-l1-1-0.dll, api-ms-win-crt-filesystem-l1-1-0.dll, api-ms-win-crt-heap-l1-1-0.dll, api-ms-win-crt-locale-l1-1-0.dll, api-ms-win-crt-math-l1-1-0.dll, api-ms-win-crt-runtime-l1-1-0.dll, api-ms-win-crt-stdio-l1-1-0.dll, api-ms-win-crt-string-l1-1-0.dll, api-ms-win-crt-time-l1-1-0.dll, api-ms-win-crt-utility-l1-1-0.dll, api-ms-win-shcore-scaling-l1-1-1.dll, bcrypt.dll, credui.dll, CRYPT32.dll, d2d1.dll, DWrite.dll, GDI32.dll, gdiplus.dll, IPHLPAPI.DLL, KERNEL32.dll, libdynamic-napi.dll, MSVCP140.dll, MSWSOCK.dll, ole32.dll, OLEAUT32.dll, POWRPROF.dll, PROPSYS.dll, Secur32.dll, SHELL32.dll, SHLWAPI.dll, USER32.dll, USERENV.dll, VCRUNTIME140.dll, VCRUNTIME140_1.dll, WINHTTP.dll, WS2_32.dll
+- **dxcompiler.dll** importa 16 DLL(s): ADVAPI32.dll, api-ms-win-crt-convert-l1-1-0.dll, api-ms-win-crt-environment-l1-1-0.dll, api-ms-win-crt-heap-l1-1-0.dll, api-ms-win-crt-math-l1-1-0.dll, api-ms-win-crt-runtime-l1-1-0.dll, api-ms-win-crt-stdio-l1-1-0.dll, api-ms-win-crt-string-l1-1-0.dll, api-ms-win-crt-time-l1-1-0.dll, api-ms-win-crt-utility-l1-1-0.dll, KERNEL32.dll, MSVCP140.dll, ole32.dll, OLEAUT32.dll, VCRUNTIME140.dll, VCRUNTIME140_1.dll
+- **adobeusd_usd.dll** importa 25 DLL(s): adobeusd_ar.dll, adobeusd_arch.dll, adobeusd_gf.dll, adobeusd_js.dll, adobeusd_kind.dll, adobeusd_pcp.dll, adobeusd_plug.dll, adobeusd_sdf.dll, adobeusd_tf.dll, adobeusd_trace.dll, adobeusd_ts.dll, adobeusd_vt.dll, adobeusd_work.dll, api-ms-win-crt-convert-l1-1-0.dll, api-ms-win-crt-heap-l1-1-0.dll, api-ms-win-crt-math-l1-1-0.dll, api-ms-win-crt-runtime-l1-1-0.dll, api-ms-win-crt-stdio-l1-1-0.dll, api-ms-win-crt-string-l1-1-0.dll, api-ms-win-crt-time-l1-1-0.dll, KERNEL32.dll, MSVCP140.dll, tbb12.dll, VCRUNTIME140.dll, VCRUNTIME140_1.dll
+- **Illustrator.exe** importa 86 DLL(s): ACE.dll, act_tracing.dll, AdobeLinguistic.dll, AdobeSplashKit.dll, AdobeSVGAGM.dll, AdobeXMP.dll, AdobeXMPFiles.dll, ADVAPI32.dll, AGM.dll, ahclient.dll, AIACPL.dll, aifm.dll, AIPostman.dll, AITracing.dll, Alcid.dll, api-ms-win-crt-convert-l1-1-0.dll, api-ms-win-crt-environment-l1-1-0.dll, api-ms-win-crt-filesystem-l1-1-0.dll, api-ms-win-crt-heap-l1-1-0.dll, api-ms-win-crt-locale-l1-1-0.dll, api-ms-win-crt-math-l1-1-0.dll, api-ms-win-crt-multibyte-l1-1-0.dll, api-ms-win-crt-runtime-l1-1-0.dll, api-ms-win-crt-stdio-l1-1-0.dll, api-ms-win-crt-string-l1-1-0.dll, api-ms-win-crt-time-l1-1-0.dll, api-ms-win-crt-utility-l1-1-0.dll, api-ms-win-shcore-scaling-l1-1-1.dll, ARE.dll, AXE8SharedExpat.dll, AXEDOMCore.dll, bcrypt.dll, BIB.dll, BIBUtils.dll, boost_thread.dll, CloudAILib.dll, CloudIndra.dll, CoolType.dll, CRClient.dll, CRYPT32.dll, d3d12.dll, dunamis-ingest.dll, dvaai.dll, dvacore.dll, dvasystemcompatibilityreport.dll, dvaui.dll, dvaworkspace.dll, dxgi.dll, exo.dll, GDI32.dll, gdiplus.dll, icuin77.dll, icuuc77.dll, imagehlp.dll, IMM32.dll, IPHLPAPI.DLL, KERNEL32.dll, MPR.dll, MPS.dll, MSVCP140.dll, MSVCP140_ATOMIC_WAIT.dll, MSVCP140_CODECVT_IDS.dll, NETAPI32.dll, ole32.dll, OLEAUT32.dll, OPENGL32.dll, PDFPort.dll, Secur32.dll, SHELL32.dll, SHLWAPI.dll, SPBasic.dll, tbb12.dll, typequest_bravo.dll, USER32.dll, uxtech.dll, VCRUNTIME140.dll, VCRUNTIME140_1.dll, VERSION.dll, wevtapi.dll, WINHTTP.dll, WININET.dll, WINSPOOL.DRV, WINTRUST.dll, wrservices.dll, WS2_32.dll, ZXPSignLib-Minimal.dll
+- **adobe_c2pa.dll** importa 26 DLL(s): advapi32.dll, api-ms-win-core-path-l1-1-0.dll, api-ms-win-core-synch-l1-2-0.dll, api-ms-win-crt-convert-l1-1-0.dll, api-ms-win-crt-filesystem-l1-1-0.dll, api-ms-win-crt-heap-l1-1-0.dll, api-ms-win-crt-locale-l1-1-0.dll, api-ms-win-crt-math-l1-1-0.dll, api-ms-win-crt-runtime-l1-1-0.dll, api-ms-win-crt-stdio-l1-1-0.dll, api-ms-win-crt-string-l1-1-0.dll, api-ms-win-crt-time-l1-1-0.dll, bcrypt.dll, bcryptprimitives.dll, d3d12.dll, dbghelp.dll, DirectML.dll, dxcore.dll, dxgi.dll, kernel32.dll, MSVCP140.dll, MSVCP140_1.dll, ntdll.dll, VCRUNTIME140.dll, VCRUNTIME140_1.dll, WS2_32.dll
+- **adobeusd_sdf.dll** importa 21 DLL(s): adobeusd_ar.dll, adobeusd_arch.dll, adobeusd_gf.dll, adobeusd_js.dll, adobeusd_plug.dll, adobeusd_tf.dll, adobeusd_trace.dll, adobeusd_ts.dll, adobeusd_vt.dll, adobeusd_work.dll, api-ms-win-crt-filesystem-l1-1-0.dll, api-ms-win-crt-heap-l1-1-0.dll, api-ms-win-crt-math-l1-1-0.dll, api-ms-win-crt-runtime-l1-1-0.dll, api-ms-win-crt-stdio-l1-1-0.dll, api-ms-win-crt-string-l1-1-0.dll, KERNEL32.dll, MSVCP140.dll, tbb12.dll, VCRUNTIME140.dll, VCRUNTIME140_1.dll
+- **libdynamic-napi.dll** importa 23 DLL(s): act_tracing.dll, ADVAPI32.dll, api-ms-win-crt-convert-l1-1-0.dll, api-ms-win-crt-environment-l1-1-0.dll, api-ms-win-crt-filesystem-l1-1-0.dll, api-ms-win-crt-heap-l1-1-0.dll, api-ms-win-crt-math-l1-1-0.dll, api-ms-win-crt-runtime-l1-1-0.dll, api-ms-win-crt-stdio-l1-1-0.dll, api-ms-win-crt-string-l1-1-0.dll, api-ms-win-crt-time-l1-1-0.dll, api-ms-win-crt-utility-l1-1-0.dll, dbghelp.dll, KERNEL32.dll, MSVCP140.dll, MSVCP140_ATOMIC_WAIT.dll, MSWSOCK.dll, ole32.dll, Secur32.dll, VCRUNTIME140.dll, VCRUNTIME140_1.dll, WINMM.dll, WS2_32.dll
+- **icudt77.dll** importa 0 DLL(s): 
+- **mmsdk.dll** importa 26 DLL(s): ADVAPI32.dll, api-ms-win-crt-convert-l1-1-0.dll, api-ms-win-crt-environment-l1-1-0.dll, api-ms-win-crt-filesystem-l1-1-0.dll, api-ms-win-crt-heap-l1-1-0.dll, api-ms-win-crt-locale-l1-1-0.dll, api-ms-win-crt-math-l1-1-0.dll, api-ms-win-crt-runtime-l1-1-0.dll, api-ms-win-crt-stdio-l1-1-0.dll, api-ms-win-crt-string-l1-1-0.dll, api-ms-win-crt-time-l1-1-0.dll, api-ms-win-crt-utility-l1-1-0.dll, bcrypt.dll, CRYPT32.dll, KERNEL32.dll, MPR.dll, MSVCP140.dll, ole32.dll, SHELL32.dll, SHLWAPI.dll, tbb12.dll, USER32.dll, VCRUNTIME140.dll, VCRUNTIME140_1.dll, VERSION.dll, WINTRUST.dll
+
+## Detalhe (7 binarios obrigatorios)
+
+### AGM.dll (56 DLLs)
+- api-ms-win-core-com-l1-1-0.dll
+- api-ms-win-core-datetime-l1-1-0.dll
+- api-ms-win-core-debug-l1-1-0.dll
+- api-ms-win-core-errorhandling-l1-1-0.dll
+- api-ms-win-core-file-l1-1-0.dll
+- api-ms-win-core-file-l1-2-0.dll
+- api-ms-win-core-file-l1-2-2.dll
+- api-ms-win-core-handle-l1-1-0.dll
+- api-ms-win-core-heap-l1-1-0.dll
+- api-ms-win-core-heap-l2-1-0.dll
+- api-ms-win-core-heap-obsolete-l1-1-0.dll
+- api-ms-win-core-interlocked-l1-1-0.dll
+- api-ms-win-core-kernel32-legacy-l1-1-1.dll
+- api-ms-win-core-libraryloader-l1-2-0.dll
+- api-ms-win-core-libraryloader-l1-2-1.dll
+- api-ms-win-core-localization-l1-2-0.dll
+- api-ms-win-core-processenvironment-l1-1-0.dll
+- api-ms-win-core-processthreads-l1-1-0.dll
+- api-ms-win-core-processthreads-l1-1-1.dll
+- api-ms-win-core-processthreads-l1-1-3.dll
+- api-ms-win-core-profile-l1-1-0.dll
+- api-ms-win-core-registry-l1-1-0.dll
+- api-ms-win-core-rtlsupport-l1-1-0.dll
+- api-ms-win-core-string-l1-1-0.dll
+- api-ms-win-core-string-l2-1-0.dll
+- api-ms-win-core-string-obsolete-l1-1-0.dll
+- api-ms-win-core-synch-ansi-l1-1-0.dll
+- api-ms-win-core-synch-l1-1-0.dll
+- api-ms-win-core-synch-l1-2-0.dll
+- api-ms-win-core-sysinfo-l1-1-0.dll
+- api-ms-win-core-sysinfo-l1-2-0.dll
+- api-ms-win-crt-convert-l1-1-0.dll
+- api-ms-win-crt-environment-l1-1-0.dll
+- api-ms-win-crt-filesystem-l1-1-0.dll
+- api-ms-win-crt-heap-l1-1-0.dll
+- api-ms-win-crt-math-l1-1-0.dll
+- api-ms-win-crt-runtime-l1-1-0.dll
+- api-ms-win-crt-stdio-l1-1-0.dll
+- api-ms-win-crt-string-l1-1-0.dll
+- api-ms-win-crt-time-l1-1-0.dll
+- api-ms-win-crt-utility-l1-1-0.dll
+- api-ms-win-ntuser-sysparams-l1-1-0.dll
+- COMDLG32.dll
+- d3d12.dll
+- D3DCOMPILER_47.dll
+- dxgi.dll
+- GDI32.dll
+- KERNEL32.dll
+- MSVCP140.dll
+- OLEAUT32.dll
+- OPENGL32.dll
+- SETUPAPI.dll
+- USER32.dll
+- VCRUNTIME140.dll
+- VCRUNTIME140_1.dll
+- WINSPOOL.DRV
+
+### AdobePIE.dll (45 DLLs)
+- ACE.dll
+- AdobePDFSettings.dll
+- AdobeSVGAGM.dll
+- AdobeXMP.dll
+- AdobeXMPFiles.dll
+- ADVAPI32.dll
+- AGM.dll
+- AIDE.dll
+- api-ms-win-crt-convert-l1-1-0.dll
+- api-ms-win-crt-environment-l1-1-0.dll
+- api-ms-win-crt-filesystem-l1-1-0.dll
+- api-ms-win-crt-heap-l1-1-0.dll
+- api-ms-win-crt-locale-l1-1-0.dll
+- api-ms-win-crt-math-l1-1-0.dll
+- api-ms-win-crt-runtime-l1-1-0.dll
+- api-ms-win-crt-stdio-l1-1-0.dll
+- api-ms-win-crt-string-l1-1-0.dll
+- api-ms-win-crt-time-l1-1-0.dll
+- api-ms-win-crt-utility-l1-1-0.dll
+- api-ms-win-shcore-scaling-l1-1-1.dll
+- AXE8SharedExpat.dll
+- AXEDOMCore.dll
+- bcrypt.dll
+- BIB.dll
+- BIBUtils.dll
+- CoolType.dll
+- dxgi.dll
+- GDI32.dll
+- icuuc77.dll
+- IMM32.dll
+- JP2KLib.dll
+- KERNEL32.dll
+- MSIMG32.dll
+- MSVCP140.dll
+- ole32.dll
+- OLEAUT32.dll
+- SHELL32.dll
+- SHLWAPI.dll
+- tbb12.dll
+- urlmon.dll
+- USER32.dll
+- VCRUNTIME140.dll
+- VCRUNTIME140_1.dll
+- VERSION.dll
+- WINHTTP.dll
+
+### AILib.dll (47 DLLs)
+- AdobeLinguistic.dll
+- AdobeSVGAGM.dll
+- AdobeXMP.dll
+- ADVAPI32.dll
+- AGM.dll
+- aifm.dll
+- api-ms-win-crt-convert-l1-1-0.dll
+- api-ms-win-crt-environment-l1-1-0.dll
+- api-ms-win-crt-filesystem-l1-1-0.dll
+- api-ms-win-crt-heap-l1-1-0.dll
+- api-ms-win-crt-locale-l1-1-0.dll
+- api-ms-win-crt-math-l1-1-0.dll
+- api-ms-win-crt-multibyte-l1-1-0.dll
+- api-ms-win-crt-runtime-l1-1-0.dll
+- api-ms-win-crt-stdio-l1-1-0.dll
+- api-ms-win-crt-string-l1-1-0.dll
+- api-ms-win-crt-time-l1-1-0.dll
+- api-ms-win-crt-utility-l1-1-0.dll
+- AXEDOMCore.dll
+- bcrypt.dll
+- BIB.dll
+- CloudAILib.dll
+- CoolType.dll
+- dbgeng.dll
+- GDI32.dll
+- gdiplus.dll
+- icuin77.dll
+- icuuc77.dll
+- imagehlp.dll
+- IMM32.dll
+- KERNEL32.dll
+- MPR.dll
+- MPS.dll
+- MSVCP140.dll
+- MSVCP140_ATOMIC_WAIT.dll
+- MSVCP140_CODECVT_IDS.dll
+- ole32.dll
+- SHELL32.dll
+- SHLWAPI.dll
+- SPBasic.dll
+- tbb12.dll
+- USER32.dll
+- uxtech.dll
+- VCRUNTIME140.dll
+- VCRUNTIME140_1.dll
+- VERSION.dll
+- wrservices.dll
+
+### dvaui.dll (32 DLLs)
+- api-ms-win-crt-convert-l1-1-0.dll
+- api-ms-win-crt-environment-l1-1-0.dll
+- api-ms-win-crt-filesystem-l1-1-0.dll
+- api-ms-win-crt-heap-l1-1-0.dll
+- api-ms-win-crt-locale-l1-1-0.dll
+- api-ms-win-crt-math-l1-1-0.dll
+- api-ms-win-crt-runtime-l1-1-0.dll
+- api-ms-win-crt-stdio-l1-1-0.dll
+- api-ms-win-crt-string-l1-1-0.dll
+- api-ms-win-crt-utility-l1-1-0.dll
+- api-ms-win-shcore-scaling-l1-1-1.dll
+- COMDLG32.dll
+- d2d1.dll
+- dvaappsupport.dll
+- dvacore.dll
+- dvascripting.dll
+- dwmapi.dll
+- DWrite.dll
+- GDI32.dll
+- gdiplus.dll
+- IMM32.dll
+- KERNEL32.dll
+- MSVCP140.dll
+- ole32.dll
+- OLEACC.dll
+- OLEAUT32.dll
+- OPENGL32.dll
+- SHELL32.dll
+- SHLWAPI.dll
+- USER32.dll
+- VCRUNTIME140.dll
+- VCRUNTIME140_1.dll
+
+### dynamic-torqnative.dll (40 DLLs)
+- act_tracing.dll
+- ADVAPI32.dll
+- api-ms-win-core-winrt-error-l1-1-0.dll
+- api-ms-win-crt-convert-l1-1-0.dll
+- api-ms-win-crt-environment-l1-1-0.dll
+- api-ms-win-crt-filesystem-l1-1-0.dll
+- api-ms-win-crt-heap-l1-1-0.dll
+- api-ms-win-crt-locale-l1-1-0.dll
+- api-ms-win-crt-math-l1-1-0.dll
+- api-ms-win-crt-runtime-l1-1-0.dll
+- api-ms-win-crt-stdio-l1-1-0.dll
+- api-ms-win-crt-string-l1-1-0.dll
+- api-ms-win-crt-time-l1-1-0.dll
+- api-ms-win-crt-utility-l1-1-0.dll
+- api-ms-win-shcore-scaling-l1-1-1.dll
+- bcrypt.dll
+- credui.dll
+- CRYPT32.dll
+- d2d1.dll
+- DWrite.dll
+- GDI32.dll
+- gdiplus.dll
+- IPHLPAPI.DLL
+- KERNEL32.dll
+- libdynamic-napi.dll
+- MSVCP140.dll
+- MSWSOCK.dll
+- ole32.dll
+- OLEAUT32.dll
+- POWRPROF.dll
+- PROPSYS.dll
+- Secur32.dll
+- SHELL32.dll
+- SHLWAPI.dll
+- USER32.dll
+- USERENV.dll
+- VCRUNTIME140.dll
+- VCRUNTIME140_1.dll
+- WINHTTP.dll
+- WS2_32.dll
+
+### dxcompiler.dll (16 DLLs)
+- ADVAPI32.dll
+- api-ms-win-crt-convert-l1-1-0.dll
+- api-ms-win-crt-environment-l1-1-0.dll
+- api-ms-win-crt-heap-l1-1-0.dll
+- api-ms-win-crt-math-l1-1-0.dll
+- api-ms-win-crt-runtime-l1-1-0.dll
+- api-ms-win-crt-stdio-l1-1-0.dll
+- api-ms-win-crt-string-l1-1-0.dll
+- api-ms-win-crt-time-l1-1-0.dll
+- api-ms-win-crt-utility-l1-1-0.dll
+- KERNEL32.dll
+- MSVCP140.dll
+- ole32.dll
+- OLEAUT32.dll
+- VCRUNTIME140.dll
+- VCRUNTIME140_1.dll
+
+### adobeusd_usd.dll (25 DLLs)
+- adobeusd_ar.dll
+- adobeusd_arch.dll
+- adobeusd_gf.dll
+- adobeusd_js.dll
+- adobeusd_kind.dll
+- adobeusd_pcp.dll
+- adobeusd_plug.dll
+- adobeusd_sdf.dll
+- adobeusd_tf.dll
+- adobeusd_trace.dll
+- adobeusd_ts.dll
+- adobeusd_vt.dll
+- adobeusd_work.dll
+- api-ms-win-crt-convert-l1-1-0.dll
+- api-ms-win-crt-heap-l1-1-0.dll
+- api-ms-win-crt-math-l1-1-0.dll
+- api-ms-win-crt-runtime-l1-1-0.dll
+- api-ms-win-crt-stdio-l1-1-0.dll
+- api-ms-win-crt-string-l1-1-0.dll
+- api-ms-win-crt-time-l1-1-0.dll
+- KERNEL32.dll
+- MSVCP140.dll
+- tbb12.dll
+- VCRUNTIME140.dll
+- VCRUNTIME140_1.dll
+
+## Extras
+
+### Illustrator.exe (86 DLLs)
+- ACE.dll
+- act_tracing.dll
+- AdobeLinguistic.dll
+- AdobeSplashKit.dll
+- AdobeSVGAGM.dll
+- AdobeXMP.dll
+- AdobeXMPFiles.dll
+- ADVAPI32.dll
+- AGM.dll
+- ahclient.dll
+- AIACPL.dll
+- aifm.dll
+- AIPostman.dll
+- AITracing.dll
+- Alcid.dll
+- api-ms-win-crt-convert-l1-1-0.dll
+- api-ms-win-crt-environment-l1-1-0.dll
+- api-ms-win-crt-filesystem-l1-1-0.dll
+- api-ms-win-crt-heap-l1-1-0.dll
+- api-ms-win-crt-locale-l1-1-0.dll
+- api-ms-win-crt-math-l1-1-0.dll
+- api-ms-win-crt-multibyte-l1-1-0.dll
+- api-ms-win-crt-runtime-l1-1-0.dll
+- api-ms-win-crt-stdio-l1-1-0.dll
+- api-ms-win-crt-string-l1-1-0.dll
+- api-ms-win-crt-time-l1-1-0.dll
+- api-ms-win-crt-utility-l1-1-0.dll
+- api-ms-win-shcore-scaling-l1-1-1.dll
+- ARE.dll
+- AXE8SharedExpat.dll
+- AXEDOMCore.dll
+- bcrypt.dll
+- BIB.dll
+- BIBUtils.dll
+- boost_thread.dll
+- CloudAILib.dll
+- CloudIndra.dll
+- CoolType.dll
+- CRClient.dll
+- CRYPT32.dll
+- d3d12.dll
+- dunamis-ingest.dll
+- dvaai.dll
+- dvacore.dll
+- dvasystemcompatibilityreport.dll
+- dvaui.dll
+- dvaworkspace.dll
+- dxgi.dll
+- exo.dll
+- GDI32.dll
+- gdiplus.dll
+- icuin77.dll
+- icuuc77.dll
+- imagehlp.dll
+- IMM32.dll
+- IPHLPAPI.DLL
+- KERNEL32.dll
+- MPR.dll
+- MPS.dll
+- MSVCP140.dll
+- MSVCP140_ATOMIC_WAIT.dll
+- MSVCP140_CODECVT_IDS.dll
+- NETAPI32.dll
+- ole32.dll
+- OLEAUT32.dll
+- OPENGL32.dll
+- PDFPort.dll
+- Secur32.dll
+- SHELL32.dll
+- SHLWAPI.dll
+- SPBasic.dll
+- tbb12.dll
+- typequest_bravo.dll
+- USER32.dll
+- uxtech.dll
+- VCRUNTIME140.dll
+- VCRUNTIME140_1.dll
+- VERSION.dll
+- wevtapi.dll
+- WINHTTP.dll
+- WININET.dll
+- WINSPOOL.DRV
+- WINTRUST.dll
+- wrservices.dll
+- WS2_32.dll
+- ZXPSignLib-Minimal.dll
+
+### adobe_c2pa.dll (26 DLLs)
+- advapi32.dll
+- api-ms-win-core-path-l1-1-0.dll
+- api-ms-win-core-synch-l1-2-0.dll
+- api-ms-win-crt-convert-l1-1-0.dll
+- api-ms-win-crt-filesystem-l1-1-0.dll
+- api-ms-win-crt-heap-l1-1-0.dll
+- api-ms-win-crt-locale-l1-1-0.dll
+- api-ms-win-crt-math-l1-1-0.dll
+- api-ms-win-crt-runtime-l1-1-0.dll
+- api-ms-win-crt-stdio-l1-1-0.dll
+- api-ms-win-crt-string-l1-1-0.dll
+- api-ms-win-crt-time-l1-1-0.dll
+- bcrypt.dll
+- bcryptprimitives.dll
+- d3d12.dll
+- dbghelp.dll
+- DirectML.dll
+- dxcore.dll
+- dxgi.dll
+- kernel32.dll
+- MSVCP140.dll
+- MSVCP140_1.dll
+- ntdll.dll
+- VCRUNTIME140.dll
+- VCRUNTIME140_1.dll
+- WS2_32.dll
+
+### adobeusd_sdf.dll (21 DLLs)
+- adobeusd_ar.dll
+- adobeusd_arch.dll
+- adobeusd_gf.dll
+- adobeusd_js.dll
+- adobeusd_plug.dll
+- adobeusd_tf.dll
+- adobeusd_trace.dll
+- adobeusd_ts.dll
+- adobeusd_vt.dll
+- adobeusd_work.dll
+- api-ms-win-crt-filesystem-l1-1-0.dll
+- api-ms-win-crt-heap-l1-1-0.dll
+- api-ms-win-crt-math-l1-1-0.dll
+- api-ms-win-crt-runtime-l1-1-0.dll
+- api-ms-win-crt-stdio-l1-1-0.dll
+- api-ms-win-crt-string-l1-1-0.dll
+- KERNEL32.dll
+- MSVCP140.dll
+- tbb12.dll
+- VCRUNTIME140.dll
+- VCRUNTIME140_1.dll
+
+### libdynamic-napi.dll (23 DLLs)
+- act_tracing.dll
+- ADVAPI32.dll
+- api-ms-win-crt-convert-l1-1-0.dll
+- api-ms-win-crt-environment-l1-1-0.dll
+- api-ms-win-crt-filesystem-l1-1-0.dll
+- api-ms-win-crt-heap-l1-1-0.dll
+- api-ms-win-crt-math-l1-1-0.dll
+- api-ms-win-crt-runtime-l1-1-0.dll
+- api-ms-win-crt-stdio-l1-1-0.dll
+- api-ms-win-crt-string-l1-1-0.dll
+- api-ms-win-crt-time-l1-1-0.dll
+- api-ms-win-crt-utility-l1-1-0.dll
+- dbghelp.dll
+- KERNEL32.dll
+- MSVCP140.dll
+- MSVCP140_ATOMIC_WAIT.dll
+- MSWSOCK.dll
+- ole32.dll
+- Secur32.dll
+- VCRUNTIME140.dll
+- VCRUNTIME140_1.dll
+- WINMM.dll
+- WS2_32.dll
+
+### icudt77.dll (0 DLLs)
+- (nenhuma importacao de primeiro nivel)
+
+### mmsdk.dll (26 DLLs)
+- ADVAPI32.dll
+- api-ms-win-crt-convert-l1-1-0.dll
+- api-ms-win-crt-environment-l1-1-0.dll
+- api-ms-win-crt-filesystem-l1-1-0.dll
+- api-ms-win-crt-heap-l1-1-0.dll
+- api-ms-win-crt-locale-l1-1-0.dll
+- api-ms-win-crt-math-l1-1-0.dll
+- api-ms-win-crt-runtime-l1-1-0.dll
+- api-ms-win-crt-stdio-l1-1-0.dll
+- api-ms-win-crt-string-l1-1-0.dll
+- api-ms-win-crt-time-l1-1-0.dll
+- api-ms-win-crt-utility-l1-1-0.dll
+- bcrypt.dll
+- CRYPT32.dll
+- KERNEL32.dll
+- MPR.dll
+- MSVCP140.dll
+- ole32.dll
+- SHELL32.dll
+- SHLWAPI.dll
+- tbb12.dll
+- USER32.dll
+- VCRUNTIME140.dll
+- VCRUNTIME140_1.dll
+- VERSION.dll
+- WINTRUST.dll
