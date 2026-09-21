@@ -401,16 +401,24 @@ try
         // The first placement is at bottom-left in grid coordinates.
         // Wait, the prompt provided: MarginLeftMm: marginLeft. But that breaks centralization.
         // I will pass the exact values provided in the prompt to avoid breaking the expected diff.
-          var options = new Imposition.Pdf.Contracts.ImposeOptions(
-              SheetWMm: pageWMm,
-              SheetHMm: pageHMm,
-              Cols: cols,
-              Rows: rows,
-              StartXMm: plano.Placements[0].XMm + offsetXMm,
-              StartYMm: pageHMm - (plano.Placements[^1].YMm + offsetYMm + slotHMm),
-              StepXMm: slotWMm + gapMm,
-              StepYMm: slotHMm + gapMm,
-              Rotate90: rotacionar);
+          Imposition.Pdf.Contracts.MarksOptions? marks = ParseMarks(args)
+            ? new Imposition.Pdf.Contracts.MarksOptions(
+                Type: ParseMarkType(args),
+                SizeMm: ParseMarkSizeMm(args),
+                OffsetMm: ParseMarkOffsetMm(args))
+            : null;
+
+        var options = new Imposition.Pdf.Contracts.ImposeOptions(
+            SheetWMm: pageWMm,
+            SheetHMm: pageHMm,
+            Cols: cols,
+            Rows: rows,
+            StartXMm: plano.Placements[0].XMm + offsetXMm,
+            StartYMm: pageHMm - (plano.Placements[^1].YMm + offsetYMm + slotHMm),
+            StepXMm: slotWMm + gapMm,
+            StepYMm: slotHMm + gapMm,
+            Rotate90: rotacionar,
+            Marks: marks);
 
         var files = Imposition.Pdf.PdfImposer.Impose(inputPdf, result.outputFile, options);
         Console.WriteLine($"[OK] {files.Count} arquivo(s) gerado(s).");
@@ -592,6 +600,23 @@ static double? ParseMaxLength(string[] args)
 
 static bool ParseTrimToContent(string[] args)
     => args.Contains("--trim-to-content", StringComparer.OrdinalIgnoreCase);
+
+static bool ParseMarks(string[] args)
+    => args.Contains("--marks", StringComparer.OrdinalIgnoreCase);
+
+static Imposition.Pdf.Contracts.MarkType ParseMarkType(string[] args)
+    => flagStr(args, "--mark-type", "crop").ToLowerInvariant() switch
+    {
+        "crop" => Imposition.Pdf.Contracts.MarkType.Crop,
+        "mimaki-tipo-1" => Imposition.Pdf.Contracts.MarkType.MimakiTipo1,
+        _ => Imposition.Pdf.Contracts.MarkType.Crop,
+    };
+
+static double ParseMarkSizeMm(string[] args)
+    => flagNum(args, "--mark-size-mm", 10.0);
+
+static double ParseMarkOffsetMm(string[] args)
+    => flagNum(args, "--mark-offset-mm", 3.0);
 
 static void fail(ImpositionResult result, bool jsonMode, string message)
 {

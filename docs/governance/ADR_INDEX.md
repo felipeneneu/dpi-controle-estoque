@@ -36,3 +36,4 @@
 > ADR-010..012 sÃ£o **pendentes**: decisÃµes capturadas nos data-maps e catÃ¡logo ainda precisam ser formalizadas. Cada uma vira ADR quando sua RFC for concluÃ­da.
 | ADR-042 | Evolução de Mesa de Etiquetas para Mesa de Imposição Profissional | Aprovado | 2026-09-20 | desktop/imposition | BR-010, BR-021 | complementa ADR-015, ADR-021 |
 | ADR-043 | Imposition.Pdf.dll (QPDF + preservação OCG) | Proposto | 2026-09-20 | imposition/pdf | BR-010, BR-021 | complementa ADR-017, ADR-021, ADR-041 |
+| ADR-044 | Marcas de Imposi��o (Crop + Mimaki Tipo 1) | Proposto | 2026-09-21 | imposition/prepress | BR-010, BR-021 | complementa ADR-043 |

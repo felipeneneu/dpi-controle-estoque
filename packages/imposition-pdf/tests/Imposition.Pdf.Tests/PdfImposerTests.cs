@@ -64,4 +64,34 @@ public class PdfImposerTests
             Environment.SetEnvironmentVariable("TMP", originalTmp);
         }
     }
+
+
+    [Fact]
+    public void BR_044_a_CropMarksDrawn()
+    {
+        var input = "Fixtures/3-layers.pdf";
+        var output = "Output/marks-crop.pdf";
+
+        var options = new ImposeOptions(700, 1000, 2, 2, 0, 0, 50, 50, false, new MarksOptions(MarkType.Crop));
+        PdfImposer.Impose(input, output, options);
+
+        var qdf = QpdfRunner.Run($"--qdf \"{output}\" -");
+        qdf.Should().Contain("0 0 0 RG");
+        qdf.Should().Contain("S\nQ");
+    }
+
+    [Fact]
+    public void BR_044_b_MimakiTipo1MarksDrawn()
+    {
+        var input = "Fixtures/3-layers.pdf";
+        var output = "Output/marks-mimaki.pdf";
+
+        var options = new ImposeOptions(700, 1000, 2, 2, 0, 0, 50, 50, false, new MarksOptions(MarkType.MimakiTipo1, SizeMm: 25.0));
+        PdfImposer.Impose(input, output, options);
+
+        var qdf = QpdfRunner.Run($"--qdf \"{output}\" -");
+        qdf.Should().Contain("0 0 0 RG");
+        qdf.Should().Contain("S\nQ");
+    }
 }
+

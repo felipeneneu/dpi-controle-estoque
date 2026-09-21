@@ -239,6 +239,29 @@ if not "!TMP!"=="" set "TMP=!TMP: =!"
 if /i "!TMP!"=="s"   set "TRIM_ARG=--trim-to-content"
 if /i "!TMP!"=="sim" set "TRIM_ARG=--trim-to-content"
 
+rem ------------------------------------------------------------
+rem Marcas de corte
+rem ------------------------------------------------------------
+
+:menu_marcas
+echo.
+echo ------------------------------------------------------------
+echo  MARCAS DE CORTE?
+echo ------------------------------------------------------------
+echo  [ENTER] Nao
+echo  [1] Crop (Konica)
+echo  [2] Mimaki Tipo 1 (10mm)
+echo  [3] Mimaki Tipo 1 (25mm)
+echo ------------------------------------------------------------
+set "MARCAS_OPT="
+set /p "MARCAS_OPT=Escolha [ENTER para Nao]: "
+if not "!MARCAS_OPT!"=="" set "MARCAS_OPT=!MARCAS_OPT: =!"
+
+set "MARKS_ARG="
+if "!MARCAS_OPT!"=="1" set "MARKS_ARG=--marks --mark-type crop"
+if "!MARCAS_OPT!"=="2" set "MARKS_ARG=--marks --mark-type mimaki-tipo-1 --mark-size-mm 10"
+if "!MARCAS_OPT!"=="3" set "MARKS_ARG=--marks --mark-type mimaki-tipo-1 --mark-size-mm 25"
+
 goto menu_rotacao
 
 rem ------------------------------------------------------------
@@ -328,6 +351,7 @@ echo PROCESSANDO IMPOSICAO...
 echo Chapa: !PW! x !PH! mm, Gap: !GAP! mm, Margem: !MARG! mm, Rotacao: !ROT!
 echo Pedido: !PEDIDO! copias
 if defined TRIM_ARG echo Fechar PDF na grade: SIM
+if defined MARKS_ARG echo Marcas de corte: SIM
 echo ============================================================
 echo.
 
@@ -344,7 +368,7 @@ if not exist "%BIN%" (
 
 rem Redirecionar stderr para arquivo temporario (para parsear OPTION_* no exit 4)
 set "STDERR_FILE=%TEMP%\impostor_stderr.txt"
-"%BIN%" "!PDF!" !PW! !PH! !GAP! !MARG! --rotation !ROT! !TARGET_ARG! !SURPLUS_ARG! !SUBSTRATE_ARG! !TRIM_ARG! !OUTPUT_ARG! 2>"!STDERR_FILE!"
+"%BIN%" "!PDF!" !PW! !PH! !GAP! !MARG! --rotation !ROT! !TARGET_ARG! !SURPLUS_ARG! !SUBSTRATE_ARG! !TRIM_ARG! !MARKS_ARG! !OUTPUT_ARG! 2>"!STDERR_FILE!"
 set "EXIT_CODE=%ERRORLEVEL%"
 
 if "%EXIT_CODE%"=="0" goto sucesso
