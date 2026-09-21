@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="GraficaOS.App/GraficaOS.App.csproj" />
+  <Project Path="GraficaOS.Core.Tests/GraficaOS.Core.Tests.csproj" />
+  <Project Path="GraficaOS.Core/GraficaOS.Core.csproj" />
+</Solution>

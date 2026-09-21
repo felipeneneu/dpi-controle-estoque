@@ -1,0 +1,308 @@
+<Window x:Class="GraficaOS.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:GraficaOS.App"
+        Title="GraficaOS Impositor" Height="800" Width="1366"
+        Background="{StaticResource FundoConteudo}" FontFamily="Segoe UI" FontSize="11"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <local:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+    </Window.Resources>
+
+    <!-- OBRIGATÓRIO: Sem CornerRadius, fontes até 14px (exceto PRODUÇÃO TOTAL), Segoe UI -->
+
+    <Window.InputBindings>
+        <KeyBinding Key="N" Modifiers="Ctrl" Command="{Binding NovoArquivoCommand}" />
+        <KeyBinding Key="O" Modifiers="Ctrl" Command="{Binding AbrirArquivoCommand}" />
+        <KeyBinding Key="P" Modifiers="Ctrl+Shift" Command="{Binding ImportarPdfCommand}" />
+        <KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding SalvarCommand}" />
+        <!-- Illustrator shortcuts handled implicitly or by routing to active VM -->
+    </Window.InputBindings>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="28"/> <!-- MenuBar -->
+            <RowDefinition Height="*"/>  <!-- Workspace -->
+            <RowDefinition Height="Auto"/> <!-- DataGrid -->
+            <RowDefinition Height="24"/> <!-- Status Bar -->
+        </Grid.RowDefinitions>
+
+        <!-- 1. MENUBAR (28px) -->
+        <Border Grid.Row="0" Background="{StaticResource Chrome}" BorderBrush="{StaticResource BordaPadrao}" BorderThickness="0,0,0,1">
+            <DockPanel>
+                <!-- Logo -->
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" VerticalAlignment="Center" Margin="12,0,16,0">
+                    <TextBlock Text="GRAFICA" FontWeight="Bold" FontSize="12" Foreground="{StaticResource TextoPrimario}"/>
+                    <TextBlock Text="OS" FontWeight="Bold" FontSize="12" Foreground="{StaticResource BrandMagenta}"/>
+                </StackPanel>
+                
+                <!-- Menus -->
+                <Menu DockPanel.Dock="Left" Background="Transparent" VerticalAlignment="Center">
+                    <MenuItem Header="Arquivo" Padding="8,4" FontSize="11"/>
+                    <MenuItem Header="Editar" Padding="8,4" FontSize="11"/>
+                    <MenuItem Header="Trabalho" Padding="8,4" FontSize="11"/>
+                    <MenuItem Header="Objetos" Padding="8,4" FontSize="11"/>
+                    <MenuItem Header="Exibição" Padding="8,4" FontSize="11"/>
+                    <MenuItem Header="Recursos" Padding="8,4" FontSize="11"/>
+                    <MenuItem Header="Janela" Padding="8,4" FontSize="11"/>
+                    <MenuItem Header="Ajuda" Padding="8,4" FontSize="11"/>
+                </Menu>
+
+                <!-- Ícones à direita -->
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,0">
+                    <Button Style="{StaticResource FlatButton}" ToolTip="Novo (Ctrl+N)" Margin="0,0,4,0" Content="📄" Width="24"/>
+                    <Button Style="{StaticResource FlatButton}" ToolTip="Abrir (Ctrl+O)" Margin="0,0,4,0" Content="📂" Width="24"/>
+                    <Button Style="{StaticResource FlatButton}" ToolTip="Importar PDF (Ctrl+Shift+P)" Margin="0,0,4,0" Content="📥" Width="24"/>
+                    <Button Style="{StaticResource FlatButton}" ToolTip="Salvar (Ctrl+S)" Content="💾" Width="24"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- 2. WORKSPACE -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="40"/>  <!-- Vertical Toolbar -->
+                <ColumnDefinition Width="260"/> <!-- Painel Esquerdo -->
+                <ColumnDefinition Width="*"/>   <!-- Center Canvas -->
+                <ColumnDefinition Width="320"/> <!-- Painel Direito -->
+            </Grid.ColumnDefinitions>
+
+            <!-- A) Toolbar Vertical (40px) -->
+            <Border Grid.Column="0" Background="{StaticResource Chrome}" BorderBrush="{StaticResource BordaPadrao}" BorderThickness="0,0,1,0" Padding="0,4,0,0">
+                <StackPanel HorizontalAlignment="Center">
+                    <!-- Grupo 1 -->
+                    <Button Style="{StaticResource ToolBtn}" Content="↖" ToolTip="Seleção (V)"/>
+                    <Button Style="{StaticResource ToolBtn}" Content="↗" ToolTip="Seleção direta (A)"/>
+                    <Border Height="8" Margin="0,4" BorderBrush="{StaticResource BordaPadrao}" BorderThickness="0,1,0,0"/>
+
+                    <!-- Grupo 2 -->
+                    <Button Style="{StaticResource ToolBtn}" Content="✥" ToolTip="Mover (M)"/>
+                    <Border Height="8" Margin="0,4" BorderBrush="{StaticResource BordaPadrao}" BorderThickness="0,1,0,0"/>
+
+                    <!-- Grupo 3 -->
+                    <Button Style="{StaticResource ToolBtn}" Content="+" ToolTip="Zoom+ (Ctrl++)"/>
+                    <Button Style="{StaticResource ToolBtn}" Content="-" ToolTip="Zoom- (Ctrl+-)"/>
+                    <Button Style="{StaticResource ToolBtn}" Content="[]" ToolTip="Zoom fit (Ctrl+0)"/>
+                    <Button Style="{StaticResource ToolBtn}" Content="🖐" ToolTip="Pan (H)"/>
+                    <Border Height="8" Margin="0,4" BorderBrush="{StaticResource BordaPadrao}" BorderThickness="0,1,0,0"/>
+
+                    <!-- Grupo 4 -->
+                    <Button Style="{StaticResource ToolBtn}" Content="|◀" ToolTip="Alinhar Esquerda"/>
+                    <Button Style="{StaticResource ToolBtn}" Content="▶|" ToolTip="Alinhar Direita"/>
+                </StackPanel>
+            </Border>
+
+            <!-- B) Painel Esquerdo (260px) -->
+            <Border Grid.Column="1" Background="{StaticResource Painel}" BorderBrush="{StaticResource BordaForte}" BorderThickness="0,0,1,0">
+                <ScrollViewer>
+                    <StackPanel>
+                        <!-- Accordion Produtos -->
+                        <Border Background="{StaticResource HeaderSecao}" BorderBrush="{StaticResource BordaPadrao}" BorderThickness="0,0,0,1" Padding="8,4">
+                            <TextBlock Text="▼ Produtos" FontWeight="Bold" Foreground="{StaticResource TextoPrimario}"/>
+                        </Border>
+                        <TreeView Background="{StaticResource Painel}" BorderThickness="0" Height="150" Padding="8">
+                            <TreeViewItem Header="Trabalho_Atual" IsExpanded="True">
+                                <TreeViewItem Header="Cartão de Visita"/>
+                            </TreeViewItem>
+                        </TreeView>
+
+                        <!-- Accordion Arquivos -->
+                        <Border Background="{StaticResource HeaderSecao}" BorderBrush="{StaticResource BordaPadrao}" BorderThickness="0,1,0,1" Padding="8,4">
+                            <TextBlock Text="▼ Arquivos" FontWeight="Bold" Foreground="{StaticResource TextoPrimario}"/>
+                        </Border>
+                        <DataGrid Height="150" HeadersVisibility="Column" AutoGenerateColumns="False" BorderThickness="0">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Nome" Width="*"/>
+                                <DataGridTextColumn Header="Págs" Width="40"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <!-- Accordion Recursos -->
+                        <Border Background="{StaticResource HeaderSecao}" BorderBrush="{StaticResource BordaPadrao}" BorderThickness="0,1,0,1" Padding="8,4">
+                            <TextBlock Text="▼ Recursos" FontWeight="Bold" Foreground="{StaticResource TextoPrimario}"/>
+                        </Border>
+                        <TabControl Background="{StaticResource Painel}" BorderThickness="0" Padding="0" Height="200">
+                            <TabItem Header="Mídia" FontSize="11">
+                                <ListBox Background="{StaticResource Painel}" BorderThickness="0" Padding="8">
+                                    <ListBoxItem Content="A3 (297 x 420mm)"/>
+                                    <ListBoxItem Content="SRA3 (320 x 450mm)"/>
+                                </ListBox>
+                            </TabItem>
+                            <TabItem Header="Bloco" FontSize="11"/>
+                            <TabItem Header="Marcas" FontSize="11"/>
+                        </TabControl>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- C) Centro: Canvas & Tabs -->
+            <Grid Grid.Column="2" Background="{StaticResource FundoConteudo}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="24"/> <!-- Tabs -->
+                    <RowDefinition Height="28"/> <!-- Toolbar Imposição -->
+                    <RowDefinition Height="*"/>  <!-- Canvas -->
+                </Grid.RowDefinitions>
+
+                <!-- Tabs Preps-style -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Background="{StaticResource Chrome}">
+                    <Border Background="{StaticResource FundoConteudo}" BorderBrush="{StaticResource BordaForte}" BorderThickness="1,1,1,0" Padding="12,0" Margin="4,4,0,0">
+                        <TextBlock Text="Páginas" VerticalAlignment="Center" Foreground="{StaticResource TextoSecundario}"/>
+                    </Border>
+                    <Border Background="{StaticResource AccentSoft}" BorderBrush="{StaticResource Accent}" BorderThickness="1,2,1,0" Padding="12,0" Margin="4,4,0,0">
+                        <TextBlock Text="Conjunto" VerticalAlignment="Center" FontWeight="Bold" Foreground="{StaticResource TextoPrimario}"/>
+                    </Border>
+                    <Border Background="{StaticResource Chrome}" BorderBrush="{StaticResource BordaForte}" BorderThickness="1,1,1,0" Padding="12,0" Margin="4,4,0,0">
+                        <TextBlock Text="Execuções" VerticalAlignment="Center" Foreground="{StaticResource TextoSecundario}"/>
+                    </Border>
+                </StackPanel>
+
+                <!-- Toolbar Imposição -->
+                <Border Grid.Row="1" Background="{StaticResource Chrome}" BorderBrush="{StaticResource BordaPadrao}" BorderThickness="0,1,0,1" Padding="8,0">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Style="{StaticResource ToolBtn}" Content="↖" Height="24" Width="24"/>
+                        <Button Style="{StaticResource ToolBtn}" Content="✂" Height="24" Width="24"/>
+                        <Border Width="1" Background="{StaticResource BordaPadrao}" Margin="8,4"/>
+                        <Button Style="{StaticResource ToolBtn}" Content="[]" Height="24" Width="24" ToolTip="Zoom Fit"/>
+                        <Button Style="{StaticResource ToolBtn}" Content="+" Height="24" Width="24"/>
+                        <Button Style="{StaticResource ToolBtn}" Content="-" Height="24" Width="24"/>
+                        <Button Style="{StaticResource ToolBtn}" Content="🖐" Height="24" Width="24"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Canvas -->
+                <Border Grid.Row="2" Background="{StaticResource CanvasBg}">
+                    <TextBlock Text="Arraste aqui a mídia, o material ou o modelo." 
+                               Foreground="#9A9A9A" FontSize="11" 
+                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                               Visibility="{Binding ImpositionVM.IsActive, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                </Border>
+
+                <!-- Fake Rendered Grid when active -->
+                <Border Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        Visibility="{Binding ImpositionVM.IsActive, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <!-- Representação visual da repetição -->
+                    <Border Padding="20">
+                        <Grid>
+                            <Rectangle Stroke="#8A8A8A" StrokeThickness="1" StrokeDashArray="2 2" Margin="-20" />
+                            <!-- Simulating layout: this would be bound to a real drawing context in prod -->
+                            <StackPanel Orientation="Horizontal">
+                                <Border Width="150" Height="200" Background="#FFFFFF" BorderBrush="#B0B0B0" BorderThickness="1" Margin="0,0,10,0"/>
+                                <Border Width="150" Height="200" Background="#FFFFFF" BorderBrush="#B0B0B0" BorderThickness="1"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Border>
+            </Grid>
+
+            <!-- D) Painel Direito (CÁLCULO EXATO) (320px) -->
+            <Border Grid.Column="3" Background="{StaticResource Painel}" BorderBrush="{StaticResource BordaForte}" BorderThickness="1,0,0,0" Padding="12">
+                <StackPanel DataContext="{Binding DocumentVM}">
+                    <TextBlock Text="CÁLCULO EXATO" FontSize="12" FontWeight="Bold" Foreground="{StaticResource TextoPrimario}" Margin="0,0,0,12"/>
+
+                    <!-- Entrada PDF -->
+                    <Border Background="#2A2A2A" Padding="12,8" Height="56" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="ENTRADA PDF" FontSize="10" Foreground="#4A9EE8" Margin="0,0,0,4"/>
+                            <TextBlock Text="{Binding CurrentPage.WidthMm, StringFormat='{}L: {0:F1} mm', FallbackValue='L: 210.0 mm'}" FontFamily="Consolas" FontSize="11" Foreground="#FFFFFF"/>
+                            <TextBlock Text="{Binding CurrentPage.HeightMm, StringFormat='{}A: {0:F1} mm', FallbackValue='A: 297.0 mm'}" FontFamily="Consolas" FontSize="11" Foreground="#FFFFFF"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Repetição -->
+                    <TextBlock Text="REPETIÇÃO" FontSize="10" FontWeight="Bold" Foreground="{StaticResource TextoSecundario}" Margin="0,0,0,4"/>
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="LINHAS (Y)" FontSize="10" Margin="0,0,0,2"/>
+                            <TextBox Text="{Binding ImpositionVM.Linhas, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="COLUNAS (X)" FontSize="10" Margin="0,0,0,2"/>
+                            <TextBox Text="{Binding ImpositionVM.Colunas, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Geometria -->
+                    <TextBlock Text="GEOMETRIA" FontSize="10" FontWeight="Bold" Foreground="{StaticResource TextoSecundario}" Margin="0,0,0,4"/>
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="ESPAÇO (mm)" FontSize="10" Margin="0,0,0,2"/>
+                            <TextBox Text="{Binding ImpositionVM.EspacamentoMm, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="SANGRIA (mm)" FontSize="10" Margin="0,0,0,2"/>
+                            <TextBox Text="{Binding ImpositionVM.SangriaMm, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Produção Total -->
+                    <Border Background="{StaticResource BrandMagenta}" Height="90" Padding="12" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="PRODUÇÃO TOTAL" FontSize="10" Foreground="#FFFFFF" Margin="0,0,0,8"/>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+                                <Border Background="#FFFFFF" Padding="6,2">
+                                    <TextBlock Text="{Binding ImpositionVM.TotalCopies, FallbackValue='0'}" FontSize="32" FontWeight="Bold" Foreground="#000000" LineHeight="32"/>
+                                </Border>
+                                <TextBlock Text="CÓPIAS" FontSize="11" Foreground="#000000" VerticalAlignment="Bottom" Margin="8,0,0,4"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <Button Style="{StaticResource PrimaryActionBtn}" Content="GERAR CHAPA DE IMPRESSÃO"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- 3. LISTA DE EXECUÇÕES DE IMPRESSÃO (DataGrid base, ~200px) -->
+        <Border Grid.Row="2" Background="{StaticResource Painel}" BorderBrush="{StaticResource BordaForte}" BorderThickness="0,1,0,0" Height="200">
+            <DockPanel>
+                <Border DockPanel.Dock="Top" Background="{StaticResource HeaderSecao}" Height="24" Padding="8,0">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="Lista de Execuções de impressão" FontSize="11" FontWeight="Bold" Margin="0,0,16,0"/>
+                        <Button Style="{StaticResource FlatButton}" Foreground="{StaticResource Sucesso}" Content="➕" ToolTip="Adicionar" Margin="0,0,4,0"/>
+                        <Button Style="{StaticResource FlatButton}" Foreground="{StaticResource Erro}" Content="✕" ToolTip="Remover" Margin="0,0,4,0"/>
+                        <Button Style="{StaticResource FlatButton}" Foreground="{StaticResource TextoSecundario}" Content="▲" ToolTip="Subir"/>
+                        <Button Style="{StaticResource FlatButton}" Foreground="{StaticResource TextoSecundario}" Content="▼" ToolTip="Descer"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- DataGrid -->
+                <DataGrid AutoGenerateColumns="False" HeadersVisibility="Column" SelectionMode="Single">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="EXECUÇÃO DE IMPRESSÃO" Width="180"/>
+                        <DataGridTextColumn Header="ESTILO DE TRABALHO" Width="150"/>
+                        <DataGridTextColumn Header="SEÇÕES" Width="80"/>
+                        <DataGridTextColumn Header="ETAPA E REPETIÇÕES" Width="140"/>
+                        <DataGridTextColumn Header="CORES" Width="80"/>
+                        <DataGridTextColumn Header="BLOCO" Width="80"/>
+                        <DataGridTextColumn Header="MÍDIA" Width="120"/>
+                        <DataGridTextColumn Header="MODELO" Width="100"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </Border>
+
+        <!-- 4. STATUS BAR (24px) -->
+        <Border Grid.Row="3" Background="{StaticResource HeaderSecao}" BorderBrush="{StaticResource BordaPadrao}" BorderThickness="0,1,0,0">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0,0,0">
+                    <Ellipse Width="6" Height="6" Fill="{StaticResource Sucesso}" Margin="0,0,6,0"/>
+                    <TextBlock Text="SISTEMA ONLINE" FontSize="10" Foreground="{StaticResource TextoPrimario}" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Background="{StaticResource TextoPrimario}" Foreground="#FFFFFF" BorderThickness="0" Padding="10,0" Height="22" FontSize="10" FontWeight="SemiBold" Content="GERAR EXECUÇÕES DE IMPRESSÃO" Cursor="Hand" Margin="0,0,8,0"/>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>
