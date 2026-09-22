@@ -139,7 +139,14 @@ public static class GridSearchEngine
     // IMPOSICAO-MOTOR.md §6.3 — pesos wA=0.50, wL=0.30, wS=0.20.
     private static double Score(Candidate c, ImpositionInput input, double lengthLim)
     {
-        var substrateArea = input.Substrate.WidthMm * lengthLim;
+        // Comprimento REALMENTE consumido pela grade (não o máximo do substrato).
+        // Isso penaliza grades longas com muita sobra vertical e favorece
+        // grades tight. Sem este fix, o motor prefere grades menores
+        // (mais desperdício) quando há targetCopies definido.
+        // c.LengthMm já é o comprimento real da grade: rows * pH + (rows - 1) * gapV.
+        var gradeLengthMm = c.LengthMm;
+
+        var substrateArea = input.Substrate.WidthMm * gradeLengthMm;
         var usedArea      = c.Total * c.PieceWmm * c.PieceHmm;
         var wasteRatio    = substrateArea > 0
             ? Math.Max(0, (substrateArea - usedArea) / substrateArea)

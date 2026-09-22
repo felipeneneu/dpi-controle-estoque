@@ -31,6 +31,8 @@ public class GridSearchEngineTests
             ForcedOrientation: forced,
             ForcedCols: forcedCols);
 
+    private static ImpositionInput BuildCanonicalInput() => Canonical();
+
     [Fact]
     public void BR_010_a_ToleranceAppliedBeforeFloor_CaseCanonical()
     {
@@ -166,5 +168,72 @@ public class GridSearchEngineTests
         result.PlannedUnits.Should().BeGreaterThanOrEqualTo(200);
         result.Surplus.Should().BeGreaterThan(0,
             "fill_row deve produzir sobra (BR-024 / ADR-026)");
+    }
+
+    [Fact]
+    public void BR_010_an_AlvoEspecificoPrefereGradeTight()
+    {
+        // Reprodução do bug: alvo 112, sheet 720×1000, piece 49×74
+        var input = new ImpositionInput(
+            Substrate: new SubstrateSpec(
+                Kind: SubstrateKind.Sheet,
+                WidthMm: 720, InitialLengthMm: 1000,
+                MaxLengthMm: null,
+                ToleranceMm: 0.1, RegisterMm: 0.1),
+            Piece: new PieceSpec(49, 74),
+            Gap: new GapSpec(0, 0),
+            Margin: new MarginSpec(0, 0, 0, 0),
+            TargetCopies: 112,
+            SurplusPolicy: SurplusPolicy.FillRow,
+            ScalePolicy: ScalePolicy.Reject,
+            ForcedOrientation: Orientation.Portrait,
+            ForcedCols: null);
+
+        var result = GridSearchEngine.Plan(input);
+
+        // Deve preferir 14×8=112 (tight) em vez de 11×11=121 (waste)
+        result.Cols.Should().Be(14);
+        result.Rows.Should().Be(8);
+        result.Total.Should().Be(112);
+    }
+
+    [Fact]
+    public void BR_010_ao_GoldenMasterAindaEh1015()
+    {
+        // Regressão: canônico 35×29=1015 não pode mudar
+        var input = BuildCanonicalInput();  // 19×34 / 665×986 / 1015
+        var result = GridSearchEngine.Plan(input);
+        result.Cols.Should().Be(35);
+        result.Rows.Should().Be(29);
+        result.Total.Should().Be(1015);
+    }
+
+    [Fact]
+    public void BR_010_ap_CasoRealGalgani()
+    {
+        // Caso reportado pelo operador (orientação automática)
+        // Deve preferir Portrait 14×8=112 UN em 592mm em vez de 11×11=121 UN em 814mm
+        var input = new ImpositionInput(
+            Substrate: new SubstrateSpec(
+                Kind: SubstrateKind.Sheet,
+                WidthMm: 720, InitialLengthMm: 1000,
+                MaxLengthMm: null,
+                ToleranceMm: 0.1, RegisterMm: 0.1),
+            Piece: new PieceSpec(49, 74),
+            Gap: new GapSpec(0, 0),
+            Margin: new MarginSpec(0, 0, 0, 0),
+            TargetCopies: 112,
+            SurplusPolicy: SurplusPolicy.FillRow,
+            ScalePolicy: ScalePolicy.Reject,
+            ForcedOrientation: null,
+            ForcedCols: null);
+
+        var result = GridSearchEngine.Plan(input);
+
+        result.Cols.Should().Be(14);
+        result.Rows.Should().Be(8);
+        result.Total.Should().Be(112);
+        result.Orientation.Should().Be(Orientation.Portrait);
+        result.LengthMm.Should().Be(592.0);
     }
 }
