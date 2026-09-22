@@ -8,6 +8,9 @@ public enum MarkType
 
     /// <summary>OutTombo Tipo 1 da Mimaki (plotter lê via sensor).</summary>
     MimakiTipo1,
+
+    /// <summary>Marca customizada injetada de um PDF externo.</summary>
+    CustomPdf,
 }
 
 /// <summary>Opções de marcas de corte.</summary>
@@ -17,4 +20,5 @@ public sealed record MarksOptions(
     double OffsetMm = 3.0,
     double LineWidthPt = 0.25,
     string LayerName = "MARCAS",
-    bool FillAroundRdG = false);
+    bool FillAroundRdG = false,
+    string? CustomMarkFile = null);
