@@ -79,6 +79,7 @@ packages/imposition-pdf/tests/**/Fixtures/*.pdf
 
 *.exe
 *.pdf
+!**/Imposition.Pdf/
 in.txt
 in_rolo.txt
 temp_*.pdf

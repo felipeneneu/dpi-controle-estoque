@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Imposition.Pdf</RootNamespace>
+    <AssemblyName>Imposition.Pdf</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\imposition-core\src\Imposition.Core\Imposition.Core.csproj" />
+  </ItemGroup>
+</Project>
