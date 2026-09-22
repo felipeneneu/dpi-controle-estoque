@@ -16,7 +16,7 @@ import {
 import { db } from '../db/index.js';
 import { newId } from './ids.js';
 import { toPrecision } from './math.js';
-import { parsePrintCsv, type MimakiTestParsedRow } from './mimaki-test-parser.js';
+import { parsePrintCsv, cleanLayerSuffix, type MimakiTestParsedRow } from './mimaki-test-parser.js';
 
 export const MIMAKI_TEST_CHANNEL = 'mimaki-teste';
 
@@ -79,37 +79,97 @@ function readPdfMediaBox(filePath: string): { widthMm: number; heightMm: number 
 }
 
 /**
- * Procura o arquivo PDF na pasta da Mimaki no J: para extrair dimensões exatas
+ * Procura o arquivo PDF na pasta da Mimaki no J: para extrair dimensões exatas.
+ * Realiza busca inteligente na raiz, subpastas ativas e em FINALIZADAS.
  */
-function findPdfDimensions(keyFilename: string): { widthMm: number; heightMm: number } | null {
+function findPdfDimensions(
+  keyFilename: string,
+  orderCode?: string | null,
+  rawFilenames?: string[],
+): { widthMm: number; heightMm: number; linearAdvanceMm: number } | null {
   const baseDir = mimakiBaseDir();
   try {
     if (!existsSync(baseDir)) return null;
 
-    // 1. Diretamente na raiz
-    const direct = join(baseDir, keyFilename);
-    if (existsSync(direct)) {
-      const dim = readPdfMediaBox(direct);
-      if (dim) return dim;
+    const candidates = new Set<string>();
+    candidates.add(keyFilename);
+    candidates.add(cleanLayerSuffix(keyFilename));
+    candidates.add(keyFilename.replace(/\s*copiar/gi, '').trim());
+    candidates.add(cleanLayerSuffix(keyFilename).replace(/\s*copiar/gi, '').trim());
+    if (rawFilenames) {
+      for (const rf of rawFilenames) {
+        candidates.add(rf);
+        candidates.add(cleanLayerSuffix(rf));
+        candidates.add(rf.replace(/\s*copiar/gi, '').trim());
+      }
     }
 
-    // 2. Subpastas de ordens de serviço (ex: 15set2026_31193_Galgani/Saida/)
+    function checkCandidate(folderPath: string): { widthMm: number; heightMm: number; linearAdvanceMm: number } | null {
+      for (const name of candidates) {
+        const p = join(folderPath, name.endsWith('.pdf') ? name : `${name}.pdf`);
+        if (existsSync(p)) {
+          const dim = readPdfMediaBox(p);
+          if (dim && (dim.widthMm > 0 || dim.heightMm > 0)) {
+            // Regra prepress da Mimaki UCJV300-75:
+            // A largura imprimível do rolo é de até 750mm.
+            // Se uma dimensão for > 750mm e a outra <= 750mm, a menor é a largura transversal e a maior é o avanço linear no rolo.
+            let linearAdvanceMm = dim.heightMm;
+            if (dim.widthMm > 750 && dim.heightMm <= 750) {
+              linearAdvanceMm = dim.widthMm;
+            }
+            return {
+              widthMm: dim.widthMm,
+              heightMm: dim.heightMm,
+              linearAdvanceMm,
+            };
+          }
+        }
+      }
+      return null;
+    }
+
+    // 1. Diretamente na raiz
+    const direct = checkCandidate(baseDir);
+    if (direct) return direct;
+
+    // 2. Subpastas de ordens de serviço ativas na raiz
     const entries = readdirSync(baseDir, { withFileTypes: true });
     for (const entry of entries) {
       if (!entry.isDirectory()) continue;
-      if (entry.name === 'jobs_tracker_print' || entry.name === 'FINALIZADAS') continue;
+      if (entry.name === 'jobs_tracker_print') continue;
+      if (entry.name === 'FINALIZADAS') continue;
 
       const subDir = join(baseDir, entry.name);
-      const saidaPath = join(subDir, 'Saida', keyFilename);
-      if (existsSync(saidaPath)) {
-        const dim = readPdfMediaBox(saidaPath);
-        if (dim) return dim;
-      }
+      const inSaida = checkCandidate(join(subDir, 'Saida'));
+      if (inSaida) return inSaida;
 
-      const subPath = join(subDir, keyFilename);
-      if (existsSync(subPath)) {
-        const dim = readPdfMediaBox(subPath);
-        if (dim) return dim;
+      const inRootSub = checkCandidate(subDir);
+      if (inRootSub) return inRootSub;
+    }
+
+    // 3. Pastas em FINALIZADAS (quando o pedido já foi arquivado)
+    const finalizadasDir = join(baseDir, 'FINALIZADAS');
+    if (existsSync(finalizadasDir)) {
+      const currentYear = new Date().getFullYear().toString();
+      const yearDir = join(finalizadasDir, currentYear);
+      if (existsSync(yearDir)) {
+        const monthEntries = readdirSync(yearDir, { withFileTypes: true });
+        for (const mEntry of monthEntries) {
+          if (!mEntry.isDirectory()) continue;
+          const monthDir = join(yearDir, mEntry.name);
+          const osEntries = readdirSync(monthDir, { withFileTypes: true });
+          for (const osEntry of osEntries) {
+            if (!osEntry.isDirectory()) continue;
+            if (orderCode && !osEntry.name.includes(orderCode)) continue;
+
+            const osDir = join(monthDir, osEntry.name);
+            const inSaida = checkCandidate(join(osDir, 'Saida'));
+            if (inSaida) return inSaida;
+
+            const inRoot = checkCandidate(osDir);
+            if (inRoot) return inRoot;
+          }
+        }
       }
     }
   } catch {
@@ -384,13 +444,18 @@ async function deductStockForPhysicalPrint(
     })
     .where(eq(mimakiTestJobs.id, testJob.id));
 
-  // Trava mimaki_jobs correspondente para que o M2M NUNCA duplique a baixa
-  if (mimakiJob && !mimakiJob.stockDeducted) {
+  // Trava mimaki_jobs correspondente para que o M2M NUNCA duplique a baixa e atualiza dados
+  if (mimakiJob) {
     await db
       .update(mimakiJobs)
-      .set({ stockDeducted: true })
+      .set({
+        stockDeducted: true,
+        materialStatus: stockItemId ? 'BOUND' : mimakiJob.materialStatus,
+        stockItemId: stockItemId ?? mimakiJob.stockItemId,
+        lengthMeters: linearMeters && linearMeters > 0 ? linearMeters : mimakiJob.lengthMeters,
+      })
       .where(eq(mimakiJobs.id, mimakiJob.id));
-    app.log.info(`[mimaki-test] mimaki_jobs ${mimakiJob.id} marcado como stockDeducted=true (evita duplicata no M2M)`);
+    app.log.info(`[mimaki-test] mimaki_jobs ${mimakiJob.id} atualizado com baixa e sincronizado`);
   }
 }
 
@@ -413,41 +478,69 @@ export async function scanMimakiTestSource(app: FastifyInstance): Promise<Mimaki
         for (const row of rows) {
           const printTime = row.printSTime ?? row.ripSTime ?? '';
 
-          // 1. Procura se já existe registro em mimaki_test_jobs
-          let testJob = await db
+          // 1. Procura registros existentes em mimaki_test_jobs para este print físico
+          const existingTestJobs = await db
             .select()
             .from(mimakiTestJobs)
             .where(
               and(
                 eq(mimakiTestJobs.sourceFile, fileName),
-                eq(mimakiTestJobs.keyFilename, row.keyFilename),
                 eq(mimakiTestJobs.printSTime, printTime)
               )
             )
-            .get();
+            .all();
 
-          // 2. Cruza com mimaki_jobs para obter dados do RIP
-          let mimakiJob = await db
-            .select()
-            .from(mimakiJobs)
-            .where(
-              or(
-                eq(mimakiJobs.jobName, row.keyFilename),
-                row.filenameMeta.orderCode ? eq(mimakiJobs.orderCode, row.filenameMeta.orderCode) : sql`1 = 0`
-              )
-            )
-            .get();
+          let testJob: typeof mimakiTestJobs.$inferSelect | null = null;
+          if (existingTestJobs.length > 0) {
+            // Se existiam múltiplas linhas (ex: COR e BRANCO separadas anteriormente), mescla na principal
+            testJob = existingTestJobs.find((t) => t.keyFilename === row.keyFilename) ?? existingTestJobs[0];
+            const duplicateRows = existingTestJobs.filter((t) => t.id !== testJob!.id);
+            for (const dup of duplicateRows) {
+              if (dup.stockDeducted) {
+                testJob.stockDeducted = true;
+              }
+              await db.delete(mimakiTestJobs).where(eq(mimakiTestJobs.id, dup.id));
+            }
+          }
 
-          // 3. Resolve altura exata (1º mimaki_jobs, 2º PDF MediaBox na J:, 3º filename)
+          // 2. Cruza com mimaki_jobs para obter dados do print ou RIP correspondente
+          let mimakiJob = printTime
+            ? await db
+                .select()
+                .from(mimakiJobs)
+                .where(
+                  or(
+                    eq(mimakiJobs.folderTimestamp, printTime),
+                    sql`${mimakiJobs.folderTimestamp} LIKE ${printTime + '%'}`
+                  )
+                )
+                .get()
+            : await db
+                .select()
+                .from(mimakiJobs)
+                .where(eq(mimakiJobs.jobName, row.keyFilename))
+                .get();
+
+          // 3. Resolve dimensões e avanço linear exato (1º mimaki_jobs se >50mm, 2º PDF MediaBox na J:, 3º Imposição, 4º Estimativa geométrica, 5º filename)
           let resolvedHeightMm: number | null = null;
-          if (mimakiJob?.heightMm && mimakiJob.heightMm > 0) {
+          let resolvedWidthMm: number | null = null;
+          if (mimakiJob?.heightMm && mimakiJob.heightMm > 50) {
             resolvedHeightMm = mimakiJob.heightMm;
+            resolvedWidthMm = mimakiJob.widthMm ?? null;
           } else {
-            const pdfDim = findPdfDimensions(row.keyFilename);
-            if (pdfDim?.heightMm && pdfDim.heightMm > 0) {
-              resolvedHeightMm = pdfDim.heightMm;
+            const pdfDim = findPdfDimensions(row.keyFilename, row.filenameMeta.orderCode, row.rawFilenames);
+            if (pdfDim) {
+              resolvedHeightMm = pdfDim.linearAdvanceMm;
+              resolvedWidthMm = pdfDim.widthMm;
+            } else if (row.filenameMeta.impostoHeightMm && row.filenameMeta.impostoHeightMm > 0) {
+              resolvedHeightMm = row.filenameMeta.impostoHeightMm;
+              resolvedWidthMm = row.filenameMeta.impostoWidthMm ?? null;
+            } else if (row.filenameMeta.estimatedLinearMeters && row.filenameMeta.estimatedLinearMeters > 0) {
+              resolvedHeightMm = Number((row.filenameMeta.estimatedLinearMeters * 1000).toFixed(2));
+              resolvedWidthMm = row.filenameMeta.impostoWidthMm ?? row.filenameMeta.widthMm ?? null;
             } else if (row.filenameMeta.heightMm && row.filenameMeta.heightMm > 0) {
               resolvedHeightMm = row.filenameMeta.heightMm;
+              resolvedWidthMm = row.filenameMeta.widthMm ?? null;
             }
           }
 
@@ -458,12 +551,133 @@ export async function scanMimakiTestSource(app: FastifyInstance): Promise<Mimaki
               ? toPrecision((resolvedHeightMm * arrange) / 1000, 3)
               : null;
 
+          // 4.1 Sincroniza mimaki_jobs para manter a aba oficial "Jobs" da Mimaki sempre atualizada
+          if (!mimakiJob) {
+            const newMimakiJobId = newId();
+            let materialStatus: 'BOUND' | 'PENDING_BIND' = 'PENDING_BIND';
+            let matchedStockItemId: string | null = null;
+
+            if (row.filenameMeta.material) {
+              const rawLower = row.filenameMeta.material.toLowerCase().replace(/[\s\-_,./()ºª]+/g, '');
+              const mediaItems = await db
+                .select()
+                .from(stockItems)
+                .where(eq(stockItems.category, 'PAPER_MEDIA'))
+                .all();
+
+              const matched = mediaItems.find((item) => {
+                const nameLower = item.name.toLowerCase().replace(/[\s\-_,./()ºª]+/g, '');
+                return nameLower.includes(rawLower) || rawLower.includes(nameLower);
+              });
+              if (matched) {
+                matchedStockItemId = matched.id;
+                materialStatus = 'BOUND';
+              }
+            }
+
+            const folderTs = printTime || new Date().toISOString();
+            await db
+              .insert(mimakiJobs)
+              .values({
+                id: newMimakiJobId,
+                machineId: MIMAKI_MACHINE_ID,
+                folderTimestamp: folderTs,
+                jobName: row.keyFilename,
+                orderCode: row.filenameMeta.orderCode ?? null,
+                quantityUnits: row.filenameMeta.units ?? 1,
+                pages: 1,
+                copyNumber: arrange,
+                totalPrint: arrange,
+                widthMm: resolvedWidthMm ?? row.filenameMeta.widthMm ?? 700,
+                heightMm: resolvedHeightMm ?? row.filenameMeta.heightMm ?? 0,
+                lengthMeters: linearMeters ?? 0,
+                inkCyanCc: row.inks.cyan,
+                inkMagentaCc: row.inks.magenta,
+                inkYellowCc: row.inks.yellow,
+                inkBlackCc: row.inks.black,
+                inkWhite1Cc: row.inks.white1,
+                inkWhite2Cc: row.inks.white2,
+                inkVarnish1Cc: row.inks.varnish1,
+                inkVarnish2Cc: row.inks.varnish2,
+                inkTotalCc: row.inks.total,
+                rawMaterialName: row.filenameMeta.material ?? null,
+                materialStatus,
+                stockItemId: matchedStockItemId,
+                stockDeducted: testJob?.stockDeducted ?? false,
+              })
+              .onConflictDoNothing()
+              .run();
+
+            mimakiJob = await db
+              .select()
+              .from(mimakiJobs)
+              .where(eq(mimakiJobs.id, newMimakiJobId))
+              .get();
+          } else {
+            // Se mimakiJob já existia mas tinha metragem defasada ou incompleta, atualiza
+            if (
+              resolvedHeightMm &&
+              resolvedHeightMm > 0 &&
+              (!mimakiJob.lengthMeters || mimakiJob.lengthMeters < (linearMeters ?? 0) || mimakiJob.heightMm !== resolvedHeightMm)
+            ) {
+              await db
+                .update(mimakiJobs)
+                .set({
+                  lengthMeters: linearMeters ?? mimakiJob.lengthMeters,
+                  heightMm: resolvedHeightMm,
+                  widthMm: resolvedWidthMm && resolvedWidthMm > 0 ? resolvedWidthMm : mimakiJob.widthMm,
+                })
+                .where(eq(mimakiJobs.id, mimakiJob.id));
+            }
+          }
+
           const errorsJson =
             row.filenameMeta.parseErrors.length > 0
               ? JSON.stringify([...new Set(row.filenameMeta.parseErrors)])
               : null;
 
-          if (!testJob) {
+          const detail =
+            row.layers && row.layers.length > 1
+              ? `Camadas mescladas: ${row.layers.join(', ')}`
+              : row.resultDetail;
+
+          if (testJob) {
+            // Atualiza registro existente com consolidação e dimensões reais
+            await db
+              .update(mimakiTestJobs)
+              .set({
+                keyFilename: row.keyFilename,
+                result: row.result,
+                resultDetail: detail,
+                arrangeCnt: row.arrangeCnt,
+                inkCyanCc: row.inks.cyan,
+                inkMagentaCc: row.inks.magenta,
+                inkYellowCc: row.inks.yellow,
+                inkBlackCc: row.inks.black,
+                inkWhite1Cc: row.inks.white1,
+                inkWhite2Cc: row.inks.white2,
+                inkVarnish1Cc: row.inks.varnish1,
+                inkVarnish2Cc: row.inks.varnish2,
+                inkTotalCc: row.inks.total,
+                parsedOrderCode: row.filenameMeta.orderCode ?? testJob.parsedOrderCode,
+                parsedClient: row.filenameMeta.client ?? testJob.parsedClient,
+                parsedMaterial: row.filenameMeta.material ?? testJob.parsedMaterial,
+                parsedWidthMm: resolvedWidthMm ?? row.filenameMeta.widthMm ?? testJob.parsedWidthMm,
+                parsedHeightMm: resolvedHeightMm ?? row.filenameMeta.heightMm ?? testJob.parsedHeightMm,
+                parsedUnits: row.filenameMeta.units ?? testJob.parsedUnits,
+                parsedCopies: row.filenameMeta.copies ?? testJob.parsedCopies,
+                parsedBobinaSerial: row.filenameMeta.bobinaSerial ?? testJob.parsedBobinaSerial,
+                heightMm: resolvedHeightMm && resolvedHeightMm > 0 ? resolvedHeightMm : testJob.heightMm,
+                linearMeters: linearMeters ?? testJob.linearMeters,
+                mimakiJobId: mimakiJob?.id ?? testJob.mimakiJobId,
+                parseErrors: errorsJson,
+              })
+              .where(eq(mimakiTestJobs.id, testJob.id));
+
+            testJob.heightMm = resolvedHeightMm && resolvedHeightMm > 0 ? resolvedHeightMm : testJob.heightMm;
+            testJob.linearMeters = linearMeters ?? testJob.linearMeters;
+            testJob.keyFilename = row.keyFilename;
+          } else {
             const testJobId = newId();
             await db
               .insert(mimakiTestJobs)
@@ -473,7 +687,7 @@ export async function scanMimakiTestSource(app: FastifyInstance): Promise<Mimaki
                 sourceFile: fileName,
                 keyFilename: row.keyFilename,
                 result: row.result,
-                resultDetail: row.resultDetail,
+                resultDetail: detail,
                 arrangeCnt: row.arrangeCnt,
                 inkCyanCc: row.inks.cyan,
                 inkMagentaCc: row.inks.magenta,
@@ -491,8 +705,8 @@ export async function scanMimakiTestSource(app: FastifyInstance): Promise<Mimaki
                 parsedOrderCode: row.filenameMeta.orderCode,
                 parsedClient: row.filenameMeta.client,
                 parsedMaterial: row.filenameMeta.material,
-                parsedWidthMm: row.filenameMeta.widthMm,
-                parsedHeightMm: row.filenameMeta.heightMm,
+                parsedWidthMm: resolvedWidthMm ?? row.filenameMeta.widthMm,
+                parsedHeightMm: resolvedHeightMm ?? row.filenameMeta.heightMm,
                 parsedUnits: row.filenameMeta.units,
                 parsedCopies: row.filenameMeta.copies,
                 parsedBobinaSerial: row.filenameMeta.bobinaSerial,
@@ -505,19 +719,19 @@ export async function scanMimakiTestSource(app: FastifyInstance): Promise<Mimaki
               .onConflictDoNothing()
               .run();
 
-            testJob = await db
-              .select()
-              .from(mimakiTestJobs)
-              .where(
-                and(
-                  eq(mimakiTestJobs.sourceFile, fileName),
-                  eq(mimakiTestJobs.keyFilename, row.keyFilename),
-                  eq(mimakiTestJobs.printSTime, printTime)
+            testJob =
+              (await db
+                .select()
+                .from(mimakiTestJobs)
+                .where(
+                  and(
+                    eq(mimakiTestJobs.sourceFile, fileName),
+                    eq(mimakiTestJobs.keyFilename, row.keyFilename),
+                    eq(mimakiTestJobs.printSTime, printTime)
+                  )
                 )
-              )
-              .get();
+                .get()) ?? null;
 
-            inserted++;
           }
 
           // 5. Se concluído com sucesso e estoque pendente de baixa, executa a baixa

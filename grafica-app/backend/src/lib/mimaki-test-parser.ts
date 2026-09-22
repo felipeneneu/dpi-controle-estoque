@@ -24,6 +24,8 @@ export interface MimakiTestParsedRow {
   ripETime: string | null;
   printSTime: string | null;
   printETime: string | null;
+  rawFilenames?: string[];
+  layers?: string[];
   filenameMeta: FilenameMeta;
 }
 
@@ -36,6 +38,13 @@ export interface FilenameMeta {
   units: number | null;
   copies: number | null;
   bobinaSerial: string | null;
+  isImposto?: boolean;
+  impostoWidthMm?: number | null;
+  impostoHeightMm?: number | null;
+  unitPieceWidthMm?: number | null;
+  unitPieceHeightMm?: number | null;
+  estimatedLinearMeters?: number | null;
+  layers?: string[];
   parseErrors: string[];
 }
 
@@ -51,7 +60,9 @@ export function extractBobinaSerial(filename: string): string | null {
 
 const ORDER_CODE_RE = /^\d{5}$/;
 const ITEM_DESC_RE = /^item\s*\d+$/i;
-const SIZE_RE = /(\d+(?:[.,]\d+)?)\s*[xX]\s*(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?/;
+const IMPOSTO_SIZE_RE = /(?:IMPOSTO|MONTAGEM|ROLO)[_\-\s]+(\d+(?:[.,]\d+)?)\s*[xX]\s*(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?/i;
+const IMPOSTO_WIDTH_RE = /(?:IMPOSTO|MONTAGEM|ROLO)[_\-\s]+(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?/i;
+const PIECE_SIZE_RE = /(\d+(?:[.,]\d+)?)\s*[xX]\s*(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?/i;
 const UNITS_RE = /(\d+)\s*un(?:id(?:ade)?s?)?\b/i;
 const COPIES_RE = /(\d+)\s*copi(?:a|as)\b/i;
 const MATERIAL_KEYWORD_RE = /vinil|adesivo|bopp|bopet|papel|couro|etiqueta|metalizado|transparente|brilho|fosco|lona|clear/i;
@@ -152,9 +163,58 @@ function parseNumber(value: string): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
+export function normalizeDimensionToMm(val: number | null, unit: string | undefined): number | null {
+  if (val == null) return null;
+  const u = (unit ?? 'mm').toLowerCase().trim();
+  if (u === 'cm') return Number((val * 10).toFixed(2));
+  if (u === 'm') return Number((val * 1000).toFixed(2));
+  return Number(val.toFixed(2));
+}
+
+/**
+ * Estima o avanço linear no rolo de 700mm considerando o tamanho da peça e quantidade de unidades.
+ * Testa ambas as orientações da peça no rolo para encontrar o melhor encaixe (menor avanço).
+ */
+export function estimateGeometricAdvanceMm(
+  pieceWMm: number | null,
+  pieceHMm: number | null,
+  units: number | null,
+  usableRollWMm = 700,
+): number | null {
+  if (!pieceWMm || !pieceHMm || !units || units <= 0) return null;
+
+  // Orientação A: W na largura do rolo, H no avanço
+  const colsA = Math.max(1, Math.floor(usableRollWMm / (pieceWMm + 2)));
+  const rowsA = Math.ceil(units / colsA);
+  const advanceA = rowsA * (pieceHMm + 2);
+
+  // Orientação B: H na largura do rolo, W no avanço
+  const colsB = Math.max(1, Math.floor(usableRollWMm / (pieceHMm + 2)));
+  const rowsB = Math.ceil(units / colsB);
+  const advanceB = rowsB * (pieceWMm + 2);
+
+  return Math.min(advanceA, advanceB);
+}
+
+export function detectLayer(filename: string): 'BRANCO' | 'COR' | 'VERNIZ' | null {
+  const clean = filename.replace(/\.pdf$/i, '').trim();
+  if (/[-_\s]BRANCO$/i.test(clean)) return 'BRANCO';
+  if (/[-_\s]COR$/i.test(clean)) return 'COR';
+  if (/[-_\s](?:VERNIZ|CLEAR)$/i.test(clean)) return 'VERNIZ';
+  return null;
+}
+
+export function cleanLayerSuffix(filename: string): string {
+  const isPdf = /\.pdf$/i.test(filename);
+  let base = filename.replace(/\.pdf$/i, '').trim();
+  base = base.replace(/[-_\s]+(?:BRANCO|COR|VERNIZ|CLEAR)$/i, '').trim();
+  return isPdf ? `${base}.pdf` : base;
+}
+
 /**
  * Extrai metadados do nome do arquivo PDF (best-effort).
- * Nunca lança: o que não reconhecer vira parse_errors.
+ * Dá prioridade a tags de imposição (IMPOSTO_666x924mm) sobre tamanho de peça unitária.
+ * Converte corretamente cm e m para mm.
  */
 export function extractFilenameMeta(keyFilename: string): FilenameMeta {
   const base = keyFilename.replace(/\.pdf$/i, '').trim();
@@ -173,6 +233,9 @@ export function extractFilenameMeta(keyFilename: string): FilenameMeta {
       parseErrors: ['KEY_FILENAME vazio'],
     };
   }
+
+  const detectedL = detectLayer(base);
+  const layers = detectedL ? [detectedL] : [];
 
   const bobinaSerial = extractBobinaSerial(base);
 
@@ -198,40 +261,94 @@ export function extractFilenameMeta(keyFilename: string): FilenameMeta {
   const client = cursor < segments.length ? segments[cursor] : null;
   cursor++;
 
-  // 4. Tamanho no filename
-  const sizeMatch = base.match(SIZE_RE);
-  let widthMm: number | null = null;
-  let heightMm: number | null = null;
-  if (sizeMatch) {
-    widthMm = parseNumber(sizeMatch[1]);
-    heightMm = parseNumber(sizeMatch[2]);
-    const unit = sizeMatch[3];
-    if (!unit) errors.push('tamanho sem unidade — assumido mm');
-  } else {
-    errors.push('tamanho não reconhecido no nome');
-  }
-
-  // 5. Material = segmentos entre cliente e o segmento que contém o tamanho;
-  //    se houver segmento com palavra-chave de material, prefere-o.
-  let material: string | null = null;
-  const afterClient = segments.slice(cursor);
-  const sizeIdx = afterClient.findIndex((seg) => SIZE_RE.test(seg));
-  const between = sizeIdx > 0 ? afterClient.slice(0, sizeIdx) : [];
-  if (between.length > 0) {
-    material = between.join(' ');
-  }
-  const keywordHit = afterClient.find((seg) => MATERIAL_KEYWORD_RE.test(seg));
-  if (keywordHit && (tagHits(keywordHit) > tagHits(material ?? ''))) {
-    material = keywordHit;
-  }
-
-  // 6. Unidades e cópias
+  // 4. Unidades e cópias
   const unitsMatch = base.match(UNITS_RE);
   const units = unitsMatch ? parseInt(unitsMatch[1], 10) : null;
   const copiesMatch = base.match(COPIES_RE);
   const copies = copiesMatch ? parseInt(copiesMatch[1], 10) : null;
 
-  return { orderCode, client, material, widthMm, heightMm, units, copies, bobinaSerial, parseErrors: errors };
+  // 5. Tamanho da peça unitária e Imposição
+  let widthMm: number | null = null;
+  let heightMm: number | null = null;
+  let isImposto = false;
+  let impostoWidthMm: number | null = null;
+  let impostoHeightMm: number | null = null;
+  let unitPieceWidthMm: number | null = null;
+  let unitPieceHeightMm: number | null = null;
+  let estimatedLinearMeters: number | null = null;
+
+  // Verifica se há tag de imposição completa (ex: IMPOSTO_666x924mm)
+  const impostoSizeMatch = base.match(IMPOSTO_SIZE_RE);
+  // Verifica se há tag de imposição apenas com largura (ex: IMPOSTO_700mm)
+  const impostoWidthMatch = base.match(IMPOSTO_WIDTH_RE);
+  // Tamanho padrão de peça
+  const pieceSizeMatch = base.match(PIECE_SIZE_RE);
+
+  if (pieceSizeMatch) {
+    unitPieceWidthMm = normalizeDimensionToMm(parseNumber(pieceSizeMatch[1]), pieceSizeMatch[3]);
+    unitPieceHeightMm = normalizeDimensionToMm(parseNumber(pieceSizeMatch[2]), pieceSizeMatch[3]);
+    if (!pieceSizeMatch[3]) errors.push('tamanho sem unidade — assumido mm');
+  }
+
+  if (impostoSizeMatch) {
+    isImposto = true;
+    impostoWidthMm = normalizeDimensionToMm(parseNumber(impostoSizeMatch[1]), impostoSizeMatch[3]);
+    impostoHeightMm = normalizeDimensionToMm(parseNumber(impostoSizeMatch[2]), impostoSizeMatch[3]);
+    widthMm = impostoWidthMm;
+    heightMm = impostoHeightMm;
+  } else if (impostoWidthMatch && unitPieceWidthMm && unitPieceHeightMm && units) {
+    isImposto = true;
+    impostoWidthMm = normalizeDimensionToMm(parseNumber(impostoWidthMatch[1]), impostoWidthMatch[2]);
+    const geoAdvance = estimateGeometricAdvanceMm(unitPieceWidthMm, unitPieceHeightMm, units, impostoWidthMm ?? 700);
+    if (geoAdvance) {
+      heightMm = geoAdvance;
+      widthMm = impostoWidthMm;
+      estimatedLinearMeters = Number((geoAdvance / 1000).toFixed(3));
+    }
+  } else if (unitPieceWidthMm && unitPieceHeightMm) {
+    widthMm = unitPieceWidthMm;
+    heightMm = unitPieceHeightMm;
+    if (units) {
+      const geoAdvance = estimateGeometricAdvanceMm(widthMm, heightMm, units, 700);
+      if (geoAdvance) {
+        estimatedLinearMeters = Number((geoAdvance / 1000).toFixed(3));
+      }
+    }
+  } else {
+    errors.push('tamanho não reconhecido no nome');
+  }
+
+  // 6. Material = segmentos entre cliente e tamanho/imposto
+  let material: string | null = null;
+  const afterClient = segments.slice(cursor);
+  const sizeIdx = afterClient.findIndex((seg) => PIECE_SIZE_RE.test(seg) || IMPOSTO_SIZE_RE.test(seg));
+  const between = sizeIdx > 0 ? afterClient.slice(0, sizeIdx) : [];
+  if (between.length > 0) {
+    material = between.join(' ');
+  }
+  const keywordHit = afterClient.find((seg) => MATERIAL_KEYWORD_RE.test(seg));
+  if (keywordHit && tagHits(keywordHit) > tagHits(material ?? '')) {
+    material = keywordHit;
+  }
+
+  return {
+    orderCode,
+    client,
+    material,
+    widthMm,
+    heightMm,
+    units,
+    copies,
+    bobinaSerial,
+    isImposto,
+    impostoWidthMm,
+    impostoHeightMm,
+    unitPieceWidthMm,
+    unitPieceHeightMm,
+    estimatedLinearMeters,
+    layers,
+    parseErrors: errors,
+  };
 }
 
 function tagHits(value: string): number {
@@ -244,10 +361,116 @@ function tagHits(value: string): number {
 }
 
 /**
- * Converte o textContent de um CSV RasterLink em registros de impressão.
- * Ignora o header; aceita múltiplas linhas (variantes BRANCO+COR de um mesmo job).
+ * Consolida linhas que pertencem à mesma impressão física sobreposta (ex: BRANCO + COR).
+ * O RasterLink gera uma linha por camada no mesmo CSV compartilhando o mesmo printSTime e
+ * já reporta o consumo cumulativo total de tintas repetido nas linhas.
  */
-export function parsePrintCsv(text: string): MimakiTestParsedRow[] {
+export function consolidateCompositeRows(rows: MimakiTestParsedRow[]): MimakiTestParsedRow[] {
+  if (rows.length <= 1) return rows;
+
+  const groups = new Map<string, MimakiTestParsedRow[]>();
+
+  for (const row of rows) {
+    // Chave de agrupamento: printSTime compartilhado (ou ripSTime)
+    const key = row.printSTime ?? row.ripSTime ?? row.keyFilename;
+    const existing = groups.get(key) ?? [];
+    existing.push(row);
+    groups.set(key, existing);
+  }
+
+  const consolidated: MimakiTestParsedRow[] = [];
+
+  for (const [, group] of groups) {
+    if (group.length === 1) {
+      const single = group[0];
+      single.rawFilenames = [single.keyFilename];
+      single.layers = single.filenameMeta.layers ?? (detectLayer(single.keyFilename) ? [detectLayer(single.keyFilename)!] : []);
+      consolidated.push(single);
+      continue;
+    }
+
+    // Múltiplas camadas do mesmo print físico
+    const rawFilenames = group.map((r) => r.keyFilename);
+    const layers = Array.from(
+      new Set(
+        group.flatMap(
+          (r) => r.filenameMeta.layers ?? (detectLayer(r.keyFilename) ? [detectLayer(r.keyFilename)!] : []),
+        ),
+      ),
+    );
+
+    // Nome unificado sem sufixo de camada
+    const cleanFilename = cleanLayerSuffix(group[0].keyFilename);
+
+    // Tintas: pega o máximo por canal (para não duplicar quando o RasterLink repete totais)
+    const inks: InkKeys = {
+      cyan: toPrecision(Math.max(...group.map((r) => r.inks.cyan)), 3),
+      magenta: toPrecision(Math.max(...group.map((r) => r.inks.magenta)), 3),
+      yellow: toPrecision(Math.max(...group.map((r) => r.inks.yellow)), 3),
+      black: toPrecision(Math.max(...group.map((r) => r.inks.black)), 3),
+      white1: toPrecision(Math.max(...group.map((r) => r.inks.white1)), 3),
+      white2: toPrecision(Math.max(...group.map((r) => r.inks.white2)), 3),
+      varnish1: toPrecision(Math.max(...group.map((r) => r.inks.varnish1)), 3),
+      varnish2: toPrecision(Math.max(...group.map((r) => r.inks.varnish2)), 3),
+      total: 0,
+    };
+    inks.total = toPrecision(
+      inks.cyan + inks.magenta + inks.yellow + inks.black + inks.white1 + inks.white2 + inks.varnish1 + inks.varnish2,
+      3,
+    );
+
+    const hasNg = group.some((r) => r.result === 'NG');
+    const result: 'OK' | 'NG' = hasNg ? 'NG' : 'OK';
+    const resultDetails = Array.from(new Set(group.map((r) => r.resultDetail).filter(Boolean))) as string[];
+    const resultDetail = resultDetails.length > 0 ? resultDetails.join('; ') : null;
+
+    const arrangeCnt = Math.max(...group.map((r) => r.arrangeCnt ?? 1));
+
+    const ripSTimes = group.map((r) => r.ripSTime).filter(Boolean) as string[];
+    const ripETimes = group.map((r) => r.ripETime).filter(Boolean) as string[];
+    const printETimes = group.map((r) => r.printETime).filter(Boolean) as string[];
+
+    const ripSTime = ripSTimes.length > 0 ? ripSTimes.sort()[0] : null;
+    const ripETime = ripETimes.length > 0 ? ripETimes.sort().reverse()[0] : null;
+    const printSTime = group[0].printSTime;
+    const printETime = printETimes.length > 0 ? printETimes.sort().reverse()[0] : null;
+
+    const filenameMeta = extractFilenameMeta(cleanFilename);
+    filenameMeta.layers = layers;
+
+    // Combina erros de parse de todas as linhas
+    const allErrors = Array.from(
+      new Set(group.flatMap((r) => r.filenameMeta.parseErrors).concat(filenameMeta.parseErrors)),
+    );
+    filenameMeta.parseErrors = allErrors;
+
+    consolidated.push({
+      keyFilename: cleanFilename,
+      rawFilenames,
+      layers,
+      result,
+      resultDetail,
+      arrangeCnt,
+      inks,
+      ripSTime,
+      ripETime,
+      printSTime,
+      printETime,
+      filenameMeta,
+    });
+  }
+
+  return consolidated;
+}
+
+/**
+ * Converte o textContent de um CSV RasterLink em registros de impressão.
+ * Por padrão consolida variantes sobrepostas (BRANCO+COR) de um mesmo job.
+ */
+export function parsePrintCsv(
+  text: string,
+  options: { consolidate?: boolean } = { consolidate: true },
+): MimakiTestParsedRow[] {
   const rows: MimakiTestParsedRow[] = [];
 
   const lines = text
@@ -296,6 +519,10 @@ export function parsePrintCsv(text: string): MimakiTestParsedRow[] {
       if (err) filenameMeta.parseErrors.push(err);
     }
     filenameMeta.parseErrors.push(...inkErrors);
+  }
+
+  if (options.consolidate !== false) {
+    return consolidateCompositeRows(rows);
   }
 
   return rows;

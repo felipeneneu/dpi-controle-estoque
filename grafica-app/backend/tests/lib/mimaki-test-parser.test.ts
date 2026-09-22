@@ -55,42 +55,44 @@ describe('parsePrintCsv', () => {
     expect(row.filenameMeta.parseErrors).toContain('tamanho sem unidade — assumido mm');
   });
 
-  it('parses 31153 OK: 2 linhas (BRANCO+COR), arrange 4, tintas com branco', () => {
+  it('parses 31153 OK: consolida 2 linhas (BRANCO+COR) em 1 único job composto sem duplicar tinta', () => {
     const rows = parsePrintCsv(okCsv31153);
-    expect(rows).toHaveLength(2);
+    expect(rows).toHaveLength(1);
 
-    const branco = rows[0]!;
-    const cor = rows[1]!;
+    const consolidated = rows[0]!;
+    expect(consolidated.result).toBe('OK');
+    expect(consolidated.layers).toEqual(['BRANCO', 'COR']);
+    expect(consolidated.keyFilename).toBe('31153 - Item 2 - Pro-Phisical - Vinil Transparente - 350x50mm.pdf');
+    expect(consolidated.arrangeCnt).toBe(4);
 
-    expect(branco.result).toBe('OK');
-    expect(cor.result).toBe('OK');
-    expect(branco.arrangeCnt).toBe(4);
-    expect(cor.arrangeCnt).toBe(4);
+    expect(consolidated.inks.white1).toBe(9.388);
+    expect(consolidated.inks.white2).toBe(9.388);
+    expect(consolidated.inks.cyan).toBe(0.624);
+    expect(consolidated.inks.total).toBe(20.904);
 
-    expect(branco.inks.white1).toBe(9.388);
-    expect(branco.inks.white2).toBe(9.388);
-    expect(branco.inks.cyan).toBe(0.624);
-    expect(branco.inks.total).toBe(20.904);
-
-    expect(cor.filenameMeta.orderCode).toBe('31153');
-    expect(cor.filenameMeta.client).toBe('Pro-Phisical');
-    expect(cor.filenameMeta.material).toBe('Vinil Transparente');
-    expect(cor.filenameMeta.widthMm).toBe(350);
-    expect(cor.filenameMeta.heightMm).toBe(50);
-    expect(cor.filenameMeta.units).toBeNull();
-    expect(cor.filenameMeta.parseErrors).not.toContain('tamanho não reconhecido no nome');
+    expect(consolidated.filenameMeta.orderCode).toBe('31153');
+    expect(consolidated.filenameMeta.client).toBe('Pro-Phisical');
+    expect(consolidated.filenameMeta.material).toBe('Vinil Transparente');
+    expect(consolidated.filenameMeta.widthMm).toBe(350);
+    expect(consolidated.filenameMeta.heightMm).toBe(50);
   });
 
-  it('captura NG: resultDetail ERROR_PRINT e fim de impressão vazio', () => {
-    const rows = parsePrintCsv(ngCsv31153);
+  it('permite parse sem consolidação com opção consolidate=false', () => {
+    const rows = parsePrintCsv(okCsv31153, { consolidate: false });
     expect(rows).toHaveLength(2);
+    expect(rows[0]!.result).toBe('OK');
+    expect(rows[1]!.result).toBe('OK');
+  });
 
-    for (const row of rows) {
-      expect(row.result).toBe('NG');
-      expect(row.resultDetail).toBe('ERROR_PRINT');
-      expect(row.printETime).toBeNull();
-      expect(row.printSTime).toBe('20260914_170822');
-    }
+  it('captura NG: resultDetail ERROR_PRINT e consolida variantes NG', () => {
+    const rows = parsePrintCsv(ngCsv31153);
+    expect(rows).toHaveLength(1);
+
+    const row = rows[0]!;
+    expect(row.result).toBe('NG');
+    expect(row.resultDetail).toBe('ERROR_PRINT');
+    expect(row.printETime).toBeNull();
+    expect(row.printSTime).toBe('20260914_170822');
   });
 });
 
@@ -104,6 +106,35 @@ describe('extractFilenameMeta', () => {
     expect(meta.units).toBe(40);
     expect(meta.copies).toBe(3);
     expect(meta.material).toBe('Vinil Branco Brilho');
+  });
+
+  it('prioriza tag IMPOSTO_666x924mm sobre o tamanho unitário 30x15mm', () => {
+    const meta = extractFilenameMeta(
+      '31188 - Galgani - Item 4 - 30x15mm - Selo Dra Roberta - Bopp Prata copiar_IMPOSTO_666x924mm_1036UN.pdf'
+    );
+    expect(meta.orderCode).toBe('31188');
+    expect(meta.client).toBe('Galgani');
+    expect(meta.isImposto).toBe(true);
+    expect(meta.impostoWidthMm).toBe(666);
+    expect(meta.impostoHeightMm).toBe(924);
+    expect(meta.widthMm).toBe(666);
+    expect(meta.heightMm).toBe(924); // 924mm e NÃO 15mm!
+    expect(meta.unitPieceWidthMm).toBe(30);
+    expect(meta.unitPieceHeightMm).toBe(15);
+    expect(meta.units).toBe(1036);
+  });
+
+  it('calcula avanço geométrico para IMPOSTO_700mm com unidades', () => {
+    const meta = extractFilenameMeta(
+      '31188 - Galgani - Item 6 - 30x15mm - Selo Dra Gabriela Matos - Bopp Prata_IMPOSTO_700mm_240UN - COR.pdf'
+    );
+    expect(meta.orderCode).toBe('31188');
+    expect(meta.isImposto).toBe(true);
+    expect(meta.impostoWidthMm).toBe(700);
+    expect(meta.unitPieceWidthMm).toBe(30);
+    expect(meta.unitPieceHeightMm).toBe(15);
+    expect(meta.units).toBe(240);
+    expect(meta.estimatedLinearMeters).toBeGreaterThan(0.15);
   });
 
   it('extrai bobina serial de diferentes formatos', () => {
@@ -121,12 +152,12 @@ describe('extractFilenameMeta', () => {
     expect(meta.material).toBe('Vinil Adesivo');
   });
 
-  it('nome sem código de pedido não quebra', () => {
+  it('converte corretamente cm para mm (30x20cm vira 300x200mm)', () => {
     const meta = extractFilenameMeta('Projeto Sem Codigo - 30x20cm.pdf');
     expect(meta.orderCode).toBeNull();
     expect(meta.client).toBe('Projeto Sem Codigo');
-    expect(meta.widthMm).toBe(30);
-    expect(meta.heightMm).toBe(20);
+    expect(meta.widthMm).toBe(300);
+    expect(meta.heightMm).toBe(200);
   });
 
   it('filename vazio vira erro de parse', () => {
@@ -135,9 +166,9 @@ describe('extractFilenameMeta', () => {
     expect(meta.parseErrors).toHaveLength(1);
   });
 
-  it('tolerante a vírgula decimal no tamanho', () => {
+  it('tolerante a vírgula decimal no tamanho e converte cm para mm', () => {
     const meta = extractFilenameMeta('12345 - Cliente - Vinil - 12,5x8,5cm.pdf');
-    expect(meta.widthMm).toBe(12.5);
-    expect(meta.heightMm).toBe(8.5);
+    expect(meta.widthMm).toBe(125);
+    expect(meta.heightMm).toBe(85);
   });
 });
