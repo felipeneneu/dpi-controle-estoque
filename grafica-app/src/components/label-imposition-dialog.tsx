@@ -272,6 +272,74 @@ export function LabelImpositionDialog({ open, onOpenChange }: LabelImpositionDia
   const occupancyPercent = Math.round((filledCount / totalSlots) * 100)
   const isLoading = loadingStock || loadingBobinas || loadingGarrafas
 
+  // Enviar dados em tempo real para o Impositor Konica C# via Named Pipe
+  const [isSendingLive, setIsSendingLive] = useState(false)
+
+  const handleSendToLiveKonica = async () => {
+    const occupied = sheet.filter(Boolean) as LabelItem[]
+    const itemsToSend = occupied.length > 0 ? occupied : filteredItems
+
+    if (itemsToSend.length === 0) {
+      toast.warning("Nenhum item selecionado ou disponível para envio.")
+      return
+    }
+
+    const payload = {
+      sheetName: "FOLHA SRA3",
+      sheetWidthMm: 330.0,
+      sheetHeightMm: 480.0,
+      marginMm,
+      gapMm,
+      defaultRotation: isVertical ? 90 : 0,
+      operatorName: "Operador GraficaOS",
+      machineTarget: "Konica Minolta bizhub PRO",
+      createdAt: new Date().toISOString(),
+      items: itemsToSend.map((item) => ({
+        id: item.id,
+        code: item.code,
+        title: item.title,
+        subtitle: item.subtitle,
+        details: item.details,
+        type: item.type,
+        qrPayload: item.qrPayload,
+        initialQuantity: 1,
+      })),
+    }
+
+    setIsSendingLive(true)
+    try {
+      if (typeof window !== "undefined" && window.grafica?.imposition) {
+        const res = await (window.grafica.imposition.sendLiveData?.(payload) ??
+          window.grafica.imposition.open?.(payload))
+        if (res && res.success === false) {
+          toast.error(res.error || "Erro ao comunicar com o Impositor Konica.")
+        } else {
+          toast.success("Etiquetas enviadas para o Impositor Konica em tempo real!")
+        }
+      } else {
+        toast.info("Ambiente Web: O Impositor Konica nativo é acionado via aplicativo desktop Electron.")
+      }
+    } catch (err) {
+      console.error(err)
+      toast.error("Falha ao comunicar com o Impositor Konica via Named Pipe.")
+    } finally {
+      setIsSendingLive(false)
+    }
+  }
+
+  // Atalho F2 para disparo em tempo real
+  useEffect(() => {
+    if (!open) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "F2") {
+        e.preventDefault()
+        handleSendToLiveKonica()
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [open, sheet, filteredItems, isVertical, marginMm, gapMm])
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[98vw] w-[98vw] h-[95vh] max-h-[960px] p-0 flex flex-col gap-0 rounded-[20px] overflow-hidden bg-neutral-950 text-neutral-200 select-none font-sans border border-neutral-800 shadow-2xl">
@@ -583,6 +651,25 @@ export function LabelImpositionDialog({ open, onOpenChange }: LabelImpositionDia
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleSendToLiveKonica}
+              disabled={isSendingLive}
+              className="bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 text-amber-400 font-bold text-xs px-4 py-2 rounded shadow transition flex items-center gap-2"
+              title="Transmite as etiquetas via Named Pipe para o Impositor Konica em tempo real (F2)"
+            >
+              {isSendingLive ? (
+                <>
+                  <Spinner className="size-4" /> Enviando…
+                </>
+              ) : (
+                <>
+                  <RiFlashlightLine className="size-4 text-amber-400" />
+                  Mesa Nativa C# (Tempo Real · F2)
+                </>
+              )}
+            </button>
+
             <button
               type="button"
               onClick={handleGeneratePdf}

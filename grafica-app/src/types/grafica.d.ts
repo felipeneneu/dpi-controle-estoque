@@ -49,5 +49,9 @@ interface Window {
       }>;
       pickArt: () => Promise<string | null>;
     };
+    imposition?: {
+      open: (payload: unknown) => Promise<{ success: boolean; mode?: string; error?: string }>;
+      sendLiveData: (payload: unknown) => Promise<{ success: boolean; mode?: string; error?: string }>;
+    };
   };
 }

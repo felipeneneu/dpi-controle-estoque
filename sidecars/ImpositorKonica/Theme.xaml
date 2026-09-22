@@ -19,6 +19,15 @@
     <SolidColorBrush x:Key="Erro" Color="#D7373F" />
     <SolidColorBrush x:Key="Sucesso" Color="#2D9D78" />
 
+    <!-- Paleta Preps Studio Dark -->
+    <SolidColorBrush x:Key="BgDarkBrush" Color="#18181B" />
+    <SolidColorBrush x:Key="BgPanelBrush" Color="#27272A" />
+    <SolidColorBrush x:Key="BorderDarkBrush" Color="#3F3F46" />
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="#F4F4F5" />
+    <SolidColorBrush x:Key="TextMutedBrush" Color="#A1A1AA" />
+    <SolidColorBrush x:Key="AccentAmberBrush" Color="#F59E0B" />
+    <SolidColorBrush x:Key="AccentGreenBrush" Color="#10B981" />
+
     <!-- ESTILOS GERAIS (Zero CornerRadius, Sem Sombras) -->
     <Style TargetType="Button" x:Key="FlatButton">
         <Setter Property="Background" Value="Transparent"/>

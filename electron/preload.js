@@ -19,6 +19,7 @@ contextBridge.exposeInMainWorld('grafica', {
   },
   imposition: {
     open: (payload) => ipcRenderer.invoke('imposition:open', payload),
+    sendLiveData: (payload) => ipcRenderer.invoke('imposition:send-live-data', payload),
   },
   automation: {
     impose: (payload) => ipcRenderer.invoke('automation:impose', payload),
