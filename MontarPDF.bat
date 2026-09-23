@@ -250,8 +250,9 @@ echo  MARCAS DE CORTE?
 echo ------------------------------------------------------------
 echo  [ENTER] Nao
 echo  [1] Crop (Konica)
-echo  [2] Mimaki Tipo 1 (10mm)
-echo  [3] Mimaki Tipo 1 (25mm)
+echo  [2] Mimaki Tipo 1 (plain)
+echo  [3] Mimaki Tipo 1 (FCRM spot)
+echo  [4] Mimaki Tipo 1 (FCRM + RDG_WHITE)
 echo ------------------------------------------------------------
 set "MARCAS_OPT="
 set /p "MARCAS_OPT=Escolha [ENTER para Nao]: "
@@ -259,8 +260,9 @@ if not "!MARCAS_OPT!"=="" set "MARCAS_OPT=!MARCAS_OPT: =!"
 
 set "MARKS_ARG="
 if "!MARCAS_OPT!"=="1" set "MARKS_ARG=--marks --mark-type crop"
-if "!MARCAS_OPT!"=="2" set "MARKS_ARG=--marks --mark-type mimaki-tipo-1 --mark-size-mm 10"
-if "!MARCAS_OPT!"=="3" set "MARKS_ARG=--marks --mark-type mimaki-tipo-1 --mark-size-mm 25"
+if "!MARCAS_OPT!"=="2" set "MARKS_ARG=--marks --mark-type mimaki-tipo1"
+if "!MARCAS_OPT!"=="3" set "MARKS_ARG=--marks --mark-type mimaki-fcrm"
+if "!MARCAS_OPT!"=="4" set "MARKS_ARG=--marks --mark-type mimaki-fcrm-rdg"
 
 goto menu_rotacao
 
