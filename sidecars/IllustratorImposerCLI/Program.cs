@@ -50,6 +50,9 @@ public class ImpositionConfig
 
     [JsonPropertyName("ManterAberto")]
     public bool ManterAberto { get; set; } = true;
+
+    [JsonPropertyName("FineCutFrame")]
+    public bool? FineCutFrame { get; set; } = null;
 }
 
 class Program
@@ -67,9 +70,10 @@ class Program
             {
                 Console.WriteLine("Uso: IllustratorImposerCLI.exe --json \"{...}\" [--open-after|--silent]");
                 Console.WriteLine("     IllustratorImposerCLI.exe <input.pdf> [output.pdf] [largura_bobina] [comprimento:0=auto] [copias] [gap] [margem] [manterAberto:0|1]");
+                Console.WriteLine("     IllustratorImposerCLI.exe <input.pdf> [largura] [altura] [gap] [margem] [flags]");
                 Console.WriteLine("     [--copies N] [--target-copies N] [--gap N] [--margin N] [--margin-t N] [--margin-r N] [--margin-b N] [--margin-l N]");
                 Console.WriteLine("     [--rotation auto|0|90] [--surplus truncate|fill_row] [--substrate-kind sheet|roll] [--max-length N]");
-                Console.WriteLine("     [--trim-to-content] [--output-dir DIR] [--open-after|--silent]");
+                Console.WriteLine("     [--finecut-frame 1|0] [--trim-to-content] [--output-dir DIR] [--open-after|--silent]");
                 return 0;
             }
 
@@ -81,7 +85,7 @@ class Program
             string output = "";
             double sheetW = 750;
             double sheetH = 0;
-            int targetCopies = 100;
+            int? explicitTargetCopies = null;
             double gap = 2;
             double marginBase = 15;
             double marginTop = 15;
@@ -90,11 +94,13 @@ class Program
             double marginLeft = 15;
             string rotationArg = "auto";
             SurplusPolicy surplusPolicy = SurplusPolicy.FillRow;
-            bool isRoll = true;
+            bool? explicitIsRoll = null;
+            bool isRoll = false;
             double? maxLength = null;
             bool trimToContent = false;
             string? outputDir = null;
             bool manter = true;
+            bool finecutFrame = false;
 
             if (args[0] == "--json" && args.Length > 1)
             {
@@ -104,7 +110,7 @@ class Program
                 output = !string.IsNullOrWhiteSpace(legacyJson.OutputPath) ? Path.GetFullPath(legacyJson.OutputPath.Trim('"')) : "";
                 sheetW = legacyJson.SheetWMm;
                 sheetH = legacyJson.SheetHMm;
-                targetCopies = legacyJson.TargetCopies > 0 ? legacyJson.TargetCopies : 100;
+                if (legacyJson.TargetCopies > 0) explicitTargetCopies = legacyJson.TargetCopies;
                 gap = legacyJson.GapMm;
                 marginBase = legacyJson.MarginSideMm;
                 marginTop = legacyJson.MarginTopMm;
@@ -113,6 +119,7 @@ class Program
                 marginLeft = legacyJson.MarginSideMm;
                 manter = legacyJson.ManterAberto;
                 isRoll = sheetH <= 0;
+                if (legacyJson.FineCutFrame.HasValue) finecutFrame = legacyJson.FineCutFrame.Value;
                 if (legacyJson.Rotacionar90.HasValue)
                 {
                     rotationArg = legacyJson.Rotacionar90.Value ? "90" : "0";
@@ -121,25 +128,38 @@ class Program
             else
             {
                 input = Path.GetFullPath(args[0].Trim('"'));
-                if (args.Length > 1 && !args[1].StartsWith("--", StringComparison.Ordinal))
-                    output = Path.GetFullPath(args[1].Trim('"'));
-                if (args.Length > 2 && double.TryParse(args[2], NumberStyles.Any, inv, out var pw) && pw > 0)
-                    sheetW = pw;
-                if (args.Length > 3 && double.TryParse(args[3], NumberStyles.Any, inv, out var ph))
-                    sheetH = ph;
-                if (args.Length > 4 && int.TryParse(args[4], NumberStyles.Any, inv, out var tc) && tc > 0)
-                    targetCopies = tc;
-                if (args.Length > 5 && double.TryParse(args[5], NumberStyles.Any, inv, out var g))
-                    gap = g;
 
-                if (args.Length >= 8)
+                // Distingue estilo AutoImposerCLI (<input> [w] [h] [gap] [margin]) de estilo legado (<input> [output] [w] [h] [copias] [gap] [margin] [manter])
+                if (args.Length > 1 && !args[1].StartsWith("--", StringComparison.Ordinal))
                 {
-                    if (double.TryParse(args[6], NumberStyles.Any, inv, out var m)) marginBase = m;
-                    manter = args[7] != "0" && !args[7].Equals("false", StringComparison.OrdinalIgnoreCase);
-                }
-                else if (args.Length == 7)
-                {
-                    manter = args[6] != "0" && !args[6].Equals("false", StringComparison.OrdinalIgnoreCase);
+                    if (double.TryParse(args[1], NumberStyles.Any, inv, out var pw) && pw > 0)
+                    {
+                        // Estilo AutoImposerCLI: args[1] é largura
+                        sheetW = pw;
+                        if (args.Length > 2 && double.TryParse(args[2], NumberStyles.Any, inv, out var ph))
+                            sheetH = ph;
+                        if (args.Length > 3 && double.TryParse(args[3], NumberStyles.Any, inv, out var g))
+                            gap = g;
+                        if (args.Length > 4 && double.TryParse(args[4], NumberStyles.Any, inv, out var m))
+                            marginBase = m;
+                    }
+                    else
+                    {
+                        // Estilo Legado: args[1] é caminho do arquivo de saída
+                        output = Path.GetFullPath(args[1].Trim('"'));
+                        if (args.Length > 2 && double.TryParse(args[2], NumberStyles.Any, inv, out var pwLeg) && pwLeg > 0)
+                            sheetW = pwLeg;
+                        if (args.Length > 3 && double.TryParse(args[3], NumberStyles.Any, inv, out var phLeg))
+                            sheetH = phLeg;
+                        if (args.Length > 4 && int.TryParse(args[4], NumberStyles.Any, inv, out var tc) && tc > 0)
+                            explicitTargetCopies = tc;
+                        if (args.Length > 5 && double.TryParse(args[5], NumberStyles.Any, inv, out var gLeg))
+                            gap = gLeg;
+                        if (args.Length > 6 && double.TryParse(args[6], NumberStyles.Any, inv, out var mLeg))
+                            marginBase = mLeg;
+                        if (args.Length > 7)
+                            manter = args[7] != "0" && !args[7].Equals("false", StringComparison.OrdinalIgnoreCase);
+                    }
                 }
 
                 marginTop = marginBase;
@@ -150,7 +170,10 @@ class Program
                 for (int i = 0; i < args.Length; i++)
                 {
                     if ((args[i] == "--copies" || args[i] == "--target-copies") && i + 1 < args.Length)
-                        targetCopies = int.TryParse(args[i + 1], NumberStyles.Any, inv, out var cVal) ? cVal : targetCopies;
+                    {
+                        if (int.TryParse(args[i + 1], NumberStyles.Any, inv, out var cVal) && cVal > 0)
+                            explicitTargetCopies = cVal;
+                    }
                     else if (args[i] == "--gap" && i + 1 < args.Length)
                         gap = double.TryParse(args[i + 1], NumberStyles.Any, inv, out var gVal) ? gVal : gap;
                     else if ((args[i] == "--margin" || args[i] == "--margin-side") && i + 1 < args.Length)
@@ -177,16 +200,25 @@ class Program
                     else if (args[i] == "--surplus" && i + 1 < args.Length)
                         surplusPolicy = args[i + 1].Equals("truncate", StringComparison.OrdinalIgnoreCase) ? SurplusPolicy.Truncate : SurplusPolicy.FillRow;
                     else if (args[i] == "--substrate-kind" && i + 1 < args.Length)
-                        isRoll = args[i + 1].Equals("roll", StringComparison.OrdinalIgnoreCase);
+                        explicitIsRoll = args[i + 1].Equals("roll", StringComparison.OrdinalIgnoreCase);
                     else if (args[i] == "--max-length" && i + 1 < args.Length && double.TryParse(args[i + 1], NumberStyles.Any, inv, out var mlVal))
                         maxLength = mlVal;
                     else if (args[i] == "--trim-to-content")
                         trimToContent = true;
                     else if (args[i] == "--output-dir" && i + 1 < args.Length)
                         outputDir = args[i + 1].Trim('"');
+                    else if (args[i] == "--finecut-frame")
+                    {
+                        if (i + 1 < args.Length && (args[i + 1] == "1" || args[i + 1].Equals("true", StringComparison.OrdinalIgnoreCase)))
+                            finecutFrame = true;
+                        else if (i + 1 < args.Length && (args[i + 1] == "0" || args[i + 1].Equals("false", StringComparison.OrdinalIgnoreCase)))
+                            finecutFrame = false;
+                        else
+                            finecutFrame = true;
+                    }
                 }
 
-                if (sheetH <= 0) isRoll = true;
+                isRoll = explicitIsRoll ?? (sheetH <= 0);
             }
 
             if (args.Contains("--open-after", StringComparer.OrdinalIgnoreCase)) manter = true;
@@ -210,6 +242,80 @@ class Program
             };
 
             double effectiveHeightMm = isRoll ? (maxLength ?? 10000.0) : sheetH;
+
+            int capacidade = isRoll
+                ? ImpositionBridge.MaxCapacityRoll(
+                    sheetW, maxLength ?? 10000.0, gap,
+                    marginTop, marginRight, marginBottom, marginLeft,
+                    pieceWMm, pieceHMm)
+                : ImpositionBridge.MaxCapacity(
+                    sheetW, effectiveHeightMm, gap,
+                    marginTop, marginRight, marginBottom, marginLeft,
+                    pieceWMm, pieceHMm, forcedOrientation);
+
+            if (capacidade <= 0)
+            {
+                Console.Error.WriteLine(
+                    $"[ERRO] Dimensão da arte ({pieceWMm:F1}x{pieceHMm:F1}mm) excede a área útil do substrato " +
+                    $"({sheetW:F0}x{effectiveHeightMm:F0}mm) considerando margens e gap.");
+                return 2;
+            }
+
+            int targetCopies = explicitTargetCopies ?? capacidade;
+
+            // Suporte a correção (exit code 4): pedido acima da capacidade não chega ao core
+            if (!isRoll && targetCopies > capacidade)
+            {
+                var colsVencedor = ImpositionBridge.BestGrid(
+                    sheetW, effectiveHeightMm, gap,
+                    marginTop, marginRight, marginBottom, marginLeft,
+                    pieceWMm, pieceHMm, forcedOrientation).Cols;
+
+                var rodadasMin = (int)Math.Ceiling((double)targetCopies / capacidade);
+
+                Console.Error.WriteLine(
+                    $"[ERRO] Pedido de {targetCopies} UN excede a capacidade " +
+                    $"da chapa {sheetW:F0}x{effectiveHeightMm:F0}mm.");
+                Console.Error.WriteLine(
+                    $"       Capacidade por rodada: {capacidade} UN " +
+                    $"({colsVencedor} cols).");
+                Console.Error.WriteLine(
+                    $"       Rodadas necessarias: {rodadasMin}.");
+
+                // Informações base para o .bat (formato parseável por for /f).
+                Console.Error.WriteLine("OPTION_COUNT=3");
+                Console.Error.WriteLine("OPTION_1_ROUNDS=1");
+                Console.Error.WriteLine($"OPTION_1_TARGET={capacidade}");
+                Console.Error.WriteLine($"OPTION_1_TOTAL={capacidade}");
+                Console.Error.WriteLine($"OPTION_1_SURPLUS={capacidade - targetCopies}");
+                Console.Error.WriteLine($"OPTION_1_LABEL=1 rodada de {capacidade} UN (maximo)");
+
+                for (int i = 0; i < 3; i++)
+                {
+                    var n = rodadasMin + i;
+                    var copiasIdeais = (int)Math.Ceiling((double)targetCopies / n);
+                    var resto = copiasIdeais % colsVencedor;
+                    var copiasRodada = resto == 0
+                        ? copiasIdeais
+                        : copiasIdeais + (colsVencedor - resto);
+                    var total = copiasRodada * n;
+                    var sobra = total - targetCopies;
+
+                    Console.Error.WriteLine($"OPTION_{i + 2}_ROUNDS={n}");
+                    Console.Error.WriteLine($"OPTION_{i + 2}_TARGET={copiasRodada}");
+                    Console.Error.WriteLine($"OPTION_{i + 2}_TOTAL={total}");
+                    Console.Error.WriteLine($"OPTION_{i + 2}_SURPLUS={sobra}");
+                    Console.Error.WriteLine(
+                        $"OPTION_{i + 2}_LABEL={n} rodadas de {copiasRodada} UN = {total} UN (sobra {sobra})");
+                }
+
+                Console.Error.WriteLine($"OPTION_BASE_CAP={capacidade}");
+                Console.Error.WriteLine($"OPTION_BASE_COLS={colsVencedor}");
+                Console.Error.WriteLine($"OPTION_BASE_TARGET={targetCopies}");
+
+                return 4;
+            }
+
             var inputSpec = ImpositionBridge.BuildInput(
                 sheetWidthMm: sheetW,
                 sheetHeightMm: effectiveHeightMm,
@@ -236,28 +342,32 @@ class Program
             double gradeWMm = (planResult.Cols * finalPieceWMm) + ((planResult.Cols - 1) * gap);
             double gradeHMm = (planResult.Rows * finalPieceHMm) + ((planResult.Rows - 1) * gap);
 
-            double artboardWMm = sheetW;
-            double artboardHMm = planResult.LengthMm;
+            double pageWMm = sheetW;
+            double pageHMm = isRoll
+                ? Math.Max(1.0, marginTop + gradeHMm + marginBottom)
+                : effectiveHeightMm;
+
+            double startXMm = planResult.Placements.Count > 0
+                ? planResult.Placements[0].XMm
+                : (marginLeft + ((pageWMm - marginLeft - marginRight - gradeWMm) / 2.0));
+
+            double startYMm = planResult.Placements.Count > 0
+                ? planResult.Placements[0].YMm
+                : (isRoll ? marginTop : (marginTop + ((pageHMm - marginTop - marginBottom - gradeHMm) / 2.0)));
 
             if (trimToContent)
             {
-                artboardWMm = gradeWMm + marginLeft + marginRight;
-                artboardHMm = gradeHMm + marginTop + marginBottom;
+                pageWMm = gradeWMm + marginLeft + marginRight;
+                pageHMm = gradeHMm + marginTop + marginBottom;
+                startXMm = marginLeft;
+                startYMm = marginTop;
             }
 
-            double utilWMm = artboardWMm - marginLeft - marginRight;
-            double startXPt = (marginLeft + ((utilWMm - gradeWMm) / 2.0)) * MmToPt;
+            double artboardWMm = pageWMm;
+            double artboardHMm = pageHMm;
 
-            double startYPt;
-            if (isRoll)
-            {
-                startYPt = -(marginTop * MmToPt);
-            }
-            else
-            {
-                double utilHMm = artboardHMm - marginTop - marginBottom;
-                startYPt = -(marginTop + ((utilHMm - gradeHMm) / 2.0)) * MmToPt;
-            }
+            double startXPt = startXMm * MmToPt;
+            double startYPt = -(startYMm * MmToPt);
 
             double stepXPt = (finalPieceWMm + gap) * MmToPt;
             double stepYPt = (finalPieceHMm + gap) * MmToPt;
@@ -298,6 +408,7 @@ class Program
                 finalPieceHMm = Math.Round(finalPieceHMm, 2),
                 gradeWMm = Math.Round(gradeWMm, 2),
                 gradeHMm = Math.Round(gradeHMm, 2),
+                finecutFrame = finecutFrame,
                 manterAberto = manter
             };
 
@@ -344,10 +455,25 @@ class Program
 
             return 0;
         }
-        catch (Exception ex)
+        catch (FileNotFoundException ex)
         {
             Console.Error.WriteLine(JsonSerializer.Serialize(new { success = false, error = ex.Message }));
             return 1;
+        }
+        catch (ArgumentException ex)
+        {
+            Console.Error.WriteLine(JsonSerializer.Serialize(new { success = false, error = ex.Message }));
+            return 1;
+        }
+        catch (InvalidOperationException ex)
+        {
+            Console.Error.WriteLine(JsonSerializer.Serialize(new { success = false, error = ex.Message }));
+            return 2;
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(JsonSerializer.Serialize(new { success = false, error = ex.Message }));
+            return 3;
         }
     }
 
