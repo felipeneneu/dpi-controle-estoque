@@ -9,6 +9,10 @@ mkdirSync(outDir, { recursive: true });
 
 const SIZES = [
   { size: 16, file: 'logo-16x16.png' },
+  { size: 32, file: 'logo-32x32.png' },
+  { size: 48, file: 'logo-48x48.png' },
+  { size: 64, file: 'logo-64x64.png' },
+  { size: 128, file: 'logo-128x128.png' },
   { size: 256, file: 'logo-256x256.png' },
 ];
 

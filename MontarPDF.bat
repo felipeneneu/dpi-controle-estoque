@@ -7,60 +7,118 @@ if not exist "%BIN%" (
     set "BIN=%~dp0sidecars\AutoImposerCLI\bin\Release\net10.0\win-x64\publish\AutoImposerCLI.exe"
 )
 
-rem Argumentos opcionais do CLI (preenchidos pelos menus; vazios no fluxo posicional legado)
-set "TARGET_ARG="
-set "SURPLUS_ARG="
-set "SUBSTRATE_ARG="
-set "TRIM_ARG="
-set "OUTPUT_ARG="
-set "PEDIDO=max"
+rem Verificar se o executavel existe
+if not exist "%BIN%" (
+    echo ============================================================
+    echo [ERRO CRITICO] Executavel AutoImposerCLI.exe nao encontrado!
+    echo Procurado em:
+    echo "%BIN%"
+    echo.
+    echo Execute primeiro: npm run build:cli
+    echo ============================================================
+    echo.
+    pause
+    exit /b 1
+)
 
+rem Inicializa fila de arquivos caso parametros tenham sido passados (drag & drop ou CLI)
 set "RAW_ARGS=%*"
-set "PDF="
-
-rem 1. Se todos os argumentos juntos formam um arquivo existente (ex: arquivo com espacos arrastado sobre o .bat)
 if defined RAW_ARGS (
-    set "CLEAN_ALL=%RAW_ARGS:"=%"
-    if exist "!CLEAN_ALL!" (
-        set "PDF=!CLEAN_ALL!"
+    rem 1. Se o primeiro parametro for um arquivo existente
+    if exist "%~1" (
+        rem Se alem do arquivo foram passados parametros numericos legados (largura/altura CLI)
+        if not "%~2"=="" (
+            if not exist "%~2" (
+                call :resetar_estado
+                set "PDF=%~1"
+                set "PW=%~2"
+                set "PH=%~3"
+                set "GAP=%~4"
+                set "MARG=%~5"
+                if "!PW!"=="" set "PW=700"
+                if "!PH!"=="" set "PH=1000"
+                if "!GAP!"=="" set "GAP=2"
+                if "!MARG!"=="" set "MARG=10"
+                set "ROT=auto"
+                set "MODO_LEGADO=1"
+                goto rodar
+            )
+        )
+        rem Arquivo individual ou primeiro de multiplos arquivos arrastados juntos
+        call :resetar_estado
+        set "PDF=%~1"
+        shift
         goto menu_opcoes
     )
-    rem 2. Se o primeiro parametro ja for um arquivo existente entre aspas
-    if exist "%~1" (
-        set "PDF=%~1"
-        rem Se alem do arquivo foram passados parametros de largura/altura por CLI,
-        rem preservar o fluxo posicional legado: vai direto para :rodar sem menus.
-        if not "%~2"=="" (
-            set "PW=%~2"
-            set "PH=%~3"
-            set "GAP=%~4"
-            set "MARG=%~5"
-            if "!PW!"=="" set "PW=700"
-            if "!PH!"=="" set "PH=1000"
-            if "!GAP!"=="" set "GAP=2"
-            if "!MARG!"=="" set "MARG=10"
-            set "ROT=auto"
-            goto rodar
-        )
+    rem 2. Se todos os argumentos juntos formam um arquivo existente (ex: caminho com espacos sem aspas)
+    set "CLEAN_ALL=%RAW_ARGS:"=%"
+    if exist "!CLEAN_ALL!" (
+        call :resetar_estado
+        set "PDF=!CLEAN_ALL!"
         goto menu_opcoes
     )
 )
 
+rem Iniciar fluxo interativo
+goto pedir_pdf
+
+rem ------------------------------------------------------------
+rem Limpeza de estado por arquivo (preserva MONTAR_PRESET e BIN)
+rem ------------------------------------------------------------
+:resetar_estado
+set "PDF="
+set "USER_INPUT="
+set "TARGET_ARG="
+set "SURPLUS_ARG="
+set "SUBSTRATE_ARG="
+set "TRIM_ARG="
+set "MARKS_ARG="
+set "OUTPUT_ARG="
+set "PEDIDO=max"
+set "PW="
+set "PH="
+set "GAP="
+set "MARG="
+set "ROT=auto"
+set "ROTOPCAO="
+set "ROT_SEL="
+set "COPIAS="
+set "SURPLUS="
+set "MAXLEN="
+set "TMP="
+set "OPCAO="
+set "OPCAO_SEL="
+set "MARCAS_OPT="
+set "PDF_DIR="
+set "OUT_DIR="
+set "STDERR_FILE="
+set "EXIT_CODE="
+set "ERR_OPT="
+set "OPTION_1_LABEL="
+set "OPTION_2_LABEL="
+set "OPTION_3_LABEL="
+set "OPTION_1_TARGET="
+set "OPTION_2_TARGET="
+set "OPTION_3_TARGET="
+goto :eof
+
 :pedir_pdf
+call :resetar_estado
 cls
 echo ============================================================
 echo   AUTO IMPOSER CLI - REPETICAO DE MATRIZES (STEP E REPEAT)
+if defined MONTAR_PRESET echo   PRESET ATIVO: !MONTAR_PRESET!
 echo ============================================================
 echo.
 echo  Arraste o arquivo PDF aqui para dentro desta janela
-echo  e pressione [ENTER] (ou digite o caminho completo):
+echo  e pressione [ENTER] (ou apenas ENTER para sair):
 echo.
 set "USER_INPUT="
 set /p "USER_INPUT=>> PDF: "
 
 if "!USER_INPUT!"=="" (
     echo.
-    echo [AVISO] Nenhum arquivo informado.
+    echo Encerrando sessao de imposicao.
     goto sair
 )
 
@@ -77,7 +135,9 @@ if not exist "!PDF!" (
     echo [ERRO] Arquivo nao encontrado:
     echo "!PDF!"
     echo.
-    goto sair
+    echo Pressione qualquer tecla para tentar outro arquivo...
+    pause >nul
+    goto pedir_pdf
 )
 
 rem Se a variavel MONTAR_PRESET esta definida (chamado por atalho especializado),
@@ -89,7 +149,7 @@ echo ============================================================
 echo   AUTO IMPOSER CLI - CONFIGURACAO DA CHAPA
 echo ============================================================
 echo  Arquivo selecionado:
-echo  "%PDF%"
+echo  "!PDF!"
 echo ============================================================
 echo.
 echo  ESCOLHA UMA OPCAO DE FORMATO:
@@ -350,23 +410,13 @@ goto rodar
 echo.
 echo ============================================================
 echo PROCESSANDO IMPOSICAO...
+echo Origem: "!PDF!"
 echo Chapa: !PW! x !PH! mm, Gap: !GAP! mm, Margem: !MARG! mm, Rotacao: !ROT!
 echo Pedido: !PEDIDO! copias
 if defined TRIM_ARG echo Fechar PDF na grade: SIM
 if defined MARKS_ARG echo Marcas de corte: SIM
 echo ============================================================
 echo.
-
-if not exist "%BIN%" (
-    echo [ERRO CRITICO] Executavel AutoImposerCLI.exe nao encontrado!
-    echo Procurado em:
-    echo "%BIN%"
-    echo.
-    echo Execute primeiro: dotnet publish sidecars\AutoImposerCLI -c Release -o sidecars\bin\cli
-    echo.
-    pause
-    goto sair
-)
 
 rem Redirecionar stderr para arquivo temporario (para parsear OPTION_* no exit 4)
 set "STDERR_FILE=%TEMP%\impostor_stderr.txt"
@@ -399,12 +449,27 @@ if exist "!STDERR_FILE!" del "!STDERR_FILE!"
 goto tratar_inesperado
 
 rem ------------------------------------------------------------
-rem Handlers de erro (nao mata o .bat, oferece correcao)
+rem Handlers de erro (permite correcao ou passar ao proximo arquivo)
 rem ------------------------------------------------------------
 
 :sucesso
+if exist "!STDERR_FILE!" del "!STDERR_FILE!" 2>nul
 echo.
-goto sair
+echo ============================================================
+echo  [OK] Imposicao gerada com sucesso!
+if defined OUT_DIR echo  Pasta de destino: "!OUT_DIR!"
+echo ============================================================
+echo.
+if defined MODO_LEGADO goto sair
+goto proximo_arquivo
+
+:cancelar_arquivo
+if exist "!STDERR_FILE!" del "!STDERR_FILE!" 2>nul
+echo.
+echo [AVISO] Operacao cancelada para este arquivo.
+echo.
+if defined MODO_LEGADO goto sair
+goto proximo_arquivo
 
 :tratar_uso
 if exist "!STDERR_FILE!" del "!STDERR_FILE!" 2>nul
@@ -416,14 +481,14 @@ echo  Argumentos invalidos. Verifique a mensagem acima.
 echo.
 echo  Como proceder?
 echo   [1] Voltar ao menu de formato
-echo   [2] Cancelar
+echo   [2] Cancelar e ir para o proximo arquivo
 echo.
 set "ERR_OPT="
 set /p "ERR_OPT=Escolha [1]: "
 if not "!ERR_OPT!"=="" set "ERR_OPT=!ERR_OPT: =!"
 if "!ERR_OPT!"=="" set "ERR_OPT=1"
 if "!ERR_OPT!"=="1" goto menu_opcoes
-goto sair
+goto cancelar_arquivo
 
 :tratar_negocio
 if exist "!STDERR_FILE!" del "!STDERR_FILE!" 2>nul
@@ -435,7 +500,7 @@ echo  A mensagem acima explica o problema. Como proceder?
 echo.
 echo   [1] Aumentar chapa (redefinir formato)
 echo   [2] Reduzir tiragem (voltar ao menu de copias)
-echo   [3] Cancelar
+echo   [3] Cancelar e ir para o proximo arquivo
 echo.
 set "ERR_OPT="
 set /p "ERR_OPT=Escolha [1]: "
@@ -443,7 +508,7 @@ if not "!ERR_OPT!"=="" set "ERR_OPT=!ERR_OPT: =!"
 if "!ERR_OPT!"=="" set "ERR_OPT=1"
 if "!ERR_OPT!"=="1" goto menu_opcoes
 if "!ERR_OPT!"=="2" goto menu_copias
-goto sair
+goto cancelar_arquivo
 
 :tratar_excesso_capacidade
 echo.
@@ -457,7 +522,7 @@ echo   [1] %OPTION_1_LABEL%
 echo   [2] %OPTION_2_LABEL%
 echo   [3] %OPTION_3_LABEL%
 echo   [4] Aumentar chapa (voltar ao menu de formato)
-echo   [5] Cancelar
+echo   [5] Cancelar e ir para o proximo arquivo
 echo.
 set "ERR_OPT="
 set /p "ERR_OPT=Escolha [1]: "
@@ -480,7 +545,7 @@ if "!ERR_OPT!"=="3" (
     goto rodar
 )
 if "!ERR_OPT!"=="4" goto menu_opcoes
-goto sair
+goto cancelar_arquivo
 
 :tratar_inesperado
 if exist "!STDERR_FILE!" del "!STDERR_FILE!" 2>nul
@@ -492,7 +557,7 @@ echo  Consulte a mensagem acima. Como proceder?
 echo.
 echo   [1] Tentar novamente
 echo   [2] Voltar ao menu de formato
-echo   [3] Cancelar
+echo   [3] Cancelar e ir para o proximo arquivo
 echo.
 set "ERR_OPT="
 set /p "ERR_OPT=Escolha [1]: "
@@ -500,11 +565,69 @@ if not "!ERR_OPT!"=="" set "ERR_OPT=!ERR_OPT: =!"
 if "!ERR_OPT!"=="" set "ERR_OPT=1"
 if "!ERR_OPT!"=="1" goto rodar
 if "!ERR_OPT!"=="2" goto menu_opcoes
-goto sair
+goto cancelar_arquivo
+
+rem ------------------------------------------------------------
+rem Loop para proximo arquivo (fila de argumentos ou interativo)
+rem ------------------------------------------------------------
+:proximo_arquivo
+rem Se ainda houver arquivos na fila de argumentos (arrastados juntos)
+if not "%~1"=="" (
+    if exist "%~1" (
+        call :resetar_estado
+        set "PDF=%~1"
+        shift
+        echo.
+        echo ============================================================
+        echo  PROCESSANDO PROXIMO ARQUIVO DA FILA:
+        echo  "!PDF!"
+        echo ============================================================
+        echo.
+        goto menu_opcoes
+    )
+)
+
+call :resetar_estado
+echo ============================================================
+echo   DESEJA PROCESSAR OUTRO ARQUIVO?
+if defined MONTAR_PRESET echo   PRESET ATIVO: !MONTAR_PRESET!
+echo ============================================================
+echo  Arraste o proximo arquivo PDF aqui para dentro
+echo  e pressione [ENTER] (ou pressione apenas ENTER para sair):
+echo.
+set "USER_INPUT="
+set /p "USER_INPUT=>> Proximo PDF: "
+
+if "!USER_INPUT!"=="" (
+    echo.
+    echo Encerrando sessao de imposicao.
+    goto sair
+)
+
+rem Limpa aspas e espacos do input
+set "PDF=!USER_INPUT:"=!"
+:trim_space_next
+if "!PDF:~-1!"==" " (
+    set "PDF=!PDF:~0,-1!"
+    goto trim_space_next
+)
+
+if not exist "!PDF!" (
+    echo.
+    echo [ERRO] Arquivo nao encontrado:
+    echo "!PDF!"
+    echo.
+    echo Pressione qualquer tecla para tentar novamente...
+    pause >nul
+    goto proximo_arquivo
+)
+
+goto menu_opcoes
 
 :sair
 echo.
 echo ============================================================
-echo Fim da operacao. Pressione qualquer tecla para encerrar.
-pause
+echo  Fim da operacao. Ate logo!
+echo ============================================================
 endlocal
+exit /b 0

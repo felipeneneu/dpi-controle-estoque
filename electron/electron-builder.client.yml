@@ -1,5 +1,6 @@
 appId: com.felipeneneu.dpi-controle-estoque.client
 productName: Dpi Controle de Estoque
+afterPack: scripts/bake-icons.cjs
 directories:
   output: ../dist/client
 files:
@@ -13,8 +14,6 @@ extraResources:
     to: graficaos/ui
   - from: config/client.json
     to: graficaos/mode.json
-  - from: ../sidecars/ImpositorKonica/bin/Release/net8.0-windows/win-x64/publish/ImpositorKonica.exe
-    to: bin/ImpositorKonica.exe
 win:
   icon: build/icon.ico
   target:

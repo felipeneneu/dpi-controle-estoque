@@ -15,6 +15,76 @@
       "when": 1788287737552,
       "tag": "0001_white_silver_centurion",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1788448641455,
+      "tag": "0002_lame_korg",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1788449236352,
+      "tag": "0003_dapper_jazinda",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1788462879254,
+      "tag": "0004_watery_owl",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1788527000000,
+      "tag": "0005_repair_machine_telemetry",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1788869475509,
+      "tag": "0006_grey_tomorrow_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1788959053119,
+      "tag": "0007_sticky_the_renegades",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1789125052251,
+      "tag": "0008_melodic_lorna_dane",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1789307349201,
+      "tag": "0009_slow_bloodscream",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1789412173200,
+      "tag": "0010_cuddly_starfox",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1789502683270,
+      "tag": "0011_glorious_changeling",
+      "breakpoints": true
     }
   ]
 }

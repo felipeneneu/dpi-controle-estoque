@@ -41,25 +41,30 @@ function backendPort() {
   return Number(process.env.GRAFICA_BACKEND_PORT || process.env.PORT || 3001);
 }
 
-// Tenta liberar a porta do backend no firewall do Windows (best-effort).
-// Falha silenciosamente (apenas log) quando não há permissão de administrador.
+// Tenta liberar as portas do backend (TCP 3001) e da descoberta LAN (UDP 41234)
+// no firewall do Windows (best-effort). Falha silenciosamente (apenas log) quando
+// não há permissão de administrador.
 function openFirewallBestEffort() {
   if (process.platform !== 'win32') return;
-  const port = backendPort();
-  const ruleName = 'GraficaOS Backend (3001)';
-  const command = `netsh advfirewall firewall delete rule name="${ruleName}"`;
-  exec(command, () => {
-    exec(
-      `netsh advfirewall firewall add rule name="${ruleName}" dir=in action=allow protocol=TCP localport=${port}`,
-      (err) => {
-        if (err) {
-          console.error('[graficaos] não foi possível liberar a porta no firewall (é preciso executar como admin).');
-          return;
+  const { DISCOVER_PORT } = require('./discovery.js');
+  const rules = [
+    { name: 'GraficaOS Backend (3001)', protocol: 'TCP', localport: backendPort() },
+    { name: 'GraficaOS Discover (UDP 41234)', protocol: 'UDP', localport: DISCOVER_PORT },
+  ];
+  for (const rule of rules) {
+    exec(`netsh advfirewall firewall delete rule name="${rule.name}"`, () => {
+      exec(
+        `netsh advfirewall firewall add rule name="${rule.name}" dir=in action=allow protocol=${rule.protocol} localport=${rule.localport}`,
+        (err) => {
+          if (err) {
+            console.error('[graficaos] não foi possível liberar a porta no firewall (é preciso executar como admin).');
+            return;
+          }
+          console.log(`[graficaos] regra de firewall criada: ${rule.name}.`);
         }
-        console.log(`[graficaos] regra de firewall criada para a porta ${port}.`);
-      }
-    );
-  });
+      );
+    });
+  }
 }
 
 function lanAddresses() {

@@ -4,37 +4,84 @@ title Illustrator Imposer CLI - Modo 100%% Automatico
 
 set "BIN=%~dp0sidecars\bin\cli\IllustratorImposerCLI.exe"
 if not exist "%BIN%" (
+    echo ============================================================
     echo [ERRO] Binario nao encontrado em: "%BIN%"
     echo Execute "npm run build:cli:illustrator" primeiro.
+    echo ============================================================
+    echo.
     pause
     exit /b 1
 )
 
-set "PDF=%~1"
-if "%PDF%"=="" (
-    cls
-    echo ============================================================
-    echo   IMPOSITOR AUTOMATICO NO ADOBE ILLUSTRATOR (FINECUT / MIMAKI)
-    echo ============================================================
-    echo.
-    echo  Arraste o arquivo PDF aqui para dentro desta janela
-    echo  e pressione [ENTER]:
-    echo.
-    set /p "PDF=>> PDF da Arte: "
+rem Se foi passado argumento via linha de comando ou drag & drop
+if exist "%~1" (
+    call :resetar_estado_ai
+    set "PDF=%~1"
+    shift
+    goto configurar_ai
 )
 
-set "PDF=!PDF:"=!"
+rem Se nenhum argumento foi passado, solicitar interativamente
+goto pedir_pdf
+
+rem ------------------------------------------------------------
+rem Limpeza de estado por arquivo
+rem ------------------------------------------------------------
+:resetar_estado_ai
+set "PDF="
+set "USER_INPUT="
+set "SHEET_W=750"
+set "COPIAS=100"
+set "GAP=2"
+set "MARGIN=15"
+set "MODO=1"
+set "MANTER=1"
+set "DIRNAME="
+set "BASENAME="
+set "OUTPUT="
+goto :eof
+
+:pedir_pdf
+call :resetar_estado_ai
+cls
+echo ============================================================
+echo   IMPOSITOR AUTOMATICO NO ADOBE ILLUSTRATOR (FINECUT / MIMAKI)
+echo ============================================================
+echo.
+echo  Arraste o arquivo PDF aqui para dentro desta janela
+echo  e pressione [ENTER] (ou apenas ENTER para sair):
+echo.
+set "USER_INPUT="
+set /p "USER_INPUT=>> PDF da Arte: "
+
+if "!USER_INPUT!"=="" (
+    echo.
+    echo Encerrando sessao do Illustrator.
+    goto sair
+)
+
+set "PDF=!USER_INPUT:"=!"
+:trim_space_ai
+if "!PDF:~-1!"==" " (
+    set "PDF=!PDF:~0,-1!"
+    goto trim_space_ai
+)
+
 if not exist "!PDF!" (
     echo.
     echo [ERRO] Arquivo nao encontrado: "!PDF!"
-    pause
-    exit /b 1
+    echo Pressione qualquer tecla para tentar outro arquivo...
+    pause >nul
+    goto pedir_pdf
 )
 
+goto configurar_ai
+
+:configurar_ai
 cls
 echo ============================================================
 echo   ARQUIVO SELECIONADO:
-echo   !PDF!
+echo   "!PDF!"
 echo ============================================================
 echo.
 
@@ -72,8 +119,8 @@ cls
 echo ============================================================
 echo   PROCESSANDO NO ADOBE ILLUSTRATOR...
 echo ============================================================
-echo  Origem:       !PDF!
-echo  Destino:      !OUTPUT!
+echo  Origem:       "!PDF!"
+echo  Destino:      "!OUTPUT!"
 echo  Largura:      !SHEET_W! mm
 echo  Copias:       !COPIAS! UN
 echo  Gap:          !GAP! mm
@@ -90,6 +137,67 @@ echo Aguarde... Abrindo e multiplicando vetores no Illustrator...
 
 echo.
 echo ============================================================
-echo  Processo finalizado!
+echo  [OK] Processo finalizado com sucesso no Illustrator!
 echo ============================================================
-pause
+echo.
+goto proximo_arquivo_ai
+
+:proximo_arquivo_ai
+rem Se houver proximo na fila de argumentos (arrastados juntos)
+if not "%~1"=="" (
+    if exist "%~1" (
+        call :resetar_estado_ai
+        set "PDF=%~1"
+        shift
+        echo.
+        echo ============================================================
+        echo  PROCESSANDO PROXIMO ARQUIVO DA FILA:
+        echo  "!PDF!"
+        echo ============================================================
+        echo.
+        goto configurar_ai
+    )
+)
+
+call :resetar_estado_ai
+echo ============================================================
+echo   DESEJA PROCESSAR OUTRO ARQUIVO NO ILLUSTRATOR?
+echo ============================================================
+echo  Arraste o proximo arquivo PDF aqui para dentro
+echo  e pressione [ENTER] (ou pressione apenas ENTER para sair):
+echo.
+set "USER_INPUT="
+set /p "USER_INPUT=>> Proximo PDF: "
+
+if "!USER_INPUT!"=="" (
+    echo.
+    echo Encerrando sessao do Illustrator.
+    goto sair
+)
+
+set "PDF=!USER_INPUT:"=!"
+:trim_space_ai_next
+if "!PDF:~-1!"==" " (
+    set "PDF=!PDF:~0,-1!"
+    goto trim_space_ai_next
+)
+
+if not exist "!PDF!" (
+    echo.
+    echo [ERRO] Arquivo nao encontrado:
+    echo "!PDF!"
+    echo.
+    echo Pressione qualquer tecla para tentar novamente...
+    pause >nul
+    goto proximo_arquivo_ai
+)
+
+goto configurar_ai
+
+:sair
+echo.
+echo ============================================================
+echo  Fim da operacao. Ate logo!
+echo ============================================================
+endlocal
+exit /b 0

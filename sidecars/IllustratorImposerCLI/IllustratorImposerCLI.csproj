@@ -13,7 +13,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="PdfSharp" Version="6.1.1" />
+    <ProjectReference Include="..\..\packages\imposition-core\src\Imposition.Core\Imposition.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="Scripts\engine.jsx" />
+    <InternalsVisibleTo Include="IllustratorImposerCLI.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="tests\**" />
+    <EmbeddedResource Remove="tests\**" />
+    <None Remove="tests\**" />
   </ItemGroup>
 
 </Project>

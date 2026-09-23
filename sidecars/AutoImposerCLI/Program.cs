@@ -615,7 +615,7 @@ static Imposition.Pdf.Marks.MarkType ParseMarkType(string[] args)
     };
 
 static double ParseMarkSizeMm(string[] args)
-    => flagNum(args, "--mark-size-mm", 10.0);
+    => flagNum(args, "--mark-size-mm", 20.0);
 
 static double ParseMarkOffsetMm(string[] args)
     => flagNum(args, "--mark-offset-mm", 3.0);

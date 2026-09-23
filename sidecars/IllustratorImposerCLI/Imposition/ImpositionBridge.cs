@@ -1,0 +1,149 @@
+using Imposition.Core.Contracts;
+using Imposition.Core.Geometry;
+using Imposition.Core.Grid;
+using Imposition.Core.Tolerance;
+using CorePlan = Imposition.Core.Contracts.ImpositionResult;
+
+namespace IllustratorImposerCLI.Imposition;
+
+// duplicado de AutoImposerCLI/Imposition/ImpositionBridge.cs
+/// <summary>
+/// Ponte entre o IllustratorImposerCLI e o imposition-core (fonte única de
+/// verdade da grade — ADR-021 Decisão 6).
+/// </summary>
+public static class ImpositionBridge
+{
+    public const double DefaultToleranceMm = 0.1;
+    public const double DefaultRegisterMm = 0.1;
+
+    /// <summary>
+    /// Capacidade máxima da chapa em cópias (default do modo legado quando o
+    /// operador não informa tiragem). Regra 1 do AGENTS.md: tol aplicada ANTES
+    /// do floor, nas DUAS orientações — a vencedora é a de maior capacidade.
+    /// Se <paramref name="forcedOrientation"/> for informado, respeita a
+    /// orientação (ignora a outra). Delega a única fórmula para
+    /// <see cref="BestGrid"/>. Fonte única.
+    /// </summary>
+    public static int MaxCapacity(
+        double sheetWidthMm,
+        double sheetHeightMm,
+        double gapMm,
+        double marginTopMm,
+        double marginRightMm,
+        double marginBottomMm,
+        double marginLeftMm,
+        double pieceWidthMm,
+        double pieceHeightMm,
+        Orientation? forcedOrientation = null)
+        => BestGrid(
+            sheetWidthMm, sheetHeightMm, gapMm,
+            marginTopMm, marginRightMm, marginBottomMm, marginLeftMm,
+            pieceWidthMm, pieceHeightMm, forcedOrientation).Capacity;
+
+    /// <summary>
+    /// Capacidade máxima de um rolo/bobina (auto-estende até
+    /// <paramref name="maxLengthMm"/>). Mesma fórmula da Regra 1, aplicada
+    /// nas DUAS orientações. Delega para <see cref="BestGrid"/>. Fonte única.
+    /// </summary>
+    public static int MaxCapacityRoll(
+        double rollWidthMm,
+        double maxLengthMm,
+        double gapMm,
+        double marginTopMm,
+        double marginRightMm,
+        double marginBottomMm,
+        double marginLeftMm,
+        double pieceWidthMm,
+        double pieceHeightMm)
+        => BestGrid(
+            rollWidthMm, maxLengthMm, gapMm,
+            marginTopMm, marginRightMm, marginBottomMm, marginLeftMm,
+            pieceWidthMm, pieceHeightMm, null).Capacity;
+
+    /// <summary>
+    /// Melhor grade (maior capacidade) para chapa/rolo, respeitando orientação
+    /// forçada se informada. Regra 1: tol aplicada ANTES do floor, nas DUAS
+    /// orientações; a vencedora é a de maior capacidade (roll usa
+    /// <c>sheetHeightMm</c> = comprimento máximo). Usado pelo CLI para a
+    /// mensagem de capacidade no exit code 4.
+    /// </summary>
+    public static (int Cols, int Rows, int Capacity) BestGrid(
+        double sheetWidthMm,
+        double sheetHeightMm,
+        double gapMm,
+        double marginTopMm,
+        double marginRightMm,
+        double marginBottomMm,
+        double marginLeftMm,
+        double pieceWidthMm,
+        double pieceHeightMm,
+        Orientation? forcedOrientation = null)
+    {
+        var tol  = Tolerance.Resolve(DefaultToleranceMm, DefaultRegisterMm);
+        var utilW = sheetWidthMm - marginLeftMm - marginRightMm;
+        var utilH = sheetHeightMm - marginTopMm - marginBottomMm;
+
+        (int Cols, int Rows) Cap(double pW, double pH) => (
+            (int)Math.Floor((utilW + gapMm + tol) / (pW + gapMm)),
+            (int)Math.Floor((utilH + gapMm + tol) / (pH + gapMm)));
+
+        var portrait  = Cap(pieceWidthMm, pieceHeightMm);
+        var landscape = Cap(pieceHeightMm, pieceWidthMm);
+
+        var (cols, rows) = forcedOrientation switch
+        {
+            Orientation.Portrait  => portrait,
+            Orientation.Landscape => landscape,
+            null                  => portrait.Cols * portrait.Rows
+                                   >= landscape.Cols * landscape.Rows
+                                       ? portrait
+                                       : landscape,
+            _ => throw new ArgumentOutOfRangeException(
+                     nameof(forcedOrientation), forcedOrientation,
+                     "Orientação inválida (valores válidos: Portrait, Landscape)."),
+        };
+
+        return (cols, rows, cols * rows);
+    }
+
+    public static ImpositionInput BuildInput(
+        double sheetWidthMm,
+        double sheetHeightMm,
+        double gapMm,
+        double marginTopMm,
+        double marginRightMm,
+        double marginBottomMm,
+        double marginLeftMm,
+        double pieceWidthMm,
+        double pieceHeightMm,
+        int targetCopies,
+        Orientation? forcedOrientation = null,
+        SurplusPolicy surplusPolicy = SurplusPolicy.FillRow,
+        SubstrateKind kind = SubstrateKind.Sheet,
+        double? maxLengthMm = null)
+    {
+        if (kind == SubstrateKind.Roll && maxLengthMm is null)
+            throw new ArgumentException(
+                "Rolo requer maxLengthMm.", nameof(maxLengthMm));
+
+        return new ImpositionInput(
+            Substrate: new SubstrateSpec(
+                Kind: kind,
+                WidthMm: sheetWidthMm,
+                InitialLengthMm: sheetHeightMm,
+                MaxLengthMm: kind == SubstrateKind.Roll ? maxLengthMm : null,
+                ToleranceMm: DefaultToleranceMm,
+                RegisterMm: DefaultRegisterMm),
+            Piece: new PieceSpec(pieceWidthMm, pieceHeightMm),
+            Gap: new GapSpec(gapMm, gapMm),
+            Margin: new MarginSpec(marginLeftMm, marginRightMm, marginTopMm, marginBottomMm),
+            TargetCopies: targetCopies,
+            SurplusPolicy: surplusPolicy,
+            ScalePolicy: ScalePolicy.Reject,
+            ForcedOrientation: forcedOrientation,
+            ForcedCols: null);
+    }
+
+    public static CorePlan Plan(ImpositionInput input)
+        => GridSearchEngine.Plan(input);
+}

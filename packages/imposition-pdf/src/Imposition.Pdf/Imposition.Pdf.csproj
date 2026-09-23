@@ -4,6 +4,10 @@
     <AssemblyName>Imposition.Pdf</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="Imposition.Pdf.Tests" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\..\imposition-core\src\Imposition.Core\Imposition.Core.csproj" />
   </ItemGroup>
 </Project>
+

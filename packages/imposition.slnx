@@ -21,5 +21,6 @@
   </Folder>
   <Folder Name="/sidecars-tests/">
     <Project Path="../sidecars/AutoImposerCLI/tests/AutoImposerCLI.Tests/AutoImposerCLI.Tests.csproj" />
+    <Project Path="../sidecars/IllustratorImposerCLI/tests/IllustratorImposerCLI.Tests/IllustratorImposerCLI.Tests.csproj" />
   </Folder>
 </Solution>

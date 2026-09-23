@@ -11,6 +11,7 @@
     "start:static": "electron . --static",
     "start:server": "electron . --serve",
     "package": "electron-builder --win",
+    "prepackage:server": "node scripts/sync-staging.js",
     "package:server": "electron-builder --win --config electron-builder.server.yml",
     "package:client": "electron-builder --win --config electron-builder.client.yml"
   },

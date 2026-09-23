@@ -34,8 +34,8 @@ public static class PdfImposer
         var qdfPath = Path.Combine(tempPath, $"imposition-{Guid.NewGuid():N}.qdf");
         try
         {
-            // 1. QPDF --qdf
-            QpdfRunner.Run($"--qdf \"{inputPath}\" \"{qdfPath}\"");
+            // 1. QPDF --qdf com descompactação de object streams (garante que /Page e /Pages sejam objetos raiz)
+            QpdfRunner.Run($"--qdf --object-streams=disable \"{inputPath}\" \"{qdfPath}\"");
 
             // 2. Editar QDF em C# (N-up)
             var editedQdf = QdfPipeline.ApplyNup(qdfPath, options);

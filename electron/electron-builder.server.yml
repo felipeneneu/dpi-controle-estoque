@@ -1,5 +1,6 @@
 appId: com.felipeneneu.dpi-controle-estoque.server
 productName: Dpi Controle de Estoque Server
+afterPack: scripts/bake-icons.cjs
 directories:
   output: ../dist/server
 files:

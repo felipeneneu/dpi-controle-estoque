@@ -22,10 +22,21 @@ internal static class QdfPipeline
         double pw = GetMediaBoxWidth(pages[0].Dict), ph = GetMediaBoxHeight(pages[0].Dict);
         
         double pt = 72.0 / 25.4;
-        double sheetW = options.SheetWMm * pt;
-        double sheetH = options.SheetHMm * pt;
-        double startX = options.StartXMm * pt;
-        double startY = options.StartYMm * pt;
+
+        // Expansão do MediaBox para acomodar marcas (em mm → pt)
+        var (expandWMm, expandHMm) = MarksRenderer.GetMarksExpansion(options.Marks);
+        double expandWPt = expandWMm * pt;
+        double expandHPt = expandHMm * pt;
+
+        double sheetW = options.SheetWMm * pt + expandWPt;
+        double sheetH = options.SheetHMm * pt + expandHPt;
+
+        // Offset da grade para centralizar dentro do MediaBox expandido
+        double marksOffsetPt = expandWPt / 2.0;
+        double marksOffsetYPt = expandHPt / 2.0;
+
+        double startX = options.StartXMm * pt + marksOffsetPt;
+        double startY = options.StartYMm * pt + marksOffsetYPt;
         double stepX  = options.StepXMm * pt;
         double stepY  = options.StepYMm * pt;
 
@@ -159,7 +170,14 @@ internal static class QdfPipeline
         return editedPath;
     }
 
-    private static string N(double d) => d.ToString(System.Globalization.CultureInfo.InvariantCulture);
+    private static string N(double d)
+    {
+        if (Math.Abs(d) < 1e-6) return "0";
+        var s = d.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        if (s.Contains('E') || s.Contains('e'))
+            return d.ToString("0.################", System.Globalization.CultureInfo.InvariantCulture);
+        return s;
+    }
 
     private static List<PdfObj> ParseObjects(List<string> lines)
     {
