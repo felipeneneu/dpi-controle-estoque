@@ -83,6 +83,7 @@ internal static class QdfPipeline
             }
         }
 
+        Dictionary<string, string> spots = new();
         if (options.Marks != null)
         {
             double pieceW = options.Rotate90 ? ph : pw;
@@ -91,7 +92,7 @@ internal static class QdfPipeline
             double gradeTop = startY + (options.Rows - 1) * stepY + pieceH;
             
             string marksStream = MarksRenderer.GenerateContentStream(
-                startX, startY, gradeRight, gradeTop, options.Marks);
+                startX, startY, gradeRight, gradeTop, options.Marks, out spots);
                 
             sheetOps.AppendLine(marksStream);
         }
@@ -108,7 +109,7 @@ internal static class QdfPipeline
         sb.AppendLine();
 
         var rootPages = objs.FirstOrDefault(o => Regex.IsMatch(o.Dict, @"\/Type\s*/Pages\b"));
-        if (rootPages is null) throw new InvalidOperationException("Objeto /Pages nǜo encontrado.");
+        if (rootPages is null) throw new InvalidOperationException("Objeto /Pages não encontrado.");
 
         sb.AppendLine($"{sheetPageNum} 0 obj");
         sb.AppendLine("<<");
@@ -119,6 +120,17 @@ internal static class QdfPipeline
         sb.AppendLine("    /XObject <<");
         sb.AppendLine($"      /Fm0 {formNum} 0 R");
         sb.AppendLine("    >>");
+        
+        if (spots.Count > 0)
+        {
+            sb.AppendLine("    /ColorSpace <<");
+            foreach (var spot in spots)
+            {
+                sb.AppendLine($"      {spot.Value}");
+            }
+            sb.AppendLine("    >>");
+        }
+        
         sb.AppendLine("  >>");
         sb.AppendLine("  /Type /Page");
         sb.AppendLine(">>");

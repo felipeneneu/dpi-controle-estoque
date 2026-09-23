@@ -4,6 +4,7 @@ using System.Linq;
 using FluentAssertions;
 using Imposition.Pdf;
 using Imposition.Pdf.Contracts;
+using Imposition.Pdf.Marks;
 using Xunit;
 
 namespace Imposition.Pdf.Tests;
@@ -86,7 +87,7 @@ public class PdfImposerTests
         var input = "Fixtures/3-layers.pdf";
         var output = "Output/marks-mimaki.pdf";
 
-        var options = new ImposeOptions(700, 1000, 2, 2, 0, 0, 50, 50, false, new MarksOptions(MarkType.MimakiTipo1, SizeMm: 25.0));
+        var options = new ImposeOptions(700, 1000, 2, 2, 0, 0, 50, 50, false, new MarksOptions(MarkType.MimakiTipo1Plain, SizeMm: 25.0));
         PdfImposer.Impose(input, output, options);
 
         var qdf = QpdfRunner.Run($"--qdf \"{output}\" -");

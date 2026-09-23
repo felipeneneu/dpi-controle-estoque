@@ -17,17 +17,53 @@ internal static class MarksRenderer
         double gradeBottomPt,
         double gradeRightPt,
         double gradeTopPt,
-        MarksOptions options)
+        MarksOptions options,
+        out Dictionary<string, string> requiredSpots)
     {
+        requiredSpots = new Dictionary<string, string>();
+        
+        var spec = Imposition.Pdf.Marks.MarkSpecs.All.FirstOrDefault(s => s.Type == options.Type) 
+                   ?? Imposition.Pdf.Marks.MarkSpecs.All[0];
+
         const double MmToPt = 72.0 / 25.4;
-        var offset = options.OffsetMm * MmToPt;
-        var size = options.SizeMm * MmToPt;
-        var width = options.LineWidthPt;
+        var offset = spec.OffsetMm * MmToPt;
+        var size = spec.SizeMm * MmToPt;
+        var width = spec.StrokePt;
 
         var sb = new StringBuilder();
         sb.AppendLine("q");
-        sb.AppendLine($"{width.ToString(CultureInfo.InvariantCulture)} w");
-        sb.AppendLine("0 0 0 RG"); // stroke preto (K)
+        
+        if (spec.HasRdgFill)
+        {
+            var (res, setup) = Imposition.Pdf.Marks.SpotRegistry.BuildSeparation(spec.RdgSpotName, 0, 0, 0, 0);
+            requiredSpots[spec.RdgSpotName] = res;
+            
+            sb.AppendLine(setup);
+            double fillBorder = spec.RdgBorderMm * MmToPt;
+            double fillSize = size + fillBorder * 2;
+            
+            // Bottom-Left
+            sb.AppendLine($"{N(gradeLeftPt - offset - fillBorder)} {N(gradeBottomPt - offset - fillBorder)} {N(fillSize)} {N(fillSize)} re f");
+            // Bottom-Right
+            sb.AppendLine($"{N(gradeRightPt + offset - size - fillBorder)} {N(gradeBottomPt - offset - fillBorder)} {N(fillSize)} {N(fillSize)} re f");
+            // Top-Left
+            sb.AppendLine($"{N(gradeLeftPt - offset - fillBorder)} {N(gradeTopPt + offset - size - fillBorder)} {N(fillSize)} {N(fillSize)} re f");
+            // Top-Right
+            sb.AppendLine($"{N(gradeRightPt + offset - size - fillBorder)} {N(gradeTopPt + offset - size - fillBorder)} {N(fillSize)} {N(fillSize)} re f");
+        }
+
+        sb.AppendLine($"{N(width)} w");
+        
+        if (spec.SpotName != null)
+        {
+            var (res, setup) = Imposition.Pdf.Marks.SpotRegistry.BuildSeparation(spec.SpotName, 0, 0, 0, 1);
+            requiredSpots[spec.SpotName] = res;
+            sb.AppendLine(setup.TrimEnd());
+        }
+        else
+        {
+            sb.AppendLine("0 0 0 RG"); // stroke preto (K)
+        }
 
         // Canto inferior esquerdo (bottom-left)
         AppendCorner(sb, gradeLeftPt - offset, gradeBottomPt - offset, 1, 1, size);
@@ -45,6 +81,8 @@ internal static class MarksRenderer
 
         return sb.ToString();
     }
+
+    private static string N(double d) => d.ToString(CultureInfo.InvariantCulture);
 
     private static void AppendCorner(
         StringBuilder sb,

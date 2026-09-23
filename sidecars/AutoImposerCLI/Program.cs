@@ -604,12 +604,14 @@ static bool ParseTrimToContent(string[] args)
 static bool ParseMarks(string[] args)
     => args.Contains("--marks", StringComparer.OrdinalIgnoreCase);
 
-static Imposition.Pdf.Contracts.MarkType ParseMarkType(string[] args)
+static Imposition.Pdf.Marks.MarkType ParseMarkType(string[] args)
     => flagStr(args, "--mark-type", "crop").ToLowerInvariant() switch
     {
-        "crop" => Imposition.Pdf.Contracts.MarkType.Crop,
-        "mimaki-tipo-1" => Imposition.Pdf.Contracts.MarkType.MimakiTipo1,
-        _ => Imposition.Pdf.Contracts.MarkType.Crop,
+        "crop" => Imposition.Pdf.Marks.MarkType.Crop,
+        "mimaki-tipo1" => Imposition.Pdf.Marks.MarkType.MimakiTipo1Plain,
+        "mimaki-fcrm" => Imposition.Pdf.Marks.MarkType.MimakiTipo1Fcrm,
+        "mimaki-fcrm-rdg" => Imposition.Pdf.Marks.MarkType.MimakiTipo1FcrmRdg,
+        _ => Imposition.Pdf.Marks.MarkType.Crop,
     };
 
 static double ParseMarkSizeMm(string[] args)
