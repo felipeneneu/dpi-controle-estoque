@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <title>GraficaOS Imposer</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <!-- Faixa de Logo -->
+    <header class="logo-banner">
+        <div class="logo-area">
+            <img src="icons/logo.svg" alt="GraficaOS" class="logo-img"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='inline'" />
+            <span class="logo-fallback" style="display:none">G GraficaOS</span>
+        </div>
+        <button class="info-btn" id="btnInfo" title="Informações">i</button>
+    </header>
+
+    <!-- Barra de Status -->
+    <div class="status-bar">
+        <div class="status-left">
+            <span class="badge loading" id="badge"></span>
+            <span class="status-text" id="statusText">Carregando...</span>
+        </div>
+        <span class="tenant-id" id="tenantId">—</span>
+    </div>
+
+    <!-- Tabs -->
+    <nav class="tabs">
+        <button class="tab active" data-tab="pdf">PDF</button>
+        <button class="tab" data-tab="bancada">Bancada</button>
+    </nav>
+
+    <!-- Aba PDF -->
+    <section class="tab-content" id="tab-pdf">
+        <div class="form-group">
+            <label>Arquivo PDF</label>
+            <div class="file-row">
+                <input type="text" id="pdfPath" readonly placeholder="Nenhum arquivo selecionado" />
+                <button id="btnPickPdf" class="btn-secondary btn-small">Selecionar…</button>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group half">
+                <label>Chapa L (mm)</label>
+                <input type="number" id="sheetW" value="710" step="0.1" />
+            </div>
+            <div class="form-group half">
+                <label>Chapa A (mm)</label>
+                <input type="number" id="sheetH" value="1000" step="0.1" />
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group half">
+                <label>Arte L (mm)</label>
+                <input type="number" id="artW" value="49" step="0.1" />
+            </div>
+            <div class="form-group half">
+                <label>Arte A (mm)</label>
+                <input type="number" id="artH" value="74" step="0.1" />
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group half">
+                <label>Tiragem</label>
+                <input type="number" id="targetCopies" value="112" min="1" />
+            </div>
+            <div class="form-group half">
+                <label>Gap (mm)</label>
+                <input type="number" id="gapMm" value="0" step="0.1" min="0" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="checkbox-label">
+                <input type="checkbox" id="chkMarks" checked />
+                Marcas Mimaki FineCut
+            </label>
+        </div>
+    </section>
+
+    <!-- Aba Bancada -->
+    <section class="tab-content hidden" id="tab-bancada">
+        <p class="hint">Usa a seleção atual do Illustrator como arte.</p>
+        <div class="form-row">
+            <div class="form-group half">
+                <label>Chapa L (mm)</label>
+                <input type="number" id="sheetW2" value="710" step="0.1" />
+            </div>
+            <div class="form-group half">
+                <label>Chapa A (mm)</label>
+                <input type="number" id="sheetH2" value="1000" step="0.1" />
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group half">
+                <label>Arte L (mm)</label>
+                <input type="number" id="artW2" value="49" step="0.1" />
+            </div>
+            <div class="form-group half">
+                <label>Arte A (mm)</label>
+                <input type="number" id="artH2" value="74" step="0.1" />
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group half">
+                <label>Tiragem</label>
+                <input type="number" id="targetCopies2" value="112" min="1" />
+            </div>
+            <div class="form-group half">
+                <label>Gap (mm)</label>
+                <input type="number" id="gapMm2" value="0" step="0.1" min="0" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="checkbox-label">
+                <input type="checkbox" id="chkMarks2" checked />
+                Marcas Mimaki FineCut
+            </label>
+        </div>
+    </section>
+
+    <!-- Ações -->
+    <div class="actions">
+        <button class="btn-secondary" id="btnPlan">Só calcular</button>
+        <button class="btn-primary" id="btnImpose">Impor</button>
+    </div>
+
+    <!-- Log -->
+    <div class="log-section">
+        <div class="log-header">
+            <span>Log</span>
+            <button class="btn-link" id="btnClearLog">limpar</button>
+        </div>
+        <pre class="log-area" id="logArea"></pre>
+    </div>
+
+    <!-- Modal Info -->
+    <div class="modal-backdrop hidden" id="modalBackdrop"></div>
+    <div class="modal hidden" id="modalInfo">
+        <h3>GraficaOS Imposer</h3>
+        <table class="info-table">
+            <tr><td>Produto</td><td>GraficaOS Imposer</td></tr>
+            <tr><td>Versão painel</td><td>0.1.0</td></tr>
+            <tr><td>Versão motor</td><td id="infoMotorVersion">—</td></tr>
+            <tr><td>Tenant</td><td id="infoTenant">—</td></tr>
+            <tr><td>Machine ID</td><td id="infoMachineId">—</td></tr>
+            <tr><td>Illustrator</td><td id="infoAiVersion">—</td></tr>
+        </table>
+        <div class="modal-footer">
+            <button class="btn-secondary" id="btnFlush">Enviar telemetria pendente</button>
+            <button class="btn-primary" id="btnCloseInfo">Fechar</button>
+        </div>
+    </div>
+
+    <!-- Modal Overflow -->
+    <div class="modal hidden" id="modalOverflow">
+        <h3>⚠️ Grade insuficiente</h3>
+        <p id="overflowMsg"></p>
+        <ul class="overflow-options" id="overflowOptions"></ul>
+        <div class="modal-footer">
+            <button class="btn-secondary" id="btnCloseOverflow">Cancelar</button>
+        </div>
+    </div>
+
+    <script src="lib/CSInterface.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
