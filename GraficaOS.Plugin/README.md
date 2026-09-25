@@ -24,7 +24,7 @@ o motor de imposição do GraficaOS diretamente dentro do Illustrator, via COM.
 ## Pré-requisitos
 
 - **Windows 10/11 x64**
-- **Adobe Illustrator CC 2021+** (CEP 9+)
+- **Adobe Illustrator CC 2019+** (CEP 9+)
 - **.NET 10 Runtime** (x64)
 - **Inno Setup 6.x** (apenas para gerar o instalador)
 

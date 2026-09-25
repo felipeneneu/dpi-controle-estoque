@@ -1,5 +1,5 @@
 /* ── GraficaOS Imposer — main.js (CEP Panel) ── */
-/* ES2020 — roda no Chromium Embedded Framework do CEP */
+/* ES2017 / Chromium 61+ — compatível com CEP 9 (Illustrator CC 2019) até CEP 12+ */
 
 (() => {
   'use strict';
@@ -15,11 +15,18 @@
 
   let _execFileCached = false;
 
+  function getNodeRequire() {
+    if (typeof require === 'function') return require;
+    if (typeof window !== 'undefined' && typeof window.require === 'function') return window.require;
+    return null;
+  }
+
   function getExecFile() {
     if (_execFileCached !== false) return _execFileCached;
     try {
-      if (typeof require !== 'function') { _execFileCached = false; return false; }
-      _execFileCached = require('child_process').execFile;
+      const req = getNodeRequire();
+      if (!req) { _execFileCached = false; return false; }
+      _execFileCached = req('child_process').execFile;
     } catch (e) {
       _execFileCached = false;
     }
@@ -28,13 +35,18 @@
 
   function getTmpPayload(payload) {
     // Escreve o JSON em arquivo temporário UTF-8 (leitura no probe via ADODB.Stream)
-    if (typeof require !== 'function') return null;
-    const fs = require('fs');
-    const os = require('os');
-    const path = require('path');
-    const tmp = path.join(os.tmpdir(), `graficaos_probe_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.json`);
-    fs.writeFileSync(tmp, payload, 'utf8');
-    return tmp;
+    const req = getNodeRequire();
+    if (!req) return null;
+    try {
+      const fs = req('fs');
+      const os = req('os');
+      const path = req('path');
+      const tmp = path.join(os.tmpdir(), `graficaos_probe_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.json`);
+      fs.writeFileSync(tmp, payload, 'utf8');
+      return tmp;
+    } catch (e) {
+      return null;
+    }
   }
 
   function callEngine(cmd, payload, callback) {
@@ -55,7 +67,12 @@
 
     const windir = (typeof process !== 'undefined' && process.env && process.env.windir) ? process.env.windir : 'C:\\Windows';
     const cscript = windir + '\\System32\\cscript.exe';
-    const probe = extensionPath() + '\\jsx\\engine_probe.js';
+    const extPath = extensionPath();
+    if (!extPath) {
+      callback('{"success":false,"errorCode":"E_PATH","message":"Caminho da extensao CEP nao encontrado."}');
+      return;
+    }
+    const probe = extPath + '\\jsx\\engine_probe.js';
     const args = ['//nologo', probe, cmd];
     if (tmpFile) args.push(tmpFile);
 
@@ -66,7 +83,10 @@
       timeout: 90000,
     }, (err, stdout) => {
       if (tmpFile) {
-        try { require('fs').unlinkSync(tmpFile); } catch (e) { /* best-effort */ }
+        try {
+          const req = getNodeRequire();
+          if (req) req('fs').unlinkSync(tmpFile);
+        } catch (e) { /* best-effort */ }
       }
       if (err) {
         const detail = (err.stderr || err.message || String(err)).replace(/[\r\n]+/g, ' ');
@@ -84,8 +104,9 @@
 
   function extensionPath() {
     try {
-      return new CSInterface().getSystemPath('extension');
-    } catch {
+      const p = csInterface.getSystemPath('extension') || '';
+      return p.replace(/\//g, '\\');
+    } catch (e) {
       return '';
     }
   }
@@ -155,13 +176,30 @@
         const t = JSON.parse(result);
         tenantData = t;
         document.getElementById('tenantId').textContent = (t && t.tenantId) || '—';
-      } catch {
+      } catch (e) {
         document.getElementById('tenantId').textContent = '—';
       }
     });
   }
 
   // ── Construir Request JSON ────────────────────────────────────────
+
+  function generateRequestId() {
+    try {
+      if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+        return crypto.randomUUID();
+      }
+      if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+        const buf = new Uint8Array(16);
+        crypto.getRandomValues(buf);
+        buf[6] = (buf[6] & 0x0f) | 0x40;
+        buf[8] = (buf[8] & 0x3f) | 0x80;
+        const hex = Array.from(buf, b => (b < 16 ? '0' : '') + b.toString(16)).join('');
+        return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+      }
+    } catch (e) { /* fallback para timestamp */ }
+    return 'req_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+  }
 
   function buildRequest() {
     const sheetW = parseFloat(document.getElementById('sheetW').value) || 710;
@@ -175,7 +213,7 @@
 
     return {
       schemaVersion: '1.0',
-      requestId: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
+      requestId: generateRequestId(),
       sheetWMm: sheetW,
       sheetHMm: sheetH,
       artWMm: artW,
@@ -235,7 +273,7 @@
             const r = JSON.parse(applyResult);
             if (!r.success) { logErr(`${r.errorCode || 'ERRO'}: ${r.message}`); return; }
             logOk(`Bancada aplicada (${r.placementCount} posições).`);
-          } catch {
+          } catch (e) {
             logOk('Bancada aplicada.');
           }
         });
@@ -264,7 +302,7 @@
       logOk(`Grade: ${g.cols}×${g.rows} = ${g.plannedUnits} un. (${g.rotationDeg}°)`);
       if (r.sheet) logInfo(`Chapa: ${r.sheet.widthMm}×${r.sheet.heightMm}mm`);
       if (r.executionTimeMs) logInfo(`Tempo: ${r.executionTimeMs}ms`);
-      if (r.outputFiles?.length) logOk(`PDF: ${r.outputFiles[0]}`);
+      if (r.outputFiles && r.outputFiles.length) logOk(`PDF: ${r.outputFiles[0]}`);
 
       trackEvent('imposition.completed', {
         mode,
@@ -329,7 +367,7 @@
           const t = JSON.parse(result);
           document.getElementById('infoTenant').textContent = t.tenantId || '—';
           document.getElementById('infoMachineId').textContent = t.machineId || '—';
-        } catch { /* ignorar */ }
+        } catch (e) { /* ignorar */ }
       });
     }
 
@@ -346,7 +384,7 @@
         } else {
           logWarn(r.message || 'Falha ao enviar telemetria.');
         }
-      } catch {
+      } catch (e) {
         logErr('Resposta inválida do flush.');
       }
     });
@@ -415,7 +453,7 @@
     };
     try {
       callEngine('track', JSON.stringify(evt));
-    } catch { /* best-effort */ }
+    } catch (e) { /* best-effort */ }
   }
 
   // ── Medidas da seleção ────────────────────────────────────────────
@@ -450,7 +488,7 @@
       try {
         const b = JSON.parse(result);
         if (b && b.selection) fillArtFromSelection(b);
-      } catch { /* ignora */ }
+      } catch (e) { /* ignora */ }
     });
   }
 
@@ -459,7 +497,7 @@
       try {
         const b = JSON.parse(result);
         if (b && b.selection) fillArtFromSelection(b);
-      } catch { /* ignora */ }
+      } catch (e) { /* ignora */ }
       cb();
     });
   }
@@ -470,7 +508,7 @@
     try {
       const env = JSON.parse(csInterface.getHostEnvironment());
       return `${env.appName || 'ILST'} ${env.appVersion || '?'}`;
-    } catch {
+    } catch (e) {
       return 'Illustrator (versão desconhecida)';
     }
   }

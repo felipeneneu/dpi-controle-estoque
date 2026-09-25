@@ -277,6 +277,16 @@ function ensureSelectionEvents() {
     }
 }
 
+function ensurePlugPlugLoaded() {
+    if (typeof CSXSEvent === 'undefined') {
+        try {
+            new ExternalObject("lib:PlugPlugExternalObject");
+        } catch (e) {
+            // Se o módulo nativo não estiver acessível, o polling do painel assume
+        }
+    }
+}
+
 function onSelectionChanged() {
     try {
         // Se trocou de documento ativo, re-registra o listener
@@ -286,10 +296,14 @@ function onSelectionChanged() {
         var parsed;
         try { parsed = JSON.parse(raw); } catch (e) { return; }
         if (!parsed || !parsed.selection) return;
-        if (typeof CSXSEvent === 'undefined') return;
 
-        var evt = new CSXSEvent('com.graficaos.imposer.selection', JSON.stringify(parsed));
-        CSXSEvent.dispatchEvent(evt);
+        ensurePlugPlugLoaded();
+        if (typeof CSXSEvent !== 'undefined') {
+            var evt = new CSXSEvent();
+            evt.type = 'com.graficaos.imposer.selection';
+            evt.data = JSON.stringify(parsed);
+            evt.dispatch();
+        }
     } catch (e) {
         // best-effort — nunca lança
     }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ExtensionManifest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    Version="9.0"
+    Version="7.0"
     ExtensionBundleId="com.graficaos.imposer"
     ExtensionBundleVersion="0.1.0"
     ExtensionBundleName="GraficaOS Imposer">
@@ -11,13 +11,13 @@
 
     <ExecutionEnvironment>
         <HostList>
-            <Host Name="ILST" Version="[25.0,99.9]" />
+            <Host Name="ILST" Version="[19.0,99.9]" />
         </HostList>
         <LocaleList>
             <Locale Code="All" />
         </LocaleList>
         <RequiredRuntimeList>
-            <RequiredRuntime Name="CSXS" Version="9.0" />
+            <RequiredRuntime Name="CSXS" Version="7.0" />
         </RequiredRuntimeList>
     </ExecutionEnvironment>
 
@@ -30,6 +30,8 @@
                     <CEFCommandLine>
                         <Parameter>--allow-file-access-from-files</Parameter>
                         <Parameter>--enable-nodejs</Parameter>
+                        <Parameter>--mixed-context</Parameter>
+                        <Parameter>--high-dpi-support=1</Parameter>
                     </CEFCommandLine>
                 </Resources>
                 <Lifecycle>
@@ -43,9 +45,6 @@
                         <MinSize><Height>400</Height><Width>280</Width></MinSize>
                         <MaxSize><Height>1200</Height><Width>800</Width></MaxSize>
                     </Geometry>
-                    <Icons>
-                        <Icon Type="Normal">./icons/logo.svg</Icon>
-                    </Icons>
                 </UI>
             </DispatchInfo>
         </Extension>
