@@ -58,6 +58,9 @@ public sealed class ImpositionEngine : IGraficaOSEngine
         {
             var request = Deserialize<ImposeRequestDto>(jsonRequest);
 
+            if (ValidateDimensions(request) is { } invalidDims)
+                return JsonSerializer.Serialize(invalidDims, JsonDefaults.Options);
+
             // Detecção precoce de overflow em chapa fixa (evita exception do core quando target > capacidade)
             if (request.SubstrateKind?.Equals("sheet", StringComparison.OrdinalIgnoreCase) == true)
             {
@@ -97,6 +100,9 @@ public sealed class ImpositionEngine : IGraficaOSEngine
         try
         {
             var request = Deserialize<ImposeRequestDto>(jsonRequest);
+
+            if (ValidateDimensions(request) is { } invalidDims)
+                return JsonSerializer.Serialize(invalidDims, JsonDefaults.Options);
 
             if (string.IsNullOrWhiteSpace(request.InputPath))
                 return ErrorJson("E_IMPOSE", "inputPath é obrigatório para imposição PDF.");
@@ -156,16 +162,17 @@ public sealed class ImpositionEngine : IGraficaOSEngine
         {
             var request = Deserialize<ImposeRequestDto>(jsonRequest);
 
+            if (ValidateDimensions(request) is { } invalidDims)
+                return JsonSerializer.Serialize(invalidDims, JsonDefaults.Options);
+
             // Detecção precoce de overflow em chapa fixa
-            if (request.SubstrateKind?.Equals("sheet", StringComparison.OrdinalIgnoreCase) == true)
+            if (request.SubstrateKind?.Equals("sheet", StringComparison.OrdinalIgnoreCase) == true
+                && request.TargetCopies > ImpositionCoreAdapter.BestGrid(request).Capacity)
             {
+                sw.Stop();
                 var best = ImpositionCoreAdapter.BestGrid(request);
-                if (request.TargetCopies > best.Capacity)
-                {
-                    sw.Stop();
-                    var overflow = ImpositionCoreAdapter.ToOverflowResponse(request, best, sw.ElapsedMilliseconds);
-                    return JsonSerializer.Serialize(overflow, JsonDefaults.Options);
-                }
+                var overflow = ImpositionCoreAdapter.ToOverflowResponse(request, best, sw.ElapsedMilliseconds);
+                return JsonSerializer.Serialize(overflow, JsonDefaults.Options);
             }
 
             var (result, _) = ImpositionCoreAdapter.Plan(request);
@@ -188,6 +195,10 @@ public sealed class ImpositionEngine : IGraficaOSEngine
         try
         {
             var request = Deserialize<ImposeRequestDto>(jsonRequest);
+
+            if (ValidateDimensions(request) is { } invalidDims)
+                return JsonSerializer.Serialize(invalidDims, JsonDefaults.Options);
+
             var best = ImpositionCoreAdapter.BestGrid(request);
             sw.Stop();
 
@@ -244,6 +255,30 @@ public sealed class ImpositionEngine : IGraficaOSEngine
     {
         return JsonSerializer.Deserialize<T>(json, JsonDefaults.Options)
             ?? throw new InvalidOperationException("JSON deserializado como null.");
+    }
+
+    /// <summary>
+    /// Valida dimensões e cópias da requisição antes de qualquer cálculo,
+    /// evitando grades negativas (ex.: arte flipada com left &gt; right) e
+    /// divisões por zero no tratamento de overflow.
+    /// </summary>
+    private static string? ValidateDimensions(ImposeRequestDto request)
+    {
+        static string? Erro(double valor, string campo)
+            => !(valor > 0) ? $"'{campo}' deve ser maior que zero (recebido: {valor})." : null;
+
+        var erro =
+            Erro(request.SheetWMm, "sheetWMm")
+            ?? Erro(request.SheetHMm, "sheetHMm")
+            ?? Erro(request.ArtWMm, "artWMm")
+            ?? Erro(request.ArtHMm, "artHMm")
+            ?? (request.GapMm < 0 || double.IsNaN(request.GapMm)
+                ? "'gapMm' não pode ser negativo ou inválido."
+                : null);
+
+        return erro is null
+            ? null
+            : ErrorJson("E_INVALID_DIMENSIONS", "Dimensões inválidas: " + erro);
     }
 
     private static string ErrorJson(string code, string message, long elapsedMs = 0)

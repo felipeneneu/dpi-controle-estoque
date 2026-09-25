@@ -1,63 +1,214 @@
 #target illustrator
 
-// ── GraficaOS Imposer — impose.jsx ──
-// Ponte ExtendScript (ES3) entre o painel CEP e o motor COM (.NET).
-// Todas as funções recebem/retornam strings JSON.
+// ── Polyfill JSON (json2.js — domínio público) ─────────────────────
+// O ExtendScript do Illustrator NÃO possui o objeto global JSON. Este
+// polyfill (Crockford, JSON-js 2023-05-10) fornece parse/stringify.
 
-var _engine = null;
-
-// ── Instância COM (singleton por sessão) ────────────────────────────
-
-function getEngine() {
-    if (_engine !== null) return _engine;
-    try {
-        _engine = new ActiveXObject("GraficaOS.Engine");
-        return _engine;
-    } catch (e) {
-        throw new Error("Motor GraficaOS nao registrado. Reinstale o plugin. Detalhe: " + e.message);
-    }
+if (typeof JSON !== "object") {
+    JSON = {};
 }
+
+(function () {
+    "use strict";
+
+    var rx_one = /^[\],:{}\s]*$/;
+    var rx_two = /\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g;
+    var rx_three = /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g;
+    var rx_four = /(?:^|:|,)(?:\s*\[)+/g;
+    var rx_escapable = /[\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+    var rx_dangerous = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+
+    function f(n) { return (n < 10) ? "0" + n : n; }
+    function this_value() { return this.valueOf(); }
+
+    if (typeof Date.prototype.toJSON !== "function") {
+        Date.prototype.toJSON = function () {
+            return isFinite(this.valueOf())
+                ? (this.getUTCFullYear() + "-" + f(this.getUTCMonth() + 1) + "-" + f(this.getUTCDate())
+                    + "T" + f(this.getUTCHours()) + ":" + f(this.getUTCMinutes()) + ":" + f(this.getUTCSeconds()) + "Z")
+                : null;
+        };
+        Boolean.prototype.toJSON = this_value;
+        Number.prototype.toJSON = this_value;
+        String.prototype.toJSON = this_value;
+    }
+
+    var gap;
+    var indent;
+    var meta;
+    var rep;
+
+    function quote(string) {
+        rx_escapable.lastIndex = 0;
+        return rx_escapable.test(string)
+            ? "\"" + string.replace(rx_escapable, function (a) {
+                var c = meta[a];
+                return typeof c === "string" ? c
+                    : "\\u" + ("0000" + a.charCodeAt(0).toString(16)).slice(-4);
+            }) + "\""
+            : "\"" + string + "\"";
+    }
+
+    function str(key, holder) {
+        var i;
+        var k;
+        var v;
+        var length;
+        var mind = gap;
+        var partial;
+        var value = holder[key];
+
+        if (value && typeof value === "object" && typeof value.toJSON === "function") {
+            value = value.toJSON(key);
+        }
+        if (typeof rep === "function") {
+            value = rep.call(holder, key, value);
+        }
+
+        switch (typeof value) {
+        case "string":
+            return quote(value);
+        case "number":
+            return (isFinite(value)) ? String(value) : "null";
+        case "boolean":
+        case "null":
+            return String(value);
+        case "object":
+            if (!value) {
+                return "null";
+            }
+            gap += indent;
+            partial = [];
+            if (Object.prototype.toString.apply(value) === "[object Array]") {
+                length = value.length;
+                for (i = 0; i < length; i += 1) {
+                    partial[i] = str(i, value) || "null";
+                }
+                v = partial.length === 0
+                    ? "[]"
+                    : gap
+                        ? ("[\n" + gap + partial.join(",\n" + gap) + "\n" + mind + "]")
+                        : "[" + partial.join(",") + "]";
+                gap = mind;
+                return v;
+            }
+            if (rep && typeof rep === "object") {
+                length = rep.length;
+                for (i = 0; i < length; i += 1) {
+                    if (typeof rep[i] === "string") {
+                        k = rep[i];
+                        v = str(k, value);
+                        if (v) {
+                            partial.push(quote(k) + ((gap) ? ": " : ":") + v);
+                        }
+                    }
+                }
+            } else {
+                for (k in value) {
+                    if (Object.prototype.hasOwnProperty.call(value, k)) {
+                        v = str(k, value);
+                        if (v) {
+                            partial.push(quote(k) + ((gap) ? ": " : ":") + v);
+                        }
+                    }
+                }
+            }
+            v = partial.length === 0
+                ? "{}"
+                : gap
+                    ? ("{\n" + gap + partial.join(",\n" + gap) + "\n" + mind + "}")
+                    : "{" + partial.join(",") + "}";
+            gap = mind;
+            return v;
+        }
+    }
+
+    if (typeof JSON.stringify !== "function") {
+        meta = {
+            "\b": "\\b",
+            "\t": "\\t",
+            "\n": "\\n",
+            "\f": "\\f",
+            "\r": "\\r",
+            "\"": "\\\"",
+            "\\": "\\\\"
+        };
+        JSON.stringify = function (value, replacer, space) {
+            var i;
+            gap = "";
+            indent = "";
+            if (typeof space === "number") {
+                for (i = 0; i < space; i += 1) { indent += " "; }
+            } else if (typeof space === "string") {
+                indent = space;
+            }
+            rep = replacer;
+            if (replacer && typeof replacer !== "function"
+                && (typeof replacer !== "object" || typeof replacer.length !== "number")) {
+                throw new Error("JSON.stringify");
+            }
+            return str("", {"": value});
+        };
+    }
+
+    if (typeof JSON.parse !== "function") {
+        JSON.parse = function (text, reviver) {
+            var j;
+
+            function walk(holder, key) {
+                var k;
+                var v;
+                var value = holder[key];
+                if (value && typeof value === "object") {
+                    for (k in value) {
+                        if (Object.prototype.hasOwnProperty.call(value, k)) {
+                            v = walk(value, k);
+                            if (v !== undefined) {
+                                value[k] = v;
+                            } else {
+                                delete value[k];
+                            }
+                        }
+                    }
+                }
+                return reviver.call(holder, key, value);
+            }
+
+            text = String(text);
+            rx_dangerous.lastIndex = 0;
+            if (rx_dangerous.test(text)) {
+                text = text.replace(rx_dangerous, function (a) {
+                    return "\\u" + ("0000" + a.charCodeAt(0).toString(16)).slice(-4);
+                });
+            }
+
+            if (
+                rx_one.test(
+                    text.replace(rx_two, "@").replace(rx_three, "]").replace(rx_four, "")
+                )
+            ) {
+                j = eval("(" + text + ")");
+                return (typeof reviver === "function") ? walk({"": j}, "") : j;
+            }
+
+            throw new SyntaxError("JSON.parse");
+        };
+    }
+}());
+
+// ── GraficaOS Imposer — impose.jsx ──
+// Rotina ExtendScript (ES3) do painel CEP: apenas operações de DOM do
+// Illustrator. O motor COM é invocado pelo painel via probe WSH (cscript),
+// porque o ExtendScript 4.5.x do Illustrator não expõe ActiveXObject.
+// Todas as funções recebem/retornam strings JSON.
 
 // ── Funções chamadas pelo painel CEP ────────────────────────────────
 
-function getEngineVersion() {
+function applyComputedPlan(json) {
     try {
-        return getEngine().GetVersion();
-    } catch (e) {
-        return '{"success":false,"errorCode":"E_COM","message":"' + escapeJson(e.message) + '"}';
-    }
-}
+        var result = parseJson(json);
 
-function getActiveTenant() {
-    try {
-        return getEngine().GetActiveTenant();
-    } catch (e) {
-        return '{"success":false,"errorCode":"E_COM","message":"' + escapeJson(e.message) + '"}';
-    }
-}
-
-function planImposition(json) {
-    try {
-        return getEngine().PlanImposition(json);
-    } catch (e) {
-        return '{"success":false,"errorCode":"E_COM","message":"' + escapeJson(e.message) + '"}';
-    }
-}
-
-function imposeToPdf(json) {
-    try {
-        return getEngine().ImposeToPdf(json);
-    } catch (e) {
-        return '{"success":false,"errorCode":"E_COM","message":"' + escapeJson(e.message) + '"}';
-    }
-}
-
-function applyPlanToDocument(json) {
-    try {
-        var resultJson = getEngine().ApplyPlanToDocument(json);
-        var result = parseJson(resultJson);
-
-        if (!result.success) return resultJson;
+        if (!result.success) return json;
         if (!result.placements || result.placements.length === 0) {
             return '{"success":false,"errorCode":"E_NO_PLACEMENTS","message":"Plano sem posicoes."}';
         }
@@ -65,25 +216,82 @@ function applyPlanToDocument(json) {
         applyPlacementsToActiveDoc(result);
         drawFineCutFrame(result);
 
-        return resultJson;
+        return '{"success":true,"placementCount":' + result.placements.length + ',"message":"Bancada aplicada."}';
     } catch (e) {
         return '{"success":false,"errorCode":"E_APPLY","message":"' + escapeJson(e.message) + '"}';
     }
 }
 
-function trackEvent(json) {
+// ── Medidas da seleção ──────────────────────────────────────────────
+
+function getSelectionBounds() {
     try {
-        getEngine().TrackEvent(json);
+        var d = app.activeDocument;
+        if (!d) return '{"selection":false,"message":"Nenhum documento aberto."}';
+        var sel = d.selection;
+        if (!sel || sel.length === 0) return '{"selection":false,"message":"Nenhum objeto selecionado."}';
+
+        var mm = 25.4 / 72;
+        var minL = 1e300, maxR = -1e300, maxT = -1e300, minB = 1e300;
+        for (var i = 0; i < sel.length; i++) {
+            var gb = sel[i].geometricBounds; // [left, top, right, bottom] em pontos
+            if (gb[0] < minL) minL = gb[0];
+            if (gb[2] > maxR) maxR = gb[2];
+            if (gb[1] > maxT) maxT = gb[1];
+            if (gb[3] < minB) minB = gb[3];
+        }
+
+        var wMm = Math.round((Math.abs(maxR - minL)) * mm * 10) / 10;
+        var hMm = Math.round((Math.abs(maxT - minB)) * mm * 10) / 10;
+
+        // Rejeita seleção vazia ou de tamanho inválido (ex.: flip com left > right, ponto isolado)
+        if (!isFinite(wMm) || !isFinite(hMm) || wMm <= 0 || hMm <= 0) {
+            return '{"selection":false,"message":"Seleção com tamanho inválido."}';
+        }
+        return '{"selection":true,"widthMm":' + wMm + ',"heightMm":' + hMm + '}';
     } catch (e) {
-        // Telemetria é best-effort — nunca lança erro
+        return '{"selection":false,"message":"' + escapeJson(e.message) + '"}';
     }
 }
 
-function flushTelemetry() {
+// ── Listener de seleção → painel (requestAnimationFrame-like via CSXSEvent) ──
+
+var _selectionDoc = null;
+var _selectionHandlersBound = false;
+
+function ensureSelectionEvents() {
     try {
-        return getEngine().FlushTelemetry();
+        var doc = app.activeDocument;
+        if (!doc) return;
+        if (_selectionHandlersBound && doc === _selectionDoc) return;
+
+        if (_selectionHandlersBound && _selectionDoc && _selectionDoc.removeEventListener) {
+            try { _selectionDoc.removeEventListener('selectionChanged', onSelectionChanged, false); } catch (e2) {}
+        }
+
+        doc.addEventListener('selectionChanged', onSelectionChanged, false);
+        _selectionDoc = doc;
+        _selectionHandlersBound = true;
     } catch (e) {
-        return '{"success":false,"errorCode":"E_COM","message":"' + escapeJson(e.message) + '"}';
+        _selectionHandlersBound = false;
+    }
+}
+
+function onSelectionChanged() {
+    try {
+        // Se trocou de documento ativo, re-registra o listener
+        if (_selectionDoc !== app.activeDocument) ensureSelectionEvents();
+
+        var raw = getSelectionBounds();
+        var parsed;
+        try { parsed = JSON.parse(raw); } catch (e) { return; }
+        if (!parsed || !parsed.selection) return;
+        if (typeof CSXSEvent === 'undefined') return;
+
+        var evt = new CSXSEvent('com.graficaos.imposer.selection', JSON.stringify(parsed));
+        CSXSEvent.dispatchEvent(evt);
+    } catch (e) {
+        // best-effort — nunca lança
     }
 }
 
@@ -102,7 +310,6 @@ function pickPdfFile() {
 function applyPlacementsToActiveDoc(plan) {
     var mm2pt = 72.0 / 25.4;
 
-    // 1. Verificar seleção
     if (app.documents.length === 0) {
         throw new Error("Nenhum documento aberto no Illustrator.");
     }
@@ -115,94 +322,78 @@ function applyPlacementsToActiveDoc(plan) {
     app.userInteractionLevel = UserInteractionLevel.DONTDISPLAYALERTS;
 
     try {
-        // 2. Mapear itens selecionados por camada
         var itemsByLayer = {};
-        var hasItems = false;
         for (var i = 0; i < sel.length; i++) {
             var item = sel[i];
             var layerName = item.layer.name;
-            if (!itemsByLayer[layerName]) {
-                itemsByLayer[layerName] = [];
-            }
+            if (!itemsByLayer[layerName]) itemsByLayer[layerName] = [];
             itemsByLayer[layerName].push(item);
-            hasItems = true;
         }
 
-        if (!hasItems) {
-            throw new Error("Nenhum item selecionado.");
-        }
-
-        // 3. Pegar referência da posição original dos itens
-        var firstItem = sel[0];
-        var origLeft = firstItem.left;
-        var origTop = firstItem.top;
-
-        // 4. Redimensionar prancheta conforme plano do motor
+        // Redimensionar prancheta conforme plano do motor
         var sheetW = plan.sheet.widthMm * mm2pt;
         var sheetH = plan.sheet.heightMm * mm2pt;
         var ab = doc.artboards[doc.artboards.getActiveArtboardIndex()];
         ab.artboardRect = [0, 0, sheetW, -sheetH];
 
-        // 5. Mover originais para o primeiro placement
-        var p0 = plan.placements[0];
-        var targetX = p0.xMm * mm2pt;
-        var targetY = -(p0.yMm * mm2pt);
-        var deltaX = targetX - origLeft;
-        var deltaY = targetY - origTop;
+        var tempLayer = doc.layers.add();
+        tempLayer.name = "Temp_GraficaOS_" + new Date().getTime();
 
-        for (var lName in itemsByLayer) {
-            if (!itemsByLayer.hasOwnProperty(lName)) continue;
-            var items = itemsByLayer[lName];
-            for (var j = 0; j < items.length; j++) {
-                items[j].translate(deltaX, deltaY);
-            }
-        }
-
-        // 6. Rotação se necessário (primeiro placement)
-        if (p0.rotated) {
-            for (var lName2 in itemsByLayer) {
-                if (!itemsByLayer.hasOwnProperty(lName2)) continue;
-                var items2 = itemsByLayer[lName2];
-                for (var k = 0; k < items2.length; k++) {
-                    items2[k].rotate(-90, true, true, true, true, Transformation.CENTER);
-                }
-            }
-        }
-
-        // 7. Duplicar para cada placement restante
         var maxCopias = plan.grid.plannedUnits;
-        var geradas = 1;
+        var geradas = 0;
 
-        for (var pi = 1; pi < plan.placements.length; pi++) {
+        for (var pi = 0; pi < plan.placements.length; pi++) {
             if (geradas >= maxCopias) break;
 
             var p = plan.placements[pi];
-            var pxPt = p.xMm * mm2pt;
-            var pyPt = -(p.yMm * mm2pt);
-            var offX = pxPt - targetX;
-            var offY = pyPt - targetY;
+            var targetX = p.xMm * mm2pt;
+            var targetY = -(p.yMm * mm2pt);
+            var cellW = p.widthMm * mm2pt;
+            var cellH = p.heightMm * mm2pt;
+
+            var masterGroup = tempLayer.groupItems.add();
 
             for (var ln in itemsByLayer) {
                 if (!itemsByLayer.hasOwnProperty(ln)) continue;
+                var subGroup = masterGroup.groupItems.add();
+                subGroup.name = "Layer_" + ln;
                 var layerItems = itemsByLayer[ln];
-                var targetLayer = doc.layers.getByName(ln);
-
                 for (var li = 0; li < layerItems.length; li++) {
-                    var dup = layerItems[li].duplicate(targetLayer, ElementPlacement.PLACEATEND);
-                    dup.translate(offX, offY);
-
-                    // Rotação diferencial
-                    if (p.rotated && !p0.rotated) {
-                        dup.rotate(-90, true, true, true, true, Transformation.CENTER);
-                    } else if (!p.rotated && p0.rotated) {
-                        dup.rotate(90, true, true, true, true, Transformation.CENTER);
-                    }
+                    layerItems[li].duplicate(subGroup, ElementPlacement.PLACEATEND);
                 }
             }
+
+            if (p.rotated) {
+                masterGroup.rotate(-90, true, true, true, true, Transformation.CENTER);
+            }
+
+            // Centralizar a arte (com possível sangria) dentro da célula teórica de imposição
+            masterGroup.left = targetX - (masterGroup.width - cellW) / 2.0;
+            masterGroup.top = targetY + (masterGroup.height - cellH) / 2.0;
+
+            for (var s = masterGroup.groupItems.length - 1; s >= 0; s--) {
+                var sub = masterGroup.groupItems[s];
+                var origLayerName = sub.name.replace(/^Layer_/, "");
+                var targetLayer = doc.layers.getByName(origLayerName);
+                
+                while (sub.pageItems.length > 0) {
+                    sub.pageItems[0].move(targetLayer, ElementPlacement.PLACEATEND);
+                }
+            }
+            masterGroup.remove();
             geradas++;
         }
 
-        // 8. Zoom para visualizar
+        tempLayer.remove();
+        
+        for (var lName in itemsByLayer) {
+            if (!itemsByLayer.hasOwnProperty(lName)) continue;
+            var origItems = itemsByLayer[lName];
+            for (var j = 0; j < origItems.length; j++) {
+                origItems[j].remove();
+            }
+        }
+
         doc.views[0].zoom = 0.35;
         app.redraw();
 
@@ -298,3 +489,6 @@ function escapeJson(str) {
     if (!str) return "";
     return str.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, "\\n").replace(/\r/g, "");
 }
+
+// Registrar listener de seleção na inicialização (best-effort)
+try { ensureSelectionEvents(); } catch (e) { /* se falhar, o painel lê na troca de aba/ação */ }

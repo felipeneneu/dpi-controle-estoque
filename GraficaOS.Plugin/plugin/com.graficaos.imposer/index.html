@@ -25,21 +25,9 @@
         <span class="tenant-id" id="tenantId">—</span>
     </div>
 
-    <!-- Tabs -->
-    <nav class="tabs">
-        <button class="tab active" data-tab="pdf">PDF</button>
-        <button class="tab" data-tab="bancada">Bancada</button>
-    </nav>
-
-    <!-- Aba PDF -->
-    <section class="tab-content" id="tab-pdf">
-        <div class="form-group">
-            <label>Arquivo PDF</label>
-            <div class="file-row">
-                <input type="text" id="pdfPath" readonly placeholder="Nenhum arquivo selecionado" />
-                <button id="btnPickPdf" class="btn-secondary btn-small">Selecionar…</button>
-            </div>
-        </div>
+    <!-- Bancada -->
+    <section class="tab-content" id="content">
+        <p class="hint">Usa a seleção atual do Illustrator como arte.</p>
         <div class="form-row">
             <div class="form-group half">
                 <label>Chapa L (mm)</label>
@@ -71,49 +59,13 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="checkbox-label">
-                <input type="checkbox" id="chkMarks" checked />
-                Marcas Mimaki FineCut
-            </label>
-        </div>
-    </section>
-
-    <!-- Aba Bancada -->
-    <section class="tab-content hidden" id="tab-bancada">
-        <p class="hint">Usa a seleção atual do Illustrator como arte.</p>
-        <div class="form-row">
-            <div class="form-group half">
-                <label>Chapa L (mm)</label>
-                <input type="number" id="sheetW2" value="710" step="0.1" />
-            </div>
-            <div class="form-group half">
-                <label>Chapa A (mm)</label>
-                <input type="number" id="sheetH2" value="1000" step="0.1" />
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group half">
-                <label>Arte L (mm)</label>
-                <input type="number" id="artW2" value="49" step="0.1" />
-            </div>
-            <div class="form-group half">
-                <label>Arte A (mm)</label>
-                <input type="number" id="artH2" value="74" step="0.1" />
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group half">
-                <label>Tiragem</label>
-                <input type="number" id="targetCopies2" value="112" min="1" />
-            </div>
-            <div class="form-group half">
-                <label>Gap (mm)</label>
-                <input type="number" id="gapMm2" value="0" step="0.1" min="0" />
-            </div>
+            <label>Margem (mm)</label>
+            <input type="number" id="marginMm" value="0" step="0.1" min="0" />
+            <span class="field-hint">Aplicada nos 4 lados da chapa.</span>
         </div>
         <div class="form-group">
             <label class="checkbox-label">
-                <input type="checkbox" id="chkMarks2" checked />
+                <input type="checkbox" id="chkMarks" checked />
                 Marcas Mimaki FineCut
             </label>
         </div>

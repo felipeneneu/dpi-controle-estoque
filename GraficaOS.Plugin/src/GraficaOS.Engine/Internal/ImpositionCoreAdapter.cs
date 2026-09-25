@@ -227,6 +227,31 @@ internal static class ImpositionCoreAdapter
     {
         var maxPerSheet = best.Capacity;
         var needed = request.TargetCopies;
+
+        if (maxPerSheet <= 0)
+        {
+            return new ImposeResponseDto(
+                SchemaVersion: "1.0",
+                RequestId: request.RequestId,
+                Success: false,
+                ErrorCode: "E_GRID_OVERFLOW",
+                Message: $"A arte {request.ArtWMm}×{request.ArtHMm}mm (com gap) não cabe na chapa {request.SheetWMm}×{request.SheetHMm}mm.",
+                ExecutionTimeMs: elapsedMs,
+                Sheet: new SheetDto(
+                    WidthMm: Math.Round(request.SheetWMm, 2),
+                    HeightMm: Math.Round(request.SheetHMm, 2)),
+                Grid: new GridDto(
+                    Cols: best.Cols,
+                    Rows: best.Rows,
+                    PlannedUnits: 0,
+                    RequestedUnits: needed,
+                    SurplusUnits: 0,
+                    RotationDeg: (int)best.Orientation),
+                OutputFiles: null,
+                Placements: null,
+                Options: new List<OverflowOptionDto>());
+        }
+
         var sheetsForAll = (int)Math.Ceiling((double)needed / maxPerSheet);
 
         var options = new List<OverflowOptionDto>
@@ -280,6 +305,31 @@ internal static class ImpositionCoreAdapter
     {
         var maxPerSheet = result.Cols * result.Rows;
         var needed = request.TargetCopies;
+
+        if (maxPerSheet <= 0)
+        {
+            return new ImposeResponseDto(
+                SchemaVersion: "1.0",
+                RequestId: request.RequestId,
+                Success: false,
+                ErrorCode: "E_GRID_OVERFLOW",
+                Message: $"A arte {request.ArtWMm}×{request.ArtHMm}mm (com gap) não cabe na chapa {request.SheetWMm}×{request.SheetHMm}mm.",
+                ExecutionTimeMs: elapsedMs,
+                Sheet: new SheetDto(
+                    WidthMm: Math.Round(request.SheetWMm, 2),
+                    HeightMm: Math.Round(result.LengthMm, 2)),
+                Grid: new GridDto(
+                    Cols: result.Cols,
+                    Rows: result.Rows,
+                    PlannedUnits: result.PlannedUnits,
+                    RequestedUnits: needed,
+                    SurplusUnits: result.Surplus,
+                    RotationDeg: (int)result.Orientation),
+                OutputFiles: null,
+                Placements: null,
+                Options: new List<OverflowOptionDto>());
+        }
+
         var sheetsForAll = (int)Math.Ceiling((double)needed / maxPerSheet);
 
         var options = new List<OverflowOptionDto>
