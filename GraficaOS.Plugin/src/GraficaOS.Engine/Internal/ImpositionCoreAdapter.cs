@@ -153,14 +153,29 @@ internal static class ImpositionCoreAdapter
         IReadOnlyList<string>? outputFiles = null)
     {
         var rotated = result.Orientation == Orientation.Landscape;
+        var pieceW = rotated ? request.ArtHMm : request.ArtWMm;
+        var pieceH = rotated ? request.ArtWMm : request.ArtHMm;
+
+        var gradeW = result.Cols * pieceW + Math.Max(0, result.Cols - 1) * request.GapMm;
+        var gradeH = result.Rows * pieceH + Math.Max(0, result.Rows - 1) * request.GapMm;
+
+        var margins = request.Margins ?? new MarginsDto();
+        var artboardW = gradeW + margins.Left + margins.Right;
+        var artboardH = gradeH + margins.Top + margins.Bottom;
+
+        double minX = result.Placements.Count > 0 ? result.Placements.Min(p => p.XMm) : 0;
+        double minY = result.Placements.Count > 0 ? result.Placements.Min(p => p.YMm) : 0;
+
+        double shiftX = margins.Left - minX;
+        double shiftY = margins.Top - minY;
 
         var placements = result.Placements
             .Select(p => new PlacementDto(
                 Index: p.Index,
                 Col: p.Col,
                 Row: p.Row,
-                XMm: Math.Round(p.XMm, 2),
-                YMm: Math.Round(p.YMm, 2),
+                XMm: Math.Round(p.XMm + shiftX, 2),
+                YMm: Math.Round(p.YMm + shiftY, 2),
                 WidthMm: Math.Round(p.WidthMm, 2),
                 HeightMm: Math.Round(p.HeightMm, 2),
                 Rotated: p.RotationDegrees != 0))
@@ -171,11 +186,11 @@ internal static class ImpositionCoreAdapter
             RequestId: request.RequestId,
             Success: true,
             ErrorCode: null,
-            Message: $"Imposição calculada: {result.Cols}×{result.Rows} = {result.PlannedUnits} unidades.",
+            Message: $"Imposicao calculada: {result.Cols}x{result.Rows} = {result.PlannedUnits} unidades.",
             ExecutionTimeMs: elapsedMs,
             Sheet: new SheetDto(
-                WidthMm: Math.Round(request.SheetWMm, 2),
-                HeightMm: Math.Round(result.LengthMm, 2)),
+                WidthMm: Math.Round(artboardW, 2),
+                HeightMm: Math.Round(artboardH, 2)),
             Grid: new GridDto(
                 Cols: result.Cols,
                 Rows: result.Rows,

@@ -194,7 +194,7 @@ Copy-Item -Recurse -Force plugin\com.graficaos.imposer $dest
 ### 3. Abrir no Illustrator
 
 1. Reiniciar o Illustrator
-2. Menu: **Janela → Extensões → GraficaOS Imposer**
+2. Menu: **Janela → Extensões → Press Automation**
 3. O painel deve abrir com a faixa de logo
 
 ## Como Gerar o Instalador
@@ -212,7 +212,7 @@ iscc installer\graficaos.iss
 | 1 | ✅ Build compila | `dotnet build -c Release -r win-x64` |
 | 2 | ✅ regsvr32 sem erro | `regsvr32 /s GraficaOS.Engine.comhost.dll` (admin) |
 | 3 | ✅ GetVersion retorna 0.1.0 | `(New-Object -ComObject GraficaOS.Engine).GetVersion()` |
-| 4 | ✅ Painel abre no Illustrator | Janela → Extensões → GraficaOS Imposer |
+| 4 | ✅ Painel abre no Illustrator | Janela → Extensões → Press Automation |
 | 5 | ✅ Faixa de logo com fallback | Verificar visualmente "G GraficaOS" |
 | 6 | ✅ Modal info | Clicar no botão "i" |
 | 7 | ✅ Aba PDF: calcular grade | Selecionar PDF + preencher + "Só calcular" |
