@@ -1,13 +1,14 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { eq } from 'drizzle-orm';
-import { stockItems, stockTransactions, notifications, users, machineItems, bobinas, garrafas } from '../db/schema.js';
+import { stockItems, stockTransactions, notifications, users, machineItems, bobinas, garrafas, cartuchos } from '../db/schema.js';
 import { db } from '../db/index.js';
 import { newId } from '../lib/ids.js';
 import { sendToRecipients } from '../lib/whatsapp.js';
 import { getSetting } from '../lib/settings.js';
 import { dispatchStockAlert } from '../lib/notification-resend.js';
 import { authenticate, authorize } from '../middleware/auth.js';
+import { saldosDerivados } from '../lib/ink-balance.js';
 
 const Categories = ['PAPER_MEDIA', 'INK_SUPPLY', 'OTHER'] as const;
 const Units = ['m', 'fls', 'ml', 'L'] as const;
@@ -56,6 +57,12 @@ const stockItemResponseSchema = {
     imageUrl: { type: 'string', nullable: true },
     status: { type: 'string', enum: ['AVAILABLE', 'LOW_STOCK', 'OUT_OF_STOCK'] },
     machineIds: { type: 'array', items: { type: 'string' } },
+    /**
+     * Qual origem venceu para o `currentQuantity` desta linha (ADR-052 / H14).
+     * Sem isso a UI mostra um saldo e nao diz se ele veio de cartucho, garrafa ou
+     * do agregado - e o operador nao consegue explicar a divergencia.
+     */
+    origemSaldo: { type: 'string', enum: ['agregado', 'bobinas', 'garrafas', 'cartuchos'] },
     createdAt: { type: 'string', format: 'date-time' },
   },
 };
@@ -70,6 +77,8 @@ const transactionResponseSchema = {
     type: { type: 'string', enum: [...TransactionTypes] },
     quantity: { type: 'number' },
     reason: { type: 'string', nullable: true },
+    source: { type: 'string', nullable: true },
+    sourceRef: { type: 'string', nullable: true },
     userId: { type: 'string', nullable: true },
     userName: { type: 'string', nullable: true },
     createdAt: { type: 'string', format: 'date-time' },
@@ -112,7 +121,14 @@ export async function stockRoutes(app: FastifyInstance) {
     const links = await db.select().from(machineItems).all();
     const allBobinas = await db.select().from(bobinas).all();
     const allGarrafas = await db.select().from(garrafas).all();
-    
+
+    // ADR-052: cartucho e a 3a origem de saldo (depois de bobina e garrafa).
+    // Uma consulta agregada para todos os itens com cartucho, em vez de N+1.
+    const idsComCartucho = (
+      await db.selectDistinct({ stockItemId: cartuchos.stockItemId }).from(cartuchos).all()
+    ).map((r) => r.stockItemId);
+    const saldosCartucho = await saldosDerivados(idsComCartucho);
+
     const byItem = new Map<string, string[]>();
     for (const l of links) {
       const arr = byItem.get(l.stockItemId) ?? [];
@@ -122,20 +138,34 @@ export async function stockRoutes(app: FastifyInstance) {
     
     return rows.map((r) => {
       let finalQuantity = r.currentQuantity;
+      let origem = 'agregado';
       if (r.category === 'PAPER_MEDIA' && r.unit === 'm') {
         const itemBobinas = allBobinas.filter(b => b.stockItemId === r.id && (b.state === 'NEW' || b.state === 'IN_USE'));
         finalQuantity = itemBobinas.reduce((acc, b) => acc + (b.metersRemaining || 0), 0);
+        origem = 'bobinas';
       } else if (r.category === 'INK_SUPPLY') {
-        const itemGarrafas = allGarrafas.filter(g => g.stockItemId === r.id && (g.state === 'NEW' || g.state === 'IN_USE'));
-        if (itemGarrafas.length > 0) {
-          finalQuantity = itemGarrafas.reduce((acc, g) => acc + (g.mlRemaining || 0), 0);
+        // Prioridade: cartucho (BR-052) > garrafa (Mimaki) > agregado.
+        // `undefined` = item nao rastreado por cartucho (folha, solvente) -> cai
+        // no agregado. Item com cartuchos, mesmo todos descartados, tem entrada
+        // no mapa com 0 e nao volta a mentir o agregado.
+        const saldoCartucho = saldosCartucho.get(r.id);
+        if (saldoCartucho !== undefined) {
+          finalQuantity = saldoCartucho;
+          origem = 'cartuchos';
+        } else {
+          const itemGarrafas = allGarrafas.filter(g => g.stockItemId === r.id && (g.state === 'NEW' || g.state === 'IN_USE'));
+          if (itemGarrafas.length > 0) {
+            finalQuantity = itemGarrafas.reduce((acc, g) => acc + (g.mlRemaining || 0), 0);
+            origem = 'garrafas';
+          }
         }
       }
       return { 
         ...r, 
         currentQuantity: finalQuantity,
         status: computeStatus(finalQuantity, r.minQuantity),
-        machineIds: byItem.get(r.id) ?? [] 
+        machineIds: byItem.get(r.id) ?? [],
+        origemSaldo: origem,
       };
     });
   });
@@ -331,6 +361,8 @@ export async function stockRoutes(app: FastifyInstance) {
     await db.delete(machineItems).where(eq(machineItems.stockItemId, id));
     await db.delete(bobinas).where(eq(bobinas.stockItemId, id));
     await db.delete(garrafas).where(eq(garrafas.stockItemId, id));
+    // cartucho_consumo sai por ON DELETE CASCADE de cartuchos (BR-052).
+    await db.delete(cartuchos).where(eq(cartuchos.stockItemId, id));
     await db.delete(stockTransactions).where(eq(stockTransactions.itemId, id));
     
     await db.delete(stockItems).where(eq(stockItems.id, id));

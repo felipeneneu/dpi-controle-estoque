@@ -11,7 +11,7 @@
 | **Item / Insumo** | Registro em `stock_items` com categoria, unidade, quantidade e mínimo. É a unidade de controle de hoje. |
 | **Bobina** ★ | Rolo físico de material (vinil, papel, substrato). **No modelo-alvo é um ativo individual rastreável** (BR-002). Hoje é uma linha de item com `unit='m'` e `label` (ex.: "Rolo B"). |
 | **Cut-sheet / Folha** | Papel em folhas soltas (unidade `fls`). |
-| **Cartucho** | Tinta em recipiente (HP/konica) — `sub_type` livre. |
+| **Cartucho** | Ativo físico de consumível por **canal** da máquina (tinta HP em `ml`, toner Konica em `pct`), rastreado na tabela `cartuchos` desde a **ADR-052**. Estados: `NEW` (em depósito) · `IN_USE` (na máquina) · `USED` (descartado na troca) · `SCRAPPED`. Tem `stock_item_id` (SKU lógico), `channel`, `level_current`/`level_capacity` e `cartridge_code` (**só HP** — toner Konica não tem código). O saldo do item com cartucho é **derivado**, não lido de `currentQuantity`. |
 | **Rolo** | Sinônimo de bobina na UI. Ação `add-roll` (`stock.ts:289`) duplica o item com saldo igual e status `AVAILABLE`. |
 | **Categoria** | `PAPER_MEDIA \| INK_SUPPLY \| OTHER` (BR-003). |
 | **Unidade** | `m \| fls \| ml \| L` na API; dedutor Konica também entende `rms \| pk \| bl`. |

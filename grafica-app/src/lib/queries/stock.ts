@@ -99,8 +99,16 @@ export function useUpdateStockItem() {
 export function useAddRoll() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ id, label }: { id: string; label: string }) =>
-      api(`/api/stock-items/${id}/add-roll`, { method: "POST", body: JSON.stringify({ label }) }),
+    // `metersInitial` é o que impede a bobina nascida sem metragem: uma bobina
+    // sem saldo não pode ser debitada depois (ver guarda de IsFinite no Mimaki).
+    mutationFn: ({ id, label, metersInitial }: { id: string; label: string; metersInitial?: number }) =>
+      api<{ id: string; serial: string; metersInitial: number | null }>(
+        `/api/stock-items/${id}/add-roll`,
+        {
+          method: "POST",
+          body: JSON.stringify({ label, metersInitial }),
+        },
+      ),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: stockKeys.all }),
   })
 }

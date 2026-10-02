@@ -14,8 +14,9 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog"
-import { useStockItems, useCreateStockItem, useBobinas } from "@/lib/queries/stock"
+import { useStockItems, useCreateStockItem, useBobinas, useAddRoll } from "@/lib/queries/stock"
 import { useBindMaterial, type MimakiJob } from "@/lib/queries/mimaki"
+import { ApiError } from "@/lib/api"
 
 interface MimakiBindDialogProps {
   job: MimakiJob | null
@@ -38,6 +39,7 @@ export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiB
   const { data: bobinas = [] } = useBobinas()
   const bindMaterial = useBindMaterial()
   const createStockItem = useCreateStockItem()
+  const addRoll = useAddRoll()
 
   // Inicializa o formulário quando o dialog abre para um novo job (adjust during render)
   const [lastInitKey, setLastInitKey] = useState("")
@@ -76,6 +78,14 @@ export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiB
     setIsCreating(true)
   }
 
+  /**
+   * Cadastro rápido: item de mídia **e** a bobina física.
+   *
+   * Antes criava só o item agregado e vinculava sem bobina — ou seja, o
+   * "cadastrar e vincular" produzia exatamente o estado quebrado que a tela
+   * deveria impedir: material cadastrado, estoque sem metragem baixada. Agora a
+   * bobina é criada junto e é ela que responde pelo consumo.
+   */
   async function handleCreateAndBind() {
     if (!job) return
     if (!newName.trim()) {
@@ -85,6 +95,10 @@ export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiB
 
     const widthNum = parseFloat(newWidth.replace(",", "."))
     const qtyNum = parseFloat(newQuantity.replace(",", ".")) || 0
+    if (qtyNum <= 0) {
+      toast.error("Informe a metragem inicial do rolo. Sem ela não há consumo a baixar.")
+      return
+    }
 
     try {
       const createdItem = await createStockItem.mutateAsync({
@@ -97,31 +111,52 @@ export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiB
         machineIds: (machineId ?? job.machineId) ? [(machineId ?? job.machineId) as string] : [],
       })
 
+      const createdBobina = await addRoll.mutateAsync({
+        id: createdItem.id,
+        label: newName.trim(),
+        metersInitial: qtyNum,
+      })
+
       await bindMaterial.mutateAsync({
         jobId: job.id,
         stockItemId: createdItem.id,
+        bobinaId: createdBobina.id,
       })
 
-      toast.success(`Mídia "${createdItem.name}" criada e vinculada com sucesso!`)
+      toast.success(
+        `Mídia "${createdItem.name}" e bobina ${createdBobina.serial} criadas e vinculadas.`,
+      )
       onOpenChange(false)
-    } catch {
-      toast.error("Erro ao cadastrar e vincular nova mídia.")
+    } catch (err) {
+      // A mensagem do backend vale mais que um toast genérico: se o item foi
+      // criado e a bobina não (falta de permissão, p.ex.), o operador precisa
+      // saber exatamente qual passo falhou.
+      toast.error(
+        err instanceof ApiError
+          ? err.message
+          : "Erro ao cadastrar e vincular nova mídia.",
+      )
     }
   }
 
   async function handleBind() {
     if (!job) return
-    if (!selectedItemId && !selectedBobinaId) return
+    // Bobina obrigatória. Sem ela não há substrato a baixar, e vincular sem
+    // consumo é pior do que não vincular: o job sai da fila de pendentes e o
+    // estoque nunca recebe a metragem.
+    if (!selectedItemId || !selectedBobinaId) return
     try {
-      await bindMaterial.mutateAsync({ 
-        jobId: job.id, 
-        stockItemId: selectedItemId || undefined,
-        bobinaId: selectedBobinaId || undefined
+      await bindMaterial.mutateAsync({
+        jobId: job.id,
+        stockItemId: selectedItemId,
+        bobinaId: selectedBobinaId,
       })
       toast.success("Material vinculado com sucesso")
       onOpenChange(false)
-    } catch {
-      toast.error("Falha ao vincular material")
+    } catch (err) {
+      toast.error(
+        err instanceof ApiError ? err.message : "Falha ao vincular material",
+      )
     }
   }
 
@@ -219,7 +254,9 @@ export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiB
                     </button>
                     {isSelected && itemBobinas.length > 0 && (
                       <div className="pl-4 space-y-1">
-                        <p className="text-xs font-bold text-gray-500 mt-2 mb-1">Selecione uma Bobina específica (opcional)</p>
+                        <p className="text-xs font-bold text-gray-500 mt-2 mb-1">
+                          Selecione a bobina consumida <span className="text-destructive">*</span>
+                        </p>
                         {itemBobinas.map(b => (
                           <button
                             key={b.id}
@@ -236,6 +273,12 @@ export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiB
                           </button>
                         ))}
                       </div>
+                    )}
+                    {isSelected && itemBobinas.length === 0 && (
+                      <p className="pl-4 text-[11px] text-destructive">
+                        Este material não tem bobina cadastrada. Use &ldquo;Cadastrar nova mídia&rdquo; para
+                        abrir o rolo e vinculá-lo.
+                      </p>
                     )}
                   </div>
                 )
@@ -312,10 +355,12 @@ export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiB
               </Button>
               <Button
                 onClick={handleCreateAndBind}
-                disabled={createStockItem.isPending || bindMaterial.isPending}
+                disabled={createStockItem.isPending || addRoll.isPending || bindMaterial.isPending}
                 className="rounded-xl font-semibold"
               >
-                {createStockItem.isPending ? "Cadastrando..." : "Cadastrar e Vincular"}
+                {createStockItem.isPending || addRoll.isPending
+                  ? "Cadastrando..."
+                  : "Cadastrar e Vincular"}
               </Button>
             </>
           ) : (
@@ -325,7 +370,14 @@ export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiB
               </Button>
               <Button
                 onClick={handleBind}
-                disabled={!selectedItemId || bindMaterial.isPending}
+                disabled={!selectedItemId || !selectedBobinaId || bindMaterial.isPending}
+                title={
+                  !selectedItemId
+                    ? "Selecione o material"
+                    : !selectedBobinaId
+                      ? "Selecione a bobina consumida"
+                      : undefined
+                }
                 className="rounded-xl font-semibold"
               >
                 {bindMaterial.isPending ? "Vinculando..." : "Vincular"}

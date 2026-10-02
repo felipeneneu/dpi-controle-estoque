@@ -85,6 +85,20 @@
       "when": 1789502683270,
       "tag": "0011_glorious_changeling",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1789680000000,
+      "tag": "0012_cartuchos",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "6",
+      "when": 1790964836121,
+      "tag": "0013_mimaki_test_jobs_deduction",
+      "breakpoints": true
     }
   ]
 }

@@ -44,3 +44,7 @@
 | ADR-049 | Contrato de Calculo e Compensacao Termica de Emendas (Modulo Seams) | Aprovado | 2026-09-30 | imposition/prepress | BR-050 | novo - complementa ADR-015, ADR-017, ADR-021, ADR-041 |
 
 | ADR-050 | Contrato de Gestao de Rolos e Sugestao de Rolo Otimo (Modulo Seams) | Aprovado | 2026-09-30 | imposition/prepress/inventory | BR-051 | novo - complementa ADR-009, ADR-015, ADR-049 |
+
+| ADR-051 | Contrato da Linha-Guia de Emenda (K 40% em PDF e Raster) | Aprovado | 2026-10-02 | imposition/prepress | BR-053 | novo - complementa ADR-047, ADR-049 |
+
+| ADR-052 | Contrato do Cartucho de Tinta/Toner como Ativo por Canal (HP e Konica) | Aprovado | 2026-10-02 | inventory/deduction/alerts | BR-052, BR-054 | novo - complementa ADR-009 (Emenda 4), ADR-007, ADR-008 |

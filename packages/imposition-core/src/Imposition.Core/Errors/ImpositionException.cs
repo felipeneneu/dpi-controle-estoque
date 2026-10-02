@@ -31,4 +31,5 @@ public static class ErrorCodes
     public const string InvalidRoll                    = "E_INVALID_ROLL";
     public const string RollNotFound                   = "E_ROLL_NOT_FOUND";
     public const string RollUsableWidthInvalid         = "E_ROLL_USABLE_WIDTH_INVALID";
+    public const string InvalidGuideLine               = "E_INVALID_GUIDE_LINE";
 }

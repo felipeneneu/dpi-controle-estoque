@@ -73,6 +73,8 @@
 | H11 | Cores/canais hard-coded (HP `INK_COLOR_MAP`, Mimaki UV, Konica toner) | deductors; `mimaki.ts:114-121` | BR-021 | binding config máquina→SKU |
 | H12 | Fatores de conversão hard-coded | `konica/stock-deductor.ts` | BR-004/BR-021 | tabela `conversionFactors` em config |
 | H13 | Categorias/unidades hard-coded | `routes/stock.ts:12-13`, `schema.ts:30` | BR-003/BR-004/BR-021 | catálogo por empresa |
+| H14 | Saldo do item com 4 origens sobrepostas (bobinas -> garrafas -> cartuchos -> agregado) | `routes/stock.ts:128-133`, `lib/ink-balance.ts` | BR-052 | 1 helper `saldoDerivado()` com `null` vs `0` |
+| H15 | Limiar de reposição de tinta/toner hard-coded (15%) | `agents/brain/index.ts:131` | BR-054, BR-021 | `catalog.ink.thresholdPct` por empresa |
 
 ## 4. Ledger hard-coded → config (por empresa)
 

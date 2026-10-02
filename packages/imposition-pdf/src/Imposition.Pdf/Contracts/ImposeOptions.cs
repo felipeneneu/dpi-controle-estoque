@@ -1,3 +1,5 @@
+using Imposition.Core.Seams;
+
 namespace Imposition.Pdf.Contracts;
 
 /// <summary>Opções de imposição para o PdfImposer.</summary>
@@ -12,7 +14,8 @@ public sealed record ImposeOptions(
     double StepYMm,
     bool Rotate90,
     MarksOptions? Marks = null,
-    SluglineOptions? Slugline = null);
+    SluglineOptions? Slugline = null,
+    SeamsResult? Seams = null);
 
 /// <summary>Informações de OCG extraídas do PDF.</summary>
 public sealed record OcgInfo(

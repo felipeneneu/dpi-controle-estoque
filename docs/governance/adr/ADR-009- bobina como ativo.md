@@ -108,3 +108,15 @@ Critério de aceite de M1 (primeira fase, escopo mínimo verificável):
   - **Troca de garrafa na máquina:** rota `POST /api/machines/:id/active-garrafa` (idêntica à `active-bobina`), com ação da garrafa anterior (`FINISHED` descarta/`RETURN_TO_STOCK` volta ao depósito), escopada ao mesmo `stockItemId`.
 - **Escopo:** Aplica-se às tintas da Mimaki (INK_SUPPLY). Não altera o modelo de papel/folhas (resmas seguem como agregado, conforme Emenda 1).
 - **Status:** Aceita — substitui parcialmente a Emenda 1 para tintas INK_SUPPLY.
+
+## Emenda 4: Cartuchos de Tinta/Toner como Ativos por Canal (HP e Konica)
+- **Data da Emenda:** 2026-10-02
+- **Contexto:** A Emenda 3 tornou a garrafa o ativo da tinta da Mimaki, mas deixou a tinta HP e o toner Konica no agregado (`currentQuantity`), decrescido por job. Na prática o operador nao sabe qual cartucho esta na maquina, nem quanto resta nele, e o debito por job da HP nao fecha com o volume real consumido. A Emenda 1 ("Nao cadastramos cartuchos fisicos como entidades") e revertida **apenas** para os consumiveis de canal.
+- **Decisao:** Cria-se a tabela `cartuchos`, generica para `ml` (HP) e `pct` (Konica), com `stock_item_id`, `channel`, `level_initial`/`level_current`/`level_capacity`, `state` (`NEW | IN_USE | USED | SCRAPPED`), `location` (`deposito | machine:<id> | discarded | cliente`), `machine_id`, `cartridge_code`, `telemetry_sku` e `last_telemetry_at`.
+  - **Identidade:** por SKU logico (`hp_tinta-cyan`, `konica_toner-cyan`). O `cartridge_code` (part number, ex.: `CZ683A`) e digitado pelo operador **so para tinta HP**; toner Konica fica com `stock_items.code = NULL`, porque nao ha codigo OEM rastreavel na base.
+  - **Carregamento nao baixa:** entrar em `IN_USE` nao gera `OUT` no ledger.
+  - **Troca da baixa integral:** o cartucho anterior vai para `USED` + `discarded` e gera **uma unica** linha `OUT` pelo `level_current` restante. Sem devolucao ao estoque e sem "trocar sem baixa": "saiu da maquina e lixo".
+  - **Saldo derivado:** `SUM(level_current)` em `NEW|IN_USE` passa a ser a verdade na UI do item, com `null` (sem ativo) distinguido de `0` (ativo zerado). Itens sem cartucho (folha, solvente, resma) seguem lendo `currentQuantity`.
+  - **Telemetria:** atualiza `level_current` do cartucho `IN_USE` do canal, com guarda de divergencia de SKU (pagina de device x `stock_item_id`); nao escreve no agregado quando existe `IN_USE` no canal.
+  - **Escopo:** aplica-se a tinta HP e ao toner Konica. Nao altera bobinas nem as garrafas da Mimaki, que seguem o modelo deste ADR.
+- **Status:** Aceita - substitui a Emenda 1 para consumiveis de canal e complementada pela **ADR-052** (BR-052 e BR-054).

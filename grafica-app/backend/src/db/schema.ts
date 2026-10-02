@@ -1,3 +1,4 @@
+import { sql } from 'drizzle-orm';
 import { sqliteTable, text, real, integer, index, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
 export const users = sqliteTable('users', {
@@ -39,7 +40,17 @@ export const stockItems = sqliteTable('stock_items', {
   label: text('label'),
   status: text('status', { enum: ['AVAILABLE', 'LOW_STOCK', 'OUT_OF_STOCK'] }).default('AVAILABLE'),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
-});
+}, (t) => [
+  /**
+   * Indice **nao unico** de proposito. `code` e o atalho que o operador digita, e o
+   * seed de midia HP ja grava codigos repetidos entre larguras (`011983` em RP420
+   * 0,76m e 1,52m; `0229` em DE530 0,76m e 1,52m). Um UNIQUE aqui reprovaria a
+   * migration em qualquer banco semeado, entao a ambiguidade e tratada em codigo
+   * (`resolveItemByCode` em `lib/ink-units.ts`): codigo que casa com mais de um
+   * item vira erro explicito, nunca um palpite silencioso (mesmo principio da BR-010).
+   */
+  index('stock_items_code_idx').on(t.code),
+]);
 
 export const bobinas = sqliteTable('bobinas', {
   id: text('id').primaryKey(),
@@ -78,6 +89,84 @@ export const garrafas = sqliteTable('garrafas', {
   index('garrafas_state_idx').on(t.state),
 ]);
 
+/**
+ * Cartucho de tinta/toner como ativo fisico por canal (ADR-052 / BR-052).
+ *
+ * Generico de proposito: `unit` distingue tinta em `ml` de toner em `pct`, porque
+ * a capacidade e o limite de aviso sao declarados **por cartucho**, nao por item.
+ * `level_current` e a fonte de verdade do nivel quando existe `IN_USE` no canal;
+ * `currentQuantity` do item passa a ser apenas o agregado legado.
+ *
+ * O indice unico parcial garante no maximo 1 cartucho `IN_USE` por (canal, maquina):
+ * e o que impede dois cartuchos no mesmo slot e o que torna a baixa da troca
+ * inequivoca. `machine_id` NULL (cartucho em deposito) nao colide porque SQLite
+ * trata NULLs como distintos em indice unico.
+ */
+export const cartuchos = sqliteTable('cartuchos', {
+  id: text('id').primaryKey(),
+  stockItemId: text('stock_item_id')
+    .notNull()
+    .references(() => stockItems.id, { onDelete: 'cascade' }),
+  channel: text('channel').notNull(),
+  unit: text('unit').notNull(),
+  levelInitial: real('level_initial').notNull(),
+  levelCurrent: real('level_current').notNull(),
+  levelCapacity: real('level_capacity'),
+  state: text('state', { enum: ['NEW', 'IN_USE', 'USED', 'SCRAPPED'] }).notNull().default('NEW'),
+  location: text('location').notNull().default('deposito'),
+  machineId: text('machine_id').references(() => machines.id, { onDelete: 'set null' }),
+  cartridgeCode: text('cartridge_code'),
+  telemetrySku: text('telemetry_sku'),
+  lastTelemetryAt: integer('last_telemetry_at', { mode: 'timestamp' }),
+  openedAt: integer('opened_at', { mode: 'timestamp' }),
+  finishedAt: integer('finished_at', { mode: 'timestamp' }),
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+}, (t) => [
+  index('cartuchos_stock_item_idx').on(t.stockItemId),
+  index('cartuchos_state_idx').on(t.state),
+  index('cartuchos_machine_idx').on(t.machineId),
+  index('cartuchos_channel_idx').on(t.channel),
+  index('cartuchos_code_idx').on(t.cartridgeCode),
+  uniqueIndex('cartuchos_active_channel_idx')
+    .on(t.machineId, t.channel)
+    .where(sql`state = 'IN_USE'`),
+]);
+
+/**
+ * Historico de consumo fino do cartucho (ADR-052 / BR-052).
+ *
+ * `attribution` separa o que foi medido do que foi estimado:
+ * - `exact`: HP, quando o job traz a contagem do canal;
+ * - `estimated`: Konica (PrintManager nao expoe toner por job) e ajuste de grade;
+ * - `manual`: lancamento do operador pelo codigo do cartucho.
+ *
+ * `level_before`/`level_after` sao o registro do estado real do ativo no momento
+ * do debito - e o que permite reconstituir o consumo quando o saldo derivado
+ * divergir do ledger.
+ */
+export const cartuchoConsumo = sqliteTable('cartucho_consumo', {
+  id: text('id').primaryKey(),
+  cartuchoId: text('cartucho_id')
+    .notNull()
+    .references(() => cartuchos.id, { onDelete: 'cascade' }),
+  machineId: text('machine_id').references(() => machines.id, { onDelete: 'set null' }),
+  jobId: text('job_id'),
+  jobName: text('job_name'),
+  channel: text('channel').notNull(),
+  quantity: real('quantity').notNull(),
+  levelBefore: real('level_before').notNull(),
+  levelAfter: real('level_after').notNull(),
+  unit: text('unit').notNull(),
+  attribution: text('attribution', { enum: ['exact', 'estimated', 'manual'] })
+    .notNull()
+    .default('estimated'),
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+}, (t) => [
+  index('cartucho_consumo_cartucho_idx').on(t.cartuchoId),
+  index('cartucho_consumo_job_idx').on(t.jobId),
+  index('cartucho_consumo_created_idx').on(t.cartuchoId, t.createdAt),
+]);
+
 export const machineItems = sqliteTable('machine_items', {
   id: text('id').primaryKey(),
   machineId: text('machine_id')
@@ -101,12 +190,20 @@ export const stockTransactions = sqliteTable('stock_transactions', {
   type: text('type', { enum: ['IN', 'OUT', 'ADJUSTMENT'] }).notNull(),
   quantity: real('quantity').notNull(),
   reason: text('reason'),
+  /**
+   * Origem estruturada da movimentacao. `reason` e texto livre e nao serve para
+   * idempotencia; `source` + `source_ref` sim (BR-008 / ADR-007, ainda Proposto).
+   * Values usados por ADR-052: `cartucho_swap`, `cartucho_manual`, `cartucho_sync`.
+   */
+  source: text('source'),
+  sourceRef: text('source_ref'),
   userId: text('user_id'),
   userName: text('user_name'),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 }, (t) => [
   index('stock_transactions_item_id_idx').on(t.itemId),
   index('stock_transactions_item_created_idx').on(t.itemId, t.createdAt),
+  index('stock_transactions_source_idx').on(t.itemId, t.source),
 ]);
 
 export const suppliers = sqliteTable('suppliers', {

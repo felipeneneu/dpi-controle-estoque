@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { eq, and, or, like, sql } from 'drizzle-orm';
-import { mimakiJobs, stockItems, stockTransactions, notifications, users, garrafas } from '../db/schema.js';
+import { mimakiJobs, stockItems, stockTransactions, notifications, users, garrafas, bobinas, machines } from '../db/schema.js';
 import { db } from '../db/index.js';
 import { newId } from '../lib/ids.js';
 import { m2mAuth } from '../middleware/m2m-auth.js';
@@ -38,11 +38,29 @@ export interface MimakiJobDeductData {
   inkVarnish2Cc?: number | null;
 }
 
+export interface MimakiDeductResult {
+  deductedSubstrate: boolean;
+  deductedInksCount: number;
+  /** Preenchido quando a operacao abortou sem escrever nada. Para o operador. */
+  motivo?: string;
+  /**
+   * O debito ja existia e foi reconhecido (nao e falha): `stockDeducted` veio
+   * ligado e ha transacao correspondente. A rota usa isto para responder "ja
+   * baixado" em vez de "nao consegui debitar".
+   */
+  jaDebitado?: boolean;
+  /**
+   * Ha transacao de tinta UV deste job mas nenhuma de substrato: debito parcial
+   * herdado do bug antigo. Refazer aqui duplicaria a tinta.
+   */
+  debitoParcial?: boolean;
+}
+
 export async function deductMimakiStockForJob(
   app: FastifyInstance,
   job: MimakiJobDeductData,
   userId?: string | null,
-): Promise<{ deductedSubstrate: boolean; deductedInksCount: number }> {
+): Promise<MimakiDeductResult> {
   // Garante ator válido no banco (FK para users.id)
   let actorId = userId && userId.trim() ? userId : 'system';
   const userExists = await db.select({ id: users.id }).from(users).where(eq(users.id, actorId)).get();
@@ -56,8 +74,53 @@ export async function deductMimakiStockForJob(
   // Anti-duplicação: verifica se já foi debitado no mimaki_jobs ou pelo watcher físico (mimaki_test_jobs)
   const jobRow = await db.select().from(mimakiJobs).where(eq(mimakiJobs.id, job.id)).get();
   if (jobRow?.stockDeducted) {
-    app.log.info(`[mimaki] Job ${job.id} (${job.jobName}) já possui estoque debitado. Ignorando para evitar duplicata.`);
-    return { deductedSubstrate: false, deductedInksCount: 0 };
+    // O booleano `stockDeducted` sozinho nao e evidencia de debito: a versao
+    // anterior marcava `true` mesmo sem baixar nada, e ai o operador ficava
+    // preso para sempre - escolher a bobina nao adiantava mais. A prova e o
+    // `stock_transactions`. Aqui separam-se tres casos que antes colapsavam em um
+    // unico "ignorar silenciosamente":
+    const txsDoJob = await db
+      .select({ id: stockTransactions.id, reason: stockTransactions.reason })
+      .from(stockTransactions)
+      .where(like(stockTransactions.reason, `%${job.jobName}%`))
+      .all();
+
+    const temSubstrato = txsDoJob.some((t) => (t.reason ?? '').includes('[Bobina'));
+    const temTinta = txsDoJob.some((t) => (t.reason ?? '').includes('Mimaki tinta UV'));
+
+    if (temSubstrato) {
+      app.log.info(`[mimaki] Job ${job.id} (${job.jobName}) ja possui baixa de substrato registrada.`);
+      return {
+        deductedSubstrate: false,
+        deductedInksCount: 0,
+        jaDebitado: true,
+        motivo: 'Este job ja tem metragem baixada do estoque.',
+      };
+    }
+
+    if (temTinta) {
+      // So tinta caiu: repetir aqui baixaria a tinta de novo.
+      app.log.warn(
+        `[mimaki] Job ${job.id} (${job.jobName}) com debito parcial herdado: tinta UV baixada, substrato nunca baixado. ` +
+        `Requer conciliacao manual - refazer agora duplicaria a tinta.`,
+      );
+      return {
+        deductedSubstrate: false,
+        deductedInksCount: 0,
+        debitoParcial: true,
+        motivo:
+          'Este job ja tem tinta UV baixada, mas a midia nunca foi baixada (debito parcial). ' +
+          'Refazer agora duplicaria a tinta: concilie o estoque manualmente.',
+      };
+    }
+
+    // `true` sem nenhuma transacao: linha envenenada pelo bug antigo. Nao ha
+    // tinta debitada, entao seguir com o debito real e seguro - e e exatamente o
+    // que conserta o dado em vez de silenciar o operador.
+    app.log.warn(
+      `[mimaki] Job ${job.id} (${job.jobName}) marcado como debitado sem nenhuma transacao registrada. ` +
+      `Corrigindo: o debito real sera feito agora.`,
+    );
   }
 
   const { mimakiTestJobs } = await import('../db/schema.js');
@@ -78,66 +141,123 @@ export async function deductMimakiStockForJob(
   if (physicalDeducted) {
     app.log.info(`[mimaki] Job ${job.id} (${job.jobName}) já teve baixa física registrada pelo watcher. Sincronizando stockDeducted=true.`);
     await db.update(mimakiJobs).set({ stockDeducted: true }).where(eq(mimakiJobs.id, job.id));
-    return { deductedSubstrate: false, deductedInksCount: 0 };
+    return {
+      deductedSubstrate: false,
+      deductedInksCount: 0,
+      jaDebitado: true,
+      motivo: 'A baixa física deste job já foi registrada pelo watcher.',
+    };
   }
 
-  // 1. Débito de Substrato / Mídia
-  if (job.stockItemId && job.lengthMeters && job.lengthMeters > 0) {
+// 1. Substrato / Midia - resolvido ANTES de qualquer escrita.
+  //
+  // A bobina e resolvida aqui, no topo, de proposito. Antes, a funcao pulava o
+  // substrato quando nao achava a bobina, continuava debitando as tintas UV e
+  // ainda marcava `stockDeducted = true` no fim. O job ficava "debitado" sem
+  // nenhuma metragem baixada, e a trava de idempotencia (linha do `if (jobRow
+  // ?.stockDeducted)`) impedia qualquer segunda tentativa: o operador escolhia a
+  // bobina correta e o estoque nao mexia - e nao voltaria a mexer. Falha de
+  // substrato e falha total, sem escrita nenhuma.
+  const substrateEsperado = Boolean(job.stockItemId && job.lengthMeters && job.lengthMeters > 0);
+  let activeBobina: typeof bobinas.$inferSelect | null = null;
+
+  if (substrateEsperado) {
     const item = await db
       .select()
       .from(stockItems)
-      .where(eq(stockItems.id, job.stockItemId))
+      .where(eq(stockItems.id, job.stockItemId!))
       .get();
 
-    if (item) {
-      const { bobinas, machines } = await import('../db/schema.js');
-      
-      let activeBobina = null;
-      if (job.bobinaId) {
-        activeBobina = await db.select().from(bobinas).where(eq(bobinas.id, job.bobinaId)).get();
-      } else if (job.machineId) {
-        activeBobina = await db.select().from(bobinas).where(
+    if (!item) {
+      return {
+        deductedSubstrate: false,
+        deductedInksCount: 0,
+        motivo: `Item de estoque ${job.stockItemId} nao encontrado no cadastro.`,
+      };
+    }
+
+    if (job.bobinaId) {
+      activeBobina =
+        (await db.select().from(bobinas).where(eq(bobinas.id, job.bobinaId)).get()) ?? null;
+      // Vincula a bobina ao item que o operador escolheu. Sem esta checagem, o
+      // job com material "Lona 1,60m" pode debitar da bobina de "Vinil 0,75m" e
+      // o saldo do item errado muda junto do saldo da bobina errada.
+      if (activeBobina && activeBobina.stockItemId !== item.id) {
+        return {
+          deductedSubstrate: false,
+          deductedInksCount: 0,
+          motivo: `A bobina ${activeBobina.serial ?? activeBobina.id.slice(0, 8)} pertence a outro item de estoque.`,
+        };
+      }
+    } else if (job.machineId) {
+      activeBobina =
+        (
+          await db
+            .select()
+            .from(bobinas)
+            .where(
+              and(
+                eq(bobinas.stockItemId, item.id),
+                eq(bobinas.state, 'IN_USE'),
+                eq(bobinas.location, `machine:${job.machineId}`),
+              ),
+            )
+            .get()
+        ) ?? null;
+    }
+
+    if (!activeBobina) {
+      return {
+        deductedSubstrate: false,
+        deductedInksCount: 0,
+        motivo: job.bobinaId
+          ? `Bobina ${job.bobinaId} nao encontrada.`
+          : 'Nenhuma bobina informada e nenhuma bobina em uso na maquina. Selecione a bobina.',
+      };
+    }
+
+    {
+      // Idempotencia
+      const existingTx = await db
+        .select({ id: stockTransactions.id })
+        .from(stockTransactions)
+        .where(
           and(
-            eq(bobinas.stockItemId, item.id),
-            eq(bobinas.state, 'IN_USE'),
-            eq(bobinas.location, `machine:${job.machineId}`)
-          )
-        ).get();
-      }
+            eq(stockTransactions.itemId, item.id),
+            like(stockTransactions.reason, `%${job.jobName}% [Bobina ${activeBobina.serial}]%`),
+          ),
+        )
+        .get();
 
-      if (!activeBobina && job.machineId) {
-        // Auto-bind failed due to missing bobina. Mark as pending and abort substrate deduction.
-        // We will still deduct inks (Mimaki reports inks separately), but wait, the job shouldn't be BOUND.
-        // We should throw or return so it remains PENDING_BIND.
-        return { deductedSubstrate: false, deductedInksCount: 0 };
-      }
-
-      if (activeBobina) {
-        // Idempotência
-        const existingTx = await db
-          .select({ id: stockTransactions.id })
-          .from(stockTransactions)
-          .where(
-            and(
-              eq(stockTransactions.itemId, item.id),
-              like(stockTransactions.reason, `%${job.jobName}% [Bobina ${activeBobina.serial}]%`),
-            ),
-          )
-          .get();
-
-        if (!existingTx) {
-          let lengthMeters = toPrecision(job.lengthMeters, 3);
-          
-          let machineInfo = null;
-          if (job.machineId) {
-             machineInfo = await db.select().from(machines).where(eq(machines.id, job.machineId)).get();
-             if (machineInfo && machineInfo.bleedAdjustmentM) {
-                lengthMeters += machineInfo.bleedAdjustmentM;
-             }
+      if (!existingTx) {
+        // `substrateEsperado` ja garante `lengthMeters > 0`, mas o TypeScript nao
+        // estreita `job.lengthMeters` a partir de uma `const` booleana: sem isto
+        // aqui, `toPrecision` recebe `number | null | undefined`.
+        const jobLength = job.lengthMeters!;
+        let lengthMeters = toPrecision(jobLength, 3);
+        
+        let machineInfo = null;
+        if (job.machineId) {
+           machineInfo = await db.select().from(machines).where(eq(machines.id, job.machineId)).get();
+           if (machineInfo && machineInfo.bleedAdjustmentM) {
+            lengthMeters += machineInfo.bleedAdjustmentM;
           }
+        }
 
-          const newQty = Math.max(0, toPrecision(activeBobina.metersRemaining! - lengthMeters, 3));
-          const isFinished = newQty <= 0;
+        // R-013: sem `metersRemaining`, `null - 5` e NaN, e `Math.max(0, NaN)`
+        // e NaN - que entraria na coluna `real` e depois em todo saldo derivado.
+        // `metersInitial` e o melhor chute; sem os dois, a bobina nao e medivel.
+        const restante = activeBobina.metersRemaining ?? activeBobina.metersInitial;
+        if (restante === null || restante === undefined || !Number.isFinite(restante)) {
+          return {
+            deductedSubstrate: false,
+            deductedInksCount: 0,
+            motivo: `A bobina ${activeBobina.serial ?? activeBobina.id.slice(0, 8)} nao tem metragem inicial nem restante informados.`,
+          };
+        }
+
+        const newQty = Math.max(0, toPrecision(restante - lengthMeters, 3));
+        const isFinished = newQty <= 0;
 
           await db.update(bobinas).set({ 
             metersRemaining: newQty,
@@ -165,10 +285,10 @@ export async function deductMimakiStockForJob(
             jobName: job.jobName,
           });
         } else {
+          // A transacao ja existe: o debito aconteceu antes (reenvio do watcher).
           deductedSubstrate = true;
         }
       }
-    }
   }
 
   // 2. Débito de Tintas UV
@@ -282,10 +402,25 @@ export async function deductMimakiStockForJob(
     }
   }
 
-  // 3. Marca job como estoque debitado
-  await db.update(mimakiJobs)
-    .set({ stockDeducted: true })
-    .where(eq(mimakiJobs.id, job.id));
+  // 3. Marca o job como estoque debitado.
+  //
+  // **So quando o debito aconteceu de fato.** A versao anterior marcava sempre, e
+  // essa e a trava que tornava o bug definitivo: `stockDeducted = true` sem
+  // metragem baixada significa que nem o operador, nem o reconciliador, nem uma
+  // segunda chamada conseguiriam debitar depois - o dado sumia em silencio e nao
+  // voltava. `deductedSubstrate = false` aqui so e aceitavel quando nao havia
+  // substrato a debitar (job sem midia vinculada), caso em que o job foi
+  // processado por completo.
+  if (deductedSubstrate || !substrateEsperado) {
+    await db.update(mimakiJobs)
+      .set({ stockDeducted: true })
+      .where(eq(mimakiJobs.id, job.id));
+  } else {
+    app.log.warn(
+      `[mimaki] Job ${job.id} (${job.jobName}) NAO marcado como debitado: substrato nao baixado. ` +
+      `Fica liberado para nova tentativa.`,
+    );
+  }
 
   return { deductedSubstrate, deductedInksCount };
 }
@@ -525,16 +660,33 @@ export async function mimakiRoutes(app: FastifyInstance) {
       },
       body: {
         type: 'object',
+        // Só `stock_item_id` fica no `required` de propósito. Se `bobina_id`
+        // também estivesse aqui, o AJV responderia 400 "Invalid input" - um
+        // erro de máquina que não diz o que falta - e a mensagem explicativa do
+        // handler (que diz o que fazer) nunca chegaria ao operador.
         required: ['stock_item_id'],
-        properties: { 
+        properties: {
           stock_item_id: { type: 'string' },
-          bobina_id: { type: 'string', nullable: true },
+          bobina_id: { type: 'string', minLength: 1 },
         },
       },
       response: {
-        200: { type: 'object', properties: { success: { type: 'boolean' } } },
+        200: {
+          type: 'object',
+          // Campos ausentes da serialização são removidos: `alreadyDeducted` e
+          // `message` precisam estar aqui para o front saber que já baixou.
+          properties: {
+            success: { type: 'boolean' },
+            deductedSubstrate: { type: 'boolean' },
+            alreadyDeducted: { type: 'boolean' },
+            deductedInks: { type: 'integer' },
+            bobinaId: { type: 'string' },
+            message: { type: 'string' },
+          },
+        },
         400: { type: 'object', properties: { error: { type: 'string' } } },
         404: { type: 'object', properties: { error: { type: 'string' } } },
+        409: { type: 'object', properties: { error: { type: 'string' }, deductedSubstrate: { type: 'boolean' }, deductedInks: { type: 'integer' } } },
       },
     },
     preHandler: [authenticate],
@@ -549,24 +701,123 @@ export async function mimakiRoutes(app: FastifyInstance) {
       .get();
 
     if (!job) {
-      return reply.code(404).send({ error: 'Job not found' });
+      return reply.code(404).send({ error: 'Job não encontrado' });
     }
 
-    // Atualiza status do job para BOUND e define stockItemId
+    /**
+     * Vincula material **e bobina** a um job Mimaki ja impresso.
+     *
+     * `bobina_id` e obrigatorio. Ele ja era opcional na UI ("Selecione uma Bobina
+     * especifica (opcional)") e no body, e a consequencia era silenciosa: sem
+     * bobina nao havia substrato para baixar, a funcao de debito marcava o job
+     * como debitado mesmo assim, e o estoque nunca mais era corrigido - nem se o
+     * operador escolhesse a bobina depois. "Sempre escolher a bobina" e a regra:
+     * quem imprime com rolo, consome rolo.
+     */
+    if (!bobina_id || !bobina_id.trim()) {
+      return reply.code(400).send({
+        error: 'Selecione a bobina usada na impressão. Sem a bobina não há metragem a baixar.',
+      });
+    }
+
+    const item = await db
+      .select()
+      .from(stockItems)
+      .where(eq(stockItems.id, stock_item_id))
+      .get();
+    if (!item) {
+      return reply.code(404).send({ error: 'Item de estoque não encontrado' });
+    }
+
+    const bobina = await db
+      .select()
+      .from(bobinas)
+      .where(eq(bobinas.id, bobina_id))
+      .get();
+    if (!bobina) {
+      return reply.code(404).send({ error: 'Bobina não encontrada' });
+    }
+    if (bobina.stockItemId !== stock_item_id) {
+      const ownerItem = await db
+        .select()
+        .from(stockItems)
+        .where(eq(stockItems.id, bobina.stockItemId))
+        .get();
+      return reply.code(400).send({
+        error:
+          `A bobina ${bobina.serial ?? bobina.id.slice(0, 8)} é do material ` +
+          `"${ownerItem?.name ?? bobina.stockItemId}", não de "${item.name}". ` +
+          `Escolha uma bobina do material selecionado.`,
+      });
+    }
+    if (bobina.state !== 'NEW' && bobina.state !== 'IN_USE') {
+      return reply.code(400).send({
+        error: `A bobina ${bobina.serial ?? bobina.id.slice(0, 8)} está ${bobina.state === 'USED' ? 'esgotada' : bobina.state.toLowerCase()} e não pode receber consumo.`,
+      });
+    }
+
+    // Desconta mídia e tintas UV de forma segura e idempotente
+    const deductRes = await deductMimakiStockForJob(
+      app,
+      {
+        ...job,
+        stockItemId: stock_item_id,
+        bobinaId: bobina_id,
+      },
+      request.userId,
+    );
+
+    // Já baixado de verdade (outra vínculo, ou o watcher físico): não é erro de
+    // deduction, e responder 409 aqui faria o operador achar que a escolha dele
+    // falhou. O job é vinculado e a idempotência fica registrada.
+    if (deductRes.jaDebitado) {
+      await db
+        .update(mimakiJobs)
+        .set({ materialStatus: 'BOUND', stockItemId: stock_item_id })
+        .where(eq(mimakiJobs.id, id));
+
+      return reply.code(200).send({
+        success: true,
+        deductedSubstrate: false,
+        alreadyDeducted: true,
+        deductedInks: 0,
+        bobinaId: bobina_id,
+        message: deductRes.motivo ?? 'Este job já tinha estoque baixado.',
+      });
+    }
+
+    // R-019: `materialStatus = 'BOUND'` e o resultado do debito, entao so e
+    // gravado depois que o debito aconteceu. A versao anterior marcava BOUND
+    // antes e ignorava o retorno: o job aparecia como vinculado no estoque sem
+    // nenhuma metragem baixada, e `PENDING_BIND` nunca mais voltava.
+    if (!deductRes.deductedSubstrate) {
+      if (!job.stockDeducted || deductRes.debitoParcial) {
+        await db
+          .update(mimakiJobs)
+          .set({ materialStatus: 'PENDING_BIND' })
+          .where(eq(mimakiJobs.id, id));
+      }
+      return reply.code(409).send({
+        error: deductRes.motivo ?? 'Não foi possível baixar a mídia da bobina selecionada.',
+        deductedSubstrate: false,
+        deductedInks: deductRes.deductedInksCount,
+      });
+    }
+
+    // `mimaki_jobs` nao tem coluna `bobina_id` (ver `mimakiJobs` no schema): o
+    // vinculo com a bobina so existe no texto do `stock_transactions.reason`
+    // (`[Bobina SERIAL]`) e no decremento de `bobinas.metersRemaining`. Persistir
+    // a bobina no job e uma migration propria (0013), nao um detalhe deste fix.
     await db.update(mimakiJobs)
       .set({ materialStatus: 'BOUND', stockItemId: stock_item_id })
       .where(eq(mimakiJobs.id, id));
 
-    // Desconta mídia e tintas UV de forma segura e idempotente
-    const updatedJob: MimakiJobDeductData = {
-      ...job,
-      stockItemId: stock_item_id,
+    return reply.code(200).send({
+      success: true,
+      deductedSubstrate: true,
+      deductedInks: deductRes.deductedInksCount,
       bobinaId: bobina_id,
-    };
-
-    await deductMimakiStockForJob(app, updatedJob, request.userId);
-
-    return reply.code(200).send({ success: true });
+    });
   });
 
   app.patch('/api/integrations/mimaki/jobs/:id', {

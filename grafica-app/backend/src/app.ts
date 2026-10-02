@@ -20,6 +20,7 @@ import { jobRoutes } from './routes/jobs.js';
 import { mimakiRoutes } from './routes/mimaki.js';
 import { mimakiTestRoutes } from './routes/mimaki-test.js';
 import { automationRoutes } from './routes/automation.js';
+import { cartuchoRoutes } from './routes/cartuchos.js';
 import { USERS_PUBLIC_DIR } from './lib/paths.js';
 import { isAllowedOrigin } from './cors.js';
 
@@ -156,6 +157,7 @@ export async function buildApp(opts: { logger?: boolean } = {}) {
   await app.register(mimakiRoutes);
   await app.register(mimakiTestRoutes);
   await app.register(automationRoutes);
+  await app.register(cartuchoRoutes);
 
   app.get('/health', {
     schema: {

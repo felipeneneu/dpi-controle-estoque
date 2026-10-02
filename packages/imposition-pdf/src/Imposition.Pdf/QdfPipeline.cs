@@ -1,7 +1,9 @@
 using System.Text;
 using System.Text.RegularExpressions;
+using Imposition.Core.Seams;
 using Imposition.Core.Slugline;
 using Imposition.Pdf.Contracts;
+using Imposition.Pdf.Seams;
 
 namespace Imposition.Pdf;
 
@@ -133,6 +135,23 @@ internal static class QdfPipeline
                     placement, marksOffsetPt, marksOffsetYPt);
                 if (sluglineStream.Length > 0)
                     sheetOps.AppendLine(sluglineStream);
+            }
+        }
+
+        // Linhas-guia de emenda (ADR-051, BR_053): se options.Seams != null,
+        // calcula os guias e injeta como operadores vetoriais (PdfSeamGuideInjector)
+        // no content stream, sem rasterizar e preservando OCG.
+        if (options.Seams is not null)
+        {
+            var guides = GuideLineCalculator.Calculate(options.Seams);
+            foreach (var guide in guides)
+            {
+                var guideStream = PdfSeamGuideInjector.GenerateContentStream(
+                    guide, startX, startY);
+                if (guideStream.Length > 0)
+                {
+                    sheetOps.AppendLine(guideStream);
+                }
             }
         }
 
