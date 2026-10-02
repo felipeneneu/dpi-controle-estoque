@@ -710,6 +710,32 @@
       "scripts": [],
       "version": "1.0.0"
     },
+    "executing-plans": {
+      "allowedTools": [
+        "Read",
+        "Write",
+        "Edit",
+        "Bash",
+        "Glob",
+        "Grep"
+      ],
+      "path": "skills/executing-plans/SKILL.md",
+      "scripts": [],
+      "version": "1.0.0"
+    },
+    "finishing-a-development-branch": {
+      "allowedTools": [
+        "Read",
+        "Glob",
+        "Grep",
+        "Bash",
+        "Write",
+        "Edit"
+      ],
+      "path": "skills/finishing-a-development-branch/SKILL.md",
+      "scripts": [],
+      "version": "1.0.0"
+    },
     "frontend-architecture": {
       "allowedTools": [
         "Read",
@@ -922,6 +948,16 @@
       "scripts": [],
       "version": "1.0.0"
     },
+    "receiving-code-review": {
+      "allowedTools": [
+        "Read",
+        "Glob",
+        "Grep"
+      ],
+      "path": "skills/receiving-code-review/SKILL.md",
+      "scripts": [],
+      "version": "1.0.0"
+    },
     "red-team-tactics": {
       "allowedTools": [
         "Read",
@@ -929,6 +965,17 @@
         "Grep"
       ],
       "path": "skills/red-team-tactics/SKILL.md",
+      "scripts": [],
+      "version": "1.0.0"
+    },
+    "requesting-code-review": {
+      "allowedTools": [
+        "Read",
+        "Glob",
+        "Grep",
+        "Bash"
+      ],
+      "path": "skills/requesting-code-review/SKILL.md",
       "scripts": [],
       "version": "1.0.0"
     },
@@ -982,6 +1029,19 @@
       "scripts": [],
       "version": "1.0.0"
     },
+    "single-flow-task-execution": {
+      "allowedTools": [
+        "Read",
+        "Write",
+        "Edit",
+        "Bash",
+        "Glob",
+        "Grep"
+      ],
+      "path": "skills/single-flow-task-execution/SKILL.md",
+      "scripts": [],
+      "version": "1.0.0"
+    },
     "skillify": {
       "allowedTools": [
         "Read",
@@ -991,6 +1051,22 @@
       ],
       "path": "skills/skillify/SKILL.md",
       "scripts": [],
+      "version": "1.0.0"
+    },
+    "subagent-driven-development": {
+      "allowedTools": [
+        "Read",
+        "Glob",
+        "Grep",
+        "Bash",
+        "Write",
+        "Edit",
+        "Agent"
+      ],
+      "path": "skills/subagent-driven-development/SKILL.md",
+      "scripts": [
+        "skills/subagent-driven-development/scripts/sdd-workspace.ps1"
+      ],
       "version": "1.0.0"
     },
     "systematic-debugging": {
@@ -1028,6 +1104,19 @@
       "scripts": [],
       "version": "1.0.0"
     },
+    "test-driven-development": {
+      "allowedTools": [
+        "Read",
+        "Write",
+        "Edit",
+        "Bash",
+        "Glob",
+        "Grep"
+      ],
+      "path": "skills/test-driven-development/SKILL.md",
+      "scripts": [],
+      "version": "1.0.0"
+    },
     "testing-patterns": {
       "allowedTools": [
         "Read",
@@ -1041,6 +1130,40 @@
       "scripts": [
         "skills/testing-patterns/scripts/test_runner.py"
       ],
+      "version": "1.0.0"
+    },
+    "using-git-worktrees": {
+      "allowedTools": [
+        "Read",
+        "Write",
+        "Edit",
+        "Bash",
+        "Glob",
+        "Grep"
+      ],
+      "path": "skills/using-git-worktrees/SKILL.md",
+      "scripts": [],
+      "version": "1.0.0"
+    },
+    "using-superpowers": {
+      "allowedTools": [
+        "Read",
+        "Glob",
+        "Grep"
+      ],
+      "path": "skills/using-superpowers/SKILL.md",
+      "scripts": [],
+      "version": "1.0.0"
+    },
+    "verification-before-completion": {
+      "allowedTools": [
+        "Read",
+        "Bash",
+        "Grep",
+        "Glob"
+      ],
+      "path": "skills/verification-before-completion/SKILL.md",
+      "scripts": [],
       "version": "1.0.0"
     },
     "verify-changes": {
@@ -1092,6 +1215,32 @@
       "scripts": [
         "skills/webapp-testing/scripts/playwright_runner.py"
       ],
+      "version": "1.0.0"
+    },
+    "writing-plans": {
+      "allowedTools": [
+        "Read",
+        "Write",
+        "Edit",
+        "Glob",
+        "Grep",
+        "Bash"
+      ],
+      "path": "skills/writing-plans/SKILL.md",
+      "scripts": [],
+      "version": "1.0.0"
+    },
+    "writing-skills": {
+      "allowedTools": [
+        "Read",
+        "Write",
+        "Edit",
+        "Glob",
+        "Grep",
+        "Bash"
+      ],
+      "path": "skills/writing-skills/SKILL.md",
+      "scripts": [],
       "version": "1.0.0"
     }
   },

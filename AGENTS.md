@@ -29,6 +29,18 @@ para gráficas. Combina ERP (Node/TS), motores de imposição (C#), UI
 5. `packages/imposition-core/AGENTS.md` — Regras 1–9 do core
 6. O `AGENTS.md` do pacote específico em que vai trabalhar
 
+## SDD obrigatório para novos módulos
+
+Todo módulo ou feature de produto entra via ciclo SDD com:
+- Contratos públicos fechados no documento de planejamento antes do código.
+- Task 0 obrigatória para ADR (se houver mudança de contrato).
+- Ledger em `.sdd/<feature>/progress.md`.
+- Dupla revisão (Spec + Code Quality).
+- Regras R-009, R-013, R-019 aplicadas no prompt de implementação.
+
+Critério de saúde do ciclo: ≤ 2 rulings totais, 0 de contrato.
+Se passar de 5 rulings, o planejamento falhou — parar e revisar.
+
 ## Convenções C#
 
 1. **PT-BR** em comentários, docs e mensagens de erro (P7 do DOC_POLICIES).
@@ -45,6 +57,28 @@ para gráficas. Combina ERP (Node/TS), motores de imposição (C#), UI
 11. **IO permitido** em `imposition-pdf` e `sidecars/*`.
 12. **Records** para DTOs imutáveis.
 13. **`async`/`await`** para IO (não em cálculo puro).
+14. **Encoding legado: nunca read-modify-write** (regra R-009). Arquivo com
+    histórico de mojibake (ex.: `docs/governance/ADR_INDEX.md`) **não** pode ser
+    reescrito por read-modify-write do arquivo inteiro. A inserção tem de ser
+    append-only, ou restaurar antes com `git checkout --` e reinserir sem tocar os
+    bytes existentes. Perder bytes que "já estavam ruins" ainda é perder dado.
+    Verificado empiricamente em 2026-09-30, ruling R-009 da slugline: no título do
+    ADR-044 os bytes `C3 BE C3 92` viraram `EF BF BD EF BF BD` (2x U+FFFD) quando o
+    arquivo foi reescrito inteiro.
+15. **Validação de `double` sempre com `IsFinite`** (regra R-013). `NaN <= 0` e
+    `NaN > 0` são **ambos** `false`: qualquer validação de `double` feita só com
+    comparações (`<=`, `<`, `>`, `>=`) deixa passar `NaN` e `±Infinity`. Toda
+    validação tem de usar `!double.IsFinite(x) || x <= 0` (ou equivalente).
+    Verificado empiricamente em 2026-09-30, ruling R-013 da slugline: `double.NaN`
+    passava em `SheetWidthMm <= 0` e gerava geometria `NaN`.
+16. **Campos de desfecho só depois da operação** (regra R-019). Campo de resultado
+    em `RESULT_JSON` (ex.: `sluglineInfo`, `status`, `outputPath`) **não** pode ser
+    preenchido antes da operação que o produz. Predição escrita antes do fato é
+    ficção: em erro, o `RESULT_JSON` mente. Todo campo de resultado tem de ser
+    derivado **dentro** do fluxo, **após** a operação correspondente.
+    Verificado empiricamente em 2026-09-30, ruling R-019 da slugline:
+    `sluglineInfo = "desenhada"` era escrito antes de `PdfImposer.Impose`, e
+    mentia no caminho de erro.
 
 ## Estrutura de pacotes
 

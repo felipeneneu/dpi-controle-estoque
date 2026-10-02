@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.RegularExpressions;
+using Imposition.Core.Slugline;
 using Imposition.Pdf.Contracts;
 
 namespace Imposition.Pdf;
@@ -47,6 +48,7 @@ internal static class QdfPipeline
         int formNum = baseNum;
         int contentNum = baseNum + 1;
         int sheetPageNum = baseNum + 2;
+        int fontNum = baseNum + 3;
 
         var src = pages[0]; // always use first page
         string contentBytes = ConcatContents(src, objs);
@@ -108,6 +110,32 @@ internal static class QdfPipeline
             sheetOps.AppendLine(marksStream);
         }
 
+        // Slugline (ADR-047): sobreposta na MESMA faixa de sangria que as marcas
+        // reservaram. Sem `Marks` a expansao e zero, o calculo do core devolve
+        // null e a slugline e OMITIDA — nunca expande a pagina (Decisao 2).
+        if (options.Slugline is not null)
+        {
+            double bleedStripeMm = expandHMm / 2.0;
+            var slugInput = new SluglineInput(
+                options.Slugline.FileName,
+                options.Slugline.ImpositionTime,
+                options.SheetWMm,
+                options.SheetHMm,
+                options.Cols,
+                options.Rows,
+                options.Slugline.Total,
+                bleedStripeMm,
+                options.Slugline.CustomText);
+            var placement = SluglineCalculator.Calculate(slugInput);
+            if (placement is not null)
+            {
+                string sluglineStream = SluglineRenderer.GenerateContentStream(
+                    placement, marksOffsetPt, marksOffsetYPt);
+                if (sluglineStream.Length > 0)
+                    sheetOps.AppendLine(sluglineStream);
+            }
+        }
+
         string sheetStreamData = sheetOps.ToString().Replace("\r\n", "\n");
         sb.AppendLine($"{contentNum} 0 obj");
         sb.AppendLine("<<");
@@ -141,12 +169,36 @@ internal static class QdfPipeline
             }
             sb.AppendLine("    >>");
         }
-        
+
+        // Fonte base-14 da slugline (ADR-047, Decisao 3). Sem `/Font` no recurso,
+        // o `Tj` do texto nao resolveria /F1 e o rodape sairia em branco.
+        if (options.Slugline is not null)
+        {
+            sb.AppendLine("    /Font <<");
+            sb.AppendLine($"      /F1 {fontNum} 0 R");
+            sb.AppendLine("    >>");
+        }
+
         sb.AppendLine("  >>");
         sb.AppendLine("  /Type /Page");
         sb.AppendLine(">>");
         sb.AppendLine("endobj");
         sb.AppendLine();
+
+        // Objeto da fonte Helvetica. A ordem em arquivo e livre: o
+        // `XrefBuilder.Rebuild` reindexa por varredura, nao por posicao.
+        if (options.Slugline is not null)
+        {
+            sb.AppendLine($"{fontNum} 0 obj");
+            sb.AppendLine("<<");
+            sb.AppendLine("  /Type /Font");
+            sb.AppendLine("  /Subtype /Type1");
+            sb.AppendLine("  /BaseFont /Helvetica");
+            sb.AppendLine("  /Encoding /WinAnsiEncoding");
+            sb.AppendLine(">>");
+            sb.AppendLine("endobj");
+            sb.AppendLine();
+        }
 
         string objectBlob = sb.ToString().Replace("\r\n", "\n");
 

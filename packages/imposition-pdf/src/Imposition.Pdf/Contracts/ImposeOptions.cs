@@ -11,7 +11,8 @@ public sealed record ImposeOptions(
     double StepXMm,
     double StepYMm,
     bool Rotate90,
-    MarksOptions? Marks = null);
+    MarksOptions? Marks = null,
+    SluglineOptions? Slugline = null);
 
 /// <summary>Informações de OCG extraídas do PDF.</summary>
 public sealed record OcgInfo(

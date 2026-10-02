@@ -10,6 +10,7 @@ using PdfSharp.Pdf.IO;
 using AutoImposerCLI.Imposition;
 using Imposition.Core.Contracts;
 using Imposition.Core.Geometry;
+using Imposition.Core.Slugline;
 using CoreInput = Imposition.Core.Contracts.ImpositionInput;
 using CorePlan = Imposition.Core.Contracts.ImpositionResult;
 using CoreImpositionException = Imposition.Core.Errors.ImpositionException;
@@ -22,11 +23,12 @@ if (args.Length == 0 || string.IsNullOrWhiteSpace(args[0]))
     Console.ForegroundColor = ConsoleColor.Yellow;
     Console.WriteLine("USO: AutoImposerCLI.exe <arquivo.pdf> [largura_mm] [altura_mm] [gap_mm] [margem_mm] [pasta_saida] [target_copies]");
     Console.WriteLine("     [--margin-t N] [--margin-r N] [--margin-b N] [--margin-l N] [--rotation auto|0|90]");
-    Console.WriteLine("     [--target-copies N] [--surplus truncate|fill_row|fill_advance] [--output-dir DIR]");
+    Console.WriteLine("     [--target-copies N] [--surplus truncate|fill_row|fill_advance] [--output-dir DIR] [--slugline <texto>]");
     Console.WriteLine("     [--substrate-kind sheet|roll] [--max-length N] [--trim-to-content] [--json] [--strict|--warn]");
     Console.WriteLine("     [--json '{\"inputPdf\":\"...\",\"sheetWMm\":665,...}']");
     Console.WriteLine("Exemplo: AutoImposerCLI.exe C:\\Artes\\adesivo.pdf 700 1000 2 10");
     Console.WriteLine("         AutoImposerCLI.exe C:\\Artes\\adesivo.pdf 700 1000 2 10 --surplus fill_row --output-dir C:\\saida");
+    Console.WriteLine("         AutoImposerCLI.exe C:\\Artes\\adesivo.pdf 700 1000 2 10 --marks --slugline \"CARIMBO RODAPE\"");
     Console.WriteLine("         AutoImposerCLI.exe --json '{\"inputPdf\":\"C:\\\\Artes\\\\copiar2.pdf\",\"sheetWMm\":665,\"sheetHMm\":986,\"cols\":35,\"rows\":29,\"pecaWMm\":19,\"pecaHMm\":34,\"gapMm\":0,\"marginLeftMm\":0,\"marginTopMm\":0,\"rotacionar90\":true,\"targetCopies\":1015}'");
     Console.ResetColor();
     return 1;
@@ -115,17 +117,19 @@ bool warnMode   = args.Contains("--warn", StringComparer.OrdinalIgnoreCase)
     && !args.Contains("--strict", StringComparer.OrdinalIgnoreCase);
 
 bool jsonMode = jp != null || args.Contains("--json", StringComparer.OrdinalIgnoreCase);
-string outputDir = jp?.outputPath
-    ?? ParseOutputDir(args)
-    ?? (args.Length > 5 && !args[5].StartsWith("--", StringComparison.Ordinal) ? args[5].Trim('"') : Path.GetDirectoryName(inputPdf)!);
-if (outputDir.Length > 0 && !Directory.Exists(outputDir))
-{
-    Directory.CreateDirectory(outputDir);
-}
-
 var sw = Stopwatch.StartNew();
 var result = new ImpositionResult { inputFile = inputPdf, version = "0.3.0" };
 string? error = null;
+
+string outputDir = jp?.outputPath
+    ?? ParseOutputDir(args)
+    ?? (args.Length > 5 && !args[5].StartsWith("--", StringComparison.Ordinal) ? args[5].Trim('"') : Path.GetDirectoryName(inputPdf)!);
+
+if (!Program.TryEnsureDirectory(outputDir, out error))
+{
+    fail(result, jsonMode, error!);
+    return 1;
+}
 
 // ── Lê a arte ────────────────────────────────────────────────────────
 XPdfForm arteForm;
@@ -393,6 +397,11 @@ try
 
     var ocgInfo = Imposition.Pdf.PdfImposer.Inspect(inputPdf);
 
+    // ── Slugline (ADR-047, ruling R-018; ADR-048) ───────────────────────
+    // --slugline <texto> liga o recurso; ausente ou vazio deixa o pipeline
+    // intocado. Lida uma vez, antes da escolha de motor.
+    var slugline = Program.ParseSlugline(args, inputPdf, cols, rows);
+
     if (ocgInfo.HasOcg && Imposition.Pdf.QpdfRunner.IsAvailable())
     {
         Console.WriteLine($"[INFO] PDF tem {ocgInfo.Layers.Count} camadas OCG. Usando QPDF.");
@@ -408,6 +417,37 @@ try
                 OffsetMm: ParseMarkOffsetMm(args))
             : null;
 
+        if (slugline is not null)
+        {
+            if (marks is null)
+            {
+                // Sem --marks a expansão das marcas é (0,0): não existe faixa de
+                // sangria onde a slugline caiba. O QDF não expande a página
+                // (ADR-047 Decisão 2) — a CLI declara a omissão e o
+                // SluglineCalculator devolve null no core. O RESULT_JSON recebe o
+                // mesmo valor ABAIXO, depois do Impose (desfecho, não previsão).
+                Console.Error.WriteLine(
+                    "[AVISO] --slugline requer --marks (faixa de sangria); slugline OMITIDA.");
+            }
+            else if (slugline.CustomText is not null)
+            {
+                if (Program.SluglineTextHasNonLatin1(slugline.CustomText))
+                {
+                    // /WinAnsiEncoding cobre latin-1 (ADR-047 Decisão 3): fora de latin-1 o
+                    // core NormalizeLatin1 REMOVE o caractere do rodapé (não vira glifo
+                    // vazio no RIP). Consequência declarada, nunca silenciosa.
+                    Console.Error.WriteLine(
+                        "[AVISO] --slugline tem caracteres fora de latin-1; eles serão REMOVIDOS do rodapé (ADR-047 Decisão 3).");
+                }
+                else if (Program.SluglineTextHasFoldedDiacritics(slugline.CustomText))
+                {
+                    // N4-2: Dobra de diacrítico latin-1 para a base ASCII (ADR-047 Decisão 3).
+                    Console.Error.WriteLine(
+                        "[AVISO] --slugline tem diacríticos que serão convertidos para base ASCII (ADR-047 Decisão 3).");
+                }
+            }
+        }
+
         var options = new Imposition.Pdf.Contracts.ImposeOptions(
             SheetWMm: pageWMm,
             SheetHMm: pageHMm,
@@ -418,13 +458,39 @@ try
             StepXMm: slotWMm + gapMm,
             StepYMm: slotHMm + gapMm,
             Rotate90: rotacionar,
-            Marks: marks);
+            Marks: marks,
+            Slugline: slugline);
 
         var files = Imposition.Pdf.PdfImposer.Impose(inputPdf, result.outputFile, options);
+
+        // ── Desfecho da slugline (R-019) ──────────────────────────────────
+        // Atribuído SÓ depois de o PDF ter sido gravado: é o que o QDF fez, não
+        // o que a CLI espera que ele faça. Se o Impose lançar antes/durante a
+        // gravação, o catch chama fail() e o campo fica null. Se falhar após a
+        // gravação (ex.: integridade estrita), o campo reflete o rodapé gravado no PDF.
+        if (slugline is not null)
+        {
+            // pageWMm é a MESMA largura que o QDF usou para truncar
+            // (ImposeOptions.SheetWMm), então o desfecho bate com o PDF.
+            result.sluglineInfo = marks is null
+                ? "omitida_sem_faixa_de_sangria"
+                : Program.ResolveSluglineInfo(slugline.CustomText, pageWMm);
+        }
+
         Console.WriteLine($"[OK] {files.Count} arquivo(s) gerado(s).");
     }
     else
     {
+        if (slugline is not null)
+        {
+            // Único desenhador de texto é o QDF: o XGraphics do PdfSharp
+            // achata o OCG (ADR-047 Decisões 4 e 6). A CLI não desenha texto.
+            // O RESULT_JSON recebe "omitida_pdfsharp_fallback" ABAIXO, depois
+            // da gravação (desfecho, não previsão — R-019).
+            Console.Error.WriteLine(
+                "[AVISO] --slugline não é desenhado no fluxo PdfSharp (fallback); omitido.");
+        }
+
         if (ocgInfo.HasOcg)
         {
             Console.Error.WriteLine("[AVISO] PDF tem camadas OCG, mas qpdf.exe não encontrado.");
@@ -471,6 +537,11 @@ try
             }
         }
         outputDoc.Save(result.outputFile);
+
+        if (slugline is not null)
+        {
+            result.sluglineInfo = "omitida_pdfsharp_fallback";
+        }
     }
 
     result.grid.units = geradas;
@@ -634,6 +705,11 @@ static void fail(ImpositionResult result, bool jsonMode, string message)
     }
 }
 
+// Os helpers da slugline vivem na classe partial (e nao como funcoes locais
+// junto do resto do arquivo) porque o corpo do Main sao top-level statements:
+// o compilador recusa o uso de funcao local de top-level fora dele (CS8801),
+// e o corpo do Main nao e testavel. Parse 100% puro: nao le arquivo, nao
+// chama qpdf, nao mexe em geometria.
 partial class Program
 {
     internal static readonly JsonSerializerOptions Opts = new()
@@ -641,6 +717,156 @@ partial class Program
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         WriteIndented = false,
     };
+
+    /// <summary>
+    /// Garante que o diretório de saída existe. Em caso de falha de I/O ou caminho inválido,
+    /// devolve false e mensagem explicativa sem lançar unhandled exception (mantém contrato RESULT_JSON).
+    /// </summary>
+    internal static bool TryEnsureDirectory(string outputDir, out string? error)
+    {
+        try
+        {
+            if (outputDir.Length > 0 && !Directory.Exists(outputDir))
+            {
+                Directory.CreateDirectory(outputDir);
+            }
+            error = null;
+            return true;
+        }
+        catch (Exception ex)
+        {
+            error = $"Falha ao criar diretório de saída '{outputDir}': {ex.Message}";
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// <c>--slugline &lt;texto&gt;</c> (ADR-047, Decisao 6): true quando a flag
+    /// existe (OrdinalIgnoreCase) com proximo token nao vazio e nao whitespace.
+    /// Texto vazio/ausente deixa o pipeline intocado.
+    /// </summary>
+    internal static bool HasSluglineFlag(string[] args)
+        => !string.IsNullOrWhiteSpace(SluglineTextArg(args));
+
+    /// <summary>
+    /// Monta as opcoes da slugline a partir da linha de comando, ou null
+    /// quando a flag nao traz texto (ADR-047, Decisao 6).
+    /// </summary>
+    /// <param name="args">Argumentos do processo.</param>
+    /// <param name="inputPdf">Arquivo de trabalho (entra so o nome).</param>
+    /// <param name="cols">Colunas da grade desenhada pelo QDF.</param>
+    /// <param name="rows">Linhas da grade desenhada pelo QDF.</param>
+    internal static Imposition.Pdf.Contracts.SluglineOptions? ParseSlugline(
+        string[] args, string inputPdf, int cols, int rows)
+    {
+        // R-018: a flag e o portao. Ausente, sem valor ou so com espacos =>
+        // pipeline intocado (ADR-047, Decisao 6).
+        if (!HasSluglineFlag(args)) return null;
+
+        var text = SluglineTextArg(args)!.Trim();
+        string? customText = string.Equals(text, "auto", StringComparison.OrdinalIgnoreCase)
+            ? null
+            : text;
+
+        return new Imposition.Pdf.Contracts.SluglineOptions(
+            FileName: Path.GetFileName(inputPdf),
+            ImpositionTime: DateTimeOffset.Now,
+            // R-018: a CLI deriva cols*rows porque e exatamente a grade que o
+            // QDF desenha; o SluglineCalculator NAO faz cross-check (R-012).
+            Total: cols * rows,
+            CustomText: customText);
+    }
+
+    /// <summary>
+    /// True se algum caractere nao e representavel no WinAnsiEncoding
+    /// (consequencia negativa da ADR-047, Decisao 3): fora de latin-1 o
+    /// <c>SluglineFormatter.NormalizeLatin1</c> REMOVE o caractere do rodape,
+    /// entao a CLI avisa em vez de falhar em silencio.
+    /// </summary>
+    internal static bool SluglineTextHasNonLatin1(string text)
+    {
+        if (string.IsNullOrEmpty(text)) return false;
+        foreach (var c in text)
+        {
+            if (c > 0xFF) return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Desfecho da slugline para o <c>RESULT_JSON</c>: "desenhada",
+    /// "desenhada_truncada" ou "omitida_texto_vazio" (ADR-047; ruling R-019).
+    /// <para>
+    /// É RESULTADO, nunca previsão: deriva o texto efetivo pelo MESMO caminho do
+    /// <c>QdfPipeline</c> (API pública do core — <c>NormalizeLatin1</c> + <c>TruncateToFit</c>),
+    /// porque o texto pedido pode não chegar ao <c>Tj</c> inteiro: caractere fora
+    /// de latin-1 é REMOVIDO (não vira glifo vazio) e o que sobra é truncado
+    /// quando não cabe. Nos dois casos o PDF sai diferente do pedido, então
+    /// dizer "desenhada" seria mentir.
+    /// </para>
+    /// <para>
+    /// <paramref name="customText"/> nulo = sem slugline (a flag é o portão,
+    /// R-018) =&gt; null, sem chave útil no JSON. Atribuído SÓ depois da tentativa
+    /// de gravação do PDF: se o pipeline falhar antes ou durante a gravação,
+    /// <c>fail()</c> serializa o resultado com <c>sluglineInfo = null</c> e
+    /// <c>status = "error"</c> (nada foi gravado). Se o erro ocorrer após a gravação
+    /// (ex.: falha de integridade na contagem de unidades), o campo mantém o
+    /// desfecho real gravado no arquivo.
+    /// </para>
+    /// </summary>
+    /// <param name="customText">Texto de <c>--slugline</c>, ou null se a flag não foi dada.</param>
+    /// <param name="pageWidthMm">Largura efetiva da chapa — a MESMA <c>pageWMm</c>
+    /// que vai em <c>ImposeOptions.SheetWMm</c>, de onde o QDF tira a largura do truncamento.</param>
+    internal static string? ResolveSluglineInfo(string? customText, double pageWidthMm)
+    {
+        if (customText is null) return null;
+
+        // Mesma cadeia do SluglineCalculator.Calculate via API unificada do core (N4-3):
+        // o cálculo do core continua sendo a fonte única da verdade.
+        var normalizado = SluglineFormatter.NormalizeLatin1(customText);
+        var efetivo = SluglineFormatter.EffectiveText(customText, pageWidthMm);
+
+        if (efetivo.Length == 0) return "omitida_texto_vazio";
+        return efetivo == normalizado ? "desenhada" : "desenhada_truncada";
+    }
+
+    /// <summary>
+    /// True se o texto contém diacríticos latin-1 que sofrem dobra para a base ASCII
+    /// por <c>SluglineFormatter.NormalizeLatin1</c> (ex: 'É' -> 'E', 'ã' -> 'a').
+    /// Caracteres como 'ç', 'ñ', '°' são mantidos sem dobra (latin-1 legítimo).
+    /// </summary>
+    internal static bool SluglineTextHasFoldedDiacritics(string text)
+    {
+        if (string.IsNullOrEmpty(text)) return false;
+        foreach (var c in text)
+        {
+            if (c > 0x7F && c <= 0xFF && !IsKeptLatin1Char(c))
+                return true;
+        }
+        return false;
+    }
+
+    private static bool IsKeptLatin1Char(char c)
+        => c is '\u00E7' or '\u00C7' or '\u00F1' or '\u00D1' or '\u00B0';
+
+    // Mesma semântica de flagStr (devolve o próximo token incondicionalmente),
+    // reimplantada aqui porque flagStr é função local do Main e não pode ser
+    // alcançada a partir da classe partial (CS8801). Rejeita tokens iniciados por
+    // '--' para não engolir flags subsequentes (N4-4).
+    private static string? SluglineTextArg(string[] args)
+    {
+        for (int i = 0; i < args.Length - 1; i++)
+        {
+            if (string.Equals(args[i], "--slugline", StringComparison.OrdinalIgnoreCase))
+            {
+                var next = args[i + 1];
+                if (next.StartsWith("--", StringComparison.Ordinal))
+                    return null;
+                return next;
+            }
+        }
+        return null;
+    }
 }
 
 // ── Modelo JSON recebido do Electron ──────────────────────────────────
@@ -682,6 +908,12 @@ public class ImpositionResult
     public int plannedUnits { get; set; }
     public int drawnUnits { get; set; }
     public int readBackUnits { get; set; }
+    // Slugline (ADR-047): null = flag ausente/vazia (nada a dizer) ou erro
+    // pré-gravação (nada foi gravado). Atribuído após a gravação do PDF
+    // (R-019): "desenhada", "desenhada_truncada", "omitida_texto_vazio",
+    // "omitida_sem_faixa_de_sangria" ou "omitida_pdfsharp_fallback".
+    // Degradação declarada, nunca silenciosa.
+    public string? sluglineInfo { get; set; }
     public int requestedUnits { get; set; }
     public int surplusUnits { get; set; }
 }

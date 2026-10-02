@@ -85,3 +85,6 @@ in_rolo.txt
 temp_*.pdf
 S/
 *.qdf
+
+# SDD (Subagent-Driven Development) - ledger local, fora do tracking
+.sdd/

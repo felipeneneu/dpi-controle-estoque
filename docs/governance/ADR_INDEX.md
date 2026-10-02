@@ -37,3 +37,10 @@
 | ADR-042 | Evolução de Mesa de Etiquetas para Mesa de Imposição Profissional | Aprovado | 2026-09-20 | desktop/imposition | BR-010, BR-021 | complementa ADR-015, ADR-021 |
 | ADR-043 | Imposition.Pdf.dll (QPDF + preservação OCG) | Proposto | 2026-09-20 | imposition/pdf | BR-010, BR-021 | complementa ADR-017, ADR-021, ADR-041 |
 | ADR-044 | Marcas de Imposi��o (Crop + Mimaki Tipo 1) | Proposto | 2026-09-21 | imposition/prepress | BR-010, BR-021 | complementa ADR-043 |
+| ADR-047 | Slugline de Imposição (Linha de Informação Técnica do Job) | Proposto | 2026-09-29 | imposition/prepress | BR-010, BR-021 | novo — complementa ADR-040; observa ADR-043, ADR-044 |
+
+| ADR-048 | Modo Automático da Slugline (--slugline auto) | Proposto | 2026-09-30 | imposition/prepress | BR-010, BR-021 | complementa ADR-047 |
+
+| ADR-049 | Contrato de Calculo e Compensacao Termica de Emendas (Modulo Seams) | Aprovado | 2026-09-30 | imposition/prepress | BR-050 | novo - complementa ADR-015, ADR-017, ADR-021, ADR-041 |
+
+| ADR-050 | Contrato de Gestao de Rolos e Sugestao de Rolo Otimo (Modulo Seams) | Aprovado | 2026-09-30 | imposition/prepress/inventory | BR-051 | novo - complementa ADR-009, ADR-015, ADR-049 |
