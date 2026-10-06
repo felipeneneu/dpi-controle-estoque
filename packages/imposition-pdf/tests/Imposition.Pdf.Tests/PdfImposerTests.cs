@@ -1,29 +1,54 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using FluentAssertions;
 using Imposition.Pdf;
 using Imposition.Pdf.Contracts;
 using Imposition.Pdf.Marks;
+using Imposition.Pdf.Tests.TestHelpers;
 using Xunit;
 
 namespace Imposition.Pdf.Tests;
 
-public class PdfImposerTests
+public class PdfImposerTests : IDisposable
 {
+    private readonly string _tempDir;
+    private static readonly Encoding Latin1 = Encoding.GetEncoding(28591);
+
+    public PdfImposerTests()
+    {
+        _tempDir = Path.Combine(Path.GetTempPath(), "PdfImposerTests_" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(_tempDir);
+    }
+
+    public void Dispose()
+    {
+        try
+        {
+            if (Directory.Exists(_tempDir))
+                Directory.Delete(_tempDir, true);
+        }
+        catch
+        {
+            // Limpeza de diretório temporário
+        }
+    }
+
     [Fact]
     public void BR_043_a_ImposePreservesOcg()
     {
-        var input = "Fixtures/3-layers.pdf";
-        var outputDir = "Output";
-        Directory.CreateDirectory(outputDir);
-        var output = Path.Combine(outputDir, "test-impose.pdf");
+        var inputQdf = Path.Combine(_tempDir, "input_3layers.qdf");
+        PdfInspector.CreateSampleQdfWithOcg(inputQdf);
 
-        var files = PdfImposer.Impose(input, output, new ImposeOptions(700, 1000, 2, 2, 0, 0, 50, 50, false));
+        var output = Path.Combine(_tempDir, "test-impose.qdf");
+        var options = new ImposeOptions(700, 1000, 2, 2, 0, 0, 50, 50, false);
 
-        files.Should().ContainSingle();
+        var resultFile = PdfInspector.ImposeQdf(inputQdf, output, options);
 
-        var outputOcg = PdfImposer.Inspect(output);
+        File.Exists(resultFile).Should().BeTrue();
+
+        var outputOcg = PdfInspector.Inspect(output);
         outputOcg.HasOcg.Should().BeTrue();
         outputOcg.Layers.Should().HaveCount(3);
         outputOcg.Layers.Select(l => l.Name).Should().Contain(new[] { "Arte", "Branco", "Faca" });
@@ -32,9 +57,11 @@ public class PdfImposerTests
     [Fact]
     public void BR_043_c_NoOcgThrowsException()
     {
-        var input = "Fixtures/no-ocg.pdf";
-        var act = () => PdfImposer.Impose(
-            input, "Output/x.pdf", new ImposeOptions(700, 1000, 2, 2, 0, 0, 50, 50, false));
+        var inputNoOcg = Path.Combine(_tempDir, "no-ocg.qdf");
+        PdfInspector.CreateSampleQdfWithoutOcg(inputNoOcg);
+
+        var options = new ImposeOptions(700, 1000, 2, 2, 0, 0, 50, 50, false);
+        var act = () => PdfInspector.ImposeQdf(inputNoOcg, Path.Combine(_tempDir, "out.qdf"), options);
 
         act.Should().Throw<InvalidOperationException>()
            .WithMessage("*OCG*");
@@ -47,17 +74,16 @@ public class PdfImposerTests
         try
         {
             Environment.SetEnvironmentVariable("TMP", "S");
-            var input = "Fixtures/3-layers.pdf";
-            var outputDir = "Output";
-            Directory.CreateDirectory(outputDir);
-            var output = Path.Combine(outputDir, "test-impose-temp.pdf");
+            var inputQdf = Path.Combine(_tempDir, "input_temp_path.qdf");
+            PdfInspector.CreateSampleQdfWithOcg(inputQdf);
 
-            // Se o bug existir, PdfImposer.Impose lança DirectoryNotFoundException
-            // (ou falha no motor). Com o fix, deve rodar com sucesso.
-            var files = PdfImposer.Impose(input, output, new ImposeOptions(700, 1000, 2, 2, 0, 0, 50, 50, false));
+            var output = Path.Combine(_tempDir, "test-impose-temp.qdf");
+            var options = new ImposeOptions(700, 1000, 2, 2, 0, 0, 50, 50, false);
 
-            files.Should().ContainSingle();
-            var outputOcg = PdfImposer.Inspect(output);
+            var resultFile = PdfInspector.ImposeQdf(inputQdf, output, options);
+
+            File.Exists(resultFile).Should().BeTrue();
+            var outputOcg = PdfInspector.Inspect(output);
             outputOcg.HasOcg.Should().BeTrue();
         }
         finally
@@ -66,33 +92,35 @@ public class PdfImposerTests
         }
     }
 
-
     [Fact]
     public void BR_044_a_CropMarksDrawn()
     {
-        var input = "Fixtures/3-layers.pdf";
-        var output = "Output/marks-crop.pdf";
+        var inputQdf = Path.Combine(_tempDir, "input_crop.qdf");
+        PdfInspector.CreateSampleQdfWithOcg(inputQdf);
 
+        var output = Path.Combine(_tempDir, "marks-crop.qdf");
         var options = new ImposeOptions(700, 1000, 2, 2, 0, 0, 50, 50, false, new MarksOptions(MarkType.Crop));
-        PdfImposer.Impose(input, output, options);
 
-        var qdf = QpdfRunner.Run($"--qdf \"{output}\" -");
-        qdf.Should().Contain("0 0 0 RG");
-        qdf.Should().Contain("S\nQ");
+        PdfInspector.ImposeQdf(inputQdf, output, options);
+
+        var qdfContent = File.ReadAllText(output, Latin1);
+        qdfContent.Should().Contain("0 0 0 1 K");
+        qdfContent.Should().MatchRegex(@"S\r?\nQ");
     }
 
     [Fact]
     public void BR_044_b_MimakiTipo1MarksDrawn()
     {
-        var input = "Fixtures/3-layers.pdf";
-        var output = "Output/marks-mimaki.pdf";
+        var inputQdf = Path.Combine(_tempDir, "input_mimaki.qdf");
+        PdfInspector.CreateSampleQdfWithOcg(inputQdf);
 
+        var output = Path.Combine(_tempDir, "marks-mimaki.qdf");
         var options = new ImposeOptions(700, 1000, 2, 2, 0, 0, 50, 50, false, new MarksOptions(MarkType.MimakiTipo1Plain, SizeMm: 25.0));
-        PdfImposer.Impose(input, output, options);
 
-        var qdf = QpdfRunner.Run($"--qdf \"{output}\" -");
-        qdf.Should().Contain("0 0 0 RG");
-        qdf.Should().Contain("S\nQ");
+        PdfInspector.ImposeQdf(inputQdf, output, options);
+
+        var qdfContent = File.ReadAllText(output, Latin1);
+        qdfContent.Should().Contain("0 0 0 1 K");
+        qdfContent.Should().MatchRegex(@"S\r?\nQ");
     }
 }
-
