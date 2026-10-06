@@ -3,7 +3,7 @@
     Version="7.0"
     ExtensionBundleId="com.graficaos.imposer"
     ExtensionBundleVersion="0.1.0"
-    ExtensionBundleName="Press Automation">
+    ExtensionBundleName="Prepress Automation">
 
     <ExtensionList>
         <Extension Id="com.graficaos.imposer.panel" Version="0.1.0" />

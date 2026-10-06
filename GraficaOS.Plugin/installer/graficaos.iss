@@ -1,7 +1,7 @@
 ; ── GraficaOS Imposer — Inno Setup 6.x ──
 ; Instalador para o plugin CEP + motor COM
 
-#define MyAppName "Press Automation"
+#define MyAppName "Prepress Automation"
 #define MyAppVersion "0.1.0"
 #define MyAppPublisher "GraficaOS"
 #define MyAppURL "https://graficaos.com"

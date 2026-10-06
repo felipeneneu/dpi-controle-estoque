@@ -1,6 +1,6 @@
 /* ── GraficaOS Imposer — Painel CEP ── */
 :root {
-  --brand-bg: #1473e6;
+  --brand-bg: #E74011;
   --bg-primary: #1e1e1e;
   --bg-secondary: #2d2d2d;
   --bg-tertiary: #3d3d3d;
@@ -75,7 +75,7 @@ body {
   .modal-footer > * + * { margin-left: 0; }
 }
 
-.logo-img { max-height: 38px; }
+.logo-img { max-height: 48px; }
 
 .logo-fallback {
   color: #fff;

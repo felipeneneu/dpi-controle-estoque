@@ -2,16 +2,17 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8" />
-    <title>Press Automation</title>
+    <title>Prepress Automation</title>
     <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
     <!-- Faixa de Logo -->
     <header class="logo-banner">
         <div class="logo-area">
-            <img src="icons/logo.svg" alt="GraficaOS" class="logo-img"
+            <img id="logoImg" alt="Prepress Automation" class="logo-img"
+                 src="icons/logo.svg"
                  onerror="this.style.display='none';this.nextElementSibling.style.display='inline'" />
-            <span class="logo-fallback" style="display:none">G GraficaOS</span>
+            <span class="logo-fallback" style="display:none">Prepress Automation</span>
         </div>
         <button class="info-btn" id="btnInfo" title="Informações">i</button>
     </header>
@@ -30,11 +31,11 @@
         <p class="hint">Usa a seleção atual do Illustrator como arte.</p>
         <div class="form-row">
             <div class="form-group half">
-                <label>Chapa L (mm)</label>
+                <label>Formato L (mm)</label>
                 <input type="number" id="sheetW" value="710" step="0.1" />
             </div>
             <div class="form-group half">
-                <label>Chapa A (mm)</label>
+                <label>Formato A (mm)</label>
                 <input type="number" id="sheetH" value="1000" step="0.1" />
             </div>
         </div>
@@ -91,7 +92,7 @@
     <div class="modal hidden" id="modalInfo">
         <h3>Press Automation</h3>
         <table class="info-table">
-            <tr><td>Produto</td><td>Press Automation</td></tr>
+            <tr><td>Produto</td><td>PrePress Automation</td></tr>
             <tr><td>Versão painel</td><td>0.1.0</td></tr>
             <tr><td>Versão motor</td><td id="infoMotorVersion">—</td></tr>
             <tr><td>Tenant</td><td id="infoTenant">—</td></tr>
@@ -114,6 +115,27 @@
         </div>
     </div>
 
+    <script>
+      function setLogoSrc() {
+        try {
+          const extPath = window.CSInterface ? window.CSInterface.getSystemPath('extension') : '';
+          if (extPath && extPath.length > 0) {
+            const logoPath = extPath.replace(/\//g, '\\') + '\\icons\\logo.svg';
+            document.getElementById('logoImg').src = logoPath;
+          }
+        } catch (e) {
+          // Ignored - keeps original src="icons/logo.svg"
+        }
+      }
+
+      const csInterface = window.CSInterface;
+      if (csInterface) {
+        setLogoSrc();
+      } else {
+        // Modo browser/development: tenta src relativo, onerror cuida do resto
+        document.getElementById('logoImg').src = 'icons/logo.svg';
+      }
+    </script>
     <script src="lib/CSInterface.js"></script>
     <script src="main.js"></script>
 </body>
