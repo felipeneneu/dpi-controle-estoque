@@ -36,4 +36,16 @@ public static class ErrorCodes
     public const string InvalidPreviewInput            = "E_INVALID_PREVIEW_INPUT";
     public const string ExportSourceNotCmyk            = "E_EXPORT_SOURCE_NOT_CMYK";
     public const string InvalidExportInput             = "E_INVALID_EXPORT_INPUT";
+    public const string SourceHasOcg                   = "E_SOURCE_HAS_OCG";
+    public const string InvalidIccProfile              = "E_INVALID_ICC_PROFILE";
+    public const string OperationCanceled              = "E_OPERATION_CANCELED";
+    public const string InputNotFound                  = "E_INPUT_NOT_FOUND";
+    public const string InvalidArgument                = "E_INVALID_ARGUMENT";
+    public const string InvalidDimension               = "E_INVALID_DIMENSION";
+    public const string InvalidOverlap                 = "E_INVALID_OVERLAP";
+    public const string FormatMismatch                 = "E_FORMAT_MISMATCH";
+    public const string RollTooNarrow                  = "E_ROLL_TOO_NARROW";
+    public const string PdfxNonCompliant               = "E_PDFX_NON_COMPLIANT";
+    public const string IoError                        = "E_IO_ERROR";
+    public const string AccessDenied                   = "E_ACCESS_DENIED";
 }

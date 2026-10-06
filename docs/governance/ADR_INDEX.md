@@ -51,3 +51,6 @@
 
 | [ADR-052](adr/ADR-052-seams-preview-contract.md) | Contrato de Preview ICC-Aware e Display Adaptation (Modulo Seams) | Aprovado | 2026-10-03 | imposition/prepress/render | BR-052 | complementa ADR-049, ADR-050, ADR-051; aplica R-020 |
 | [ADR-053](adr/ADR-053-jpg-export-contract.md) | Contrato de Exportacao de Paineis JPG CMYK (Modulo Seams) | Aprovado | 2026-10-05 | imposition/prepress/export | BR-054 | complementa ADR-049, ADR-050, ADR-051, ADR-052; aplica R-020 |
+
+| [ADR-054](adr/ADR-054-pdfx1a-export-contract.md) | Contrato de Exportacao de Paineis PDF/X-1a (Modulo Seams) | Aprovado | 2026-10-06 | imposition/prepress/export | BR-055 | complementa ADR-043, ADR-049, ADR-050, ADR-051; aplica R-020 |
+| [ADR-055](adr/ADR-055-seams-cli-contract.md) | Contrato de Automacao Headless CLI de Emendas (Modulo Seams) | Proposta | 2026-10-06 | imposition/prepress/cli | BR-056 | complementa ADR-049, ADR-050, ADR-053, ADR-054; aplica R-013, R-019, R-020 |
