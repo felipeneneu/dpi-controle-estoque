@@ -32,4 +32,8 @@ public static class ErrorCodes
     public const string RollNotFound                   = "E_ROLL_NOT_FOUND";
     public const string RollUsableWidthInvalid         = "E_ROLL_USABLE_WIDTH_INVALID";
     public const string InvalidGuideLine               = "E_INVALID_GUIDE_LINE";
+    public const string PreviewInputNotFound           = "E_PREVIEW_INPUT_NOT_FOUND";
+    public const string InvalidPreviewInput            = "E_INVALID_PREVIEW_INPUT";
+    public const string ExportSourceNotCmyk            = "E_EXPORT_SOURCE_NOT_CMYK";
+    public const string InvalidExportInput             = "E_INVALID_EXPORT_INPUT";
 }

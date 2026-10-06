@@ -79,6 +79,14 @@ Se passar de 5 rulings, o planejamento falhou — parar e revisar.
     Verificado empiricamente em 2026-09-30, ruling R-019 da slugline:
     `sluglineInfo = "desenhada"` era escrito antes de `PdfImposer.Impose`, e
     mentia no caminho de erro.
+17. **CMYK sempre, RGB nunca no arquivo** (regra R-020 — permanente). Arquivos de
+    saída (`.jpg`, `.pdf`, `.tif`, `.psd`) **nunca** passam por conversão para RGB.
+    `K40%` e demais cores CMYK são escritas diretamente nos canais CMYK.
+    Preview em tela é **display adaptation via ICC** (LittleCMS):
+    CMYK (FOGRA39 ou perfil configurado) → sRGB do monitor.
+    **Nunca** valor hexadecimal arbitrário. Documentar como "aproximação visual",
+    nunca como conversão de cor. Violação desta regra invalida o arquivo para
+    impressão gráfica.
 
 ## Estrutura de pacotes
 
@@ -104,5 +112,6 @@ Se passar de 5 rulings, o planejamento falhou — parar e revisar.
 - ❌ Python em produção (só `spikes/`).
 - ❌ Ajustar teste para passar (se quebrou, é bug).
 - ❌ Alterar contrato público sem ADR.
+- ❌ Converter arquivos de saída para RGB (regra R-020 — CMYK sempre).
 
 ## Padrões de commit

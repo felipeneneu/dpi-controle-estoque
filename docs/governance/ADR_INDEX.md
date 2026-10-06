@@ -48,3 +48,6 @@
 | ADR-051 | Contrato da Linha-Guia de Emenda (K 40% em PDF e Raster) | Aprovado | 2026-10-02 | imposition/prepress | BR-053 | novo - complementa ADR-047, ADR-049 |
 
 | ADR-052 | Contrato do Cartucho de Tinta/Toner como Ativo por Canal (HP e Konica) | Aprovado | 2026-10-02 | inventory/deduction/alerts | BR-052, BR-054 | novo - complementa ADR-009 (Emenda 4), ADR-007, ADR-008 |
+
+| [ADR-052](adr/ADR-052-seams-preview-contract.md) | Contrato de Preview ICC-Aware e Display Adaptation (Modulo Seams) | Aprovado | 2026-10-03 | imposition/prepress/render | BR-052 | complementa ADR-049, ADR-050, ADR-051; aplica R-020 |
+| [ADR-053](adr/ADR-053-jpg-export-contract.md) | Contrato de Exportacao de Paineis JPG CMYK (Modulo Seams) | Aprovado | 2026-10-05 | imposition/prepress/export | BR-054 | complementa ADR-049, ADR-050, ADR-051, ADR-052; aplica R-020 |
