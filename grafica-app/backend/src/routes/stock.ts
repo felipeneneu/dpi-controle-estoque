@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { eq } from 'drizzle-orm';
-import { stockItems, stockTransactions, notifications, users, machineItems, bobinas, garrafas, cartuchos } from '../db/schema.js';
+import { stockItems, stockTransactions, notifications, users, machineItems, bobinas, garrafas, cartuchos, tintaLotes, machines } from '../db/schema.js';
 import { db } from '../db/index.js';
 import { newId } from '../lib/ids.js';
 import { sendToRecipients } from '../lib/whatsapp.js';
@@ -58,11 +58,25 @@ const stockItemResponseSchema = {
     status: { type: 'string', enum: ['AVAILABLE', 'LOW_STOCK', 'OUT_OF_STOCK'] },
     machineIds: { type: 'array', items: { type: 'string' } },
     /**
-     * Qual origem venceu para o `currentQuantity` desta linha (ADR-052 / H14).
-     * Sem isso a UI mostra um saldo e nao diz se ele veio de cartucho, garrafa ou
+     * Qual origem venceu para o `currentQuantity` desta linha (ADR-052 / ADR-057 / H14).
+     * Sem isso a UI mostra um saldo e nao diz se ele veio de cartucho, garrafa, lote ou
      * do agregado - e o operador nao consegue explicar a divergencia.
      */
-    origemSaldo: { type: 'string', enum: ['agregado', 'bobinas', 'garrafas', 'cartuchos'] },
+    origemSaldo: { type: 'string', enum: ['agregado', 'bobinas', 'garrafas', 'cartuchos', 'tinta_lotes'] },
+    availableLots: { type: 'number', nullable: true },
+    totalLots: { type: 'number', nullable: true },
+    activeLot: {
+      type: 'object',
+      nullable: true,
+      properties: {
+        id: { type: 'string' },
+        serial: { type: 'string' },
+        machineId: { type: 'string', nullable: true },
+        machineName: { type: 'string', nullable: true },
+        channel: { type: 'string', nullable: true },
+        metersRemaining: { type: 'number', nullable: true },
+      },
+    },
     createdAt: { type: 'string', format: 'date-time' },
   },
 };
@@ -121,6 +135,9 @@ export async function stockRoutes(app: FastifyInstance) {
     const links = await db.select().from(machineItems).all();
     const allBobinas = await db.select().from(bobinas).all();
     const allGarrafas = await db.select().from(garrafas).all();
+    const allTintaLotes = await db.select().from(tintaLotes).all();
+    const allMachines = await db.select().from(machines).all();
+    const machineMap = new Map(allMachines.map((m) => [m.id, m.name]));
 
     // ADR-052: cartucho e a 3a origem de saldo (depois de bobina e garrafa).
     // Uma consulta agregada para todos os itens com cartucho, em vez de N+1.
@@ -139,33 +156,110 @@ export async function stockRoutes(app: FastifyInstance) {
     return rows.map((r) => {
       let finalQuantity = r.currentQuantity;
       let origem = 'agregado';
+      let activeLot: {
+        id: string;
+        serial: string;
+        machineId?: string | null;
+        machineName?: string | null;
+        channel?: string | null;
+        metersRemaining?: number | null;
+      } | null = null;
+      let availableLots = 0;
+      let totalLots = 0;
+
       if (r.category === 'PAPER_MEDIA' && r.unit === 'm') {
-        const itemBobinas = allBobinas.filter(b => b.stockItemId === r.id && (b.state === 'NEW' || b.state === 'IN_USE'));
-        finalQuantity = itemBobinas.reduce((acc, b) => acc + (b.metersRemaining || 0), 0);
+        const itemBobinas = allBobinas.filter((b) => b.stockItemId === r.id);
+        const ativas = itemBobinas.filter((b) => b.state === 'NEW' || b.state === 'IN_USE');
+        const emEspera = itemBobinas.filter((b) => b.state === 'NEW');
+        const emUso = itemBobinas.find((b) => b.state === 'IN_USE');
+
+        finalQuantity = ativas.reduce((acc, b) => acc + (b.metersRemaining || 0), 0);
         origem = 'bobinas';
+        availableLots = emEspera.length;
+        totalLots = ativas.length;
+
+        if (emUso) {
+          const mId = emUso.location.startsWith('machine:')
+            ? emUso.location.replace('machine:', '')
+            : null;
+          activeLot = {
+            id: emUso.id,
+            serial: emUso.serial ?? emUso.id.slice(0, 8),
+            machineId: mId,
+            machineName: mId ? machineMap.get(mId) ?? mId : null,
+            metersRemaining: emUso.metersRemaining,
+          };
+        }
       } else if (r.category === 'INK_SUPPLY') {
-        // Prioridade: cartucho (BR-052) > garrafa (Mimaki) > agregado.
-        // `undefined` = item nao rastreado por cartucho (folha, solvente) -> cai
-        // no agregado. Item com cartuchos, mesmo todos descartados, tem entrada
-        // no mapa com 0 e nao volta a mentir o agregado.
-        const saldoCartucho = saldosCartucho.get(r.id);
-        if (saldoCartucho !== undefined) {
-          finalQuantity = saldoCartucho;
-          origem = 'cartuchos';
+        const itemTintaLotes = allTintaLotes.filter((l) => l.stockItemId === r.id);
+
+        if (itemTintaLotes.length > 0) {
+          // ADR-057: entidade tinta_lotes por unidade inteira NEW
+          const emEspera = itemTintaLotes.filter((l) => l.state === 'NEW');
+          const emUso = itemTintaLotes.find((l) => l.state === 'IN_USE');
+          const ativas = itemTintaLotes.filter((l) => l.state === 'NEW' || l.state === 'IN_USE');
+
+          finalQuantity = emEspera.length;
+          origem = 'tinta_lotes';
+          availableLots = emEspera.length;
+          totalLots = ativas.length;
+
+          if (emUso) {
+            activeLot = {
+              id: emUso.id,
+              serial: emUso.serial ?? emUso.id.slice(0, 8),
+              machineId: emUso.machineId,
+              machineName: emUso.machineId ? machineMap.get(emUso.machineId) ?? emUso.machineId : null,
+              channel: emUso.channel,
+            };
+          }
         } else {
-          const itemGarrafas = allGarrafas.filter(g => g.stockItemId === r.id && (g.state === 'NEW' || g.state === 'IN_USE'));
-          if (itemGarrafas.length > 0) {
-            finalQuantity = itemGarrafas.reduce((acc, g) => acc + (g.mlRemaining || 0), 0);
-            origem = 'garrafas';
+          // Fallback para cartuchos legados ou garrafas
+          const saldoCartucho = saldosCartucho.get(r.id);
+          if (saldoCartucho !== undefined) {
+            finalQuantity = saldoCartucho;
+            origem = 'cartuchos';
+            availableLots = finalQuantity;
+            totalLots = finalQuantity;
+          } else {
+            const itemGarrafas = allGarrafas.filter((g) => g.stockItemId === r.id && (g.state === 'NEW' || g.state === 'IN_USE'));
+            if (itemGarrafas.length > 0) {
+              finalQuantity = itemGarrafas.reduce((acc, g) => acc + (g.mlRemaining || 0), 0);
+              origem = 'garrafas';
+              availableLots = itemGarrafas.filter((g) => g.state === 'NEW').length;
+              totalLots = itemGarrafas.length;
+              const emUso = itemGarrafas.find((g) => g.state === 'IN_USE');
+              if (emUso) {
+                const mId = emUso.location.startsWith('machine:')
+                  ? emUso.location.replace('machine:', '')
+                  : null;
+                activeLot = {
+                  id: emUso.id,
+                  serial: emUso.serial ?? emUso.id.slice(0, 8),
+                  machineId: mId,
+                  machineName: mId ? machineMap.get(mId) ?? mId : null,
+                };
+              }
+            } else {
+              availableLots = r.currentQuantity;
+              totalLots = r.currentQuantity;
+            }
           }
         }
+      } else {
+        availableLots = r.currentQuantity;
+        totalLots = r.currentQuantity;
       }
+
       return { 
         ...r, 
         currentQuantity: finalQuantity,
         status: computeStatus(finalQuantity, r.minQuantity),
         machineIds: byItem.get(r.id) ?? [],
         origemSaldo: origem,
+        activeLot,
+        availableLots,
+        totalLots,
       };
     });
   });
