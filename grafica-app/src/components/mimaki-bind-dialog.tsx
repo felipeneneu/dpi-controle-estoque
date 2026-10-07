@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { toast } from "sonner"
 import { RiAddLine, RiArrowLeftLine, RiCheckLine, RiSearchLine } from "@remixicon/react"
 import { Button } from "@/components/ui/button"
@@ -58,6 +58,33 @@ export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiB
       setNewWidth(defaultW)
     }
   }
+
+  const selectedItem = stockItems.find((item) => item.id === selectedItemId)
+  const isSheetOrUnit = selectedItem ? selectedItem.unit !== "m" : false
+
+  // Sugestões inteligentes extraídas do nome do arquivo (jobName)
+  const suggestedItems = useMemo(() => {
+    if (!job?.jobName) return []
+    const cleanJobName = job.jobName.replace(/\.(pdf|eps|cdr|ai|tiff?|jpg|jpeg|png)$/i, "")
+    const stopWords = new Set(["com", "sem", "para", "por", "dos", "das", "the", "and", "job", "print", "copia", "copias", "unidades", "teste"])
+    const tokens = cleanJobName
+      .toLowerCase()
+      .split(/[\s_\-+./\\]+/)
+      .filter((t) => t.length >= 3 && !/^\d+$/.test(t) && !stopWords.has(t))
+
+    if (tokens.length === 0) return []
+
+    return stockItems
+      .map((item) => {
+        const itemLower = item.name.toLowerCase()
+        const score = tokens.reduce((acc, t) => (itemLower.includes(t) ? acc + 1 : acc), 0)
+        return { item, score }
+      })
+      .filter((entry) => entry.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3)
+      .map((entry) => entry.item)
+  }, [job?.jobName, stockItems])
 
   const filtered = stockItems.filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase())
@@ -140,18 +167,24 @@ export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiB
   }
 
   async function handleBind() {
-    if (!job) return
-    // Bobina obrigatória. Sem ela não há substrato a baixar, e vincular sem
-    // consumo é pior do que não vincular: o job sai da fila de pendentes e o
-    // estoque nunca recebe a metragem.
-    if (!selectedItemId || !selectedBobinaId) return
+    if (!job || !selectedItemId) return
+    const isSheet = selectedItem ? selectedItem.unit !== "m" : false
+    if (!isSheet && !selectedBobinaId) {
+      toast.error("Selecione a bobina consumida.")
+      return
+    }
+
     try {
       await bindMaterial.mutateAsync({
         jobId: job.id,
         stockItemId: selectedItemId,
-        bobinaId: selectedBobinaId,
+        bobinaId: isSheet ? undefined : (selectedBobinaId ?? undefined),
       })
-      toast.success("Material vinculado com sucesso")
+      toast.success(
+        isSheet
+          ? `Material "${selectedItem?.name}" vinculado com sucesso (${selectedItem?.unit}).`
+          : "Material e bobina vinculados com sucesso",
+      )
       onOpenChange(false)
     } catch (err) {
       toast.error(
@@ -225,10 +258,47 @@ export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiB
               />
             </div>
 
+            {suggestedItems.length > 0 && (
+              <div className="space-y-1.5 pt-0.5 pb-1">
+                <p className="text-[11px] font-medium text-muted-foreground">
+                  💡 Sugestões pelo nome do job:
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {suggestedItems.map((sug) => {
+                    const isSugSelected = selectedItemId === sug.id
+                    const isSugSheet = sug.unit !== "m"
+                    const sugBobinas = bobinas.filter((b) => b.stockItemId === sug.id)
+                    return (
+                      <button
+                        key={sug.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedItemId(sug.id)
+                          setSelectedBobinaId(null)
+                          setSearch(sug.name)
+                        }}
+                        className={`text-xs px-2.5 py-1 rounded-lg border transition-colors ${
+                          isSugSelected
+                            ? "bg-primary text-primary-foreground border-primary font-medium shadow-xs"
+                            : "bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200"
+                        }`}
+                      >
+                        {sug.name}{" "}
+                        <span className="text-[10px] opacity-75">
+                          {isSugSheet ? `(${sug.unit})` : `(${sugBobinas.length} bobinas)`}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
             <div className="max-h-56 overflow-y-auto space-y-1.5 pr-1">
               {filtered.map((item) => {
                 const isSelected = selectedItemId === item.id
                 const itemBobinas = bobinas.filter(b => b.stockItemId === item.id)
+                const isItemSheet = item.unit !== "m"
                 return (
                   <div key={item.id} className="space-y-1">
                     <button
@@ -244,15 +314,38 @@ export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiB
                       }`}
                     >
                       <div>
-                        <p className="font-medium text-gray-900">{item.name}</p>
+                        <div className="flex items-center gap-1.5">
+                          <p className="font-medium text-gray-900">{item.name}</p>
+                          {isItemSheet && (
+                            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                              Folha/Avulso
+                            </span>
+                          )}
+                        </div>
                         <p className="text-xs text-muted-foreground">
                           {item.currentQuantity} {item.unit}
                           {item.width ? ` · rolo ${item.width}m` : ""}
+                          {!isItemSheet && ` · ${itemBobinas.length} bobina(s)`}
                         </p>
                       </div>
-                      {isSelected && !selectedBobinaId && <RiCheckLine className="size-4 text-primary shrink-0" />}
+                      {isSelected && (!selectedBobinaId || isItemSheet) && (
+                        <RiCheckLine className="size-4 text-primary shrink-0" />
+                      )}
                     </button>
-                    {isSelected && itemBobinas.length > 0 && (
+
+                    {isSelected && isItemSheet && (
+                      <div className="pl-4 py-2 px-3 rounded-lg bg-emerald-50/80 border border-emerald-200/80 text-xs text-emerald-900 space-y-0.5">
+                        <p className="font-semibold flex items-center gap-1.5">
+                          <RiCheckLine className="size-3.5 text-emerald-600" />
+                          Material em {item.unit} (sem bobina física)
+                        </p>
+                        <p className="text-[11px] text-emerald-700 leading-relaxed">
+                          Não exige bobina. O consumo será debitado diretamente do saldo de estoque ({item.currentQuantity} {item.unit} disponíveis).
+                        </p>
+                      </div>
+                    )}
+
+                    {isSelected && !isItemSheet && itemBobinas.length > 0 && (
                       <div className="pl-4 space-y-1">
                         <p className="text-xs font-bold text-gray-500 mt-2 mb-1">
                           Selecione a bobina consumida <span className="text-destructive">*</span>
@@ -274,9 +367,10 @@ export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiB
                         ))}
                       </div>
                     )}
-                    {isSelected && itemBobinas.length === 0 && (
+
+                    {isSelected && !isItemSheet && itemBobinas.length === 0 && (
                       <p className="pl-4 text-[11px] text-destructive">
-                        Este material não tem bobina cadastrada. Use &ldquo;Cadastrar nova mídia&rdquo; para
+                        Este material de rolo não tem bobina cadastrada. Use &ldquo;Cadastrar nova mídia&rdquo; para
                         abrir o rolo e vinculá-lo.
                       </p>
                     )}
@@ -370,11 +464,15 @@ export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiB
               </Button>
               <Button
                 onClick={handleBind}
-                disabled={!selectedItemId || !selectedBobinaId || bindMaterial.isPending}
+                disabled={
+                  !selectedItemId ||
+                  (!isSheetOrUnit && !selectedBobinaId) ||
+                  bindMaterial.isPending
+                }
                 title={
                   !selectedItemId
                     ? "Selecione o material"
-                    : !selectedBobinaId
+                    : !isSheetOrUnit && !selectedBobinaId
                       ? "Selecione a bobina consumida"
                       : undefined
                 }

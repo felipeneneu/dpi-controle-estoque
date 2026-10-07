@@ -271,6 +271,36 @@ describe('mimaki bind-material', () => {
     expect(b!.state).toBe('USED');
   });
 
+  it('permite vincular material em folha (unit: fls) sem bobina_id e debita diretamente do estoque', async () => {
+    const folhaItemId = newId();
+    await db.insert(stockItems).values({
+      id: folhaItemId,
+      name: 'Adesivo Couché 33x48',
+      category: 'PAPER_MEDIA',
+      unit: 'fls',
+      currentQuantity: 26,
+      minQuantity: 5,
+    });
+
+    const jobId = await seedJob({
+      jobName: 'Dona Tunica - Adesivo Folha',
+      totalPrint: 4,
+    });
+
+    const res = await bind(jobId, { stock_item_id: folhaItemId });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json().deductedSubstrate).toBe(true);
+
+    const item = await db.select().from(stockItems).where(eq(stockItems.id, folhaItemId)).get();
+    expect(item!.currentQuantity).toBe(22); // 26 - 4 folhas
+
+    const job = await jobDe(jobId);
+    expect(job!.materialStatus).toBe('BOUND');
+    expect(job!.stockItemId).toBe(folhaItemId);
+    expect(job!.stockDeducted).toBe(true);
+  });
+
   it('exige autenticacao', async () => {
     const jobId = await seedJob();
     const res = await app.inject({

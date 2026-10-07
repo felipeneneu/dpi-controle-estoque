@@ -67,7 +67,7 @@ export function useBindMaterial() {
     // Ambos obrigatórios: vincular sem bobina não baixa metragem nenhuma e
     // deixava o job marcado como debitado sem consumo (ver bind-material no
     // backend, que rejeita o corpo incompleto com 400).
-    mutationFn: ({ jobId, stockItemId, bobinaId }: { jobId: string; stockItemId: string; bobinaId: string }) =>
+    mutationFn: ({ jobId, stockItemId, bobinaId }: { jobId: string; stockItemId: string; bobinaId?: string }) =>
       api(`/api/integrations/mimaki/jobs/${jobId}/bind-material`, {
         method: "POST",
         body: JSON.stringify({ stock_item_id: stockItemId, bobina_id: bobinaId }),

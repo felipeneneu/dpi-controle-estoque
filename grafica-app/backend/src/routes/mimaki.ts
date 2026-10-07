@@ -176,119 +176,163 @@ export async function deductMimakiStockForJob(
       };
     }
 
-    if (job.bobinaId) {
-      activeBobina =
-        (await db.select().from(bobinas).where(eq(bobinas.id, job.bobinaId)).get()) ?? null;
-      // Vincula a bobina ao item que o operador escolheu. Sem esta checagem, o
-      // job com material "Lona 1,60m" pode debitar da bobina de "Vinil 0,75m" e
-      // o saldo do item errado muda junto do saldo da bobina errada.
-      if (activeBobina && activeBobina.stockItemId !== item.id) {
-        return {
-          deductedSubstrate: false,
-          deductedInksCount: 0,
-          motivo: `A bobina ${activeBobina.serial ?? activeBobina.id.slice(0, 8)} pertence a outro item de estoque.`,
-        };
-      }
-    } else if (job.machineId) {
-      activeBobina =
-        (
-          await db
-            .select()
-            .from(bobinas)
-            .where(
-              and(
-                eq(bobinas.stockItemId, item.id),
-                eq(bobinas.state, 'IN_USE'),
-                eq(bobinas.location, `machine:${job.machineId}`),
-              ),
-            )
-            .get()
-        ) ?? null;
-    }
+    const isFolhaOuUnidade = item.unit !== 'm' || item.unit === 'fls' || item.unit === 'rms' || item.unit === 'pk' || item.unit === 'un';
 
-    if (!activeBobina) {
-      return {
-        deductedSubstrate: false,
-        deductedInksCount: 0,
-        motivo: job.bobinaId
-          ? `Bobina ${job.bobinaId} nao encontrada.`
-          : 'Nenhuma bobina informada e nenhuma bobina em uso na maquina. Selecione a bobina.',
-      };
-    }
-
-    {
-      // Idempotencia
+    if (isFolhaOuUnidade) {
+      const sheetsUsed = Math.max(1, job.totalPrint || job.copyNumber || job.quantityUnits || job.pages || 1);
       const existingTx = await db
         .select({ id: stockTransactions.id })
         .from(stockTransactions)
         .where(
           and(
             eq(stockTransactions.itemId, item.id),
-            like(stockTransactions.reason, `%${job.jobName}% [Bobina ${activeBobina.serial}]%`),
+            like(stockTransactions.reason, `%${job.jobName}% [Folhas]%`),
           ),
         )
         .get();
 
       if (!existingTx) {
-        // `substrateEsperado` ja garante `lengthMeters > 0`, mas o TypeScript nao
-        // estreita `job.lengthMeters` a partir de uma `const` booleana: sem isto
-        // aqui, `toPrecision` recebe `number | null | undefined`.
-        const jobLength = job.lengthMeters!;
-        let lengthMeters = toPrecision(jobLength, 3);
-        
-        let machineInfo = null;
-        if (job.machineId) {
-           machineInfo = await db.select().from(machines).where(eq(machines.id, job.machineId)).get();
-           if (machineInfo && machineInfo.bleedAdjustmentM) {
-            lengthMeters += machineInfo.bleedAdjustmentM;
-          }
-        }
+        const newQty = Math.max(0, item.currentQuantity - sheetsUsed);
+        const status = newQty <= 0 ? 'OUT_OF_STOCK' : newQty <= item.minQuantity ? 'LOW_STOCK' : 'AVAILABLE';
 
-        // R-013: sem `metersRemaining`, `null - 5` e NaN, e `Math.max(0, NaN)`
-        // e NaN - que entraria na coluna `real` e depois em todo saldo derivado.
-        // `metersInitial` e o melhor chute; sem os dois, a bobina nao e medivel.
-        const restante = activeBobina.metersRemaining ?? activeBobina.metersInitial;
-        if (restante === null || restante === undefined || !Number.isFinite(restante)) {
+        await db.update(stockItems).set({ currentQuantity: newQty, status }).where(eq(stockItems.id, item.id));
+
+        await db.insert(stockTransactions).values({
+          id: newId(),
+          itemId: item.id,
+          type: 'OUT',
+          quantity: sheetsUsed,
+          reason: `Mimaki consumo folha/papel: ${job.jobName} [Folhas] — ${sheetsUsed} ${item.unit}`,
+          userId: actorId,
+          userName: 'Mimaki Agent',
+        });
+
+        deductedSubstrate = true;
+
+        app.io.to('estoque').emit('stock:deducted', {
+          itemName: item.name,
+          quantity: sheetsUsed,
+          unit: item.unit,
+          jobName: job.jobName,
+        });
+      } else {
+        deductedSubstrate = true;
+      }
+    } else {
+      if (job.bobinaId) {
+        activeBobina =
+          (await db.select().from(bobinas).where(eq(bobinas.id, job.bobinaId)).get()) ?? null;
+        // Vincula a bobina ao item que o operador escolheu. Sem esta checagem, o
+        // job com material "Lona 1,60m" pode debitar da bobina de "Vinil 0,75m" e
+        // o saldo do item errado muda junto do saldo da bobina errada.
+        if (activeBobina && activeBobina.stockItemId !== item.id) {
           return {
             deductedSubstrate: false,
             deductedInksCount: 0,
-            motivo: `A bobina ${activeBobina.serial ?? activeBobina.id.slice(0, 8)} nao tem metragem inicial nem restante informados.`,
+            motivo: `A bobina ${activeBobina.serial ?? activeBobina.id.slice(0, 8)} pertence a outro item de estoque.`,
           };
         }
-
-        const newQty = Math.max(0, toPrecision(restante - lengthMeters, 3));
-        const isFinished = newQty <= 0;
-
-          await db.update(bobinas).set({ 
-            metersRemaining: newQty,
-            state: isFinished ? 'USED' : activeBobina.state
-          }).where(eq(bobinas.id, activeBobina.id));
-
-          const sangriaDetail = machineInfo?.bleedAdjustmentM ? ` + sangria ${machineInfo.bleedAdjustmentM}m` : '';
-
-          await db.insert(stockTransactions).values({
-            id: newId(),
-            itemId: item.id,
-            type: 'OUT',
-            quantity: lengthMeters,
-            reason: `Mimaki consumo mídia: ${job.jobName} [Bobina ${activeBobina.serial}]${sangriaDetail}`,
-            userId: actorId,
-            userName: 'Mimaki Agent',
-          });
-
-          deductedSubstrate = true;
-
-          app.io.to('estoque').emit('stock:deducted', {
-            itemName: item.name,
-            quantity: lengthMeters,
-            unit: item.unit,
-            jobName: job.jobName,
-          });
-        } else {
-          // A transacao ja existe: o debito aconteceu antes (reenvio do watcher).
-          deductedSubstrate = true;
-        }
+      } else if (job.machineId) {
+        activeBobina =
+          (
+            await db
+              .select()
+              .from(bobinas)
+              .where(
+                and(
+                  eq(bobinas.stockItemId, item.id),
+                  eq(bobinas.state, 'IN_USE'),
+                  eq(bobinas.location, `machine:${job.machineId}`),
+                ),
+              )
+              .get()
+          ) ?? null;
       }
+
+      if (!activeBobina) {
+        return {
+          deductedSubstrate: false,
+          deductedInksCount: 0,
+          motivo: job.bobinaId
+            ? `Bobina ${job.bobinaId} nao encontrada.`
+            : 'Nenhuma bobina informada e nenhuma bobina em uso na maquina. Selecione a bobina.',
+        };
+      }
+
+      {
+        // Idempotencia
+        const existingTx = await db
+          .select({ id: stockTransactions.id })
+          .from(stockTransactions)
+          .where(
+            and(
+              eq(stockTransactions.itemId, item.id),
+              like(stockTransactions.reason, `%${job.jobName}% [Bobina ${activeBobina.serial}]%`),
+            ),
+          )
+          .get();
+
+        if (!existingTx) {
+          // `substrateEsperado` ja garante `lengthMeters > 0`, mas o TypeScript nao
+          // estreita `job.lengthMeters` a partir de uma `const` booleana: sem isto
+          // aqui, `toPrecision` recebe `number | null | undefined`.
+          const jobLength = job.lengthMeters ?? 0;
+          let lengthMeters = toPrecision(jobLength, 3);
+          
+          let machineInfo = null;
+          if (job.machineId) {
+             machineInfo = await db.select().from(machines).where(eq(machines.id, job.machineId)).get();
+             if (machineInfo && machineInfo.bleedAdjustmentM) {
+              lengthMeters += machineInfo.bleedAdjustmentM;
+            }
+          }
+
+          // R-013: sem `metersRemaining`, `null - 5` e NaN, e `Math.max(0, NaN)`
+          // e NaN - que entraria na coluna `real` e depois em todo saldo derivado.
+          // `metersInitial` e o melhor chute; sem os dois, a bobina nao e medivel.
+          const restante = activeBobina.metersRemaining ?? activeBobina.metersInitial;
+          if (restante === null || restante === undefined || !Number.isFinite(restante)) {
+            return {
+              deductedSubstrate: false,
+              deductedInksCount: 0,
+              motivo: `A bobina ${activeBobina.serial ?? activeBobina.id.slice(0, 8)} nao tem metragem inicial nem restante informados.`,
+            };
+          }
+
+          const newQty = Math.max(0, toPrecision(restante - lengthMeters, 3));
+          const isFinished = newQty <= 0;
+
+            await db.update(bobinas).set({ 
+              metersRemaining: newQty,
+              state: isFinished ? 'USED' : activeBobina.state
+            }).where(eq(bobinas.id, activeBobina.id));
+
+            const sangriaDetail = machineInfo?.bleedAdjustmentM ? ` + sangria ${machineInfo.bleedAdjustmentM}m` : '';
+
+            await db.insert(stockTransactions).values({
+              id: newId(),
+              itemId: item.id,
+              type: 'OUT',
+              quantity: lengthMeters,
+              reason: `Mimaki consumo mídia: ${job.jobName} [Bobina ${activeBobina.serial}]${sangriaDetail}`,
+              userId: actorId,
+              userName: 'Mimaki Agent',
+            });
+
+            deductedSubstrate = true;
+
+            app.io.to('estoque').emit('stock:deducted', {
+              itemName: item.name,
+              quantity: lengthMeters,
+              unit: item.unit,
+              jobName: job.jobName,
+            });
+          } else {
+            // A transacao ja existe: o debito aconteceu antes (reenvio do watcher).
+            deductedSubstrate = true;
+          }
+        }
+    }
   }
 
   // 2. Registro de Consumo de Tintas UV (ADR-057 / BR-012 emendada)
@@ -640,22 +684,6 @@ export async function mimakiRoutes(app: FastifyInstance) {
       return reply.code(404).send({ error: 'Job não encontrado' });
     }
 
-    /**
-     * Vincula material **e bobina** a um job Mimaki ja impresso.
-     *
-     * `bobina_id` e obrigatorio. Ele ja era opcional na UI ("Selecione uma Bobina
-     * especifica (opcional)") e no body, e a consequencia era silenciosa: sem
-     * bobina nao havia substrato para baixar, a funcao de debito marcava o job
-     * como debitado mesmo assim, e o estoque nunca mais era corrigido - nem se o
-     * operador escolhesse a bobina depois. "Sempre escolher a bobina" e a regra:
-     * quem imprime com rolo, consome rolo.
-     */
-    if (!bobina_id || !bobina_id.trim()) {
-      return reply.code(400).send({
-        error: 'Selecione a bobina usada na impressão. Sem a bobina não há metragem a baixar.',
-      });
-    }
-
     const item = await db
       .select()
       .from(stockItems)
@@ -665,31 +693,42 @@ export async function mimakiRoutes(app: FastifyInstance) {
       return reply.code(404).send({ error: 'Item de estoque não encontrado' });
     }
 
-    const bobina = await db
-      .select()
-      .from(bobinas)
-      .where(eq(bobinas.id, bobina_id))
-      .get();
-    if (!bobina) {
-      return reply.code(404).send({ error: 'Bobina não encontrada' });
-    }
-    if (bobina.stockItemId !== stock_item_id) {
-      const ownerItem = await db
+    const isFolhaOuUnidade = item.unit === 'fls' || item.unit === 'rms' || item.unit === 'pk' || item.unit === 'un';
+    let resolvedBobinaId = bobina_id;
+
+    if (!isFolhaOuUnidade) {
+      if (!resolvedBobinaId || !resolvedBobinaId.trim()) {
+        return reply.code(400).send({
+          error: 'Selecione a bobina usada na impressão. Sem a bobina não há metragem a baixar.',
+        });
+      }
+
+      const bobina = await db
         .select()
-        .from(stockItems)
-        .where(eq(stockItems.id, bobina.stockItemId))
+        .from(bobinas)
+        .where(eq(bobinas.id, resolvedBobinaId))
         .get();
-      return reply.code(400).send({
-        error:
-          `A bobina ${bobina.serial ?? bobina.id.slice(0, 8)} é do material ` +
-          `"${ownerItem?.name ?? bobina.stockItemId}", não de "${item.name}". ` +
-          `Escolha uma bobina do material selecionado.`,
-      });
-    }
-    if (bobina.state !== 'NEW' && bobina.state !== 'IN_USE') {
-      return reply.code(400).send({
-        error: `A bobina ${bobina.serial ?? bobina.id.slice(0, 8)} está ${bobina.state === 'USED' ? 'esgotada' : bobina.state.toLowerCase()} e não pode receber consumo.`,
-      });
+      if (!bobina) {
+        return reply.code(404).send({ error: 'Bobina não encontrada' });
+      }
+      if (bobina.stockItemId !== stock_item_id) {
+        const ownerItem = await db
+          .select()
+          .from(stockItems)
+          .where(eq(stockItems.id, bobina.stockItemId))
+          .get();
+        return reply.code(400).send({
+          error:
+            `A bobina ${bobina.serial ?? bobina.id.slice(0, 8)} é do material ` +
+            `"${ownerItem?.name ?? bobina.stockItemId}", não de "${item.name}". ` +
+            `Escolha uma bobina do material selecionado.`,
+        });
+      }
+      if (bobina.state !== 'NEW' && bobina.state !== 'IN_USE') {
+        return reply.code(400).send({
+          error: `A bobina ${bobina.serial ?? bobina.id.slice(0, 8)} está ${bobina.state === 'USED' ? 'esgotada' : bobina.state.toLowerCase()} e não pode receber consumo.`,
+        });
+      }
     }
 
     // Desconta mídia e tintas UV de forma segura e idempotente
@@ -698,7 +737,7 @@ export async function mimakiRoutes(app: FastifyInstance) {
       {
         ...job,
         stockItemId: stock_item_id,
-        bobinaId: bobina_id,
+        bobinaId: resolvedBobinaId,
       },
       request.userId,
     );
