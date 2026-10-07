@@ -87,6 +87,15 @@ Se passar de 5 rulings, o planejamento falhou — parar e revisar.
     **Nunca** valor hexadecimal arbitrário. Documentar como "aproximação visual",
     nunca como conversão de cor. Violação desta regra invalida o arquivo para
     impressão gráfica.
+18. **Validação cross-tool obrigatória** (regra R-021). Arquivos gerados por um
+    pipeline NÃO podem ser validados apenas pelo próprio código. Toda feature que
+    produz arquivo (JPG, PDF, TIFF) DEVE ter pelo menos um teste que:
+    - Abre o arquivo em biblioteca externa (Magick.NET, PDFium, SkiaSharp)
+    - Valida que decodifica sem erro
+    - Compara pixels ou estrutura contra o esperado
+    - Idealmente: documenta como validar em software de mercado (Photoshop, Acrobat)
+    Sem essa validação cruzada, testes passam com arquivos corrompidos em produção.
+
 
 ## Estrutura de pacotes
 

@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BitMiracle.LibJpeg.NET" Version="1.5.324" />
     <PackageReference Include="SkiaSharp" Version="4.152.0" />
     <PackageReference Include="SkiaSharp.NativeAssets.Win32" Version="4.152.0" />
   </ItemGroup>
