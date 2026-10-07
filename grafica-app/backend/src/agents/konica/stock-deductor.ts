@@ -1,6 +1,6 @@
-import { eq } from 'drizzle-orm';
+import { eq, count } from 'drizzle-orm';
 import { db } from '../../db/index.js';
-import { stockItems, stockTransactions, notifications, printJobs, users } from '../../db/schema.js';
+import { stockItems, stockTransactions, notifications, printJobs, users, machineItems } from '../../db/schema.js';
 import type { StockItem } from '../../db/schema.js';
 import { newId } from '../../lib/ids.js';
 import { sendToRecipients } from '../../lib/whatsapp.js';
@@ -129,51 +129,77 @@ async function notifyStock(
 export async function deductStockForJob(
   job: NewKonicaJob,
   io: { to: (room: string) => { emit: (event: string, data: unknown) => void } },
+  machineId?: string,
 ): Promise<void> {
   const actorId = await ensureSystemUser();
+  let stockDeducted = false;
+  let deductedAt: string | null = null;
 
   if (job.paperName && job.sheets > 0) {
     const rows = await db.select().from(stockItems).where(eq(stockItems.category, 'PAPER_MEDIA')).all();
     const item = findPaperItem(rows, job.paperName, job.gram);
 
     if (item) {
-      const sheetsUsed = Math.floor(job.sheets); // folhas inteiras (job.sheets já é inteiro)
-      // O papel da AccurioPrint é cotado em folhas (fls) → débito = páginas impressas.
-      // Para outras unidades (rms), converte e arredonda SEM casas decimais.
-      const factor = CONVERSION_FACTOR_BY_UNIT[item.unit as keyof typeof CONVERSION_FACTOR_BY_UNIT] ?? 1;
-      const debitQty = factor > 1 ? Math.floor(sheetsUsed / factor) : sheetsUsed;
+      // Checar se o SKU está associado a alguma impressora no catálogo quando há vínculos cadastrados
+      const anyMachineItems = await db.select({ count: count() }).from(machineItems).get();
+      let isLinked = true;
+      if ((anyMachineItems?.count ?? 0) > 0) {
+        const itemLinks = await db.select().from(machineItems).where(eq(machineItems.stockItemId, item.id)).all();
+        if (itemLinks.length === 0) {
+          isLinked = false;
+        } else if (machineId && !itemLinks.some((l) => l.machineId === machineId)) {
+          isLinked = false;
+        }
+      }
 
-      const newQty = Math.max(0, item.currentQuantity - debitQty);
-      const status = computeStatus(newQty, item.minQuantity);
+      if (!isLinked) {
+        console.warn(
+          `[Konica Agent] Papel "${item.name}" não está vinculado à impressora no catálogo de máquinas; débito automático suspenso (job "${job.jobName}").`,
+        );
+        await db.update(printJobs).set({ materialStatus: 'PENDING_BIND' }).where(eq(printJobs.jobId, job.jobId));
+      } else {
+        const sheetsUsed = Math.floor(job.sheets); // folhas inteiras (job.sheets já é inteiro)
+        // O papel da AccurioPrint é cotado em folhas (fls) → débito = páginas impressas.
+        // Para outras unidades (rms), converte e arredonda SEM casas decimais.
+        const factor = CONVERSION_FACTOR_BY_UNIT[item.unit as keyof typeof CONVERSION_FACTOR_BY_UNIT] ?? 1;
+        const debitQty = factor > 1 ? Math.floor(sheetsUsed / factor) : sheetsUsed;
 
-      await db.update(stockItems).set({ currentQuantity: newQty, status }).where(eq(stockItems.id, item.id));
+        const newQty = Math.max(0, item.currentQuantity - debitQty);
+        const status = computeStatus(newQty, item.minQuantity);
 
-      const gramNote = job.gram ? `, gramatura ${job.gram}g` : '';
-      await db.insert(stockTransactions).values({
-        id: newId(),
-        itemId: item.id,
-        type: 'OUT',
-        quantity: debitQty,
-        reason: `Konica Agent: job ${job.jobName} (${job.paperName}${gramNote}) — ${sheetsUsed} folhas`,
-        userId: actorId,
-        userName: 'Konica Agent',
-      });
+        await db.update(stockItems).set({ currentQuantity: newQty, status }).where(eq(stockItems.id, item.id));
 
-      io.to('estoque').emit('stock:deducted', {
-        itemName: item.name,
-        quantity: debitQty,
-        unit: item.unit,
-        jobName: job.jobName,
-      });
+        const gramNote = job.gram ? `, gramatura ${job.gram}g` : '';
+        await db.insert(stockTransactions).values({
+          id: newId(),
+          itemId: item.id,
+          type: 'OUT',
+          quantity: debitQty,
+          reason: `Konica Agent: job ${job.jobName} (${job.paperName}${gramNote}) — ${sheetsUsed} folhas`,
+          userId: actorId,
+          userName: 'Konica Agent',
+        });
 
-      if (status === 'LOW_STOCK' || status === 'OUT_OF_STOCK') {
-        await notifyStock(item, newQty, status, actorId, io);
+        stockDeducted = true;
+        deductedAt = new Date().toISOString();
+
+        io.to('estoque').emit('stock:deducted', {
+          itemName: item.name,
+          quantity: debitQty,
+          unit: item.unit,
+          jobName: job.jobName,
+        });
+
+        if (status === 'LOW_STOCK' || status === 'OUT_OF_STOCK') {
+          await notifyStock(item, newQty, status, actorId, io);
+        }
       }
     } else {
       console.warn(
         `[Konica Agent] Papel "${job.paperName}"${job.gram ? ` (${job.gram}g)` : ''} ` +
           `não encontrado no estoque; nenhum débito realizado (job "${job.jobName}").`,
       );
+      await db.update(printJobs).set({ materialStatus: 'PENDING_BIND' }).where(eq(printJobs.jobId, job.jobId));
     }
   }
 
@@ -218,8 +244,9 @@ export async function deductStockForJob(
   const jobRow = await db.select().from(printJobs).where(eq(printJobs.jobId, job.jobId)).get();
   if (jobRow) {
     await db.update(printJobs).set({
-      stockDeducted: true,
-      deductedAt: new Date().toISOString(),
+      stockDeducted: stockDeducted || jobRow.stockDeducted,
+      deductedAt: deductedAt ?? jobRow.deductedAt,
+      materialStatus: stockDeducted ? 'DEDUCTED' : (jobRow.materialStatus ?? 'PENDING_BIND'),
     }).where(eq(printJobs.id, jobRow.id));
   }
 

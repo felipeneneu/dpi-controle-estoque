@@ -118,7 +118,7 @@ async function pollOnce(io: SocketIOServer): Promise<void> {
 
     for (const job of newJobs) {
       await insertKonicaJob(job, machineId);
-      await deductStockForJob(job, io);
+      await deductStockForJob(job, io, machineId);
     }
 
     console.log(`${TAG} ${newJobs.length} jobs processados`);

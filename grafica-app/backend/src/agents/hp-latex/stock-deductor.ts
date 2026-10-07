@@ -1,6 +1,6 @@
-import { eq, and, like } from 'drizzle-orm';
+import { eq, and, like, count } from 'drizzle-orm';
 import { db } from '../../db/index.js';
-import { stockItems, stockTransactions, notifications, printJobs, users, inkConsumptionLog } from '../../db/schema.js';
+import { stockItems, stockTransactions, notifications, printJobs, users, inkConsumptionLog, machineItems, bobinas, machines } from '../../db/schema.js';
 import type { StockItem } from '../../db/schema.js';
 import { newId } from '../../lib/ids.js';
 import { sendToRecipients } from '../../lib/whatsapp.js';
@@ -175,76 +175,92 @@ export async function deductStockForJob(
     const item = findMediaItem(rows, job.mediaType, widthHint) ?? null;
 
     if (item) {
-      // Procurar bobina IN_USE para esta máquina
-      const { bobinas, machines } = await import('../../db/schema.js');
-      const activeBobina = await db.select().from(bobinas).where(
-        and(
-          eq(bobinas.stockItemId, item.id),
-          eq(bobinas.state, 'IN_USE'),
-          eq(bobinas.location, `machine:${machineId}`)
-        )
-      ).get();
+      // Checar se o SKU possui vínculo com alguma impressora no catálogo de máquinas (quando há vínculos cadastrados)
+      const anyMachineItems = await db.select({ count: count() }).from(machineItems).get();
+      let isLinked = true;
+      if ((anyMachineItems?.count ?? 0) > 0) {
+        const itemLinks = await db.select().from(machineItems).where(eq(machineItems.stockItemId, item.id)).all();
+        if (itemLinks.length === 0) {
+          isLinked = false;
+        } else if (machineId && !itemLinks.some((l) => l.machineId === machineId)) {
+          isLinked = false;
+        }
+      }
 
-      if (!activeBobina) {
-        // Marca o job como PENDENTE_VINCULO na tabela printJobs, será atualizado ao final da função.
-        console.warn(`[HP Agent] Job órfão detectado: Nenhuma bobina IN_USE para o item ${item.name} na máquina ${machineId}`);
+      if (!isLinked) {
+        console.warn(`[HP Agent] SKU ${item.name} não está vinculado à impressora no catálogo de máquinas. Débito automático suspenso.`);
         await db.update(printJobs).set({ materialStatus: 'PENDING_BIND' }).where(eq(printJobs.jobId, job.jobId));
       } else {
-        // Checar idempotência pela bobina específica e jobName
-        const existingMediaTx = await db
-          .select({ id: stockTransactions.id })
-          .from(stockTransactions)
-          .where(
-            and(
-              eq(stockTransactions.itemId, item.id),
-              like(stockTransactions.reason, `%${job.jobName}% [Bobina ${activeBobina.serial}]%`),
-            ),
+        // Procurar bobina IN_USE para esta máquina
+        const activeBobina = await db.select().from(bobinas).where(
+          and(
+            eq(bobinas.stockItemId, item.id),
+            eq(bobinas.state, 'IN_USE'),
+            eq(bobinas.location, `machine:${machineId}`)
           )
-          .get();
+        ).get();
 
-        if (!existingMediaTx) {
-          widthM = (widthHint ?? (item.width && item.width > 0 ? item.width : null)) ?? null;
-          debitQty = widthM ? divideAreaToLength(job.mediaAreaM2, widthM) : job.mediaAreaM2;
-
-          // Adicionar fator de sangria se existir
-          const machine = await db.select().from(machines).where(eq(machines.id, machineId)).get();
-          if (machine && machine.bleedAdjustmentM) {
-            debitQty += machine.bleedAdjustmentM;
-          }
-
-          const newMeters = Math.max(0, subtractStock(activeBobina.metersRemaining || 0, debitQty));
-          const isFinished = newMeters <= 0;
-
-          await db.update(bobinas).set({ 
-            metersRemaining: newMeters,
-            state: isFinished ? 'USED' : activeBobina.state
-          }).where(eq(bobinas.id, activeBobina.id));
-
-          const detail = widthM ? `${job.mediaAreaM2.toFixed(4)} m² / ${widthM} m` : `${job.mediaAreaM2.toFixed(4)} m²`;
-          const sangriaDetail = (machine?.bleedAdjustmentM) ? ` + sangria ${machine.bleedAdjustmentM}m` : '';
-          
-          await db.insert(stockTransactions).values({
-            id: newId(),
-            itemId: item.id, // Ledger ainda aponta para o stockItem, mas anotamos o serial
-            type: 'OUT',
-            quantity: toPrecision(debitQty, 3),
-            reason: `HP Agent: job ${job.jobName} [Bobina ${activeBobina.serial}] — ${detail}${sangriaDetail}`,
-            userId: actorId,
-            userName: 'HP Latex Agent',
-          });
-
-          stockDeducted = true;
-          deductedAt = new Date().toISOString();
-
-          io.to('estoque').emit('stock:deducted', {
-            itemName: item.name,
-            quantity: debitQty,
-            unit: item.unit,
-            jobName: job.jobName,
-          });
+        if (!activeBobina) {
+          // Marca o job como PENDENTE_VINCULO na tabela printJobs, será atualizado ao final da função.
+          console.warn(`[HP Agent] Job órfão detectado: Nenhuma bobina IN_USE para o item ${item.name} na máquina ${machineId}`);
+          await db.update(printJobs).set({ materialStatus: 'PENDING_BIND' }).where(eq(printJobs.jobId, job.jobId));
         } else {
-          // Já processado
-          stockDeducted = true;
+          // Checar idempotência pela bobina específica e jobName
+          const existingMediaTx = await db
+            .select({ id: stockTransactions.id })
+            .from(stockTransactions)
+            .where(
+              and(
+                eq(stockTransactions.itemId, item.id),
+                like(stockTransactions.reason, `%${job.jobName}% [Bobina ${activeBobina.serial}]%`),
+              ),
+            )
+            .get();
+
+          if (!existingMediaTx) {
+            widthM = (widthHint ?? (item.width && item.width > 0 ? item.width : null)) ?? null;
+            debitQty = widthM ? divideAreaToLength(job.mediaAreaM2, widthM) : job.mediaAreaM2;
+
+            // Adicionar fator de sangria se existir
+            const machine = await db.select().from(machines).where(eq(machines.id, machineId)).get();
+            if (machine && machine.bleedAdjustmentM) {
+              debitQty += machine.bleedAdjustmentM;
+            }
+
+            const newMeters = Math.max(0, subtractStock(activeBobina.metersRemaining || 0, debitQty));
+            const isFinished = newMeters <= 0;
+
+            await db.update(bobinas).set({ 
+              metersRemaining: newMeters,
+              state: isFinished ? 'USED' : activeBobina.state
+            }).where(eq(bobinas.id, activeBobina.id));
+
+            const detail = widthM ? `${job.mediaAreaM2.toFixed(4)} m² / ${widthM} m` : `${job.mediaAreaM2.toFixed(4)} m²`;
+            const sangriaDetail = (machine?.bleedAdjustmentM) ? ` + sangria ${machine.bleedAdjustmentM}m` : '';
+            
+            await db.insert(stockTransactions).values({
+              id: newId(),
+              itemId: item.id, // Ledger ainda aponta para o stockItem, mas anotamos o serial
+              type: 'OUT',
+              quantity: toPrecision(debitQty, 3),
+              reason: `HP Agent: job ${job.jobName} [Bobina ${activeBobina.serial}] — ${detail}${sangriaDetail}`,
+              userId: actorId,
+              userName: 'HP Latex Agent',
+            });
+
+            stockDeducted = true;
+            deductedAt = new Date().toISOString();
+
+            io.to('estoque').emit('stock:deducted', {
+              itemName: item.name,
+              quantity: debitQty,
+              unit: item.unit,
+              jobName: job.jobName,
+            });
+          } else {
+            // Já processado
+            stockDeducted = true;
+          }
         }
       }
     } else {

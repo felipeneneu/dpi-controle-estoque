@@ -1,8 +1,8 @@
 "use client"
 
-import { useDeferredValue, useState } from "react"
+import { useDeferredValue, useMemo, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { RiRefreshLine, RiEyeLine, RiEyeOffLine } from "@remixicon/react"
+import { RiRefreshLine, RiEyeLine, RiEyeOffLine, RiFlashlightLine } from "@remixicon/react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,9 +10,10 @@ import { Spinner, LoadingState } from "@/components/ui/spinner"
 import { MachineJobsTable } from "@/components/machine-jobs-table"
 import { MediaEditDialog } from "@/components/media-edit-dialog"
 import { HideJobDialog } from "@/components/hide-job-dialog"
+import { BulkDeductDialog } from "@/components/bulk-deduct-dialog"
 import { useJobs, useSyncMachineJobsStock, type PrintJobRow } from "@/lib/queries/jobs"
 import { useUser } from "@/hooks/use-user"
-import type { Machine } from "@/lib/api"
+import { isKonicaMachine, type Machine } from "@/lib/api"
 
 function currentMonth(): string {
   const d = new Date()
@@ -38,6 +39,8 @@ export function JobsTab({ machine }: { machine: Machine }) {
   const [editJob, setEditJob] = useState<PrintJobRow | null>(null)
   const [hideJobTarget, setHideJobTarget] = useState<PrintJobRow | null>(null)
   const [showHidden, setShowHidden] = useState(false)
+  const [selectedJobIds, setSelectedJobIds] = useState<string[]>([])
+  const [bulkDialogOpen, setBulkDialogOpen] = useState(false)
 
   const user = useUser()
   const canManageHidden = user?.role === "DEV_MASTER"
@@ -54,6 +57,46 @@ export function JobsTab({ machine }: { machine: Machine }) {
     page,
     pageSize: 20,
   })
+
+  const isKonica = isKonicaMachine(machine)
+  const selectedJobs = useMemo(
+    () => (data?.rows ?? []).filter((j) => selectedJobIds.includes(j.id)),
+    [data?.rows, selectedJobIds]
+  )
+
+  const selectedStats = useMemo(() => {
+    let sheets = 0
+    let meters = 0
+    for (const job of selectedJobs) {
+      sheets += job.sheets ?? job.pages ?? 0
+      let linear = job.linearMetersDebited
+      if (!linear || linear <= 0) {
+        linear = job.mediaAreaM2 && job.mediaAreaM2 > 0 ? job.mediaAreaM2 / 1.52 : 1
+      }
+      meters += linear
+    }
+    return {
+      sheets,
+      meters: Number(meters.toFixed(3)),
+    }
+  }, [selectedJobs])
+
+  function handleToggleSelectJob(id: string) {
+    setSelectedJobIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    )
+  }
+
+  function handleToggleSelectAll() {
+    if (!data?.rows) return
+    const pageIds = data.rows.map((r) => r.id)
+    const allSelected = pageIds.length > 0 && pageIds.every((id) => selectedJobIds.includes(id))
+    if (allSelected) {
+      setSelectedJobIds((prev) => prev.filter((id) => !pageIds.includes(id)))
+    } else {
+      setSelectedJobIds((prev) => Array.from(new Set([...prev, ...pageIds])))
+    }
+  }
 
   const syncStock = useSyncMachineJobsStock(machine.id)
 
@@ -172,6 +215,43 @@ export function JobsTab({ machine }: { machine: Machine }) {
         </Button>
       </div>
 
+      {selectedJobIds.length > 0 && (
+        <div className="flex items-center justify-between gap-3 p-3 bg-primary/10 border border-primary/20 rounded-xl shadow-xs transition-all">
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-1.5 font-semibold text-xs text-primary">
+              <RiFlashlightLine className="size-4" />
+              <span>
+                {selectedJobIds.length} serviço{selectedJobIds.length > 1 ? "s" : ""} selecionado{selectedJobIds.length > 1 ? "s" : ""}
+              </span>
+            </div>
+            <span className="text-xs text-muted-foreground">·</span>
+            <span className="text-xs font-bold text-gray-900">
+              {isKonica
+                ? `${selectedStats.sheets} folhas acumuladas`
+                : `${selectedStats.meters.toFixed(3)}m lineares acumulados`}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              onClick={() => setBulkDialogOpen(true)}
+              className="gap-1.5 font-semibold h-8 text-xs shadow-xs"
+            >
+              <RiFlashlightLine className="size-3.5" />
+              Debitar Selecionados em Massa
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSelectedJobIds([])}
+              className="h-8 text-xs text-muted-foreground hover:text-gray-900"
+            >
+              Limpar
+            </Button>
+          </div>
+        </div>
+      )}
+
       {isLoading ? (
         <LoadingState label="Carregando jobs..." />
       ) : isError ? (
@@ -194,6 +274,9 @@ export function JobsTab({ machine }: { machine: Machine }) {
             data={data?.rows ?? []}
             onEditMedia={setEditJob}
             onHideJob={canManageHidden ? setHideJobTarget : undefined}
+            selectedJobIds={selectedJobIds}
+            onToggleSelectJob={handleToggleSelectJob}
+            onToggleSelectAll={handleToggleSelectAll}
           />
         </div>
       )}
@@ -212,6 +295,17 @@ export function JobsTab({ machine }: { machine: Machine }) {
           onOpenChange={(o) => !o && setHideJobTarget(null)}
         />
       )}
+
+      <BulkDeductDialog
+        open={bulkDialogOpen}
+        onOpenChange={setBulkDialogOpen}
+        selectedJobs={selectedJobs}
+        machine={machine}
+        onSuccess={() => {
+          setSelectedJobIds([])
+          refetch()
+        }}
+      />
 
       <div className="flex items-center justify-between px-1">
         <span className="text-sm text-muted-foreground">

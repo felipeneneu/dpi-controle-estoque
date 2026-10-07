@@ -1,12 +1,13 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
-import { and, eq, gte, lt, like, or, desc, asc, count, getTableColumns, sql } from 'drizzle-orm';
-import { printJobs, machines, stockItems, users } from '../db/schema.js';
+import { and, eq, gte, lt, like, or, desc, asc, count, getTableColumns, sql, inArray } from 'drizzle-orm';
+import { printJobs, machines, stockItems, users, bobinas, stockTransactions } from '../db/schema.js';
 import { db } from '../db/index.js';
 import { authenticate } from '../middleware/auth.js';
 import { deductStockForJob } from '../agents/hp-latex/stock-deductor.js';
 import { toPrecision } from '../lib/math.js';
 import { verifyPassword } from '../lib/password.js';
+import { newId } from '../lib/ids.js';
 
 function monthRange(month: string): { start: string; end: string } {
   const [y, m] = month.split('-').map(Number);
@@ -386,5 +387,224 @@ export async function jobRoutes(app: FastifyInstance) {
         ? 'Job ocultado com sucesso. O débito de estoque foi mantido.'
         : 'Job restaurado com sucesso.',
     });
+  });
+
+  const CONVERSION_FACTOR_BY_UNIT = {
+    fls: 1,
+    rms: 500,
+    pk: 50,
+    bl: 2500,
+  } as const;
+
+  app.post('/api/jobs/bulk-deduct', {
+    schema: {
+      tags: ['Jobs'],
+      summary: 'Debitar múltiplos jobs em massa no mesmo material (bobina ou folha)',
+      description: 'Permite selecionar jobs que rodaram no mesmo material e aplicar o débito consolidado de uma só vez.',
+      body: {
+        type: 'object',
+        required: ['jobIds', 'stockItemId'],
+        properties: {
+          jobIds: { type: 'array', items: { type: 'string' }, minItems: 1 },
+          stockItemId: { type: 'string' },
+          machineId: { type: 'string' },
+          bobinaId: { type: 'string' },
+          reason: { type: 'string' },
+        },
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            processedCount: { type: 'number' },
+            totalDebited: { type: 'number' },
+            unit: { type: 'string' },
+            message: { type: 'string' },
+          },
+        },
+        400: { type: 'object', properties: { error: { type: 'string' } } },
+        404: { type: 'object', properties: { error: { type: 'string' } } },
+      },
+    },
+    preHandler: [authenticate],
+  }, async (request, reply) => {
+    const { jobIds, stockItemId, machineId, bobinaId, reason } = request.body as {
+      jobIds: string[];
+      stockItemId: string;
+      machineId?: string;
+      bobinaId?: string;
+      reason?: string;
+    };
+
+    const item = await db.select().from(stockItems).where(eq(stockItems.id, stockItemId)).get();
+    if (!item) {
+      return reply.code(404).send({ error: 'Material selecionado não foi encontrado no estoque.' });
+    }
+
+    // Busca os jobs por ID interno ou por jobId público
+    const allJobs = await db
+      .select()
+      .from(printJobs)
+      .where(or(inArray(printJobs.id, jobIds), inArray(printJobs.jobId, jobIds)))
+      .all();
+
+    if (allJobs.length === 0) {
+      return reply.code(404).send({ error: 'Nenhum dos jobs selecionados foi encontrado.' });
+    }
+
+    // Filtra jobs ainda não debitados
+    const pendingJobs = allJobs.filter((j) => !j.stockDeducted);
+    if (pendingJobs.length === 0) {
+      return reply.code(400).send({ error: 'Todos os jobs selecionados já tiveram o estoque debitado anteriormente.' });
+    }
+
+    const nowIso = new Date().toISOString();
+    const user = request.user as { sub?: string; name?: string } | undefined;
+
+    // Distingue entre material de FOLHAS (Konica / unidades fls, rms, pk) e BOBINA (m / metros lineares)
+    const isSheetMaterial = item.unit === 'fls' || item.unit === 'rms' || item.unit === 'pk' || item.unit === 'bl';
+
+    if (isSheetMaterial) {
+      // SOMA DE FOLHAS
+      let totalSheets = 0;
+      for (const job of pendingJobs) {
+        const sheetsCount = (job.sheets && job.sheets > 0) ? job.sheets : (job.pages ?? 1);
+        totalSheets += sheetsCount;
+      }
+
+      const factor = CONVERSION_FACTOR_BY_UNIT[item.unit as keyof typeof CONVERSION_FACTOR_BY_UNIT] ?? 1;
+      const debitQty = factor > 1 ? Math.floor(totalSheets / factor) : totalSheets;
+
+      const newQty = Math.max(0, item.currentQuantity - debitQty);
+      await db.update(stockItems).set({ currentQuantity: newQty }).where(eq(stockItems.id, item.id));
+
+      await db.insert(stockTransactions).values({
+        id: newId(),
+        itemId: item.id,
+        type: 'OUT',
+        quantity: debitQty,
+        reason: reason || `Baixa em massa: ${pendingJobs.length} job(s) [${totalSheets} folhas] no papel ${item.name}`,
+        userId: user?.sub ?? null,
+        userName: user?.name ?? 'Operador',
+      });
+
+      // Atualiza os jobs como debitados
+      for (const job of pendingJobs) {
+        await db
+          .update(printJobs)
+          .set({
+            stockDeducted: true,
+            deductedAt: nowIso,
+            materialStatus: 'DEDUCTED',
+            mediaType: item.name,
+          })
+          .where(eq(printJobs.id, job.id));
+      }
+
+      app.io.to('estoque').emit('stock:updated', { itemId: item.id });
+      app.io.to('estoque').emit('printer:job_completed', { message: 'Jobs debitados em massa' });
+
+      return reply.code(200).send({
+        success: true,
+        processedCount: pendingJobs.length,
+        totalDebited: debitQty,
+        unit: item.unit,
+        message: `${pendingJobs.length} job(s) debitado(s) com sucesso: ${debitQty} ${item.unit} (${totalSheets} folhas) de ${item.name}.`,
+      });
+    } else {
+      // SOMA DE METROS LINEARES DE BOBINA
+      const rollWidth = (item.width && item.width > 0) ? item.width : 1.52;
+      let totalLinearM = 0;
+
+      for (const job of pendingJobs) {
+        let linear = job.linearMetersDebited;
+        if (!linear || linear <= 0) {
+          linear = job.mediaAreaM2 && job.mediaAreaM2 > 0 ? toPrecision(job.mediaAreaM2 / rollWidth, 3) : 1;
+        }
+        totalLinearM += linear;
+      }
+      totalLinearM = toPrecision(totalLinearM, 3);
+
+      let targetBobina: typeof bobinas.$inferSelect | null = null;
+      if (bobinaId) {
+        targetBobina = await db.select().from(bobinas).where(eq(bobinas.id, bobinaId)).get() ?? null;
+      } else {
+        // Busca bobina IN_USE para a máquina informada ou primeira bobina em uso do item
+        const mId = machineId || pendingJobs[0]?.machineId;
+        if (mId) {
+          targetBobina = await db
+            .select()
+            .from(bobinas)
+            .where(
+              and(
+                eq(bobinas.stockItemId, item.id),
+                eq(bobinas.state, 'IN_USE'),
+                eq(bobinas.location, `machine:${mId}`),
+              ),
+            )
+            .get() ?? null;
+        }
+        if (!targetBobina) {
+          targetBobina = await db
+            .select()
+            .from(bobinas)
+            .where(and(eq(bobinas.stockItemId, item.id), eq(bobinas.state, 'IN_USE')))
+            .get() ?? null;
+        }
+      }
+
+      if (targetBobina) {
+        const remaining = Math.max(0, toPrecision(targetBobina.metersRemaining - totalLinearM, 3));
+        await db
+          .update(bobinas)
+          .set({
+            metersRemaining: remaining,
+            state: remaining <= 0 ? 'USED' : 'IN_USE',
+          })
+          .where(eq(bobinas.id, targetBobina.id));
+      }
+
+      const newQty = Math.max(0, toPrecision(item.currentQuantity - totalLinearM, 3));
+      await db.update(stockItems).set({ currentQuantity: newQty }).where(eq(stockItems.id, item.id));
+
+      const bobinaDesc = targetBobina ? ` [Bobina ${targetBobina.serial}]` : '';
+      await db.insert(stockTransactions).values({
+        id: newId(),
+        itemId: item.id,
+        type: 'OUT',
+        quantity: totalLinearM,
+        reason: reason || `Baixa em massa: ${pendingJobs.length} job(s)${bobinaDesc} no material ${item.name}`,
+        userId: user?.sub ?? null,
+        userName: user?.name ?? 'Operador',
+      });
+
+      // Atualiza os jobs
+      for (const job of pendingJobs) {
+        const linear = job.linearMetersDebited ?? (job.mediaAreaM2 && job.mediaAreaM2 > 0 ? toPrecision(job.mediaAreaM2 / rollWidth, 3) : 1);
+        await db
+          .update(printJobs)
+          .set({
+            stockDeducted: true,
+            deductedAt: nowIso,
+            rollWidthUsed: rollWidth,
+            linearMetersDebited: linear,
+            materialStatus: 'DEDUCTED',
+            mediaType: item.name,
+          })
+          .where(eq(printJobs.id, job.id));
+      }
+
+      app.io.to('estoque').emit('stock:updated', { itemId: item.id });
+      app.io.to('estoque').emit('printer:job_completed', { message: 'Jobs debitados em massa' });
+
+      return reply.code(200).send({
+        success: true,
+        processedCount: pendingJobs.length,
+        totalDebited: totalLinearM,
+        unit: 'm',
+        message: `${pendingJobs.length} job(s) debitado(s) com sucesso: ${totalLinearM}m de ${item.name}${bobinaDesc}.`,
+      });
+    }
   });
 }

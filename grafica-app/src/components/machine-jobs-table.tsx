@@ -126,12 +126,73 @@ const STATUS_BADGE_CLS: Record<string, string> = {
   failed: "bg-red-100 text-red-700",
 }
 
+function selectColumn(
+  selectedJobIds: string[],
+  onToggleSelectJob?: (id: string) => void,
+  onToggleSelectAll?: () => void,
+  allSelected?: boolean,
+  someSelected?: boolean,
+) {
+  return columnHelper.display({
+    id: "select",
+    header: () => (
+      <div className="flex items-center justify-center pl-1">
+        <input
+          type="checkbox"
+          checked={!!allSelected}
+          ref={(el) => {
+            if (el) el.indeterminate = Boolean(someSelected && !allSelected)
+          }}
+          onChange={onToggleSelectAll}
+          aria-label="Selecionar todos os jobs"
+          className="size-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer accent-primary"
+        />
+      </div>
+    ),
+    cell: (info) => {
+      const job = info.row.original
+      const isSelected = selectedJobIds.includes(job.id)
+      return (
+        <div className="flex items-center justify-center pl-1">
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={() => onToggleSelectJob?.(job.id)}
+            aria-label={`Selecionar job ${job.jobName}`}
+            className="size-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer accent-primary"
+          />
+        </div>
+      )
+    },
+  })
+}
+
+interface SelectionOptions {
+  selectedJobIds: string[]
+  onToggleSelectJob?: (id: string) => void
+  onToggleSelectAll?: () => void
+  allSelected?: boolean
+  someSelected?: boolean
+}
+
 function konicaColumns(
   onEditMedia?: (job: PrintJobRow) => void,
   onHideJob?: (job: PrintJobRow) => void,
   showHiddenBadge?: boolean,
+  selection?: SelectionOptions,
 ): JobsColumns {
   return [
+    ...(selection?.onToggleSelectJob
+      ? [
+          selectColumn(
+            selection.selectedJobIds,
+            selection.onToggleSelectJob,
+            selection.onToggleSelectAll,
+            selection.allSelected,
+            selection.someSelected,
+          ),
+        ]
+      : []),
     osColumn(),
     jobColumn(),
     dateColumn(),
@@ -267,8 +328,20 @@ function hpColumns(
   machine?: Machine,
   onHideJob?: (job: PrintJobRow) => void,
   showHiddenBadge?: boolean,
+  selection?: SelectionOptions,
 ): JobsColumns {
   return [
+    ...(selection?.onToggleSelectJob
+      ? [
+          selectColumn(
+            selection.selectedJobIds,
+            selection.onToggleSelectJob,
+            selection.onToggleSelectAll,
+            selection.allSelected,
+            selection.someSelected,
+          ),
+        ]
+      : []),
     osColumn(),
     jobColumn(),
     dateColumn(),
@@ -449,17 +522,38 @@ export function MachineJobsTable({
   data,
   onEditMedia,
   onHideJob,
+  selectedJobIds = [],
+  onToggleSelectJob,
+  onToggleSelectAll,
 }: {
   machine: Machine
   data: PrintJobRow[]
   onEditMedia?: (job: PrintJobRow) => void
   onHideJob?: (job: PrintJobRow) => void
+  selectedJobIds?: string[]
+  onToggleSelectJob?: (id: string) => void
+  onToggleSelectAll?: () => void
 }) {
   // showHiddenBadge is derived from whether onHideJob is provided (i.e. DEV_MASTER only)
   const showHiddenBadge = !!onHideJob
+
+  const allSelected = data.length > 0 && data.every((j) => selectedJobIds.includes(j.id))
+  const someSelected = data.some((j) => selectedJobIds.includes(j.id))
+
+  const selection: SelectionOptions | undefined = onToggleSelectJob
+    ? {
+        selectedJobIds,
+        onToggleSelectJob,
+        onToggleSelectAll,
+        allSelected,
+        someSelected,
+      }
+    : undefined
+
   const columns = isKonicaMachine(machine)
-    ? konicaColumns(onEditMedia, onHideJob, showHiddenBadge)
-    : hpColumns(onEditMedia, machine, onHideJob, showHiddenBadge)
+    ? konicaColumns(onEditMedia, onHideJob, showHiddenBadge, selection)
+    : hpColumns(onEditMedia, machine, onHideJob, showHiddenBadge, selection)
+
   const table = useLegacyTable({
     data,
     columns,
@@ -487,10 +581,13 @@ export function MachineJobsTable({
         <tbody>
           {table.getRowModel().rows.map((row) => {
             const isHidden = Boolean(row.original.hidden)
+            const isSelected = selectedJobIds.includes(row.original.id)
             return (
               <tr
                 key={row.id}
                 className={`border-b border-gray-50 hover:bg-muted/30 transition-colors ${
+                  isSelected ? "bg-primary/5 hover:bg-primary/10" : ""
+                } ${
                   showHiddenBadge && isHidden ? "bg-amber-50/40 opacity-80" : ""
                 }`}
               >

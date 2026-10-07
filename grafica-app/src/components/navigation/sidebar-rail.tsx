@@ -43,7 +43,7 @@ export function SidebarRail() {
               </Link>
             </TooltipTrigger>
             <TooltipContent side="right" className="bg-black text-white font-semibold">
-              GráficaOS — Visão Geral
+              DPI — Visão Geral
             </TooltipContent>
           </Tooltip>
 

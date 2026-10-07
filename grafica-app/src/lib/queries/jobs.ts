@@ -139,3 +139,35 @@ export function useSyncMachineJobsStock(machineId: string) {
     },
   })
 }
+
+export interface BulkDeductJobsInput {
+  jobIds: string[]
+  stockItemId: string
+  bobinaId?: string
+  reason?: string
+  machineId?: string
+}
+
+export interface BulkDeductJobsResponse {
+  success: boolean
+  processedCount: number
+  totalDebited: number
+  unit: string
+  message: string
+}
+
+export function useBulkDeductJobs() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (input: BulkDeductJobsInput) =>
+      api<BulkDeductJobsResponse>("/api/jobs/bulk-deduct", {
+        method: "POST",
+        body: JSON.stringify(input),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: jobKeys.all })
+      queryClient.invalidateQueries({ queryKey: stockKeys.all })
+    },
+  })
+}
+

@@ -87,7 +87,7 @@ export function TitleBar() {
               src="/logo-32x32.png"
               alt="Logo do Sistema"
               fill
-              className="object-contain rounded-md"
+              className=" object-contain h-6 w-6 rounded-md"
               draggable={false}
             />
           </div>

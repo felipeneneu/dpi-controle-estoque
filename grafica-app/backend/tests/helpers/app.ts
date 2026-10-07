@@ -23,6 +23,7 @@ export async function resetDb() {
     // estoura FK em qualquer teste que semeie job Mimaki.
     'mimaki_test_jobs',
     'mimaki_jobs',
+    'print_jobs',
     // `bobinas` e `garrafas` tambem referenciam `stock_items`.
     'bobinas',
     'garrafas',
