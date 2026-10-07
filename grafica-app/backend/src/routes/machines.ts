@@ -453,4 +453,114 @@ app.post('/api/machines/:id/active-garrafa', {
 
     return { success: true, message: 'Garrafa definida como em uso na máquina' };
   });
+
+  app.post('/api/machines/:id/active-tinta', {
+    schema: {
+      tags: ['Máquinas'],
+      summary: 'Trocar lote de tinta ativo da máquina (Quick Switch)',
+      description: 'Define um lote de tinta como em uso na máquina em um canal específico. O lote anterior daquele canal vai para FINISHED (ou volta para estoque se solicitado). Emite stock:updated.',
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: { id: { type: 'string' } },
+      },
+      body: {
+        type: 'object',
+        required: ['newLoteId'],
+        properties: {
+          channel: { type: 'string' },
+          newLoteId: { type: 'string' },
+          oldLoteAction: { type: 'string', enum: ['FINISHED', 'RETURN_TO_STOCK'] },
+        },
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            message: { type: 'string' },
+            activeLote: { type: 'object', additionalProperties: true },
+          },
+        },
+        400: { type: 'object', properties: { error: { type: 'string' } } },
+        404: { type: 'object', properties: { error: { type: 'string' } } },
+      },
+    },
+    preHandler: [authenticate, authorize(['DEV_MASTER', 'ADMIN', 'OPERATOR'])],
+  }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const { channel, newLoteId, oldLoteAction } = request.body as {
+      channel?: string;
+      newLoteId: string;
+      oldLoteAction?: 'FINISHED' | 'RETURN_TO_STOCK';
+    };
+
+    const { tintaLotes } = await import('../db/schema.js');
+
+    const machine = await db.select().from(machines).where(eq(machines.id, id)).get();
+    if (!machine) return reply.code(404).send({ error: 'Máquina não encontrada' });
+
+    if (!newLoteId) return reply.code(400).send({ error: 'Informe o ID ou código do novo lote.' });
+
+    const newLote = await db.select().from(tintaLotes).where(
+      or(eq(tintaLotes.id, newLoteId), eq(tintaLotes.serial, newLoteId))
+    ).get();
+    if (!newLote) return reply.code(404).send({ error: 'Novo lote de tinta não encontrado' });
+    if (newLote.state === 'FINISHED') {
+      return reply.code(400).send({ error: 'Este lote de tinta já foi marcado como terminado/descartado.' });
+    }
+
+    const effectiveChannel = channel || newLote.channel;
+
+    // 1. Tratar lote anterior em uso nesta máquina para este canal (ou mesmo stockItem)
+    const currentActive = await db.select().from(tintaLotes).where(
+      and(
+        eq(tintaLotes.state, 'IN_USE'),
+        eq(tintaLotes.location, `machine:${id}`),
+        effectiveChannel
+          ? eq(tintaLotes.channel, effectiveChannel)
+          : eq(tintaLotes.stockItemId, newLote.stockItemId),
+      )
+    ).get();
+
+    if (currentActive && currentActive.id !== newLote.id) {
+      const action = oldLoteAction ?? 'FINISHED';
+      const newState = action === 'FINISHED' ? 'FINISHED' : 'NEW';
+      const newLoc = action === 'FINISHED' ? 'discarded' : 'deposito';
+      await db.update(tintaLotes).set({
+        state: newState,
+        location: newLoc,
+        finishedAt: action === 'FINISHED' ? new Date() : null,
+      }).where(eq(tintaLotes.id, currentActive.id));
+    }
+
+    // 2. Definir o novo lote como em uso na máquina
+    await db.update(tintaLotes).set({
+      state: 'IN_USE',
+      location: `machine:${id}`,
+      machineId: id,
+      channel: effectiveChannel ?? null,
+      openedAt: newLote.openedAt ?? new Date(),
+    }).where(eq(tintaLotes.id, newLote.id));
+
+    // 3. Notificar via Socket.IO para atualização ao vivo
+    app.io.to('estoque').emit('stock:updated', {
+      type: 'TINTA_QUICK_SWITCH',
+      machineId: id,
+      channel: effectiveChannel,
+      loteId: newLote.id,
+    });
+
+    return {
+      success: true,
+      message: 'Lote de tinta definido como em uso na máquina com sucesso',
+      activeLote: {
+        ...newLote,
+        state: 'IN_USE',
+        location: `machine:${id}`,
+        machineId: id,
+        channel: effectiveChannel ?? null,
+      },
+    };
+  });
 }
