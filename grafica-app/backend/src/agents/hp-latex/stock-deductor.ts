@@ -1,6 +1,6 @@
 import { eq, and, like } from 'drizzle-orm';
 import { db } from '../../db/index.js';
-import { stockItems, stockTransactions, notifications, printJobs, users } from '../../db/schema.js';
+import { stockItems, stockTransactions, notifications, printJobs, users, inkConsumptionLog } from '../../db/schema.js';
 import type { StockItem } from '../../db/schema.js';
 import { newId } from '../../lib/ids.js';
 import { sendToRecipients } from '../../lib/whatsapp.js';
@@ -127,52 +127,34 @@ export async function deductStockForJob(
 ): Promise<void> {
   const actorId = await ensureSystemUser();
 
+  // ADR-057 / BR-011 emendada: Desacoplamento da dedução de tinta.
+  // Grava consumo de ml por job exclusivamente em ink_consumption_log para relatórios.
+  // NÃO debita stockItems nem gera stockTransactions para tinta.
   for (const [sku, field] of Object.entries(INK_COLOR_MAP)) {
     const quantity = job[field];
     if (!quantity || quantity <= 0) continue;
 
-    const items = await db.select().from(stockItems).where(eq(stockItems.name, sku)).all();
-    const item = items[0];
-    if (!item) continue;
-
-    const existingTx = await db
-      .select({ id: stockTransactions.id })
-      .from(stockTransactions)
+    // Idempotência por machineId + canal + jobId
+    const existingLog = await db
+      .select({ id: inkConsumptionLog.id })
+      .from(inkConsumptionLog)
       .where(
         and(
-          eq(stockTransactions.itemId, item.id),
-          like(stockTransactions.reason, `%${job.jobName}%`),
+          eq(inkConsumptionLog.machineId, machineId),
+          eq(inkConsumptionLog.channel, sku),
+          job.jobId ? eq(inkConsumptionLog.jobId, job.jobId) : undefined,
         ),
       )
       .get();
-    if (existingTx) continue;
+    if (existingLog) continue;
 
-    const newQty = Math.max(0, item.currentQuantity - quantity);
-    const status = computeStatus(newQty, item.minQuantity);
-
-    await db.update(stockItems).set({ currentQuantity: newQty, status }).where(eq(stockItems.id, item.id));
-
-    const txId = newId();
-    await db.insert(stockTransactions).values({
-      id: txId,
-      itemId: item.id,
-      type: 'OUT',
-      quantity,
-      reason: `HP Agent: job ${job.jobName}`,
-      userId: actorId,
-      userName: 'HP Latex Agent',
+    await db.insert(inkConsumptionLog).values({
+      id: newId(),
+      machineId,
+      channel: sku,
+      jobId: job.jobId || null,
+      mlConsumed: quantity,
     });
-
-    io.to('estoque').emit('stock:deducted', {
-      itemName: item.name,
-      quantity,
-      unit: item.unit,
-      jobName: job.jobName,
-    });
-
-    if (status === 'LOW_STOCK' || status === 'OUT_OF_STOCK') {
-      await dispatchStockAlert({ item, newQty, status, actorId, io });
-    }
   }
 
   // Tratamento de mídia/bobina

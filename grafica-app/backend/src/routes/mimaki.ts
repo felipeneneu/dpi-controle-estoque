@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { eq, and, or, like, sql } from 'drizzle-orm';
-import { mimakiJobs, stockItems, stockTransactions, notifications, users, garrafas, bobinas, machines } from '../db/schema.js';
+import { mimakiJobs, stockItems, stockTransactions, notifications, users, garrafas, bobinas, machines, inkConsumptionLog } from '../db/schema.js';
 import { db } from '../db/index.js';
 import { newId } from '../lib/ids.js';
 import { m2mAuth } from '../middleware/m2m-auth.js';
@@ -291,114 +291,50 @@ export async function deductMimakiStockForJob(
       }
   }
 
-  // 2. Débito de Tintas UV
+  // 2. Registro de Consumo de Tintas UV (ADR-057 / BR-012 emendada)
+  // Desacoplado do saldo de estoque: grava em inkConsumptionLog para relatórios analíticos.
+  // NÃO altera garrafas nem stockItems nem gera stockTransactions para tinta.
   const inkChannels = [
-    { key: 'inkCyanCc' as const, color: 'Cyan' },
-    { key: 'inkMagentaCc' as const, color: 'Magenta' },
-    { key: 'inkYellowCc' as const, color: 'Yellow' },
-    { key: 'inkBlackCc' as const, color: 'Black' },
-    { key: 'inkWhite1Cc' as const, color: 'White' },
-    { key: 'inkWhite2Cc' as const, color: 'White' },
-    { key: 'inkVarnish1Cc' as const, color: 'Varnish' },
-    { key: 'inkVarnish2Cc' as const, color: 'Varnish' },
+    { key: 'inkCyanCc' as const, channel: 'Cyan' },
+    { key: 'inkMagentaCc' as const, channel: 'Magenta' },
+    { key: 'inkYellowCc' as const, channel: 'Yellow' },
+    { key: 'inkBlackCc' as const, channel: 'Black' },
+    { key: 'inkWhite1Cc' as const, channel: 'White1' },
+    { key: 'inkWhite2Cc' as const, channel: 'White2' },
+    { key: 'inkVarnish1Cc' as const, channel: 'Varnish1' },
+    { key: 'inkVarnish2Cc' as const, channel: 'Varnish2' },
   ];
 
-  const allInks = await db
-    .select()
-    .from(stockItems)
-    .where(eq(stockItems.category, 'INK_SUPPLY'))
-    .all();
-
-  for (const { key, color } of inkChannels) {
+  for (const { key, channel } of inkChannels) {
     const consumed = job[key];
     if (consumed && consumed > 0) {
       const consumedCc = toPrecision(consumed, 4);
-      const inkItem = allInks.find(
-        (i) =>
-          i.name.toLowerCase().includes('uv') &&
-          i.name.toLowerCase().includes(color.toLowerCase()),
-      );
+      const machineId = job.machineId || 'mimaki-default';
 
-      if (inkItem) {
-        // Busca garrafa ativa deste item na máquina (se existir)
-        let activeGarrafa = null;
-        if (job.machineId) {
-          activeGarrafa = await db.select().from(garrafas).where(
-            and(
-              eq(garrafas.stockItemId, inkItem.id),
-              eq(garrafas.state, 'IN_USE'),
-              eq(garrafas.location, `machine:${job.machineId}`)
-            )
-          ).get();
-        }
+      // Idempotência por machineId + canal + jobId
+      const existingLog = await db
+        .select({ id: inkConsumptionLog.id })
+        .from(inkConsumptionLog)
+        .where(
+          and(
+            eq(inkConsumptionLog.machineId, machineId),
+            eq(inkConsumptionLog.channel, channel),
+            job.id ? eq(inkConsumptionLog.jobId, job.id) : undefined,
+          ),
+        )
+        .get();
 
-        if (activeGarrafa) {
-          const newMl = Math.max(0, toPrecision((activeGarrafa.mlRemaining ?? 0) - consumedCc, 4));
-          const isFinished = newMl <= 0;
-          await db.update(garrafas).set({
-            mlRemaining: newMl,
-            state: isFinished ? 'USED' : activeGarrafa.state,
-            finishedAt: isFinished ? new Date(Date.now()) : null,
-          }).where(eq(garrafas.id, activeGarrafa.id));
-
-          const newQty = newMl;
-          const status = computeStatus(newQty, inkItem.minQuantity);
-
-          await db.insert(stockTransactions).values({
-            id: newId(),
-            itemId: inkItem.id,
-            type: 'OUT',
-            quantity: consumedCc,
-            reason: `Mimaki tinta UV ${color}: ${job.jobName} (garrafa ${activeGarrafa.serial ?? activeGarrafa.id.slice(0,8)})`,
-            userId: actorId,
-            userName: 'Mimaki Agent',
-          });
-
-          deductedInksCount++;
-
-          app.io.to('estoque').emit('stock:deducted', {
-            itemName: inkItem.name,
-            quantity: consumedCc,
-            unit: inkItem.unit,
-            jobName: job.jobName,
-          });
-
-          if (status === 'LOW_STOCK' || status === 'OUT_OF_STOCK') {
-            await dispatchStockAlert({ item: inkItem, newQty, status, actorId, io: app.io });
-          }
-        } else {
-          // Sem garrafa ativa: débito agregado (compatibilidade retroativa)
-          const newQty = Math.max(0, toPrecision(inkItem.currentQuantity - consumedCc, 4));
-          const status = computeStatus(newQty, inkItem.minQuantity);
-
-          await db.update(stockItems)
-            .set({ currentQuantity: newQty, status })
-            .where(eq(stockItems.id, inkItem.id));
-
-          await db.insert(stockTransactions).values({
-            id: newId(),
-            itemId: inkItem.id,
-            type: 'OUT',
-            quantity: consumedCc,
-            reason: `Mimaki tinta UV ${color}: ${job.jobName}`,
-            userId: actorId,
-            userName: 'Mimaki Agent',
-          });
-
-          deductedInksCount++;
-
-          app.io.to('estoque').emit('stock:deducted', {
-            itemName: inkItem.name,
-            quantity: consumedCc,
-            unit: inkItem.unit,
-            jobName: job.jobName,
-          });
-
-          if (status === 'LOW_STOCK' || status === 'OUT_OF_STOCK') {
-            await dispatchStockAlert({ item: inkItem, newQty, status, actorId, io: app.io });
-          }
-        }
+      if (!existingLog) {
+        await db.insert(inkConsumptionLog).values({
+          id: newId(),
+          machineId,
+          channel,
+          jobId: job.id || null,
+          mlConsumed: consumedCc,
+        });
       }
+
+      deductedInksCount++;
     }
   }
 
