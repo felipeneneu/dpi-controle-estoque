@@ -14,6 +14,8 @@ export async function resetDb() {
   // Order matters for FKs (children first). `users` is intentionally preserved so
   // that JWT `sub`s remain valid across tests within a file.
   const tables = [
+    'ink_consumption_log',
+    'tinta_lotes',
     'cartucho_consumo',
     'cartuchos',
     // Filhos de `stock_items`/`machines` antes deles. `mimaki_jobs` referencia

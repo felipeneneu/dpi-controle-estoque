@@ -90,6 +90,57 @@ export const garrafas = sqliteTable('garrafas', {
 ]);
 
 /**
+ * Lote/unidade de tinta/toner como ativo físico por unidade (ADR-057 / BR-057).
+ *
+ * Estados: NEW (na prateleira) | IN_USE (carregada na máquina) | FINISHED (baixada/trocada).
+ * O saldo disponível de um SKU de tinta no estoque é a contagem de lotes em NEW.
+ * Ao entrar em IN_USE, o lote sai imediatamente do saldo disponível.
+ */
+export const tintaLotes = sqliteTable('tinta_lotes', {
+  id: text('id').primaryKey(),
+  stockItemId: text('stock_item_id')
+    .notNull()
+    .references(() => stockItems.id, { onDelete: 'cascade' }),
+  serial: text('serial'),
+  state: text('state', { enum: ['NEW', 'IN_USE', 'FINISHED'] }).notNull().default('NEW'),
+  location: text('location').notNull().default('deposito'),
+  machineId: text('machine_id').references(() => machines.id, { onDelete: 'set null' }),
+  channel: text('channel'),
+  openedAt: integer('opened_at', { mode: 'timestamp' }),
+  finishedAt: integer('finished_at', { mode: 'timestamp' }),
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+}, (t) => [
+  index('tinta_lotes_stock_item_idx').on(t.stockItemId),
+  index('tinta_lotes_state_idx').on(t.state),
+  index('tinta_lotes_machine_idx').on(t.machineId),
+  index('tinta_lotes_channel_idx').on(t.channel),
+  uniqueIndex('tinta_lotes_active_channel_idx')
+    .on(t.machineId, t.channel)
+    .where(sql`state = 'IN_USE'`),
+]);
+
+/**
+ * Registro analítico de consumo de tinta por job para relatórios (ADR-057 / BR-057).
+ *
+ * Desacoplado do saldo de estoque. Os agentes HP e Mimaki gravam aqui os ml/cc
+ * calculados para fins de auditoria e relatórios de custo/consumo.
+ */
+export const inkConsumptionLog = sqliteTable('ink_consumption_log', {
+  id: text('id').primaryKey(),
+  jobId: text('job_id'),
+  machineId: text('machine_id')
+    .notNull()
+    .references(() => machines.id, { onDelete: 'cascade' }),
+  channel: text('channel').notNull(),
+  mlConsumed: real('ml_consumed').notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+}, (t) => [
+  index('ink_consumption_log_machine_idx').on(t.machineId),
+  index('ink_consumption_log_channel_idx').on(t.channel),
+  index('ink_consumption_log_created_idx').on(t.createdAt),
+]);
+
+/**
  * Cartucho de tinta/toner como ativo fisico por canal (ADR-052 / BR-052).
  *
  * Generico de proposito: `unit` distingue tinta em `ml` de toner em `pct`, porque
@@ -500,3 +551,8 @@ export type MimakiTestJob = typeof mimakiTestJobs.$inferSelect;
 export type NewMimakiTestJob = typeof mimakiTestJobs.$inferInsert;
 export type ImpositionJob = typeof impositionJobs.$inferSelect;
 export type NewImpositionJob = typeof impositionJobs.$inferInsert;
+export type TintaLote = typeof tintaLotes.$inferSelect;
+export type NewTintaLote = typeof tintaLotes.$inferInsert;
+export type InkConsumptionLog = typeof inkConsumptionLog.$inferSelect;
+export type NewInkConsumptionLog = typeof inkConsumptionLog.$inferInsert;
+

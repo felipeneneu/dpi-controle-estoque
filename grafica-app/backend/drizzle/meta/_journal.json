@@ -99,6 +99,13 @@
       "when": 1790964836121,
       "tag": "0013_mimaki_test_jobs_deduction",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "6",
+      "when": 1791377571719,
+      "tag": "0014_zippy_rictor",
+      "breakpoints": true
     }
   ]
 }
