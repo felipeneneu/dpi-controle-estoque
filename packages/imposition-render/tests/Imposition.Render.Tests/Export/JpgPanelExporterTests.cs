@@ -1,9 +1,9 @@
 using System.Buffers.Binary;
 using FluentAssertions;
+using ImageMagick;
 using Imposition.Core.Errors;
 using Imposition.Core.Seams;
 using Imposition.Render.Export;
-using Imposition.Render.Native;
 using Xunit;
 
 namespace Imposition.Render.Tests.Export;
@@ -99,6 +99,15 @@ public sealed class JpgPanelExporterTests : IDisposable
 
         var header2 = RasterPanelSplitter.ReadJpegHeaderInfo(file2);
         header2.Components.Should().Be(4, "O arquivo exportado deve ter 4 canais CMYK (Regra R-020)");
+
+        // Regra R-021: Validação cruzada com decodificador externo (Magick.NET)
+        using var magick1 = new MagickImage(file1);
+        magick1.ColorSpace.Should().Be(ColorSpace.CMYK, "Painel 1 deve ser reconhecido como CMYK por biblioteca externa");
+        magick1.ChannelCount.Should().Be(4, "Painel 1 deve ter 4 canais");
+
+        using var magick2 = new MagickImage(file2);
+        magick2.ColorSpace.Should().Be(ColorSpace.CMYK, "Painel 2 deve ser reconhecido como CMYK por biblioteca externa");
+        magick2.ChannelCount.Should().Be(4, "Painel 2 deve ter 4 canais");
     }
 
     [Fact]

@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using Imposition.Core.Errors;
 using Imposition.Core.Seams;
-using Imposition.Render.Native;
 
 namespace Imposition.Render.Export;
 
@@ -80,7 +79,7 @@ public sealed class JpgPanelExporter : IJpgPanelExporter
         var jobName = Path.GetFileNameWithoutExtension(sourceImagePath);
 
         // Decodifica buffer CMYK
-        var cmykBuffer = LibJpegTurboNative.DecodeCmyk(sourceImagePath, out var decW, out var decH);
+        var cmykBuffer = JpegCmykEncoder.DecodeCmyk(sourceImagePath, out var decW, out var decH);
 
         return await ExportPanelsFromBufferAsync(
             cmykBuffer,
@@ -159,16 +158,19 @@ public sealed class JpgPanelExporter : IJpgPanelExporter
 
             try
             {
+                byte[]? iccBytes = options.EmbedIccProfile ? JpegCmykEncoder.GetDefaultFogra39Profile() : null;
+
                 // Escrita atômica em arquivo temporário com flush síncrono
                 await using (var fs = new FileStream(tempPath, FileMode.Create, FileAccess.Write, FileShare.None, 65536, useAsync: true))
                 {
-                    LibJpegTurboNative.EncodeCmyk(
+                    JpegCmykEncoder.Encode(
                         panelData.CmykBuffer,
                         panelData.WidthPx,
                         panelData.HeightPx,
                         options.Quality,
-                        fs,
-                        (int)Math.Round(panelData.Dpi));
+                        (int)Math.Round(panelData.Dpi),
+                        iccBytes,
+                        fs);
 
                     await fs.FlushAsync(cancellationToken).ConfigureAwait(false);
                 }

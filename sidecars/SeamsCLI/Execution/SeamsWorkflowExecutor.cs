@@ -12,7 +12,6 @@ using Imposition.Core.Seams;
 using Imposition.Pdf.Preflight;
 using Imposition.Pdf.Seams;
 using Imposition.Render.Export;
-using Imposition.Render.Native;
 using SeamsCLI.CommandLine;
 
 namespace SeamsCLI.Execution;
@@ -335,7 +334,7 @@ public sealed class SeamsWorkflowExecutor
                 }
             }
 
-            LibJpegTurboNative.DecodeCmyk(imagePath, out int pxW, out int pxH);
+            JpegCmykEncoder.DecodeCmyk(imagePath, out int pxW, out int pxH);
             double widthMm = (pxW / (double)dpi) * 25.4;
             double heightMm = (pxH / (double)dpi) * 25.4;
             return (widthMm, heightMm, foundDpi);

@@ -1,7 +1,6 @@
 using System.Buffers.Binary;
 using Imposition.Core.Errors;
 using Imposition.Core.Seams;
-using Imposition.Render.Native;
 
 namespace Imposition.Render.Export;
 
@@ -160,8 +159,8 @@ public static class RasterPanelSplitter
                 $"O arquivo de imagem fonte '{Path.GetFileName(imagePath)}' possui {components} componente(s). A exportação exige imagem CMYK (4 canais) estrita (Regra R-020).");
         }
 
-        // Decodifica buffer CMYK usando leitor nativo/gerenciado
-        var cmykBuffer = LibJpegTurboNative.DecodeCmyk(imagePath, out var decW, out var decH);
+        // Decodifica buffer CMYK usando leitor gerenciado BitMiracle
+        var cmykBuffer = JpegCmykEncoder.DecodeCmyk(imagePath, out var decW, out var decH);
         return Split(cmykBuffer, decW, decH, seamsResult, dpi);
     }
 

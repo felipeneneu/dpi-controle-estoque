@@ -1,8 +1,8 @@
 using System.Buffers.Binary;
 using FluentAssertions;
+using ImageMagick;
 using Imposition.Core.Seams;
 using Imposition.Render.Export;
-using Imposition.Render.Native;
 using Xunit;
 
 namespace Imposition.Render.Tests.Export;
@@ -60,7 +60,7 @@ public sealed class JpgPanelExporterIntegrationTests : IDisposable
         var sourceJpgPath = Path.Combine(_workDir, "banner_mega_evento.jpg");
         using (var fs = File.Create(sourceJpgPath))
         {
-            LibJpegTurboNative.EncodeCmyk(srcBuffer, srcWidthPx, srcHeightPx, 100, fs, dpi);
+            JpegCmykEncoder.EncodeCmyk(srcBuffer, srcWidthPx, srcHeightPx, 100, fs, dpi);
         }
 
         // 2. Calcula divisão geométrica com encolhimento térmico ativado
@@ -99,8 +99,6 @@ public sealed class JpgPanelExporterIntegrationTests : IDisposable
         result.ElapsedTime.Should().BeGreaterThan(TimeSpan.Zero);
         progressReports.Should().Contain(1.0);
 
-        var jfifBuffer = new byte[18];
-
         // Valida integridade de cada painel gerado no disco
         for (var i = 0; i < seamsResult.TotalPanels; i++)
         {
@@ -120,19 +118,31 @@ public sealed class JpgPanelExporterIntegrationTests : IDisposable
             headerW.Should().Be(expectedW, $"A largura em pixels do painel {panel.Index} deve corresponder à dimensão com sobreposição.");
             headerH.Should().Be(expectedH, $"A altura em pixels do painel {panel.Index} deve corresponder à dimensão com encolhimento.");
 
-            // Verifica densidade DPI no cabeçalho JFIF
-            using var fileStream = File.OpenRead(expectedFile);
-            fileStream.ReadExactly(jfifBuffer);
+            // Regra R-021: Validação cruzada com decodificador de mercado (Magick.NET)
+            using var magickImage = new MagickImage(expectedFile);
+            magickImage.ColorSpace.Should().Be(ColorSpace.CMYK, $"O painel {panel.Index} deve ser decodificado como CMYK.");
+            magickImage.ChannelCount.Should().Be(4, $"O painel {panel.Index} deve possuir 4 canais.");
+            magickImage.Width.Should().Be((uint)expectedW);
+            magickImage.Height.Should().Be((uint)expectedH);
 
-            jfifBuffer[0].Should().Be(0xFF);
-            jfifBuffer[1].Should().Be(0xD8);
-            jfifBuffer[2].Should().Be(0xFF);
-            jfifBuffer[3].Should().Be(0xE0); // APP0
-            jfifBuffer[13].Should().Be(0x01); // Unidade = DPI (offset 13 no arquivo = 2 SOI + 11 APP0)
-            var densityX = BinaryPrimitives.ReadUInt16BigEndian(jfifBuffer.AsSpan(14, 2));
-            var densityY = BinaryPrimitives.ReadUInt16BigEndian(jfifBuffer.AsSpan(16, 2));
-            densityX.Should().Be(150);
-            densityY.Should().Be(150);
+            // Verifica integridade dos marcadores JPEG (ADR-056)
+            var fileBytes = File.ReadAllBytes(expectedFile);
+            fileBytes[0].Should().Be(0xFF);
+            fileBytes[1].Should().Be(0xD8); // SOI
+            fileBytes[2].Should().Be(0xFF);
+            fileBytes[3].Should().Be(0xEE); // APP14 Adobe
+
+            // ADR-056: Nunca emitir APP0 JFIF em CMYK
+            var hasApp0 = false;
+            for (var b = 0; b < Math.Min(fileBytes.Length - 1, 1024); b++)
+            {
+                if (fileBytes[b] == 0xFF && fileBytes[b + 1] == 0xE0)
+                {
+                    hasApp0 = true;
+                    break;
+                }
+            }
+            hasApp0.Should().BeFalse($"O painel {panel.Index} não deve conter marcador APP0 JFIF em CMYK (ISO 10918-5).");
         }
 
         // Verifica que não ficaram arquivos temporários residuais
