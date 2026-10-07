@@ -136,11 +136,12 @@ public static class RasterPanelSplitter
     /// <summary>
     /// Valida e fatia painéis diretamente a partir de um arquivo JPEG CMYK em disco.
     /// Aborta com E_EXPORT_SOURCE_NOT_CMYK se o arquivo não tiver 4 componentes CMYK.
+    /// Preserva estritamente o DPI nativo da imagem fonte se nenhum DPI customizado for fornecido.
     /// </summary>
     public static IReadOnlyList<PanelRasterData> SplitFromFile(
         string imagePath,
         SeamsResult seamsResult,
-        double dpi = 150.0)
+        double? dpi = null)
     {
         ArgumentNullException.ThrowIfNull(imagePath, nameof(imagePath));
         ArgumentNullException.ThrowIfNull(seamsResult, nameof(seamsResult));
@@ -159,9 +160,12 @@ public static class RasterPanelSplitter
                 $"O arquivo de imagem fonte '{Path.GetFileName(imagePath)}' possui {components} componente(s). A exportação exige imagem CMYK (4 canais) estrita (Regra R-020).");
         }
 
+        var (_, _, sourceDpi, _) = JpegCmykEncoder.ReadImageInfo(imagePath);
+        var effectiveDpi = dpi ?? sourceDpi;
+
         // Decodifica buffer CMYK usando leitor gerenciado BitMiracle
         var cmykBuffer = JpegCmykEncoder.DecodeCmyk(imagePath, out var decW, out var decH);
-        return Split(cmykBuffer, decW, decH, seamsResult, dpi);
+        return Split(cmykBuffer, decW, decH, seamsResult, effectiveDpi);
     }
 
     /// <summary>

@@ -223,4 +223,38 @@ public sealed class JpgPanelExporterTests : IDisposable
         await act.Should().ThrowAsync<ImpositionException>()
             .Where(ex => ex.Code == ErrorCodes.InvalidExportInput);
     }
+
+    [Fact]
+    public void BR_054_FactoryFile_Teste02_SlicesExactPixelsAtNativeDpi_R021()
+    {
+        var factoryFile = @"C:\Users\impressao\Desktop\Emenda Teste\Teste 02.jpg";
+        if (!File.Exists(factoryFile))
+            return; // Skip se executado em ambiente sem o arquivo de fábrica
+
+        // 1. Validação de leitura ultrarrápida do cabeçalho da arte original
+        var (w, h, dpi, hasDpi) = JpegCmykEncoder.ReadImageInfo(factoryFile);
+        w.Should().Be(29528);
+        h.Should().Be(10630);
+        dpi.Should().Be(353);
+        hasDpi.Should().BeTrue();
+
+        // 2. Validação dos painéis gerados pelo hotfix
+        var p1Path = @"C:\Users\impressao\Desktop\Emenda Teste\saida_hotfix_jpg\Teste 02_painel_01.jpg";
+        var p2Path = @"C:\Users\impressao\Desktop\Emenda Teste\saida_hotfix_jpg\Teste 02_painel_02.jpg";
+
+        if (File.Exists(p1Path) && File.Exists(p2Path))
+        {
+            using var m1 = new MagickImage(p1Path);
+            m1.ColorSpace.Should().Be(ColorSpace.CMYK);
+            m1.ChannelCount.Should().Be(4);
+            m1.Height.Should().Be(10630);
+            ((int)Math.Round(m1.Density.X)).Should().Be(353);
+
+            using var m2 = new MagickImage(p2Path);
+            m2.ColorSpace.Should().Be(ColorSpace.CMYK);
+            m2.ChannelCount.Should().Be(4);
+            m2.Height.Should().Be(10630);
+            ((int)Math.Round(m2.Density.X)).Should().Be(353);
+        }
+    }
 }

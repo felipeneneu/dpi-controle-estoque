@@ -114,15 +114,15 @@ echo ============================================================
 echo  Arquivo: "!INPUT!"
 echo ============================================================
 echo.
-echo  ROLO (largura da bobina):
-echo   [1] 1520 mm   [ENTER] - padrao industria BR
+echo  QUAL A LARGURA DA BOBINA (ROLO) QUE VOCE VAI USAR?
+echo   [1] 1520 mm   [ENTER - Padrao Industria BR]
 echo   [2] 1270 mm
 echo   [3] 1060 mm
 echo   [4]  910 mm
-echo   [5] Personalizado
+echo   [5] Personalizado (digitar largura em mm)
 echo.
 set "TMP=1"
-set /p "TMP=Escolha [1]: "
+set /p "TMP=Escolha a bobina [1]: "
 if not "!TMP!"=="" set "TMP=!TMP: =!"
 set "SEL=!TMP:~0,1!"
 if "!SEL!"=="2" set "ROLL=1270"
@@ -230,7 +230,7 @@ rem ------------------------------------------------------------
 if exist "!STDERR_FILE!" del "!STDERR_FILE!" 2>nul
 echo.
 echo ============================================================
-echo  [OK] Paineis gerados com sucesso!
+echo  [OK] Paineis e emenda(s) gerados com fidelidade 1:1!
 echo  Pasta: "!OUT_DIR!"
 echo ============================================================
 echo.

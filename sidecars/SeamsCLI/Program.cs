@@ -78,7 +78,8 @@ public static class Program
         {
             if (workflowResult.Success)
             {
-                Console.Out.WriteLine($"[SeamsCLI] Sucesso: {workflowResult.PanelCount} painéis gerados.");
+                var seamWord = workflowResult.SeamCount == 1 ? "emenda" : "emendas";
+                Console.Out.WriteLine($"[SeamsCLI] Sucesso: {workflowResult.PanelCount} painéis gerados ({workflowResult.SeamCount} {seamWord}).");
                 Console.Out.WriteLine($"[SeamsCLI] Comprimento linear total: {workflowResult.TotalLinearLengthMeters:F2} m em {workflowResult.ElapsedTime.TotalMilliseconds:F0} ms.");
                 foreach (var file in workflowResult.GeneratedFiles)
                 {

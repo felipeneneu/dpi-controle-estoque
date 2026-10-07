@@ -58,7 +58,7 @@ public sealed class SeamsWorkflowExecutor
             }
 
             // 1. Extração / determinação de dimensões
-            var (widthMm, heightMm) = ExtractDimensions(options, warnings);
+            var (widthMm, heightMm, detectedDpi) = ExtractDimensions(options, warnings);
 
             if (!double.IsFinite(widthMm) || widthMm <= 0 || !double.IsFinite(heightMm) || heightMm <= 0)
             {
@@ -117,9 +117,10 @@ public sealed class SeamsWorkflowExecutor
             }
             else
             {
+                var effectiveDpi = options.Dpi ?? detectedDpi;
                 var jpgOptions = new JpgExportOptions(
                     Quality: 100,
-                    Dpi: 150,
+                    Dpi: effectiveDpi,
                     EmbedIccProfile: true,
                     NamingPattern: $"{jobName}_painel_{{index:D2}}.jpg");
 
@@ -232,12 +233,13 @@ public sealed class SeamsWorkflowExecutor
         return new PdfxOutputIntent("FOGRA39", "ISO Coated v2 (ECI)", iccBytes);
     }
 
-    private static (double WidthMm, double HeightMm) ExtractDimensions(SeamsCliOptions options, List<string> warnings)
+    private static (double WidthMm, double HeightMm, int DetectedDpi) ExtractDimensions(SeamsCliOptions options, List<string> warnings)
     {
         double width = options.WidthMm ?? 0.0;
         double height = options.HeightMm ?? 0.0;
         bool hasWidthOverride = options.WidthMm.HasValue;
         bool hasHeightOverride = options.HeightMm.HasValue;
+        int detectedDpi = options.Dpi ?? 300;
 
         var ext = Path.GetExtension(options.SourcePath).ToLowerInvariant();
         if (ext == ".pdf")
@@ -253,20 +255,23 @@ public sealed class SeamsWorkflowExecutor
         }
         else
         {
-            if (!hasWidthOverride || !hasHeightOverride)
-            {
-                var (rasterW, rasterH, hasDpi) = ReadRasterDimensions(options.SourcePath);
-                if (!hasWidthOverride) width = rasterW;
-                if (!hasHeightOverride) height = rasterH;
+            var (rasterW, rasterH, rasterDpi, hasDpi) = ReadRasterDimensions(options.SourcePath);
+            if (!hasWidthOverride) width = rasterW;
+            if (!hasHeightOverride) height = rasterH;
+            if (options.Dpi == null) detectedDpi = rasterDpi;
 
-                if (!hasDpi)
-                {
-                    warnings.Add("Resolução DPI não detectada na imagem de origem; adotado fallback de 300 DPI.");
-                }
+            if (hasWidthOverride || hasHeightOverride)
+            {
+                warnings.Add("Dimensões da imagem sobrescritas via opções de comando (--width / --height).");
+            }
+
+            if (!hasDpi && options.Dpi == null)
+            {
+                warnings.Add("Resolução DPI não detectada na imagem de origem; adotado fallback de 300 DPI.");
             }
         }
 
-        return (width, height);
+        return (width, height, detectedDpi);
     }
 
     private static (double WidthMm, double HeightMm) ReadPdfMediaBox(string pdfPath)
@@ -303,45 +308,18 @@ public sealed class SeamsWorkflowExecutor
         return (1000.0, 1000.0);
     }
 
-    private static (double WidthMm, double HeightMm, bool HasDpi) ReadRasterDimensions(string imagePath)
+    private static (double WidthMm, double HeightMm, int Dpi, bool HasDpi) ReadRasterDimensions(string imagePath)
     {
         try
         {
-            var bytes = File.ReadAllBytes(imagePath);
-            int dpi = 300;
-            bool foundDpi = false;
-
-            for (int i = 0; i < bytes.Length - 14; i++)
-            {
-                if (bytes[i] == 0xFF && bytes[i + 1] == 0xE0)
-                {
-                    if (bytes[i + 4] == 'J' && bytes[i + 5] == 'F' && bytes[i + 6] == 'I' && bytes[i + 7] == 'F')
-                    {
-                        byte units = bytes[i + 11];
-                        int xDensity = (bytes[i + 12] << 8) | bytes[i + 13];
-                        if (units == 1 && xDensity > 0)
-                        {
-                            dpi = xDensity;
-                            foundDpi = true;
-                        }
-                        else if (units == 2 && xDensity > 0)
-                        {
-                            dpi = (int)Math.Round(xDensity * 2.54);
-                            foundDpi = true;
-                        }
-                        break;
-                    }
-                }
-            }
-
-            JpegCmykEncoder.DecodeCmyk(imagePath, out int pxW, out int pxH);
+            var (pxW, pxH, dpi, hasDpi) = JpegCmykEncoder.ReadImageInfo(imagePath);
             double widthMm = (pxW / (double)dpi) * 25.4;
             double heightMm = (pxH / (double)dpi) * 25.4;
-            return (widthMm, heightMm, foundDpi);
+            return (widthMm, heightMm, dpi, hasDpi);
         }
         catch
         {
-            return (1000.0, 1000.0, false);
+            return (1000.0, 1000.0, 300, false);
         }
     }
 
