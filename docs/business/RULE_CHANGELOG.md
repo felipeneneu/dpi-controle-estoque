@@ -130,3 +130,10 @@ desenhada no PDF coincide com a reportada (Regra 4 do `AGENTS.md` do core).
 ## [1.6.0] - 2026-10-06 - Automacao Headless CLI de Emendas (SeamsCLI)
 
 - **ADICAO** BR-056 `imposition/cli`: Utilitario headless de linha de comando em .NET 10 (`sidecars/SeamsCLI`), integrando calculo geometrico (imposition-core), exportacao raster (imposition-render) e vetorial PDF/X-1a (imposition-pdf) com System.CommandLine, saida RESULT_JSON em stdout, logs em stderr, validacoes R-013, CMYK puro (R-020), exit codes padronizados (0, 1, 2, 3, 4, 130) e cancelamento gracioso via SIGINT. | motivo: Automacao nao interativa de emendas para pastas quentes, integracoes ERP e scripts de pre-impressao | ADR-055 | Felipe / Agent
+
+## [1.7.0] — 2026-10-07 — Estoque em Tabela Inteligente e Tinta por Unidade
+
+- **EMENDA** BR-011 e BR-012: Desacoplamento da dedução de tinta nos agentes HP Latex e Mimaki. O consumo medido/estimado por job em ml/cc não decrementa mais `stock_items` nem gera `stockTransactions` de saída, sendo gravado exclusivamente na tabela analítica `ink_consumption_log` para relatórios. Dedução de mídias/bobinas permanece 100% inalterada.
+- **ADIÇÃO** BR-057 `inventory/ui`: Tela de estoque em tabela interativa inteligente (TanStack Table), exibindo lote ativo em destaque na linha, contagem de lotes em espera (`NEW`), ordenação por status com foco em itens críticos, busca instantânea em memória, filtros combinados, agrupamento por categoria colapsável, exportação CSV e sincronização em tempo real via Socket.IO (`stock:updated`).
+- **ATUALIZAÇÃO** Estoque de tintas gerenciado exclusivamente por contagem de unidades inteiras lacradas (`NEW`). Unidade em uso (`IN_USE`) sai do disponível no ato do carregamento via Quick Switch (`POST /api/machines/:id/active-tinta`). | motivo: Eliminar divergências contábeis de RIPs em produção e fornecer alta densidade de informação operacional | ADR-057 | Felipe / Agent
+
