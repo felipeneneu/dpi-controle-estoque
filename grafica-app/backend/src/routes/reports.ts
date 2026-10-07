@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import { eq, and, gte, lt } from 'drizzle-orm';
-import { printJobs, machines, mimakiJobs } from '../db/schema.js';
+import { printJobs, machines, mimakiJobs, inkConsumptionLog } from '../db/schema.js';
 import { db } from '../db/index.js';
 import { authenticate } from '../middleware/auth.js';
 import { sumPrecise } from '../lib/math.js';
@@ -146,6 +146,39 @@ export async function reportRoutes(app: FastifyInstance) {
       lengthMeters: sumPrecise([v.lengthMeters]),
     }));
 
+    // Log de consumo analítico de tintas desacoplado (ADR-057 / BR-057)
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
+    const inkLogs = await db
+      .select()
+      .from(inkConsumptionLog)
+      .where(
+        and(
+          query.machineId ? eq(inkConsumptionLog.machineId, query.machineId) : undefined,
+          gte(inkConsumptionLog.createdAt, startDate),
+          lt(inkConsumptionLog.createdAt, endDate),
+        )
+      )
+      .all();
+
+    const channelMap = new Map<string, { totalMl: number; count: number }>();
+    for (const log of inkLogs) {
+      const entry = channelMap.get(log.channel) ?? { totalMl: 0, count: 0 };
+      entry.totalMl += log.mlConsumed;
+      entry.count += 1;
+      channelMap.set(log.channel, entry);
+    }
+
+    const inkConsumptionLogs = {
+      totalMl: sumPrecise(inkLogs.map((l) => l.mlConsumed)),
+      byChannel: [...channelMap.entries()].map(([channel, v]) => ({
+        channel,
+        totalMl: sumPrecise([v.totalMl]),
+        count: v.count,
+      })),
+    };
+
     return {
       month,
       machineId: query.machineId ?? null,
@@ -155,6 +188,7 @@ export async function reportRoutes(app: FastifyInstance) {
       totals,
       konicaTotals,
       mimakiTotals,
+      inkConsumptionLogs,
       byMedia: byMediaArray,
     };
   });

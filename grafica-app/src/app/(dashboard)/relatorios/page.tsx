@@ -146,6 +146,42 @@ export default function RelatoriosPage() {
                 </div>
               </div>
 
+              {r.inkConsumptionLogs && r.inkConsumptionLogs.byChannel.length > 0 && (
+                <div className="rounded-2xl border border-sky-100 bg-sky-50/50 p-4 space-y-3">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-wider text-sky-800">
+                        Consumo Real Registrado pelos Agentes (ink_consumption_log)
+                      </p>
+                      <p className="text-xs text-sky-600">
+                        Histórico operacional por job (ml/cc calculados). Desacoplado do saldo de prateleira (unidades NEW).
+                      </p>
+                    </div>
+                    <span className="text-sm font-bold text-sky-900 bg-sky-100 px-3 py-1 rounded-full">
+                      Total: {r.inkConsumptionLogs.totalMl.toLocaleString("pt-BR")} ml
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {r.inkConsumptionLogs.byChannel.map((ch) => (
+                      <div
+                        key={ch.channel}
+                        className="rounded-xl border border-sky-200/60 bg-white/80 px-3 py-2 flex items-center justify-between"
+                      >
+                        <span className="text-xs font-bold text-gray-800">{ch.channel}</span>
+                        <div className="text-right">
+                          <span className="text-sm font-semibold tabular-nums text-sky-950 block">
+                            {ch.totalMl.toLocaleString("pt-BR")} ml
+                          </span>
+                          <span className="text-[10px] text-muted-foreground block">
+                            {ch.count} {ch.count === 1 ? "job" : "jobs"}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div>
                 <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
                   Área por tipo de mídia (m²)

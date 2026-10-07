@@ -41,6 +41,10 @@ export interface ConsumptionReport {
     totalSheets: number
   }
   mimakiTotals?: MimakiTotals
+  inkConsumptionLogs?: {
+    totalMl: number
+    byChannel: { channel: string; totalMl: number; count: number }[]
+  }
   byMedia: { media: string; m2: number; jobs: number; sheets?: number; lengthMeters?: number }[]
 }
 

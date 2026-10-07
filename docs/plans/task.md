@@ -8,8 +8,8 @@
 | Task 3 | Backend de Lotes de Tinta e Saldo por Unidades NEW | Concluída | Rotas GET/POST de tinta-lotes e discharge implementadas; stock.ts calcula availableLots, totalLots, activeLot e saldo de tinta por unidades NEW; 3/3 testes passando em `tinta-lotes.test.ts`. Commit. |
 | Task 4 | Desacoplamento dos Agentes HP Latex e Mimaki | Concluída | Débito de ml/cc em stockItems/garrafas removido de HP Latex e Mimaki; consumo registrado exclusivamente em ink_consumption_log; dedução de bobinas/mídias 100% preservada; 23 suítes de teste passando. |
 | Task 5 | Quick Switch de Tinta na Máquina (`POST /api/machines/:id/active-tinta`) | Concluída | Endpoint implementado com Quick Switch por canal, finalização do lote anterior em FINISHED, emissão de evento Socket.IO stock:updated e 6/6 testes passando em `machines-tinta.test.ts`. Commit. |
-| Task 6 | Endpoint e Relatório de Consumo Desacoplado | In_Progress | Em andamento |
-| Task 7 | Componente `StockDataTable` com TanStack Table | Pendente | — |
+| Task 6 | Endpoint e Relatório de Consumo Desacoplado | Concluída | Endpoint /api/reports/consumption agrega inkConsumptionLog por canal e total; frontend atualizado em queries/reports e relatorios/page.tsx; testes passando em `reports.test.ts` e `npx tsc --noEmit` 100% verde. Commit. |
+| Task 7 | Componente `StockDataTable` com TanStack Table | In_Progress | Em andamento |
 | Task 8 | Modal de Drill-Down Reorganizado em Seções | Pendente | — |
 | Task 9 | Integração de `/estoque` e `/tintas` com Socket.IO | Pendente | — |
 | Task 10 | Verificação Integrada Final e Validação de Build | Pendente | — |
