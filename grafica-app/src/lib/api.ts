@@ -162,6 +162,19 @@ export interface Garrafa {
   createdAt: string | null;
 }
 
+export interface TintaLote {
+  id: string;
+  stockItemId: string;
+  serial: string;
+  state: "NEW" | "IN_USE" | "FINISHED";
+  location: string;
+  machineId: string | null;
+  channel: string | null;
+  openedAt: string | null;
+  finishedAt: string | null;
+  createdAt: string | null;
+}
+
 export interface StockItem {
   id: string;
   name: string;
@@ -177,6 +190,18 @@ export interface StockItem {
   status: StockStatus;
   createdAt: string;
   machineIds: string[];
+  availableLots?: number | null;
+  totalLots?: number | null;
+  activeLot?: {
+    id: string;
+    serial: string;
+    state: string;
+    location: string;
+    channel?: string | null;
+    machineId?: string | null;
+    machineName?: string | null;
+  } | null;
+  origemSaldo?: string | null;
 }
 
 export interface StockTransaction {

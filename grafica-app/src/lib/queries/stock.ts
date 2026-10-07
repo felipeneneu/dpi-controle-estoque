@@ -1,7 +1,7 @@
 "use client"
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { api, getUser, type StockItem, type StockTransaction, type Bobina, type Garrafa } from "@/lib/api"
+import { api, getUser, type StockItem, type StockTransaction, type Bobina, type Garrafa, type TintaLote } from "@/lib/api"
 import { machineKeys, stockKeys } from "@/lib/queries/query-keys"
 
 export function useStockItems(category?: string) {
@@ -185,3 +185,49 @@ export function useDischargeGarrafa() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: stockKeys.all }),
   })
 }
+
+export function useTintaLotes(stockItemId?: string) {
+  return useQuery({
+    queryKey: stockKeys.tintaLotes(stockItemId),
+    queryFn: () =>
+      api<TintaLote[]>(stockItemId ? `/api/stock-items/${stockItemId}/tinta-lotes` : "/api/tinta-lotes"),
+    enabled: !!stockItemId,
+  })
+}
+
+export function useAddTintaLote() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      stockItemId,
+      serial,
+      quantity,
+      channel,
+    }: {
+      stockItemId: string
+      serial?: string
+      quantity?: number
+      channel?: string
+    }) =>
+      api<{ success: boolean; createdCount: number; lotes: TintaLote[] }>(
+        `/api/stock-items/${stockItemId}/tinta-lotes`,
+        {
+          method: "POST",
+          body: JSON.stringify({ serial, quantity, channel }),
+        },
+      ),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: stockKeys.all }),
+  })
+}
+
+export function useDischargeTintaLote() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
+      api(`/api/tinta-lotes/${id}/discharge`, {
+        method: "POST",
+        body: JSON.stringify({ reason }),
+      }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: stockKeys.all }),
+  })
+}

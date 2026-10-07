@@ -9,7 +9,7 @@
 | Task 4 | Desacoplamento dos Agentes HP Latex e Mimaki | Concluída | Débito de ml/cc em stockItems/garrafas removido de HP Latex e Mimaki; consumo registrado exclusivamente em ink_consumption_log; dedução de bobinas/mídias 100% preservada; 23 suítes de teste passando. |
 | Task 5 | Quick Switch de Tinta na Máquina (`POST /api/machines/:id/active-tinta`) | Concluída | Endpoint implementado com Quick Switch por canal, finalização do lote anterior em FINISHED, emissão de evento Socket.IO stock:updated e 6/6 testes passando em `machines-tinta.test.ts`. Commit. |
 | Task 6 | Endpoint e Relatório de Consumo Desacoplado | Concluída | Endpoint /api/reports/consumption agrega inkConsumptionLog por canal e total; frontend atualizado em queries/reports e relatorios/page.tsx; testes passando em `reports.test.ts` e `npx tsc --noEmit` 100% verde. Commit. |
-| Task 7 | Componente `StockDataTable` com TanStack Table | In_Progress | Em andamento |
-| Task 8 | Modal de Drill-Down Reorganizado em Seções | Pendente | — |
-| Task 9 | Integração de `/estoque` e `/tintas` com Socket.IO | Pendente | — |
-| Task 10 | Verificação Integrada Final e Validação de Build | Pendente | — |
+| Task 7 | Componente `StockDataTable` com TanStack Table | Concluída | `StockDataTable` criado usando TanStack Table com busca instantânea, ordenação de status com prioridade aos zerados/baixos, lote ativo em destaque, seleção em lote, agrupamento colapsável por categoria e exportação CSV com UTF-8 BOM. `npx tsc` verde. |
+| Task 8 | Modal de Drill-Down Reorganizado em Seções | Concluída | `StockItemDrilldownDialog` implementado com 3 seções obrigatórias: 1. Em Uso (destaque no topo), 2. Em Espera (prateleira/NEW) e 3. Baixados/Finalizados (recolhido), além de modal integrado para Quick Switch de tinta. |
+| Task 9 | Integração de `/estoque` e `/tintas` com Socket.IO | Concluída | Páginas `/estoque` e `/tintas` migradas para `StockDataTable`; hook `useStockSocket` implementado com join na sala 'estoque' e invalidação de cache em tempo real no evento `stock:updated`. |
+| Task 10 | Verificação Integrada Final e Validação de Build | Concluída | Build de produção Next.js `npm run build` gerando 15 rotas estáticas com sucesso; 25 suítes de teste de backend passando (189 testes 100% verdes). |

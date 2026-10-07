@@ -133,3 +133,32 @@ export function useChangeGarrafa() {
     },
   })
 }
+
+export function useChangeTinta() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      machineId,
+      stockItemId,
+      tintaLoteId,
+      channel,
+    }: {
+      machineId: string
+      stockItemId?: string
+      tintaLoteId: string
+      channel?: string
+    }) =>
+      api<{
+        success: boolean
+        activeTintaLote: any
+        dischargedLoteId: string | null
+      }>(`/api/machines/${machineId}/active-tinta`, {
+        method: "POST",
+        body: JSON.stringify({ stockItemId, tintaLoteId, channel }),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: machineKeys.all })
+      queryClient.invalidateQueries({ queryKey: stockKeys.all })
+    },
+  })
+}

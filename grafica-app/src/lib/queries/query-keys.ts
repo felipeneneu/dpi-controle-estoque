@@ -14,6 +14,7 @@ export const stockKeys = {
   transactions: () => [...stockKeys.all, "transactions"] as const,
   bobinas: (stockItemId?: string) => [...stockKeys.all, "bobinas", stockItemId || "all"] as const,
   garrafas: (stockItemId?: string) => [...stockKeys.all, "garrafas", stockItemId || "all"] as const,
+  tintaLotes: (stockItemId?: string) => [...stockKeys.all, "tinta-lotes", stockItemId || "all"] as const,
 }
 
 export const machineKeys = {
