@@ -38,13 +38,16 @@ public sealed class PdfxPanelExporter
         var stopwatch = Stopwatch.StartNew();
         progress?.Report(0.0);
 
-        // 1. Fatiamento vetorial dos painéis
-        var splitFiles = await _splitter.SplitAsync(
+        // 1. Fatiamento vetorial dos painéis com metadados estruturados (ADR-060)
+        var metadata = await _splitter.SplitWithMetadataAsync(
             sourcePdfPath,
             seams,
             outputDirectory,
             options.NamingPattern,
+            options.GuideLine,
             cancellationToken).ConfigureAwait(false);
+
+        var splitFiles = metadata.GeneratedFiles;
 
         progress?.Report(0.5);
 
@@ -76,6 +79,7 @@ public sealed class PdfxPanelExporter
         return new PdfxExportResult(
             splitFiles,
             validationResults,
-            stopwatch.Elapsed);
+            stopwatch.Elapsed,
+            metadata);
     }
 }

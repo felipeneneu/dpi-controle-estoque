@@ -64,7 +64,7 @@ Para cada painel:
    ```
    Seguido dos operadores da linha-guia visual calculados em coordenadas locais do painel `[0..panelWPt, 0..panelHPt]`.
 3. Cria a nova `/Page` (`PainelPage`) com `/MediaBox [0 0 panelWPt panelHPt]`, `/CropBox [0 0 panelWPt panelHPt]` e `/Rotate` herdado preservado.
-4. Cria o novo `/Pages` (`PainelPages`) e `/Catalog` (`PainelCatalog`) preservando `/OutputIntents` do original.
+4. Cria o novo `/Pages` (`PainelPages`) e `/Catalog` (`PainelCatalog`) descartando quaisquer `/OutputIntents` pré-existentes do source e delegando a injeção canônica do perfil FOGRA39 ao `PdfxOutputIntentInjector` (ADR-054).
 5. Injeta a tabela `xref` incremental e novo trailer com `/Prev <offsetStartXrefOriginal>`.
 6. Conclui com escrita atômica via `File.Move(..., overwrite: true)`.
 
@@ -80,14 +80,12 @@ namespace Imposition.Pdf.Seams;
 public sealed record PanelSplitMetadata(
     IReadOnlyList<string> GeneratedFiles,
     IReadOnlyList<long> FileSizesBytes,
-    bool HadAnnotations,
-    bool HadRotate,
     IReadOnlyList<string> Warnings);
 ```
 
 - **Consumo pelo CLI (`SeamsWorkflowExecutor`):**
   - Se algum arquivo em `FileSizesBytes` exceder 500 MB (524.288.000 bytes), emite `[AVISO]` em stderr e adiciona à lista `warnings[]` do `RESULT_JSON`.
-  - Se `HadAnnotations == true`, registra em log e adiciona warning sobre anotações de revisão ignoradas.
+  - Propaga quaisquer `Warnings` retornados pelo splitter para a saída do workflow.
 
 ---
 

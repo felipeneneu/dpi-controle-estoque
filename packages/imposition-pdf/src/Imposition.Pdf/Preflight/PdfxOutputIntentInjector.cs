@@ -35,17 +35,27 @@ public static class PdfxOutputIntentInjector
             return;
         }
 
-        // 1. Localiza a raiz do catálogo (/Root)
-        var catalogObjMatch = Regex.Match(content, @"(\d+)\s+0\s+obj[\s\S]*?\/Type\s*\/Catalog[\s\S]*?endobj");
-        if (!catalogObjMatch.Success)
+        // 1. Localiza a raiz do catálogo (/Root) a partir do último trailer (ISO 32000-1 §7.5.5)
+        int? rootObjNum = null;
+        var trailerMatches = Regex.Matches(content, @"trailer\s*<<([\s\S]*?)>>", RegexOptions.RightToLeft);
+        foreach (Match tm in trailerMatches)
         {
-            // Tenta procurar via trailer /Root <num> 0 R
-            var trailerRootMatch = Regex.Match(content, @"\/Root\s+(\d+)\s+0\s+R");
-            if (trailerRootMatch.Success)
+            var rootMatch = Regex.Match(tm.Groups[1].Value, @"\/Root\s+(\d+)\s+0\s+R");
+            if (rootMatch.Success && int.TryParse(rootMatch.Groups[1].Value, out var rn))
             {
-                var rootNum = trailerRootMatch.Groups[1].Value;
-                catalogObjMatch = Regex.Match(content, $@"{rootNum}\s+0\s+obj[\s\S]*?endobj");
+                rootObjNum = rn;
+                break;
             }
+        }
+
+        Match catalogObjMatch;
+        if (rootObjNum.HasValue)
+        {
+            catalogObjMatch = Regex.Match(content, $@"\b{rootObjNum.Value}\s+0\s+obj[\s\S]*?endobj");
+        }
+        else
+        {
+            catalogObjMatch = Regex.Match(content, @"(\d+)\s+0\s+obj[\s\S]*?\/Type\s*\/Catalog[\s\S]*?endobj", RegexOptions.RightToLeft);
         }
 
         if (!catalogObjMatch.Success)
@@ -57,7 +67,7 @@ public static class PdfxOutputIntentInjector
         var catalogObjNum = int.Parse(Regex.Match(catalogObjText, @"^(\d+)\s+0\s+obj").Groups[1].Value);
 
         // 2. Localiza startxref anterior
-        var startXrefMatch = Regex.Match(content, @"startxref\s+(\d+)\s+%%EOF", RegexOptions.RightToLeft);
+        var startXrefMatch = Regex.Match(content, @"startxref\s+(\d+)", RegexOptions.RightToLeft);
         long prevXrefOffset = startXrefMatch.Success ? long.Parse(startXrefMatch.Groups[1].Value) : 0;
 
         // 3. Determina o maior ID de objeto no arquivo existente

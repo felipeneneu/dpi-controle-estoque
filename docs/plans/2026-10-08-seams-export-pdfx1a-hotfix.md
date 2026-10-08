@@ -37,11 +37,8 @@
 
 **Step 4: Atualizar BR-055 em BUSINESS_RULES.md**
 
-**Step 5: Commit**
-```bash
-git add docs/governance/adr/ADR-060-pdf-object-graph-contract.md docs/governance/ADR_INDEX.md AGENTS.md docs/governance/BUSINESS_RULES.md
-git commit -m "docs(governance): ADR-060 e regras R-022/R-023 para exportacao PDF/X-1a"
-```
+**Step 5: Verificação de Governança**
+- Verificar que ADR-060 existe, ADR_INDEX foi atualizado sem mojibake (R-009) e AGENTS.md contém R-022 e R-023.
 
 ---
 
@@ -59,11 +56,8 @@ git commit -m "docs(governance): ADR-060 e regras R-022/R-023 para exportacao PD
 Run: `dotnet test packages/imposition-pdf/tests/Imposition.Pdf.Tests/Imposition.Pdf.Tests.csproj --filter "FullyQualifiedName~PdfSplitterAuditTests"`
 Expected: Teste documenta o bug com precisão (objeto referenciado no `/Resources` não existe no arquivo).
 
-**Step 3: Commit da auditoria**
-```bash
-git add packages/imposition-pdf/tests/Imposition.Pdf.Tests/Seams/PdfSplitterAuditTests.cs
-git commit -m "test(imposition-pdf): auditoria e reproducao RED do bug estrutural de Resources"
-```
+**Step 3: Registro no Ledger**
+- Registrar evidência da falha RED e matriz de auditoria em `.sdd/seams-export-pdfx1a-hotfix/progress.md`.
 
 ---
 
@@ -92,12 +86,6 @@ git commit -m "test(imposition-pdf): auditoria e reproducao RED do bug estrutura
 Run: `dotnet test packages/imposition-pdf/tests/Imposition.Pdf.Tests/Imposition.Pdf.Tests.csproj --filter "FullyQualifiedName~PdfStructureResolverTests"`
 Expected: PASS.
 
-**Step 5: Commit**
-```bash
-git add packages/imposition-pdf/src/Imposition.Pdf/Seams/ packages/imposition-pdf/tests/Imposition.Pdf.Tests/Seams/
-git commit -m "feat(imposition-pdf): implementa PdfStructureResolver e FormXObjectBuilder"
-```
-
 ---
 
 ### Task 2: Integração no `QdfPanelSplitter` com 3 Estágios e Validação Estrita
@@ -118,22 +106,18 @@ git commit -m "feat(imposition-pdf): implementa PdfStructureResolver e FormXObje
 
 **Step 2: Rodar testes de pré-vôo para confirmar falhas (RED)**
 
-**Step 3: Refatorar `QdfPanelSplitter` para a arquitetura de 3 estágios**
+**Step 3: Refatorar `QdfPanelSplitter` e `PdfxPanelExporter`**
 - Executar os 6 checks de pré-vôo.
-- Retornar `PanelSplitMetadata` estruturado (arquivos, tamanhos em bytes, hadAnnotations, hadRotate, warnings).
+- Retornar `PanelSplitMetadata` simplificado: `(IReadOnlyList<string> GeneratedFiles, IReadOnlyList<long> FileSizesBytes, IReadOnlyList<string> Warnings)`.
 - Executar emissão incremental anexando bytes originais (`0..sourceLen`), novos objetos, tabela `xref` incremental e trailer com `/Prev`.
 - Normalizar `/MediaBox [0 0 panelWPt panelHPt]` e `/CropBox [0 0 panelWPt panelHPt]`, aplicando translação `cm`.
+- Descartar quaisquer `/OutputIntents` do source original, permitindo injeção limpa de FOGRA39 via `PdfxOutputIntentInjector` (ADR-054).
 - Injetar linha-guia normalizada em coordenadas do painel.
+- Atualizar `PdfxPanelExporter` para propagar `PanelSplitMetadata`.
 
 **Step 4: Rodar testes de validação e testes existentes do splitter (GREEN)**
 Run: `dotnet test packages/imposition-pdf/tests/Imposition.Pdf.Tests/Imposition.Pdf.Tests.csproj`
 Expected: Todos os testes passando com zero warnings.
-
-**Step 5: Commit**
-```bash
-git add packages/imposition-pdf/src/Imposition.Pdf/Seams/ packages/imposition-pdf/tests/Imposition.Pdf.Tests/Seams/
-git commit -m "feat(imposition-pdf): integra 3 estagios, incremental append e PanelSplitMetadata no QdfPanelSplitter"
-```
 
 ---
 
@@ -160,10 +144,4 @@ git commit -m "feat(imposition-pdf): integra 3 estagios, incremental append e Pa
 **Step 4: Rodar suíte de testes completa do monorepo**
 Run: `dotnet test packages/imposition-pdf/tests/Imposition.Pdf.Tests/Imposition.Pdf.Tests.csproj`
 Run: `dotnet test sidecars/SeamsCLI/tests/SeamsCLI.Tests/SeamsCLI.Tests.csproj`
-Expected: 100% dos testes aprovados.
-
-**Step 5: Commit**
-```bash
-git add packages/imposition-pdf/tests/Imposition.Pdf.Tests/ sidecars/SeamsCLI/Execution/
-git commit -m "test(imposition-pdf): validacao cruzada E2E com PDFtoImage (R-021) e streaming V5"
-```
+Expected: 100% dos testes aprovados, zero warnings. Working tree pronto para revisão humana (sem commits automáticos).

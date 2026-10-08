@@ -95,6 +95,17 @@ Se passar de 5 rulings, o planejamento falhou — parar e revisar.
     - Compara pixels ou estrutura contra o esperado
     - Idealmente: documenta como validar em software de mercado (Photoshop, Acrobat)
     Sem essa validação cruzada, testes passam com arquivos corrompidos em produção.
+19. **Preservação verbatim em PDF** (regra R-022 — permanente). Em transformações
+    de PDF (fatiamento, painéis, imposição), priorizar sempre a preservação de bytes
+    verbatim do arquivo fonte (`0..sourceLen`) e mecanismos nativos de composição
+    (Form XObject, Incremental Update) em vez de descompressão/recompressão de streams.
+    Streams de imagens (DCTDecode, Flate, LZW), fontes e perfis nunca devem ser alterados
+    bit-a-bit.
+20. **Herança de propriedades em PDF sempre via `/Parent` chain** (regra R-023 — permanente).
+    Nunca assumir que atributos como `/Resources`, `/MediaBox`, `/CropBox` ou `/Rotate`
+    residem no nó folha `/Page`. Eles podem estar declarados em qualquer nó ancestral da
+    árvore `/Pages` e DEVEM ser resolvidos subindo recursivamente a hierarquia `/Parent`
+    até encontrar.
 
 
 ## Estrutura de pacotes
