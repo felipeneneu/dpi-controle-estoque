@@ -59,7 +59,7 @@ export default function NovoProdutoPage() {
         minQuantity: Number(minQuantity) || 0,
         machineIds: selectedMachines,
       });
-      router.push("/produtos");
+      router.push("/estoque");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao salvar");
     }
@@ -71,7 +71,7 @@ export default function NovoProdutoPage() {
   return (
     <div className="max-w-[1200px] mx-auto space-y-6">
       <div className="flex items-center gap-4">
-        <Link href="/produtos">
+        <Link href="/estoque">
           <Button variant="outline" size="icon" className="rounded-xl">
             <RiArrowLeftLine className="w-5 h-5" />
           </Button>

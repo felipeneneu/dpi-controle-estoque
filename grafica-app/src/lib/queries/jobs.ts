@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { api } from "@/lib/api"
-import { jobKeys, stockKeys } from "@/lib/queries/query-keys"
+import { jobKeys, stockKeys, mimakiKeys } from "@/lib/queries/query-keys"
 
 export interface PrintJobRow {
   id: string
@@ -88,6 +88,8 @@ export interface UpdateJobInput {
   id: string
   mediaType?: string
   osNumber?: string
+  printMode?: string
+  sheets?: number
 }
 
 export function useUpdateJob() {
@@ -170,4 +172,36 @@ export function useBulkDeductJobs() {
     },
   })
 }
+
+export function useDeleteJob() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) =>
+      api<{ success: boolean; id: string; message: string }>(`/api/jobs/${id}`, {
+        method: "DELETE",
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: jobKeys.all })
+      queryClient.invalidateQueries({ queryKey: mimakiKeys.all })
+      queryClient.invalidateQueries({ queryKey: stockKeys.all })
+    },
+  })
+}
+
+export function useBulkDeleteJobs() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (jobIds: string[]) =>
+      api<{ success: boolean; count: number; message: string }>("/api/jobs/bulk-delete", {
+        method: "POST",
+        body: JSON.stringify({ jobIds }),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: jobKeys.all })
+      queryClient.invalidateQueries({ queryKey: mimakiKeys.all })
+      queryClient.invalidateQueries({ queryKey: stockKeys.all })
+    },
+  })
+}
+
 

@@ -141,8 +141,24 @@ export function getStockColumns(actions: StockTableActions): StockColumns {
       cell: (info) => {
         const item = info.row.original;
         const active = item.activeLot;
+        const isRoll = item.category === "PAPER_MEDIA" && item.unit === "m";
+        const isInk = item.category === "INK_SUPPLY";
 
         if (!active) {
+          if (!isRoll && !isInk) {
+            return (
+              <span className="text-xs text-muted-foreground/60 italic font-normal">
+                — n/a (folhas) —
+              </span>
+            );
+          }
+          if (isInk) {
+            return (
+              <span className="text-xs text-muted-foreground italic font-normal">
+                — nenhum em uso —
+              </span>
+            );
+          }
           return (
             <span className="text-xs text-muted-foreground italic font-normal">
               — nenhum carregado —
@@ -184,10 +200,10 @@ export function getStockColumns(actions: StockTableActions): StockColumns {
     columnHelper.accessor(
       (row) => {
         if (row.category === "INK_SUPPLY") {
-          return row.availableLots ?? 0;
+          return row.availableLots ?? row.currentQuantity;
         }
-        if (row.availableLots !== undefined && row.availableLots !== null) {
-          return row.availableLots;
+        if (row.category === "PAPER_MEDIA" && row.unit === "m") {
+          return row.availableLots ?? 0;
         }
         return row.currentQuantity;
       },
@@ -215,27 +231,51 @@ export function getStockColumns(actions: StockTableActions): StockColumns {
         },
         cell: (info) => {
           const item = info.row.original;
-          if (item.category === "INK_SUPPLY") {
+          const isRoll = item.category === "PAPER_MEDIA" && item.unit === "m";
+          const isSheet = item.category === "PAPER_MEDIA" && item.unit !== "m";
+
+          if (isRoll) {
             const avail = item.availableLots ?? 0;
             return (
               <div className="text-sm">
                 <span className="font-bold text-gray-900">{avail}</span>
-                <span className="text-xs text-muted-foreground ml-1">unidades NEW</span>
+                <span className="text-xs text-muted-foreground ml-1">
+                  {avail === 1 ? "bobina livre" : "bobinas livres"}
+                </span>
               </div>
             );
           }
-          if (
-            item.category === "PAPER_MEDIA" &&
-            item.availableLots !== undefined &&
-            item.availableLots !== null
-          ) {
+
+          if (isSheet) {
             return (
               <div className="text-sm">
-                <span className="font-bold text-gray-900">{item.availableLots}</span>
-                <span className="text-xs text-muted-foreground ml-1">bobinas livres</span>
+                <span className="font-bold text-gray-900">{item.currentQuantity}</span>
+                <span className="text-xs text-muted-foreground ml-1">{item.unit}</span>
               </div>
             );
           }
+
+          if (item.category === "INK_SUPPLY") {
+            const hasLots = item.origemSaldo === "tinta_lotes" || (item.availableLots !== null && item.availableLots !== undefined);
+            if (hasLots) {
+              const avail = item.availableLots ?? 0;
+              return (
+                <div className="text-sm">
+                  <span className="font-bold text-gray-900">{avail}</span>
+                  <span className="text-xs text-muted-foreground ml-1">
+                    {avail === 1 ? "unidade NEW" : "unidades NEW"}
+                  </span>
+                </div>
+              );
+            }
+            return (
+              <div className="text-sm">
+                <span className="font-bold text-gray-900">{item.currentQuantity}</span>
+                <span className="text-xs text-muted-foreground ml-1">{item.unit}</span>
+              </div>
+            );
+          }
+
           return (
             <div className="text-sm">
               <span className="font-bold text-gray-900">{item.currentQuantity}</span>
@@ -248,8 +288,8 @@ export function getStockColumns(actions: StockTableActions): StockColumns {
 
     columnHelper.accessor(
       (row) => {
-        if (row.category === "INK_SUPPLY") {
-          return row.totalLots ?? row.currentQuantity;
+        if (row.category === "INK_SUPPLY" && row.totalLots !== null && row.totalLots !== undefined) {
+          return row.totalLots;
         }
         return row.currentQuantity;
       },
@@ -277,19 +317,20 @@ export function getStockColumns(actions: StockTableActions): StockColumns {
         },
         cell: (info) => {
           const item = info.row.original;
-          const total =
-            item.category === "INK_SUPPLY"
-              ? item.totalLots ?? item.currentQuantity
-              : item.currentQuantity;
+          const isInkWithLots = item.category === "INK_SUPPLY" && (item.totalLots !== null && item.totalLots !== undefined);
+          const total = isInkWithLots ? item.totalLots : item.currentQuantity;
+          const unitLabel = isInkWithLots
+            ? (total === 1 ? "frasco" : "frascos")
+            : item.unit;
 
           return (
             <div className="text-sm">
               <span className="font-bold text-gray-900">{total}</span>
               <span className="text-xs text-muted-foreground ml-1">
-                {item.category === "INK_SUPPLY" ? "frascos" : item.unit}
+                {unitLabel}
               </span>
               <div className="text-[11px] text-muted-foreground">
-                Mín: {item.minQuantity}
+                Mín: {item.minQuantity} {item.unit}
               </div>
             </div>
           );

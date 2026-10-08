@@ -1,3 +1,5 @@
+  ### Dia 07-10-26
+  
   ### Resumo das Implementações e Esclarecimentos
   ──────
   ### 1. Esclarecimento de Domínio & Estado do Débito de Tinta
@@ -105,3 +107,136 @@
   • Suíte de Testes Automatizados:
       • 269/269 testes aprovados (Core: 127, Render: 54, Pdf: 58, SeamsCLI: 30), 0 warnings, 0 erros.
       • Executável publicado em sidecars/bin/seams-cli/SeamsCLI.exe.
+
+### Dia 08-10-26
+
+  Toda a implementação de customização da linha-guia e logging de diagnóstico por
+  execução foi concluída e validada ponta a ponta com sucesso!
+  Consulte os detalhes consolidados no artefato walkthrough.md.
+  ──────
+  ### 🚀 Resumo das Entregas
+  1. Customização da Linha-Guia de Emenda:
+      • Ativar/Desativar: Flags --guide-line / --no-guide-line suportadas no SeamsCLI
+      e no MontarEmendas.bat.
+      • Cores CMYK: Suporte a presets (k40, k100, magenta, cyan, yellow, white, red)
+      ou valores percentuais diretos C,M,Y,K (ex: 0,100,100,0) via --line-color / -c.
+      Desenhado nos canais CMYK sem conversão para RGB (Regra R-020).
+      • Espessura do Risco: Ajuste em pontos PDF via --line-thickness / -t (presets:
+      1.0 pt padrão, 1.5 pt, 2.0 pt, 0.5 pt ou personalizada).
+  2. Infraestrutura de Logging de Diagnóstico (ADR-058):
+      • Cabeçalho com Telemetria: Registra versão, OS, runtime .NET, CPU cores, RAM e
+      comando executado.
+      • 9 Pontos do Pipeline: Registra parâmetros, dimensões detectadas, DPI, cálculo
+      de cada painel, progresso de exportação, arquivos gerados, tempo total e stack
+      trace completo de exceções em caso de falha.
+      • Templates Automáticos: Cria automaticamente README.txt e feedback.txt na pasta
+      logs/ para o seu amigo preencher suas impressões e devolver o zip.
+      • Fail-Safe & Saída Limpa: Se faltar permissão de escrita de log, a CLI continua
+      operando normalmente; se --json for solicitado, stdout emite estritamente o JSON
+      (Regra R-019).
+      • Desativação e Caminho Custom: Flags --no-log e --log-dir <caminho>.
+  3. Menu Interativo MontarEmendas.bat:
+      • Pergunta se deseja a linha-guia ([ENTER] mantém ligada).
+      • Menu numerado de cores (K40%, K100%, Magenta, Branco, Ciano ou Outra).
+      • Menu numerado de espessuras (1.0 pt, 1.5 pt, 2.0 pt, 0.5 pt ou Outra).
+      • Mostra no final a pasta de saída e o aviso sobre a pasta logs/.
+  4. Validação & Publicação:
+      • Suíte .NET: 271 testes funcionais aprovados (Core: 135, Render: 26, PDF: 58,
+      CLI: 52).
+      • Binário de Produção: Publicado em sidecars/bin/seams-cli/SeamsCLI.exe.
+      • Teste Real de Fábrica: Testado com sucesso sobre a imagem real de 80.4 MB
+      (Teste 02.jpg), fatiando os 2 painéis perfeitamente em CMYK com resolução nativa
+      de 353 DPI, linha magenta de 1.5 pt desenhada na emenda e log completo
+      registrado em logs/.
+
+
+### UI - ESTOQUE - 08-10-26
+  ### O que causava o erro e o que foi resolvido
+
+  1. Trava legada de tinta eliminada (ADR-057 / BR-012):
+      • O backend da Mimaki ainda continha uma validação antiga (temTinta /
+      debitoParcial) que bloqueava o vínculo de mídia caso o job já possuísse qualquer
+      registro de tinta UV no histórico (o job 31350 possuía registros de tinta do dia
+      06/10).
+      • Essa trava foi completamente removida: como a tinta é puramente analítica para
+      relatórios em ink_consumption_log, ela nunca bloqueia nem interfere na baixa da
+      bobina ou folha.
+  2. Permissão de Re-vínculo e Troca de Material:
+      • Implementado suporte a re-bind com estorno automático: se o operador precisar
+      trocar a mídia de um job já vinculado, o sistema estorna os metros da bobina
+      anterior (ou folhas anteriores) e realiza o débito na nova mídia escolhida.
+      • Adicionada diferenciação por [Job shortId] nas transações de estoque para que
+      duas impressões do mesmo arquivo PDF não interfiram uma no histórico da outra.
+  3. Correção na Ação em Massa (bulk-deduct) da Mimaki:
+      • Ajustado o filtro de jobs pendentes para incluir jobs em PENDING_BIND mesmo
+      que possuíssem logs antigos.
+  4. Job 31350 Atualizado no Banco de Dados:
+      • Os dois registros do job 31350 - Dona Tunica - Adesivo - Bopp Prata - 216un.
+      pdf foram vinculados com sucesso ao material Bopp Prata 75cm e à bobina Rolo
+      Bopp Prata 75cm, ficando com status VINCULADO (BOUND) e estoque baixado.
+
+  ──────
+  ### Verificação
+
+  • Testes Backend: 26/26 suítes aprovadas, 196/196 testes verdes (incluindo testes de
+  re-vínculo com estorno em mimaki-bind.test.ts).
+  • TypeScript Frontend: 0 erros de compilação (npx tsc --noEmit).
+
+    Implementamos com sucesso o Menu de Contexto estilo Windows, as Ações em Massa no
+  Botão Direito e a Exclusão de Jobs (Individual e em Lote) na tabela!
+  ──────
+  ### O que foi implementado:
+
+  #### 1. 🪟 Menu de Contexto Estilo Windows (WindowsContextMenu)
+  • Estética Desktop / Windows 11: Efeito acrílico translúcido (backdrop blur), cantos
+  arredondados, elevação com sombra suave, ícones alinhados, divisores sutis e atalhos
+  de teclado visuais.
+  • Detecção de Bordas (Collision Clamping): O menu calcula a largura e altura da
+  janela e se auto-posiciona para nunca vazar para fora da tela.
+  • Fechamento Natural: Fecha automaticamente ao clicar em uma opção, ao clicar fora
+  ou ao pressionar a tecla Esc.
+  ──────
+  #### 2. ⚡ Comportamento Inteligente por Seleção
+  • Mais de um job selecionado (Ações em Massa):
+  Ao clicar com o botão direito em itens selecionados, o menu exibe:
+      • ⚡ Debitar Selecionados em Massa... (com badge contendo o total de itens, abre
+      o modal BulkDeductDialog).
+      • 🗑 Excluir N jobs selecionados... (abre confirmação de exclusão em lote, com
+      indicação do atalho Del).
+      • ✖ Desmarcar todos (limpa a seleção atual).
+  • Clique individual (ou se o item não estava selecionado):
+  Seleciona o job e abre as opções específicas dele:
+      • ✏ Vincular / Editar Material... (abre o modal de edição de mídia/folhas).
+      • ⚡ Debitar Material... (se o job estiver pendente de débito).
+      • 👁 Ocultar / Restaurar Job... (para administradores).
+      • 🗑 Excluir job... (abre diálogo de exclusão individual).
+
+  ──────
+  #### 3. 🗑 Exclusão de Jobs da Tabela e do Banco de Dados
+  • Endpoints no Backend:
+      • DELETE /api/jobs/:id: Remove o job das tabelas print_jobs ou mimaki_jobs e
+      emite evento Socket.IO em tempo real.
+      • POST /api/jobs/bulk-delete: Remove múltiplos jobs em massa de uma só vez.
+  • Modal de Confirmação Seguro (DeleteJobDialog):
+      • Exibe o nome do job (ou a listagem dos jobs selecionados em lote).
+      • Avisa claramente sobre a remoção definitiva.
+      • Botão de confirmação destrutivo com spinner de carregamento.
+  • Atalho de Teclado Delete / Del:
+      • Se houver jobs selecionados na tabela, pressionar Delete no teclado abre
+      instantaneamente o modal de exclusão.
+  • Botão na Barra Flutuante:
+      • A barra flutuante inferior também recebeu o botão vermelho "Excluir
+      Selecionados".
+
+  ──────
+  #### 4. 🖨 Compatibilidade Total
+
+  • Funciona tanto na tabela da Konica Minolta e HP Latex (MachineJobsTable), quanto
+  na tabela da Mimaki (MimakiJobsTable).
+  ──────
+  ### Evidências de Teste e Validação:
+
+  • Testes Backend: 28 suítes de teste executadas com 216 testes 100% aprovados
+  (incluindo testes de exclusão individual e em lote em jobs-delete.test.ts).
+  • Build de Produção: npm run build compilou com sucesso gerando todas as 15 rotas
+  estáticas sem nenhum erro de tipagem.

@@ -61,11 +61,13 @@ export function SubSidebar() {
   const onChat = pathname.startsWith('/chat');
   const onTintas = pathname.startsWith('/tintas');
   const onEstoque = pathname.startsWith('/estoque');
+  const isEstoque = onEstoque || onProdutos || onTintas;
 
-  const cats = [
-    { label: 'Todos os Insumos', href: '/produtos', active: cat === 'todos' },
-    { label: 'Bobinas de Vinil', href: '/produtos?cat=bobinas', active: cat === 'bobinas' },
-    { label: 'Papeis Fotográficos', href: '/produtos?cat=fotograficos', active: cat === 'fotograficos' },
+  const estoqueCats = [
+    { label: 'Todos os Insumos', href: '/estoque', active: !cat || cat === 'todos' || cat === 'TODOS' },
+    { label: 'Mídias & Bobinas', href: '/estoque?cat=PAPER_MEDIA', active: cat === 'PAPER_MEDIA' || cat === 'bobinas' },
+    { label: 'Tintas & Química', href: '/estoque?cat=INK_SUPPLY', active: cat === 'INK_SUPPLY' || cat === 'tintas' },
+    { label: 'Outros Insumos', href: '/estoque?cat=OTHER', active: cat === 'OTHER' },
   ];
 
   const sectionTitle = onMaquinas
@@ -74,11 +76,9 @@ export function SubSidebar() {
     ? 'Relatórios'
     : onChat
     ? 'Chat Interno'
-    : onTintas
-    ? 'Tintas & Química'
-    : onEstoque
-    ? 'Estoque de Mídias'
-    : 'Estoque & Mídias';
+    : isEstoque
+    ? 'Estoque de Insumos'
+    : 'Estoque';
 
   const availableUsers = users.filter((u) => u.id !== user?.id);
 
@@ -89,9 +89,9 @@ export function SubSidebar() {
       <div>
         <div className="h-16 px-4 border-b border-gray-100 flex items-center justify-between">
           <span className="font-bold text-gray-900 text-base tracking-wide">{sectionTitle}</span>
-          {onProdutos && (
+          {isEstoque && (
             <Link href="/produtos/new">
-              <Button size="icon" variant="ghost" className="w-8 h-8 rounded-lg hover:bg-[#35373c] text-accent-foreground hover:text-white">
+              <Button size="icon" variant="ghost" className="w-8 h-8 rounded-lg hover:bg-[#35373c] text-accent-foreground hover:text-white" title="Novo Insumo">
                 <RiAddLine className="w-5 h-5" />
               </Button>
             </Link>
@@ -138,17 +138,17 @@ export function SubSidebar() {
                 );
               })}
             </>
-          ) : onProdutos ? (
+          ) : isEstoque ? (
             <>
               <div className="px-2 py-1.5 text-xs font-bold text-foreground uppercase tracking-wider">
-                Categorias Ativas
+                Categorias do Estoque
               </div>
-              {cats.map((c) => (
+              {estoqueCats.map((c) => (
                 <button
                   key={c.label}
                   onClick={() => router.push(c.href)}
                   className={`w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-sm transition-colors ${
-                    onProdutos && c.active
+                    c.active
                       ? 'bg-primary text-secondary font-medium'
                       : 'hover:bg-primary/50 text-primary hover:text-primary font-medium cursor-pointer'
                   }`}

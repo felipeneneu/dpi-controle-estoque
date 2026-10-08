@@ -19,6 +19,7 @@ export interface KonicaJob {
   status: string;
   printEndDate: string;
   tonerByColor?: KonicaTonerColor;
+  isDuplex: boolean;
   rawData: unknown;
 }
 

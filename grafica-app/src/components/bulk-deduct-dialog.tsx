@@ -26,10 +26,23 @@ import { useBulkDeductJobs, type PrintJobRow } from "@/lib/queries/jobs"
 import { useStockItems, useBobinas } from "@/lib/queries/stock"
 import { isKonicaMachine, type Machine, type StockItem } from "@/lib/api"
 
+export interface DeductJobItem {
+  id: string
+  jobName: string
+  mediaType?: string | null
+  rawMaterialName?: string | null
+  linearMetersDebited?: number | null
+  lengthMeters?: number | null
+  mediaAreaM2?: number | null
+  sheets?: number | null
+  pages?: number | null
+  quantityUnits?: number | null
+}
+
 interface BulkDeductDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  selectedJobs: PrintJobRow[]
+  selectedJobs: DeductJobItem[]
   machine: Machine
   onSuccess: () => void
 }
@@ -64,16 +77,17 @@ export function BulkDeductDialog({
     const mediaSet = new Set<string>()
 
     for (const job of selectedJobs) {
-      if (job.mediaType) {
-        mediaSet.add(job.mediaType)
+      const mName = job.mediaType ?? job.rawMaterialName
+      if (mName) {
+        mediaSet.add(mName)
       }
 
-      // Konica: folhas
-      const s = job.sheets ?? job.pages ?? 0
+      // Konica / folhas
+      const s = job.sheets ?? job.quantityUnits ?? job.pages ?? 0
       sheets += s
 
       // HP / Mimaki: metros lineares
-      let linear = job.linearMetersDebited
+      let linear = job.lengthMeters ?? job.linearMetersDebited
       if (!linear || linear <= 0) {
         linear = job.mediaAreaM2 && job.mediaAreaM2 > 0 ? job.mediaAreaM2 / 1.52 : 1
       }

@@ -138,9 +138,87 @@ interface RawJob {
   [key: string]: unknown;
 }
 
+/**
+ * Detecta se o job é impresso em frente e verso (duplex).
+ *
+ * No setor gráfico / pré-impressão:
+ * 1. Cada folha física possui 2 faces (frente e verso).
+ * 2. Em duplex, 2 páginas do documento ocupam 1 folha física.
+ * 3. Adesivos e vinis são quase exclusivamente de face única (só frente / simplex).
+ * 4. Padrões de frente e verso no nome do arquivo:
+ *    - "frente e verso", "frente-verso", "frente verso", "f/v", "f-v", "duplex"
+ *    - "4x4", "4x1", "4x2", "1x1", "1x4" (escala de cores frente x verso)
+ *    - "miolo" (cadernos/páginas internas de livros e revistas)
+ *    - "folder", "folheto", "flyer", "cardápio"
+ */
+export function isKonicaDuplex(jobName: string, paperName?: string | null, raw?: unknown): boolean {
+  const lowerName = (jobName || '').toLowerCase();
+  const lowerPaper = (paperName || '').toLowerCase();
+
+  // Adesivo, vinil ou etiqueta: face única (simplex), a menos que o nome diga expressamente "frente-verso"
+  const isAdhesive =
+    /adesivo|vinil|vini\b|etiqueta|transparente/.test(lowerPaper) ||
+    /adesivo|vinil|vini\b|transparente/.test(lowerName);
+
+  // Padrões explícitos de frente e verso
+  const explicitDuplex =
+    /(?:frente[\s_-]*(?:e[\s_-]*)?(?:verso|tr[aá]s|costas)|(?<=^|[^a-zA-Z0-9])(?:f[\/_-]v|[14]\s*[xX]\s*[142]|duplex)(?=$|[^a-zA-Z0-9]))/i;
+
+  if (explicitDuplex.test(lowerName)) {
+    return true;
+  }
+
+  if (isAdhesive) {
+    return false;
+  }
+
+  // Termos editoriais onde frente-e-verso é o padrão de produção
+  const editorialDuplex = /(?<=^|[^a-zA-Z0-9])(?:miolo|folder|folheto|flyer|cardapio|cardápio)(?=$|[^a-zA-Z0-9])/i;
+  if (editorialDuplex.test(lowerName)) {
+    return true;
+  }
+
+  if (raw && typeof raw === 'object') {
+    const rawStr = JSON.stringify(raw).toLowerCase();
+    if (rawStr.includes('"duplex"') || rawStr.includes('"two_sided"') || rawStr.includes('"both_sides"')) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Calcula a quantidade de folhas físicas utilizadas para o job.
+ * Em frente e verso (duplex), cada folha física acomoda até 2 páginas.
+ */
+export function calculateKonicaSheets(
+  pages: number,
+  copies: number,
+  pagesPrinted: number,
+  isDuplex: boolean,
+): number {
+  const effectiveCopies = Math.max(1, copies);
+
+  if (isDuplex) {
+    if (pages > 0) {
+      const sheetsPerCopy = Math.ceil(pages / 2);
+      return Math.max(1, sheetsPerCopy * effectiveCopies);
+    }
+    // Fallback se pages == 0 mas pagesPrinted > 0
+    return Math.max(1, Math.ceil(pagesPrinted / 2));
+  }
+
+  // Simplex (só frente): 1 página impressa = 1 folha física
+  if (pages > 0) {
+    return Math.max(1, pages * effectiveCopies);
+  }
+  return Math.max(1, pagesPrinted);
+}
+
 /** Lê o JSON do jobList.fcgi ({jobLists: [{containerId, jobs}]}) e devolve os
- *  jobs efetivamente impressos (completed). `sheets` = pagesPrinted (impressões
- *  físicas, já inclui cópias); papel derivado de MediaTypeAuto + TargetPaperSize. */
+ *  jobs efetivamente impressos (completed). `sheets` calcula a quantidade de folhas
+ *  físicas considerando se o job é frente e verso (duplex) ou só frente (simplex). */
 export function parseJobs(raw: unknown): KonicaJob[] {
   if (raw == null) return [];
 
@@ -197,6 +275,8 @@ export function parseJobs(raw: unknown): KonicaJob[] {
     const pages = Math.round(parseDecimalPtBR(String(r.pages ?? 0)));
 
     const gram = extractGram(jobName);
+    const isDuplex = isKonicaDuplex(jobName, paperName, row);
+    const sheets = calculateKonicaSheets(pages, copies, pagesPrinted, isDuplex);
 
     jobs.push({
       jobName,
@@ -205,12 +285,13 @@ export function parseJobs(raw: unknown): KonicaJob[] {
       osNumber: extractOsNumber(jobName),
       gram,
       pages,
-      sheets: pagesPrinted,
+      sheets,
       pagesPrinted,
       copies,
       colorMode: colorPagesPrinted > 0 ? 'Color' : 'Mono',
       status: 'completed',
       printEndDate: parseDate(datePrintEndSecs),
+      isDuplex,
       rawData: row,
     });
   }

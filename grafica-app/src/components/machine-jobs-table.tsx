@@ -229,7 +229,21 @@ function konicaColumns(
       header: "Folhas",
       cell: (info) => {
         const val = formatSheets(info.getValue())
-        return <span className="tabular-nums">{val}</span>
+        const row = info.row.original
+        const isDuplex = row.printMode === "DUPLEX"
+        return (
+          <div className="flex items-center gap-1.5">
+            <span className="tabular-nums font-medium">{val}</span>
+            {isDuplex && (
+              <span
+                title="Frente e Verso (Duplex) — 2 páginas por folha"
+                className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary border border-primary/20 leading-none select-none"
+              >
+                F/V
+              </span>
+            )}
+          </div>
+        )
       },
     }),
     columnHelper.accessor("colorMode", {
@@ -525,6 +539,7 @@ export function MachineJobsTable({
   selectedJobIds = [],
   onToggleSelectJob,
   onToggleSelectAll,
+  onRowContextMenu,
 }: {
   machine: Machine
   data: PrintJobRow[]
@@ -533,6 +548,7 @@ export function MachineJobsTable({
   selectedJobIds?: string[]
   onToggleSelectJob?: (id: string) => void
   onToggleSelectAll?: () => void
+  onRowContextMenu?: (e: React.MouseEvent, job: PrintJobRow) => void
 }) {
   // showHiddenBadge is derived from whether onHideJob is provided (i.e. DEV_MASTER only)
   const showHiddenBadge = !!onHideJob
@@ -585,7 +601,8 @@ export function MachineJobsTable({
             return (
               <tr
                 key={row.id}
-                className={`border-b border-gray-50 hover:bg-muted/30 transition-colors ${
+                onContextMenu={(e) => onRowContextMenu?.(e, row.original)}
+                className={`border-b border-gray-50 hover:bg-muted/30 transition-colors cursor-default ${
                   isSelected ? "bg-primary/5 hover:bg-primary/10" : ""
                 } ${
                   showHiddenBadge && isHidden ? "bg-amber-50/40 opacity-80" : ""

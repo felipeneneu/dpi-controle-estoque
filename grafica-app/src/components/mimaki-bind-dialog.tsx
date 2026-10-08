@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { toast } from "sonner"
 import { RiAddLine, RiArrowLeftLine, RiCheckLine, RiSearchLine } from "@remixicon/react"
 import { Button } from "@/components/ui/button"
@@ -28,6 +28,7 @@ interface MimakiBindDialogProps {
 export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiBindDialogProps) {
   const [search, setSearch] = useState("")
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null)
+  const [selectedBobinaId, setSelectedBobinaId] = useState<string | null>(null)
   const [isCreating, setIsCreating] = useState(false)
 
   // Campos para criação rápida
@@ -41,14 +42,9 @@ export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiB
   const createStockItem = useCreateStockItem()
   const addRoll = useAddRoll()
 
-  // Inicializa o formulário quando o dialog abre para um novo job (adjust during render)
-  const [lastInitKey, setLastInitKey] = useState("")
-  const [selectedBobinaId, setSelectedBobinaId] = useState<string | null>(null)
-  
-  const initKey = `${job?.id ?? "none"}:${open ? "open" : "closed"}`
-  if (initKey !== lastInitKey) {
-    setLastInitKey(initKey)
-    if (job && open) {
+  // Inicializa o formulário com segurança ao abrir para um novo job
+  useEffect(() => {
+    if (open && job) {
       setSearch(job.rawMaterialName ?? "")
       setSelectedItemId(job.stockItemId ?? null)
       setSelectedBobinaId(null)
@@ -57,7 +53,7 @@ export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiB
       const defaultW = job.widthMm ? (job.widthMm / 1000).toFixed(2) : "0.75"
       setNewWidth(defaultW)
     }
-  }
+  }, [open, job?.id, job?.rawMaterialName, job?.stockItemId, job?.widthMm])
 
   const selectedItem = stockItems.find((item) => item.id === selectedItemId)
   const isSheetOrUnit = selectedItem ? selectedItem.unit !== "m" : false
@@ -90,12 +86,12 @@ export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiB
     item.name.toLowerCase().includes(search.toLowerCase())
   )
 
-  // Bobinas cujo serial casa com a busca (para digitar BOB-XXXX direto)
+  // Bobinas cujo serial casa com a busca (para digitar BOB-XXXX direto com proteção a nulos)
   const q = search.trim().toLowerCase()
   const serialMatchBobinas = q
     ? bobinas.filter(
         (b) =>
-          b.serial.toLowerCase().includes(q) &&
+          Boolean(b.serial && b.serial.toLowerCase().includes(q)) &&
           stockItems.some((i) => i.id === b.stockItemId),
       )
     : []
@@ -195,7 +191,7 @@ export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiB
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md sm:max-w-lg min-h-[460px] flex flex-col justify-between">
         <DialogHeader>
           <DialogTitle>{isCreating ? "Cadastrar Nova Mídia Mimaki" : "Vincular Material"}</DialogTitle>
           <DialogDescription className="line-clamp-1 break-all">
@@ -244,14 +240,13 @@ export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiB
             </p>
           </div>
         ) : (
-          <div className="space-y-3 py-2">
+          <div className="space-y-3 py-2 flex-1 flex flex-col">
             <div className="relative">
               <RiSearchLine className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
               <Input
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value)
-                  setSelectedItemId(null)
                 }}
                 placeholder="Buscar material no estoque..."
                 className="pl-9 h-10 rounded-xl"
@@ -294,7 +289,7 @@ export function MimakiBindDialog({ job, machineId, open, onOpenChange }: MimakiB
               </div>
             )}
 
-            <div className="max-h-56 overflow-y-auto space-y-1.5 pr-1">
+            <div className="h-56 overflow-y-auto space-y-1.5 pr-1 border border-gray-100 rounded-xl p-1.5 bg-gray-50/40">
               {filtered.map((item) => {
                 const isSelected = selectedItemId === item.id
                 const itemBobinas = bobinas.filter(b => b.stockItemId === item.id)

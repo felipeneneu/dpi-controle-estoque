@@ -57,6 +57,7 @@ export async function insertKonicaJob(job: NewKonicaJob, machineId: string): Pro
     status: job.status,
     printEndDate: job.printEndDate,
     stockDeducted: false,
+    printMode: job.isDuplex ? 'DUPLEX' : 'SIMPLEX',
     rawDataJson: JSON.stringify(job.rawData),
   });
 }

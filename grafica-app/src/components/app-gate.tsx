@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { backendUrl, clearSession, getToken } from "@/lib/api";
 import { checkHealth } from "@/lib/health";
 import { cn } from "@/lib/utils";
+import { syncAuthStore } from "@/stores/auth-store";
 
 const MAX_WAIT = 15000;
 
@@ -17,6 +18,7 @@ export function AppGate({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
+    syncAuthStore();
     let cancelled = false;
     const started = Date.now();
 

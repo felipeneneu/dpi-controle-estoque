@@ -230,9 +230,9 @@ describe('mimaki bind-material', () => {
     expect((await bobinaDe(bobinaId))!.metersRemaining).toBeCloseTo(95, 3);
   });
 
-  it('nao refaz debito parcial: com tinta baixada e sem substrato, exige conciliacao', async () => {
+  it('permite vincular substrato mesmo com transações legadas de tinta UV (ADR-057)', async () => {
     const jobId = await seedJob({ stockDeducted: true, materialStatus: 'BOUND' });
-    // Só tinta: exatamente o que o bug antigo deixava para trás.
+    // Transação legada de tinta UV no banco
     await db.insert(stockTransactions).values({
       id: newId(),
       itemId,
@@ -244,9 +244,35 @@ describe('mimaki bind-material', () => {
 
     const res = await bind(jobId, { stock_item_id: itemId, bobina_id: bobinaId });
 
-    expect(res.statusCode).toBe(409);
-    expect(res.json().error).toMatch(/duplicaria a tinta/i);
+    expect(res.statusCode).toBe(200);
+    expect(res.json().deductedSubstrate).toBe(true);
+    expect((await bobinaDe(bobinaId))!.metersRemaining).toBeCloseTo(95, 3);
+  });
+
+  it('permite trocar bobina/material estornando a bobina anterior e debitando a nova', async () => {
+    const jobId = await seedJob({ lengthMeters: 5 });
+    // Primeiro bind na bobinaId (100m - 5m = 95m)
+    const res1 = await bind(jobId, { stock_item_id: itemId, bobina_id: bobinaId });
+    expect(res1.statusCode).toBe(200);
+    expect((await bobinaDe(bobinaId))!.metersRemaining).toBeCloseTo(95, 3);
+
+    // Nova bobina criada para outro material
+    const novaBobinaId = await seedBobina(itemOutrosId, 'BOB-2002', 100);
+
+    // Re-bind para a nova bobina (deve estornar a bobinaId para 100m e debitar novaBobinaId para 95m)
+    const res2 = await bind(jobId, { stock_item_id: itemOutrosId, bobina_id: novaBobinaId });
+    expect(res2.statusCode).toBe(200);
+    expect(res2.json().deductedSubstrate).toBe(true);
+
+    // Bobina anterior estornada
     expect((await bobinaDe(bobinaId))!.metersRemaining).toBeCloseTo(100, 3);
+    // Nova bobina debitada
+    expect((await bobinaDe(novaBobinaId))!.metersRemaining).toBeCloseTo(95, 3);
+
+    const txs = await db.select().from(stockTransactions).all();
+    const estornos = txs.filter((t) => t.type === 'IN' && (t.reason ?? '').includes('Estorno troca de mídia Mimaki'));
+    expect(estornos).toHaveLength(1);
+    expect(estornos[0].quantity).toBeCloseTo(5, 3);
   });
 
   it('debita mais de um job da mesma bobina, encadeando o saldo', async () => {

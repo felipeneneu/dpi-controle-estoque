@@ -144,30 +144,35 @@ try {
     await safeAddCol('mimaki_test_jobs', 'bobina_id', 'text');
     await safeAddCol('mimaki_test_jobs', 'mimaki_job_id', 'text');
 
-    const hashes = await db.all<{ hash: string }>(sql`SELECT hash FROM __drizzle_migrations`);
-    const existing = new Set(hashes.map((h) => h.hash));
-    const migrationFiles = [
-      '0001_white_silver_centurion',
-      '0002_lame_korg',
-      '0003_dapper_jazinda',
-      '0004_watery_owl',
-      '0005_repair_machine_telemetry',
-      '0006_grey_tomorrow_man',
-      '0007_sticky_the_renegades',
-      '0008_melodic_lorna_dane',
-    ];
-    for (const tag of migrationFiles) {
-      const path = `${MIGRATIONS_DIR}/${tag}.sql`;
-      try {
-        const raw = readFileSync(path, 'utf8');
-        const hash = createHash('sha256').update(raw).digest('hex');
-        if (!existing.has(hash)) {
-          await db.run(
-            sql`INSERT INTO __drizzle_migrations (hash, created_at) VALUES (${hash}, ${Date.now()})`
-          );
-        }
-      } catch { /* ignore missing files */ }
-    }
+    await safeCreateIdx('ink_consumption_log_machine_idx', 'ink_consumption_log', 'machine_id');
+    await safeCreateIdx('ink_consumption_log_channel_idx', 'ink_consumption_log', 'channel');
+    await safeCreateIdx('ink_consumption_log_created_idx', 'ink_consumption_log', 'created_at');
+    await safeCreateIdx('tinta_lotes_stock_item_idx', 'tinta_lotes', 'stock_item_id');
+    await safeCreateIdx('tinta_lotes_state_idx', 'tinta_lotes', 'state');
+    await safeCreateIdx('tinta_lotes_machine_idx', 'tinta_lotes', 'machine_id');
+    await safeCreateIdx('tinta_lotes_channel_idx', 'tinta_lotes', 'channel');
+
+    try {
+      const journalPath = `${MIGRATIONS_DIR}/meta/_journal.json`;
+      const journal = JSON.parse(readFileSync(journalPath, 'utf8'));
+      const hashes = await db.all<{ hash: string }>(sql`SELECT hash FROM __drizzle_migrations`);
+      const existing = new Set(hashes.map((h) => h.hash));
+
+      for (const entry of journal.entries as Array<{ tag: string; when: number }>) {
+        const path = `${MIGRATIONS_DIR}/${entry.tag}.sql`;
+        try {
+          const raw = readFileSync(path, 'utf8');
+          const hash = createHash('sha256').update(raw).digest('hex');
+          if (!existing.has(hash)) {
+            await db.run(
+              sql`INSERT INTO __drizzle_migrations (hash, created_at) VALUES (${hash}, ${entry.when})`
+            );
+            existing.add(hash);
+          }
+        } catch { /* ignore missing files */ }
+      }
+    } catch { /* ignore journal read errors */ }
+
     console.warn('[migration] Colunas verificadas/adicionadas. Tentando migrate() novamente...');
     try {
       await migrate(db, { migrationsFolder: MIGRATIONS_DIR });
@@ -199,6 +204,11 @@ await client.execute({
 await client.execute({
   sql: `INSERT OR IGNORE INTO users (id, name, email, password_hash, role) VALUES (?, ?, ?, ?, ?)`,
   args: ['hp-agent-system', 'HP Latex Agent', 'hp-agent@grafica.local', '__system__', 'OPERATOR'],
+});
+
+await client.execute({
+  sql: `INSERT OR IGNORE INTO users (id, name, email, password_hash, role) VALUES (?, ?, ?, ?, ?)`,
+  args: ['mimaki-agent-system', 'Mimaki Agent', 'mimaki-agent@grafica.local', '__system__', 'OPERATOR'],
 });
 
 const app = await buildApp({ logger: true });

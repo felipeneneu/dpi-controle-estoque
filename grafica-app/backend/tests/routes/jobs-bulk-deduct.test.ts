@@ -3,7 +3,7 @@ import type { FastifyInstance } from 'fastify';
 import { eq } from 'drizzle-orm';
 import { makeApp, ensureSchema, resetDb } from '../helpers/app.js';
 import { db } from '../../src/db/index.js';
-import { machines, stockItems, printJobs, bobinas, stockTransactions, users } from '../../src/db/schema.js';
+import { machines, stockItems, printJobs, bobinas, stockTransactions, users, mimakiJobs } from '../../src/db/schema.js';
 import { newId } from '../../src/lib/ids.js';
 
 describe('POST /api/jobs/bulk-deduct (Ação em Massa de Jobs)', () => {
@@ -292,6 +292,80 @@ describe('POST /api/jobs/bulk-deduct (Ação em Massa de Jobs)', () => {
     const job1Atual = await db.select().from(printJobs).where(eq(printJobs.id, j1)).get();
     expect(job1Atual?.stockDeducted).toBe(true);
     expect(job1Atual?.materialStatus).toBe('DEDUCTED');
+  });
+
+  it('debita múltiplos jobs da Mimaki em massa no mesmo rolo', async () => {
+    const vinil = {
+      id: newId(),
+      name: 'Vinil Mimaki 75cm',
+      category: 'PAPER_MEDIA' as const,
+      unit: 'm' as const,
+      width: 0.75,
+      currentQuantity: 50,
+      minQuantity: 5,
+    };
+    await db.insert(stockItems).values(vinil);
+
+    const bobinaId = newId();
+    await db.insert(bobinas).values({
+      id: bobinaId,
+      stockItemId: vinil.id,
+      serial: 'BOB-MIM-01',
+      metersInitial: 50,
+      metersRemaining: 50,
+      state: 'IN_USE',
+    });
+
+    const mj1 = newId();
+    const mj2 = newId();
+    await db.insert(mimakiJobs).values([
+      {
+        id: mj1,
+        machineId: machineHpId,
+        folderTimestamp: '2026-10-08_12-00-00',
+        jobName: 'Rotulo A',
+        widthMm: 750,
+        heightMm: 1000,
+        lengthMeters: 3.5,
+        materialStatus: 'PENDING_BIND',
+        stockDeducted: false,
+      },
+      {
+        id: mj2,
+        machineId: machineHpId,
+        folderTimestamp: '2026-10-08_12-01-00',
+        jobName: 'Rotulo B',
+        widthMm: 750,
+        heightMm: 1000,
+        lengthMeters: 2.5,
+        materialStatus: 'PENDING_BIND',
+        stockDeducted: false,
+      },
+    ]);
+
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/jobs/bulk-deduct',
+      headers: { authorization: `Bearer ${token}` },
+      payload: {
+        jobIds: [mj1, mj2],
+        stockItemId: vinil.id,
+        bobinaId,
+        reason: 'Baixa em lote de jobs Mimaki',
+      },
+    });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json().totalDebited).toBe(6.0); // 3.5 + 2.5
+    expect(res.json().processedCount).toBe(2);
+
+    const bobinaDb = await db.select().from(bobinas).where(eq(bobinas.id, bobinaId)).get();
+    expect(bobinaDb?.metersRemaining).toBe(44.0); // 50 - 6
+
+    const job1 = await db.select().from(mimakiJobs).where(eq(mimakiJobs.id, mj1)).get();
+    expect(job1?.stockDeducted).toBe(true);
+    expect(job1?.materialStatus).toBe('BOUND');
+    expect(job1?.stockItemId).toBe(vinil.id);
   });
 });
 

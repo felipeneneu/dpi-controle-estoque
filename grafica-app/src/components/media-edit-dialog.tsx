@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dialog"
 import { useUpdateJob, type PrintJobRow } from "@/lib/queries/jobs"
 import { useStockItems, useCreateStockItem } from "@/lib/queries/stock"
-import type { Machine, StockItem } from "@/lib/api"
+import { isKonicaMachine, type Machine, type StockItem } from "@/lib/api"
 
 interface MediaEditDialogProps {
   job: PrintJobRow | null
@@ -40,6 +40,11 @@ export function MediaEditDialog({ job, machine, open, onOpenChange }: MediaEditD
   const updateJob = useUpdateJob()
   const createStockItem = useCreateStockItem()
 
+  // Modo de impressão Konica (Duplex / Simplex) e folhas
+  const isKonica = machine ? (isKonicaMachine(machine) || /konica|accurio/i.test(machine.brand) || machine.technology === "Laser") : false
+  const [printMode, setPrintMode] = useState<"DUPLEX" | "SIMPLEX">("SIMPLEX")
+  const [sheets, setSheets] = useState<string>("")
+
   // Inicializa o formulário quando o dialog abre para um novo job (adjust during render)
   const [lastInitKey, setLastInitKey] = useState("")
   const initKey = `${job?.id ?? "none"}:${open ? "open" : "closed"}`
@@ -48,6 +53,10 @@ export function MediaEditDialog({ job, machine, open, onOpenChange }: MediaEditD
     if (job && open) {
       setSearch(job.mediaType ?? "")
       setIsCreating(false)
+
+      const isDuplexInit = job.printMode === "DUPLEX" || (!job.printMode && /(?:frente[\s_-]*(?:e[\s_-]*)?(?:verso|tr[aá]s|costas)|f[\/_-]v\b|\b[14]\s*[xX]\s*[142]\b|\bduplex\b)/i.test(job.jobName || ""))
+      setPrintMode(isDuplexInit ? "DUPLEX" : "SIMPLEX")
+      setSheets(job.sheets ? String(job.sheets) : "")
 
       // Determina largura padrão da máquina
       const defaultW = machine?.telemetry?.mediaWidthMm
@@ -113,6 +122,26 @@ export function MediaEditDialog({ job, machine, open, onOpenChange }: MediaEditD
     }
   }
 
+  function handleTogglePrintMode(newMode: "DUPLEX" | "SIMPLEX") {
+    setPrintMode(newMode)
+    if (!job) return
+
+    const pages = job.pages || 1
+    let copies = 1
+    try {
+      const raw = JSON.parse(job.rawDataJson || "{}")
+      copies = Number(raw.copiesPrinted || 1)
+    } catch {}
+    if (!Number.isFinite(copies) || copies <= 0) copies = 1
+
+    if (newMode === "DUPLEX") {
+      const sheetsPerCopy = Math.ceil(pages / 2)
+      setSheets(String(Math.max(1, sheetsPerCopy * copies)))
+    } else {
+      setSheets(String(Math.max(1, pages * copies)))
+    }
+  }
+
   async function handleSaveSelection() {
     if (!job) return
     const mediaName = selectedItem ? selectedItem.name : search.trim()
@@ -125,8 +154,10 @@ export function MediaEditDialog({ job, machine, open, onOpenChange }: MediaEditD
       await updateJob.mutateAsync({
         id: job.id,
         mediaType: mediaName,
+        printMode: isKonica ? printMode : undefined,
+        sheets: isKonica && sheets ? parseFloat(sheets.replace(",", ".")) : undefined,
       })
-      toast.success("Mídia atualizada com sucesso!")
+      toast.success("Job atualizado com sucesso!")
       onOpenChange(false)
     } catch {
       toast.error("Erro ao atualizar mídia do job.")
@@ -247,6 +278,62 @@ export function MediaEditDialog({ job, machine, open, onOpenChange }: MediaEditD
               <RiAddLine className="size-4" />
               {search.trim() ? `Criar mídia "${search.trim()}"` : "Cadastrar nova mídia no estoque"}
             </Button>
+
+            {isKonica && (
+              <div className="pt-3 border-t border-gray-150 space-y-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold text-gray-700">Modo de Impressão (Konica)</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleTogglePrintMode("SIMPLEX")}
+                      className={`px-3 py-2 rounded-xl border text-xs font-medium text-center transition-all ${
+                        printMode === "SIMPLEX"
+                          ? "border-primary bg-primary/10 text-primary font-bold shadow-xs"
+                          : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                      }`}
+                    >
+                      Só Frente (Simplex)
+                      <span className="block text-[10px] font-normal text-muted-foreground mt-0.5">1 pág = 1 folha</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleTogglePrintMode("DUPLEX")}
+                      className={`px-3 py-2 rounded-xl border text-xs font-medium text-center transition-all ${
+                        printMode === "DUPLEX"
+                          ? "border-primary bg-primary/10 text-primary font-bold shadow-xs"
+                          : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                      }`}
+                    >
+                      Frente e Verso (Duplex)
+                      <span className="block text-[10px] font-normal text-muted-foreground mt-0.5">2 págs = 1 folha</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs font-semibold text-gray-700">Folhas Físicas a Debitar</Label>
+                    <span className="text-[11px] text-muted-foreground">
+                      {job?.pages ?? 1} pág(s) no arquivo
+                    </span>
+                  </div>
+                  <Input
+                    type="number"
+                    min="1"
+                    step="1"
+                    value={sheets}
+                    onChange={(e) => setSheets(e.target.value)}
+                    className="h-9 rounded-xl font-mono text-sm"
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    {printMode === "DUPLEX"
+                      ? "Frente e verso: cada folha consome 2 páginas do arquivo."
+                      : "Só frente: cada página consome 1 folha inteira."}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

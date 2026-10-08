@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import { getUser, type StockItem } from "@/lib/api";
+import { getUser, type StockItem, type StockCategory } from "@/lib/api";
 import { useStockItems, useStockTransaction, useAddRoll } from "@/lib/queries/stock";
 import { useMachines } from "@/lib/queries/machines";
 import { useStockSocket } from "@/hooks/use-stock-socket";
@@ -23,8 +23,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export default function EstoquePage() {
+function EstoqueContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const catParam = searchParams.get("cat");
+  const selectedCategory: "TODOS" | StockCategory =
+    catParam === "PAPER_MEDIA" || catParam === "bobinas" || catParam === "midias"
+      ? "PAPER_MEDIA"
+      : catParam === "INK_SUPPLY" || catParam === "tintas"
+      ? "INK_SUPPLY"
+      : catParam === "OTHER"
+      ? "OTHER"
+      : "TODOS";
 
   // Socket.IO para sincronização ao vivo (stock:updated)
   useStockSocket();
@@ -112,6 +122,7 @@ export default function EstoquePage() {
         <StockDataTable
           items={items}
           machines={machines}
+          defaultCategoryFilter={selectedCategory}
           actions={{
             onViewLots: (item) => setSelectedItem(item),
             onQuickTransaction: (item, type) => {
@@ -208,5 +219,13 @@ export default function EstoquePage() {
         onOpenChange={setLabelImpositionOpen}
       />
     </div>
+  );
+}
+
+export default function EstoquePage() {
+  return (
+    <Suspense fallback={<LoadingState label="Carregando estoque…" />}>
+      <EstoqueContent />
+    </Suspense>
   );
 }

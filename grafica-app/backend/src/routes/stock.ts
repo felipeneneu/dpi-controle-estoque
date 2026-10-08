@@ -164,8 +164,8 @@ export async function stockRoutes(app: FastifyInstance) {
         channel?: string | null;
         metersRemaining?: number | null;
       } | null = null;
-      let availableLots = 0;
-      let totalLots = 0;
+      let availableLots: number | null = null;
+      let totalLots: number | null = null;
 
       if (r.category === 'PAPER_MEDIA' && r.unit === 'm') {
         const itemBobinas = allBobinas.filter((b) => b.stockItemId === r.id);
@@ -241,14 +241,15 @@ export async function stockRoutes(app: FastifyInstance) {
                 };
               }
             } else {
-              availableLots = r.currentQuantity;
-              totalLots = r.currentQuantity;
+              availableLots = null;
+              totalLots = null;
             }
           }
         }
       } else {
-        availableLots = r.currentQuantity;
-        totalLots = r.currentQuantity;
+        // Para folhas (PAPER_MEDIA unit !== 'm') e OTHER: não são bobinas nem lotes de tinta
+        availableLots = null;
+        totalLots = null;
       }
 
       return { 

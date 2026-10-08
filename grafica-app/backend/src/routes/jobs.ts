@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { and, eq, gte, lt, like, or, desc, asc, count, getTableColumns, sql, inArray } from 'drizzle-orm';
-import { printJobs, machines, stockItems, users, bobinas, stockTransactions } from '../db/schema.js';
+import { printJobs, machines, stockItems, users, bobinas, stockTransactions, mimakiJobs, mimakiTestJobs } from '../db/schema.js';
 import { db } from '../db/index.js';
 import { authenticate } from '../middleware/auth.js';
 import { deductStockForJob } from '../agents/hp-latex/stock-deductor.js';
@@ -174,6 +174,8 @@ export async function jobRoutes(app: FastifyInstance) {
         properties: {
           mediaType: { type: 'string' },
           osNumber: { type: 'string' },
+          printMode: { type: 'string' },
+          sheets: { type: 'number' },
         },
       },
       response: {
@@ -184,7 +186,12 @@ export async function jobRoutes(app: FastifyInstance) {
     preHandler: [authenticate],
   }, async (request, reply) => {
     const { id } = request.params as { id: string };
-    const body = request.body as { mediaType?: string; osNumber?: string };
+    const body = request.body as {
+      mediaType?: string;
+      osNumber?: string;
+      printMode?: string;
+      sheets?: number;
+    };
 
     const existing = await db.select().from(printJobs).where(eq(printJobs.id, id)).get();
     if (!existing) {
@@ -208,12 +215,39 @@ export async function jobRoutes(app: FastifyInstance) {
       }
     }
 
+    if (body.printMode !== undefined) {
+      const mode = body.printMode.toUpperCase();
+      const isDuplex = mode === 'DUPLEX' || mode === 'FRENTE_VERSO';
+      patch.printMode = isDuplex ? 'DUPLEX' : 'SIMPLEX';
+
+      if (body.sheets === undefined && existing.ripType === 'konica-printmanager') {
+        const pages = existing.pages || 1;
+        let copies = 1;
+        try {
+          const raw = JSON.parse(existing.rawDataJson || '{}');
+          copies = Number(raw.copiesPrinted || 1);
+        } catch {}
+        if (!Number.isFinite(copies) || copies <= 0) copies = 1;
+
+        patch.sheets = isDuplex
+          ? Math.max(1, Math.ceil(pages / 2) * copies)
+          : Math.max(1, pages * copies);
+      }
+    }
+
+    if (body.sheets !== undefined) {
+      if (Number.isFinite(body.sheets) && body.sheets > 0) {
+        patch.sheets = body.sheets;
+      }
+    }
+
     if (Object.keys(patch).length === 0) {
       return reply.code(400).send({ error: 'Nenhum campo para atualizar' });
     }
 
     await db.update(printJobs).set(patch).where(eq(printJobs.id, id));
     const updated = await db.select().from(printJobs).where(eq(printJobs.id, id)).get();
+    app.io?.to('estoque').emit('job:updated', updated);
     return reply.code(200).send(updated);
   });
 
@@ -442,20 +476,37 @@ export async function jobRoutes(app: FastifyInstance) {
       return reply.code(404).send({ error: 'Material selecionado não foi encontrado no estoque.' });
     }
 
-    // Busca os jobs por ID interno ou por jobId público
+    // Busca os jobs em printJobs ou em mimakiJobs
     const allJobs = await db
       .select()
       .from(printJobs)
       .where(or(inArray(printJobs.id, jobIds), inArray(printJobs.jobId, jobIds)))
       .all();
 
-    if (allJobs.length === 0) {
+    let isMimaki = false;
+    let pendingJobs: typeof printJobs.$inferSelect[] = [];
+    let pendingMimakiJobs: typeof mimakiJobs.$inferSelect[] = [];
+
+    if (allJobs.length > 0) {
+      pendingJobs = allJobs.filter((j) => !j.stockDeducted);
+    } else {
+      const allMimaki = await db
+        .select()
+        .from(mimakiJobs)
+        .where(inArray(mimakiJobs.id, jobIds))
+        .all();
+      if (allMimaki.length > 0) {
+        isMimaki = true;
+        pendingMimakiJobs = allMimaki.filter((j) => !j.stockDeducted || j.materialStatus === 'PENDING_BIND');
+      }
+    }
+
+    if (!isMimaki && allJobs.length === 0) {
       return reply.code(404).send({ error: 'Nenhum dos jobs selecionados foi encontrado.' });
     }
 
-    // Filtra jobs ainda não debitados
-    const pendingJobs = allJobs.filter((j) => !j.stockDeducted);
-    if (pendingJobs.length === 0) {
+    const totalPendingCount = isMimaki ? pendingMimakiJobs.length : pendingJobs.length;
+    if (totalPendingCount === 0) {
       return reply.code(400).send({ error: 'Todos os jobs selecionados já tiveram o estoque debitado anteriormente.' });
     }
 
@@ -468,9 +519,16 @@ export async function jobRoutes(app: FastifyInstance) {
     if (isSheetMaterial) {
       // SOMA DE FOLHAS
       let totalSheets = 0;
-      for (const job of pendingJobs) {
-        const sheetsCount = (job.sheets && job.sheets > 0) ? job.sheets : (job.pages ?? 1);
-        totalSheets += sheetsCount;
+      if (isMimaki) {
+        for (const job of pendingMimakiJobs) {
+          const sheetsCount = (job.quantityUnits && job.quantityUnits > 0) ? job.quantityUnits : (job.pages ?? 1);
+          totalSheets += sheetsCount;
+        }
+      } else {
+        for (const job of pendingJobs) {
+          const sheetsCount = (job.sheets && job.sheets > 0) ? job.sheets : (job.pages ?? 1);
+          totalSheets += sheetsCount;
+        }
       }
 
       const factor = CONVERSION_FACTOR_BY_UNIT[item.unit as keyof typeof CONVERSION_FACTOR_BY_UNIT] ?? 1;
@@ -484,45 +542,68 @@ export async function jobRoutes(app: FastifyInstance) {
         itemId: item.id,
         type: 'OUT',
         quantity: debitQty,
-        reason: reason || `Baixa em massa: ${pendingJobs.length} job(s) [${totalSheets} folhas] no papel ${item.name}`,
+        reason: reason || `Baixa em massa: ${totalPendingCount} job(s) [${totalSheets} folhas] no papel ${item.name}`,
         userId: user?.sub ?? null,
         userName: user?.name ?? 'Operador',
       });
 
       // Atualiza os jobs como debitados
-      for (const job of pendingJobs) {
-        await db
-          .update(printJobs)
-          .set({
-            stockDeducted: true,
-            deductedAt: nowIso,
-            materialStatus: 'DEDUCTED',
-            mediaType: item.name,
-          })
-          .where(eq(printJobs.id, job.id));
+      if (isMimaki) {
+        for (const job of pendingMimakiJobs) {
+          await db
+            .update(mimakiJobs)
+            .set({
+              stockDeducted: true,
+              materialStatus: 'BOUND',
+              stockItemId: item.id,
+            })
+            .where(eq(mimakiJobs.id, job.id));
+        }
+      } else {
+        for (const job of pendingJobs) {
+          await db
+            .update(printJobs)
+            .set({
+              stockDeducted: true,
+              deductedAt: nowIso,
+              materialStatus: 'DEDUCTED',
+              mediaType: item.name,
+            })
+            .where(eq(printJobs.id, job.id));
+        }
       }
 
       app.io.to('estoque').emit('stock:updated', { itemId: item.id });
       app.io.to('estoque').emit('printer:job_completed', { message: 'Jobs debitados em massa' });
+      if (isMimaki) {
+        app.io.to('estoque').emit('mimaki:job:bound', { count: totalPendingCount });
+      }
 
       return reply.code(200).send({
         success: true,
-        processedCount: pendingJobs.length,
+        processedCount: totalPendingCount,
         totalDebited: debitQty,
         unit: item.unit,
-        message: `${pendingJobs.length} job(s) debitado(s) com sucesso: ${debitQty} ${item.unit} (${totalSheets} folhas) de ${item.name}.`,
+        message: `${totalPendingCount} job(s) debitado(s) com sucesso: ${debitQty} ${item.unit} (${totalSheets} folhas) de ${item.name}.`,
       });
     } else {
       // SOMA DE METROS LINEARES DE BOBINA
       const rollWidth = (item.width && item.width > 0) ? item.width : 1.52;
       let totalLinearM = 0;
 
-      for (const job of pendingJobs) {
-        let linear = job.linearMetersDebited;
-        if (!linear || linear <= 0) {
-          linear = job.mediaAreaM2 && job.mediaAreaM2 > 0 ? toPrecision(job.mediaAreaM2 / rollWidth, 3) : 1;
+      if (isMimaki) {
+        for (const job of pendingMimakiJobs) {
+          const linear = job.lengthMeters && job.lengthMeters > 0 ? job.lengthMeters : 1;
+          totalLinearM += linear;
         }
-        totalLinearM += linear;
+      } else {
+        for (const job of pendingJobs) {
+          let linear = job.linearMetersDebited;
+          if (!linear || linear <= 0) {
+            linear = job.mediaAreaM2 && job.mediaAreaM2 > 0 ? toPrecision(job.mediaAreaM2 / rollWidth, 3) : 1;
+          }
+          totalLinearM += linear;
+        }
       }
       totalLinearM = toPrecision(totalLinearM, 3);
 
@@ -531,7 +612,7 @@ export async function jobRoutes(app: FastifyInstance) {
         targetBobina = await db.select().from(bobinas).where(eq(bobinas.id, bobinaId)).get() ?? null;
       } else {
         // Busca bobina IN_USE para a máquina informada ou primeira bobina em uso do item
-        const mId = machineId || pendingJobs[0]?.machineId;
+        const mId = machineId || (isMimaki ? pendingMimakiJobs[0]?.machineId : pendingJobs[0]?.machineId);
         if (mId) {
           targetBobina = await db
             .select()
@@ -574,37 +655,201 @@ export async function jobRoutes(app: FastifyInstance) {
         itemId: item.id,
         type: 'OUT',
         quantity: totalLinearM,
-        reason: reason || `Baixa em massa: ${pendingJobs.length} job(s)${bobinaDesc} no material ${item.name}`,
+        reason: reason || `Baixa em massa: ${totalPendingCount} job(s)${bobinaDesc} no material ${item.name}`,
         userId: user?.sub ?? null,
         userName: user?.name ?? 'Operador',
       });
 
       // Atualiza os jobs
-      for (const job of pendingJobs) {
-        const linear = job.linearMetersDebited ?? (job.mediaAreaM2 && job.mediaAreaM2 > 0 ? toPrecision(job.mediaAreaM2 / rollWidth, 3) : 1);
-        await db
-          .update(printJobs)
-          .set({
-            stockDeducted: true,
-            deductedAt: nowIso,
-            rollWidthUsed: rollWidth,
-            linearMetersDebited: linear,
-            materialStatus: 'DEDUCTED',
-            mediaType: item.name,
-          })
-          .where(eq(printJobs.id, job.id));
+      if (isMimaki) {
+        for (const job of pendingMimakiJobs) {
+          await db
+            .update(mimakiJobs)
+            .set({
+              stockDeducted: true,
+              materialStatus: 'BOUND',
+              stockItemId: item.id,
+            })
+            .where(eq(mimakiJobs.id, job.id));
+
+          const { mimakiTestJobs } = await import('../db/schema.js');
+          await db
+            .update(mimakiTestJobs)
+            .set({
+              stockDeducted: true,
+              stockItemId: item.id,
+              bobinaId: targetBobina ? targetBobina.id : null,
+              parsedBobinaSerial: targetBobina ? targetBobina.serial : null,
+            })
+            .where(
+              or(
+                eq(mimakiTestJobs.keyFilename, job.jobName),
+                job.orderCode ? eq(mimakiTestJobs.parsedOrderCode, job.orderCode) : sql`1 = 0`
+              )
+            );
+        }
+      } else {
+        for (const job of pendingJobs) {
+          const linear = job.linearMetersDebited ?? (job.mediaAreaM2 && job.mediaAreaM2 > 0 ? toPrecision(job.mediaAreaM2 / rollWidth, 3) : 1);
+          await db
+            .update(printJobs)
+            .set({
+              stockDeducted: true,
+              deductedAt: nowIso,
+              rollWidthUsed: rollWidth,
+              linearMetersDebited: linear,
+              materialStatus: 'DEDUCTED',
+              mediaType: item.name,
+            })
+            .where(eq(printJobs.id, job.id));
+        }
       }
 
       app.io.to('estoque').emit('stock:updated', { itemId: item.id });
       app.io.to('estoque').emit('printer:job_completed', { message: 'Jobs debitados em massa' });
+      if (isMimaki) {
+        app.io.to('estoque').emit('mimaki:job:bound', { count: totalPendingCount });
+      }
 
       return reply.code(200).send({
         success: true,
-        processedCount: pendingJobs.length,
+        processedCount: totalPendingCount,
         totalDebited: totalLinearM,
         unit: 'm',
-        message: `${pendingJobs.length} job(s) debitado(s) com sucesso: ${totalLinearM}m de ${item.name}${bobinaDesc}.`,
+        message: `${totalPendingCount} job(s) debitado(s) com sucesso: ${totalLinearM}m de ${item.name}${bobinaDesc}.`,
       });
     }
   });
+
+  app.delete('/api/jobs/:id', {
+    schema: {
+      tags: ['Jobs'],
+      summary: 'Excluir job de impressão',
+      description: 'Exclui um job de impressão da tabela e do banco de dados.',
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: { id: { type: 'string' } },
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            id: { type: 'string' },
+            message: { type: 'string' },
+          },
+        },
+        404: {
+          type: 'object',
+          properties: { error: { type: 'string' } },
+        },
+      },
+    },
+    preHandler: [authenticate],
+  }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+
+    // Tenta encontrar em printJobs
+    const printJob = await db.select().from(printJobs).where(eq(printJobs.id, id)).get();
+    if (printJob) {
+      await db.delete(printJobs).where(eq(printJobs.id, id));
+      app.io?.to('estoque').emit('job:deleted', { id, ripType: printJob.ripType });
+      app.io?.to('estoque').emit('printer:job_completed', { message: `Job ${printJob.jobName} excluído` });
+      return reply.code(200).send({
+        success: true,
+        id,
+        message: 'Job de impressão excluído com sucesso.',
+      });
+    }
+
+    // Tenta encontrar em mimakiJobs
+    const mimakiJob = await db.select().from(mimakiJobs).where(eq(mimakiJobs.id, id)).get();
+    if (mimakiJob) {
+      await db.delete(mimakiJobs).where(eq(mimakiJobs.id, id));
+      await db.delete(mimakiTestJobs).where(
+        or(
+          eq(mimakiTestJobs.keyFilename, mimakiJob.jobName),
+          mimakiJob.orderCode ? eq(mimakiTestJobs.parsedOrderCode, mimakiJob.orderCode) : sql`1 = 0`
+        )
+      );
+      app.io?.to('estoque').emit('job:deleted', { id, ripType: 'mimaki' });
+      app.io?.to('estoque').emit('mimaki:job:bound', { count: 0 });
+      return reply.code(200).send({
+        success: true,
+        id,
+        message: 'Job Mimaki excluído com sucesso.',
+      });
+    }
+
+    return reply.code(404).send({ error: 'Job não encontrado.' });
+  });
+
+  app.post('/api/jobs/bulk-delete', {
+    schema: {
+      tags: ['Jobs'],
+      summary: 'Excluir múltiplos jobs de impressão em massa',
+      description: 'Remove múltiplos jobs da tabela e do banco de dados em lote.',
+      body: {
+        type: 'object',
+        required: ['jobIds'],
+        properties: {
+          jobIds: { type: 'array', items: { type: 'string' }, minItems: 1 },
+        },
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            count: { type: 'number' },
+            message: { type: 'string' },
+          },
+        },
+        400: {
+          type: 'object',
+          properties: { error: { type: 'string' } },
+        },
+      },
+    },
+    preHandler: [authenticate],
+  }, async (request, reply) => {
+    const { jobIds } = request.body as { jobIds: string[] };
+
+    if (!Array.isArray(jobIds) || jobIds.length === 0) {
+      return reply.code(400).send({ error: 'jobIds deve ser uma lista não vazia' });
+    }
+
+    const pJobs = await db.select().from(printJobs).where(inArray(printJobs.id, jobIds)).all();
+    const mJobs = await db.select().from(mimakiJobs).where(inArray(mimakiJobs.id, jobIds)).all();
+
+    if (pJobs.length > 0) {
+      await db.delete(printJobs).where(inArray(printJobs.id, pJobs.map((j) => j.id)));
+    }
+
+    if (mJobs.length > 0) {
+      await db.delete(mimakiJobs).where(inArray(mimakiJobs.id, mJobs.map((j) => j.id)));
+      for (const mj of mJobs) {
+        await db.delete(mimakiTestJobs).where(
+          or(
+            eq(mimakiTestJobs.keyFilename, mj.jobName),
+            mj.orderCode ? eq(mimakiTestJobs.parsedOrderCode, mj.orderCode) : sql`1 = 0`
+          )
+        );
+      }
+    }
+
+    const totalCount = pJobs.length + mJobs.length;
+
+    app.io?.to('estoque').emit('job:deleted', { ids: jobIds, count: totalCount });
+    app.io?.to('estoque').emit('printer:job_completed', { message: `${totalCount} jobs excluídos` });
+    app.io?.to('estoque').emit('mimaki:job:bound', { count: 0 });
+
+    return reply.code(200).send({
+      success: true,
+      count: totalCount,
+      message: `${totalCount} job(s) excluído(s) com sucesso.`,
+    });
+  });
 }
+

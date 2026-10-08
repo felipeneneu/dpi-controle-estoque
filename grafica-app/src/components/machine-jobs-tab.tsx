@@ -1,8 +1,16 @@
 "use client"
 
-import { useDeferredValue, useMemo, useState } from "react"
+import { useDeferredValue, useMemo, useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { RiRefreshLine, RiEyeLine, RiEyeOffLine, RiFlashlightLine } from "@remixicon/react"
+import {
+  RiRefreshLine,
+  RiEyeLine,
+  RiEyeOffLine,
+  RiFlashlightLine,
+  RiDeleteBinLine,
+  RiCloseLine,
+  RiPencilLine,
+} from "@remixicon/react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,6 +19,8 @@ import { MachineJobsTable } from "@/components/machine-jobs-table"
 import { MediaEditDialog } from "@/components/media-edit-dialog"
 import { HideJobDialog } from "@/components/hide-job-dialog"
 import { BulkDeductDialog } from "@/components/bulk-deduct-dialog"
+import { WindowsContextMenu, type WindowsContextMenuItem } from "@/components/ui/windows-context-menu"
+import { DeleteJobDialog, type DeleteJobTarget } from "@/components/delete-job-dialog"
 import { useJobs, useSyncMachineJobsStock, type PrintJobRow } from "@/lib/queries/jobs"
 import { useUser } from "@/hooks/use-user"
 import { isKonicaMachine, type Machine } from "@/lib/api"
@@ -97,6 +107,146 @@ export function JobsTab({ machine }: { machine: Machine }) {
       setSelectedJobIds((prev) => Array.from(new Set([...prev, ...pageIds])))
     }
   }
+
+  const [contextMenu, setContextMenu] = useState<{
+    x: number
+    y: number
+    job: PrintJobRow
+    isMulti: boolean
+  } | null>(null)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [deleteTargets, setDeleteTargets] = useState<DeleteJobTarget[]>([])
+
+  function handleRowContextMenu(e: React.MouseEvent, job: PrintJobRow) {
+    e.preventDefault()
+    const isAlreadySelected = selectedJobIds.includes(job.id)
+
+    if (isAlreadySelected && selectedJobIds.length > 1) {
+      setContextMenu({
+        x: e.clientX,
+        y: e.clientY,
+        job,
+        isMulti: true,
+      })
+    } else {
+      if (!isAlreadySelected) {
+        setSelectedJobIds([job.id])
+      }
+      setContextMenu({
+        x: e.clientX,
+        y: e.clientY,
+        job,
+        isMulti: false,
+      })
+    }
+  }
+
+  // Atalho de teclado Delete do Windows para itens selecionados
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Delete" || e.key === "Del") {
+        const target = e.target as HTMLElement | null
+        const tag = target?.tagName?.toLowerCase()
+        if (tag === "input" || tag === "textarea" || tag === "select" || target?.isContentEditable) {
+          return
+        }
+        if (selectedJobIds.length > 0) {
+          e.preventDefault()
+          setDeleteTargets(
+            selectedJobs.map((j) => ({
+              id: j.id,
+              jobName: j.jobName,
+              osNumber: j.osNumber,
+            }))
+          )
+          setDeleteDialogOpen(true)
+        }
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [selectedJobIds, selectedJobs])
+
+  const contextMenuItems: WindowsContextMenuItem[] = useMemo(() => {
+    if (!contextMenu) return []
+
+    if (contextMenu.isMulti) {
+      return [
+        {
+          label: "Debitar Selecionados em Massa...",
+          icon: <RiFlashlightLine className="size-4" />,
+          variant: "primary",
+          badge: selectedJobIds.length,
+          onClick: () => setBulkDialogOpen(true),
+        },
+        {
+          label: `Excluir ${selectedJobIds.length} jobs selecionados...`,
+          icon: <RiDeleteBinLine className="size-4" />,
+          variant: "destructive",
+          shortcut: "Del",
+          separatorBelow: true,
+          onClick: () => {
+            setDeleteTargets(
+              selectedJobs.map((j) => ({
+                id: j.id,
+                jobName: j.jobName,
+                osNumber: j.osNumber,
+              }))
+            )
+            setDeleteDialogOpen(true)
+          },
+        },
+        {
+          label: "Desmarcar todos",
+          icon: <RiCloseLine className="size-4" />,
+          onClick: () => setSelectedJobIds([]),
+        },
+      ]
+    }
+
+    const j = contextMenu.job
+    const items: WindowsContextMenuItem[] = [
+      {
+        label: "Vincular / Editar Material...",
+        icon: <RiPencilLine className="size-4" />,
+        onClick: () => setEditJob(j),
+      },
+    ]
+
+    if (!j.stockDeducted) {
+      items.push({
+        label: "Debitar Material...",
+        icon: <RiFlashlightLine className="size-4" />,
+        variant: "primary",
+        onClick: () => {
+          setSelectedJobIds([j.id])
+          setBulkDialogOpen(true)
+        },
+      })
+    }
+
+    if (canManageHidden) {
+      items.push({
+        label: j.hidden ? "Restaurar Job..." : "Ocultar Job...",
+        icon: <RiEyeLine className="size-4" />,
+        onClick: () => setHideJobTarget(j),
+      })
+    }
+
+    items.push({
+      label: "Excluir job...",
+      icon: <RiDeleteBinLine className="size-4" />,
+      variant: "destructive",
+      shortcut: "Del",
+      separatorBelow: false,
+      onClick: () => {
+        setDeleteTargets([{ id: j.id, jobName: j.jobName, osNumber: j.osNumber }])
+        setDeleteDialogOpen(true)
+      },
+    })
+
+    return items
+  }, [contextMenu, selectedJobIds, selectedJobs, canManageHidden])
 
   const syncStock = useSyncMachineJobsStock(machine.id)
 
@@ -241,6 +391,24 @@ export function JobsTab({ machine }: { machine: Machine }) {
               Debitar Selecionados em Massa
             </Button>
             <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => {
+                setDeleteTargets(
+                  selectedJobs.map((j) => ({
+                    id: j.id,
+                    jobName: j.jobName,
+                    osNumber: j.osNumber,
+                  }))
+                )
+                setDeleteDialogOpen(true)
+              }}
+              className="gap-1.5 font-semibold h-8 text-xs shadow-xs"
+            >
+              <RiDeleteBinLine className="size-3.5" />
+              Excluir Selecionados
+            </Button>
+            <Button
               variant="ghost"
               size="sm"
               onClick={() => setSelectedJobIds([])}
@@ -277,6 +445,7 @@ export function JobsTab({ machine }: { machine: Machine }) {
             selectedJobIds={selectedJobIds}
             onToggleSelectJob={handleToggleSelectJob}
             onToggleSelectAll={handleToggleSelectAll}
+            onRowContextMenu={handleRowContextMenu}
           />
         </div>
       )}
@@ -306,6 +475,35 @@ export function JobsTab({ machine }: { machine: Machine }) {
           refetch()
         }}
       />
+
+      <DeleteJobDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        targetJobs={deleteTargets}
+        onSuccess={() => {
+          setSelectedJobIds([])
+          refetch()
+        }}
+      />
+
+      {contextMenu && (
+        <WindowsContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          title={
+            contextMenu.isMulti
+              ? `Ações em Massa (${selectedJobIds.length} selecionados)`
+              : contextMenu.job.jobName
+          }
+          subtitle={
+            !contextMenu.isMulti && contextMenu.job.osNumber
+              ? `OS: ${contextMenu.job.osNumber}`
+              : undefined
+          }
+          items={contextMenuItems}
+          onClose={() => setContextMenu(null)}
+        />
+      )}
 
       <div className="flex items-center justify-between px-1">
         <span className="text-sm text-muted-foreground">

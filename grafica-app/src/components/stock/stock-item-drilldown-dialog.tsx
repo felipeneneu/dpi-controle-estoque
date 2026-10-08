@@ -57,7 +57,10 @@ export function StockItemDrilldownDialog({
   }
 
   if (item.category === "PAPER_MEDIA") {
-    return <BobinaDrilldownContent item={item} onClose={onClose} />;
+    if (item.unit === "m") {
+      return <BobinaDrilldownContent item={item} onClose={onClose} />;
+    }
+    return <FolhaDrilldownContent item={item} onClose={onClose} />;
   }
 
   return <GenericItemDrilldownContent item={item} onClose={onClose} />;
@@ -848,6 +851,102 @@ function BobinaDrilldownContent({
         </DialogContent>
       </Dialog>
     </>
+  );
+}
+
+// ==========================================
+// DRILL-DOWN DE MÍDIA PLANA / FOLHAS
+// ==========================================
+function FolhaDrilldownContent({
+  item,
+  onClose,
+}: {
+  item: StockItem;
+  onClose: () => void;
+}) {
+  const isOutOfStock = item.currentQuantity <= 0;
+  const isLowStock = !isOutOfStock && item.currentQuantity <= item.minQuantity;
+
+  return (
+    <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="border-sky-300 bg-sky-50 text-sky-800 text-[11px] font-semibold">
+              Mídia Plana · Folhas
+            </Badge>
+            {item.subType && (
+              <span className="text-xs text-muted-foreground font-medium">
+                {item.subType}
+              </span>
+            )}
+          </div>
+          <DialogTitle className="text-base text-gray-900 mt-1">{item.name}</DialogTitle>
+          <DialogDescription>
+            {item.code ? `Código do Material: ${item.code}` : "Item de papel cortado / folha avulsa"}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4 py-3">
+          {/* Card de Saldo */}
+          <div className="rounded-xl border border-gray-150 bg-gray-50/70 p-4 space-y-3">
+            <div className="flex items-baseline justify-between">
+              <div>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Saldo em Estoque
+                </p>
+                <p className="text-2xl font-bold font-mono text-gray-900 mt-0.5">
+                  {item.currentQuantity}{" "}
+                  <span className="text-sm font-sans font-medium text-muted-foreground">
+                    {item.unit}
+                  </span>
+                </p>
+              </div>
+
+              <Badge
+                variant="secondary"
+                className={
+                  isOutOfStock
+                    ? "bg-red-100 text-red-700 border-red-200"
+                    : isLowStock
+                    ? "bg-amber-100 text-amber-800 border-amber-200"
+                    : "bg-emerald-100 text-emerald-800 border-emerald-200"
+                }
+              >
+                {isOutOfStock ? "Esgotado" : isLowStock ? "Estoque Baixo" : "Disponível"}
+              </Badge>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-200/60 text-xs">
+              <div>
+                <span className="text-muted-foreground">Estoque Mínimo:</span>
+                <p className="font-semibold text-gray-800">{item.minQuantity} {item.unit}</p>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Controle Físico:</span>
+                <p className="font-semibold text-gray-800">Folhas / Resmas</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-blue-100 bg-blue-50/50 p-3 text-xs text-blue-900 space-y-1">
+            <p className="font-semibold flex items-center gap-1.5 text-blue-950">
+              ℹ️ Controle por Folhas e Resmas
+            </p>
+            <p className="text-[11px] text-blue-800 leading-relaxed">
+              Este item não utiliza bobinas físicas de rolo. Os débitos operacionais da Konica ou de mesas planas
+              são realizados diretamente por contagem de folhas impressas com conversão automática pela unidade.
+            </p>
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose} className="rounded-xl">
+            Fechar
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 

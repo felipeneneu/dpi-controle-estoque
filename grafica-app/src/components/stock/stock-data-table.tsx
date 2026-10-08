@@ -50,6 +50,11 @@ export function StockDataTable({
   const [categoryFilter, setCategoryFilter] = useState<"TODOS" | StockCategory>(
     defaultCategoryFilter
   );
+
+  React.useEffect(() => {
+    setCategoryFilter(defaultCategoryFilter);
+  }, [defaultCategoryFilter]);
+
   const [statusFilter, setStatusFilter] = useState<"TODOS" | StockStatus>("TODOS");
   const [machineFilter, setMachineFilter] = useState("TODAS");
 

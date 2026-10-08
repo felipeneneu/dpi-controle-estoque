@@ -2,7 +2,7 @@ import { readdir, readFile } from 'node:fs/promises';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import type { FastifyInstance } from 'fastify';
-import { eq, and, or, like, sql } from 'drizzle-orm';
+import { eq, and, or, like, sql, count } from 'drizzle-orm';
 import {
   mimakiTestJobs,
   mimakiJobs,
@@ -10,6 +10,8 @@ import {
   stockItems,
   stockTransactions,
   garrafas,
+  machineItems,
+  inkConsumptionLog,
   type MimakiTestJob,
   type MimakiJob,
 } from '../db/schema.js';
@@ -243,11 +245,23 @@ async function deductStockForPhysicalPrint(
       .get();
   }
 
+  let isLinked = true;
   if (targetBobina) {
     bobinaId = targetBobina.id;
     stockItemId = targetBobina.stockItemId;
 
-    if (linearMeters && linearMeters > 0) {
+    // Checar se o SKU possui vínculo com a Mimaki no catálogo de máquinas (quando há vínculos cadastrados)
+    const anyMachineItems = await db.select({ count: count() }).from(machineItems).get();
+    if ((anyMachineItems?.count ?? 0) > 0) {
+      const itemLinks = await db.select().from(machineItems).where(eq(machineItems.stockItemId, targetBobina.stockItemId)).all();
+      if (itemLinks.length === 0 || !itemLinks.some((l) => l.machineId === MIMAKI_MACHINE_ID)) {
+        isLinked = false;
+      }
+    }
+
+    if (!isLinked) {
+      app.log.warn(`[mimaki-test] Bobina ${targetBobina.serial} (SKU ${targetBobina.stockItemId}) não está vinculada à Mimaki no catálogo de máquinas. Débito automático suspenso.`);
+    } else if (linearMeters && linearMeters > 0) {
       // Idempotência: verifica se esta impressão física já gerou transação
       const txExists = await db
         .select({ id: stockTransactions.id })
@@ -331,110 +345,55 @@ async function deductStockForPhysicalPrint(
   }
 
   // -------------------------------------------------------------
-  // 2. DÉBITO DAS TINTAS UV
+  // 2. REGISTRO DE CONSUMO DE TINTAS UV (ADR-057 / BR-012 emendada)
+  // Desacoplado do saldo de estoque: grava exclusivamente em inkConsumptionLog
   // -------------------------------------------------------------
-  const inkMap = [
-    { color: 'Cyan', amount: row.inks.cyan },
-    { color: 'Magenta', amount: row.inks.magenta },
-    { color: 'Yellow', amount: row.inks.yellow },
-    { color: 'Black', amount: row.inks.black },
-    { color: 'White', amount: toPrecision(row.inks.white1 + row.inks.white2, 4) },
-    { color: 'Verniz', amount: toPrecision(row.inks.varnish1 + row.inks.varnish2, 4) },
+  const inkChannels = [
+    { channel: 'Cyan', amount: row.inks.cyan },
+    { channel: 'Magenta', amount: row.inks.magenta },
+    { channel: 'Yellow', amount: row.inks.yellow },
+    { channel: 'Black', amount: row.inks.black },
+    { channel: 'White1', amount: row.inks.white1 },
+    { channel: 'White2', amount: row.inks.white2 },
+    { channel: 'Varnish1', amount: row.inks.varnish1 },
+    { channel: 'Varnish2', amount: row.inks.varnish2 },
   ];
 
-  const allUvInks = await db
-    .select()
-    .from(stockItems)
-    .where(eq(stockItems.category, 'INK_SUPPLY'))
-    .all();
+  for (const { channel, amount } of inkChannels) {
+    if (!amount || amount <= 0) continue;
+    const consumedCc = toPrecision(amount, 4);
 
-  for (const { color, amount } of inkMap) {
-    if (amount <= 0) continue;
-
-    const inkItem = allUvInks.find(
-      (i) =>
-        i.name.toLowerCase().includes('uv') &&
-        (i.name.toLowerCase().includes(color.toLowerCase()) ||
-          (color === 'Verniz' && (i.name.toLowerCase().includes('verniz') || i.name.toLowerCase().includes('clear'))))
-    );
-
-    if (!inkItem) continue;
-
-    // Idempotência para o canal de tinta nesta impressão física
-    const inkTxExists = await db
-      .select({ id: stockTransactions.id })
-      .from(stockTransactions)
+    const existingLog = await db
+      .select({ id: inkConsumptionLog.id })
+      .from(inkConsumptionLog)
       .where(
         and(
-          eq(stockTransactions.itemId, inkItem.id),
-          like(stockTransactions.reason, `%[PrintS: ${printTime}]%`)
-        )
+          eq(inkConsumptionLog.machineId, MIMAKI_MACHINE_ID),
+          eq(inkConsumptionLog.channel, channel),
+          mimakiJob?.id ? eq(inkConsumptionLog.jobId, mimakiJob.id) : undefined,
+        ),
       )
       .get();
 
-    if (!inkTxExists) {
-      // Se houver garrafa ativa instalada na máquina, debita dela
-      const activeGarrafa = await db
-        .select()
-        .from(garrafas)
-        .where(
-          and(
-            eq(garrafas.stockItemId, inkItem.id),
-            eq(garrafas.state, 'IN_USE'),
-            eq(garrafas.location, `machine:${MIMAKI_MACHINE_ID}`)
-          )
-        )
-        .get();
-
-      if (activeGarrafa) {
-        const newMl = Math.max(0, toPrecision((activeGarrafa.mlRemaining ?? 0) - amount, 4));
-        const isGarrafaFinished = newMl <= 0;
-        await db
-          .update(garrafas)
-          .set({
-            mlRemaining: newMl,
-            state: isGarrafaFinished ? 'USED' : activeGarrafa.state,
-            finishedAt: isGarrafaFinished ? new Date() : activeGarrafa.finishedAt,
-          })
-          .where(eq(garrafas.id, activeGarrafa.id));
-      }
-
-      // Atualiza estoque geral do stock_item
-      const newStockQty = Math.max(0, toPrecision(inkItem.currentQuantity - amount, 4));
-      const status = computeStatus(newStockQty, inkItem.minQuantity);
-      await db
-        .update(stockItems)
-        .set({ currentQuantity: newStockQty, status })
-        .where(eq(stockItems.id, inkItem.id));
-
-      await db.insert(stockTransactions).values({
+    if (!existingLog) {
+      await db.insert(inkConsumptionLog).values({
         id: newId(),
-        itemId: inkItem.id,
-        type: 'OUT',
-        quantity: amount,
-        reason: `Mimaki tinta UV ${color}: ${row.keyFilename} [PrintS: ${printTime}]`,
-        userId: 'system',
-        userName: 'Mimaki Watcher',
+        machineId: MIMAKI_MACHINE_ID,
+        channel,
+        jobId: mimakiJob?.id || null,
+        mlConsumed: consumedCc,
       });
-
-      app.io?.to('estoque').emit('stock:deducted', {
-        itemName: inkItem.name,
-        quantity: amount,
-        unit: inkItem.unit,
-        jobName: row.keyFilename,
-      });
-
-      app.log.info(`[mimaki-test] Tinta UV ${color} debitada: -${amount}cc (restante: ${newStockQty}ml)`);
     }
   }
 
   // -------------------------------------------------------------
   // 3. ATUALIZA mimaki_test_jobs E SINCRONIZA mimaki_jobs
   // -------------------------------------------------------------
+  const isDeducted = Boolean(isLinked && targetBobina && linearMeters && linearMeters > 0);
   await db
     .update(mimakiTestJobs)
     .set({
-      stockDeducted: true,
+      stockDeducted: isDeducted,
       bobinaId: bobinaId ?? testJob.bobinaId,
       stockItemId: stockItemId ?? testJob.stockItemId,
       mimakiJobId: mimakiJob?.id ?? testJob.mimakiJobId,
@@ -444,18 +403,18 @@ async function deductStockForPhysicalPrint(
     })
     .where(eq(mimakiTestJobs.id, testJob.id));
 
-  // Trava mimaki_jobs correspondente para que o M2M NUNCA duplique a baixa e atualiza dados
+  // Trava mimaki_jobs correspondente se debitado com sucesso
   if (mimakiJob) {
     await db
       .update(mimakiJobs)
       .set({
-        stockDeducted: true,
-        materialStatus: stockItemId ? 'BOUND' : mimakiJob.materialStatus,
+        stockDeducted: isDeducted,
+        materialStatus: (isLinked && stockItemId) ? 'BOUND' : 'PENDING_BIND',
         stockItemId: stockItemId ?? mimakiJob.stockItemId,
         lengthMeters: linearMeters && linearMeters > 0 ? linearMeters : mimakiJob.lengthMeters,
       })
       .where(eq(mimakiJobs.id, mimakiJob.id));
-    app.log.info(`[mimaki-test] mimaki_jobs ${mimakiJob.id} atualizado com baixa e sincronizado`);
+    app.log.info(`[mimaki-test] mimaki_jobs ${mimakiJob.id} atualizado (stockDeducted=${isDeducted}, materialStatus=${(isLinked && stockItemId) ? 'BOUND' : 'PENDING_BIND'})`);
   }
 }
 
@@ -570,8 +529,16 @@ export async function scanMimakiTestSource(app: FastifyInstance): Promise<Mimaki
                 return nameLower.includes(rawLower) || rawLower.includes(nameLower);
               });
               if (matched) {
+                const anyMachineItems = await db.select({ count: count() }).from(machineItems).get();
+                let isLinked = true;
+                if ((anyMachineItems?.count ?? 0) > 0) {
+                  const itemLinks = await db.select().from(machineItems).where(eq(machineItems.stockItemId, matched.id)).all();
+                  if (itemLinks.length === 0 || !itemLinks.some((l) => l.machineId === MIMAKI_MACHINE_ID)) {
+                    isLinked = false;
+                  }
+                }
                 matchedStockItemId = matched.id;
-                materialStatus = 'BOUND';
+                materialStatus = isLinked ? 'BOUND' : 'PENDING_BIND';
               }
             }
 

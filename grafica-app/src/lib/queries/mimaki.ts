@@ -125,3 +125,6 @@ export function useUpdateMimakiJob() {
   })
 }
 
+export { useDeleteJob, useBulkDeleteJobs } from "@/lib/queries/jobs"
+
+

@@ -23,9 +23,7 @@ export function SidebarRail() {
 
   const navItems = [
     { label: 'Máquinas', icon: RiPrinterLine, href: '/maquinas', badge: null },
-    { label: 'Produtos', icon: RiLayoutGridLine, href: '/produtos', badge: null },
-    { label: 'Estoque de Mídias', icon: RiStackLine, href: '/estoque', badge: stockBadge },
-    { label: 'Tintas & Química', icon: RiDropLine, href: '/tintas', badge: null },
+    { label: 'Estoque', icon: RiStackLine, href: '/estoque', badge: stockBadge },
     { label: 'Chat Interno', icon: RiChat3Line, href: '/chat', badge: chatBadgeStr },
   ];
 

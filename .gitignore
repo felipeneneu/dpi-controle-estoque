@@ -88,3 +88,7 @@ S/
 
 # SDD (Subagent-Driven Development) - ledger local, fora do tracking
 .sdd/
+
+# Testes locais e PDFs de cliente
+arquivos-testes/
+
