@@ -11,7 +11,8 @@ namespace Imposition.Pdf.Seams;
 public sealed record PdfxExportResult(
     IReadOnlyList<string> GeneratedFiles,
     IReadOnlyList<PdfxValidationResult> PerPanelResults,
-    TimeSpan ElapsedTime)
+    TimeSpan ElapsedTime,
+    PanelSplitMetadata? Metadata = null)
 {
     /// <summary>
     /// Retorna verdadeiro se todos os painéis gerados foram validados como conformes com PDF/X-1a.

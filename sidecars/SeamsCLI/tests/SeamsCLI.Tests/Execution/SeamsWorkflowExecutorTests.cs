@@ -122,7 +122,7 @@ public class SeamsWorkflowExecutorTests
             "2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj\n" +
             "3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 2834.65 2834.65] /Contents 4 0 R >> endobj\n" +
             "4 0 obj << /Length 12 >> stream\n0 0 0 1 k S\nendstream endobj\n" +
-            "trailer << /Root 1 0 R >>\n%%EOF\n";
+            "trailer << /Root 1 0 R /Size 5 >>\n%%EOF\n";
         await File.WriteAllTextAsync(pdfPath, pdfContent);
 
         var options = new SeamsCliOptions(

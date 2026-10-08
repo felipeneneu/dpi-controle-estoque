@@ -48,4 +48,8 @@ public static class ErrorCodes
     public const string PdfxNonCompliant               = "E_PDFX_NON_COMPLIANT";
     public const string IoError                        = "E_IO_ERROR";
     public const string AccessDenied                   = "E_ACCESS_DENIED";
+    public const string PdfMultiPageUnsupported        = "E_PDF_MULTI_PAGE_UNSUPPORTED";
+    public const string PdfTransparencyUnsupported     = "E_PDF_TRANSPARENCY_UNSUPPORTED";
+    public const string PdfUserUnitUnsupported         = "E_PDF_USERUNIT_UNSUPPORTED";
+    public const string PdfInvalidTrailer              = "E_PDF_INVALID_TRAILER";
 }

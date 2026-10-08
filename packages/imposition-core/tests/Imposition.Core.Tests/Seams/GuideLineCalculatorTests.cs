@@ -226,4 +226,77 @@ public class GuideLineCalculatorTests
         act.Should().Throw<ImpositionException>()
            .Where(e => e.Code == ErrorCodes.InvalidGuideLine);
     }
+
+    [Fact]
+    [Trait("Category", "Guide")]
+    public void BR_059_Calculate_WhenConfigDisabled_ReturnsEmpty()
+    {
+        var input = new SeamsInput(
+            ArtworkWidthMm: 3000,
+            ArtworkHeightMm: 1000,
+            PrintableRollWidthMm: 1100,
+            OverlapMm: 50,
+            Direction: SeamDirection.LeftToRight,
+            Orientation: SeamOrientation.Vertical,
+            ApplyShrinkage: false);
+
+        var result = PanelCalculator.Calculate(input);
+        result.TotalPanels.Should().Be(3);
+
+        var guides = GuideLineCalculator.Calculate(result, new GuideLineConfig(Enabled: false));
+
+        guides.Should().BeEmpty();
+    }
+
+    [Fact]
+    [Trait("Category", "Guide")]
+    public void BR_059_Calculate_WithCustomThicknessAndColor_AppliesToAllLines()
+    {
+        var input = new SeamsInput(
+            ArtworkWidthMm: 3000,
+            ArtworkHeightMm: 1000,
+            PrintableRollWidthMm: 1100,
+            OverlapMm: 50,
+            Direction: SeamDirection.LeftToRight,
+            Orientation: SeamOrientation.Vertical,
+            ApplyShrinkage: false);
+
+        var result = PanelCalculator.Calculate(input);
+        var config = new GuideLineConfig(
+            Enabled: true,
+            ThicknessPt: 2.5,
+            Cyan: 0.0,
+            Magenta: 1.0,
+            Yellow: 0.0,
+            Black: 0.0);
+
+        var guides = GuideLineCalculator.Calculate(result, config);
+
+        guides.Should().HaveCount(2);
+        foreach (var guide in guides)
+        {
+            guide.ThicknessPt.Should().Be(2.5);
+            guide.Cyan.Should().Be(0.0);
+            guide.Magenta.Should().Be(1.0);
+            guide.Yellow.Should().Be(0.0);
+            guide.Black.Should().Be(0.0);
+        }
+    }
+
+    [Theory]
+    [Trait("Category", "Guide")]
+    [InlineData(double.NaN, 0, 0, 0, 0.4)]
+    [InlineData(0, 0, 0, 0, 0.4)]
+    [InlineData(-1.0, 0, 0, 0, 0.4)]
+    [InlineData(1.0, -0.1, 0, 0, 0.4)]
+    [InlineData(1.0, 1.1, 0, 0, 0.4)]
+    [InlineData(1.0, 0, double.NaN, 0, 0.4)]
+    public void BR_059_InvalidGuideLineConfig_ThrowsImpositionException(
+        double thickness, double c, double m, double y, double k)
+    {
+        var act = () => new GuideLineConfig(true, thickness, c, m, y, k);
+        act.Should().Throw<ImpositionException>()
+           .Where(e => e.Code == ErrorCodes.InvalidGuideLine);
+    }
 }
+

@@ -15,7 +15,12 @@ public sealed record SeamsCliOptions(
     string? OutputDir = null,
     int? Dpi = null,
     bool JsonOutput = false,
-    bool Verbose = false);
+    bool Verbose = false,
+    bool GuideLine = true,
+    string LineColor = "k40",
+    double LineThicknessPt = 1.0,
+    bool NoLog = false,
+    string? LogDir = null);
 
 public sealed record CliParseResult(
     bool Success,

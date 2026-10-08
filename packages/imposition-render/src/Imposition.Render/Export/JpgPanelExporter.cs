@@ -156,7 +156,8 @@ public sealed class JpgPanelExporter : IJpgPanelExporter
                 srcHeightPx,
                 panel,
                 seamsResult,
-                effectiveDpi);
+                effectiveDpi,
+                options.GuideLine);
 
             var fileName = FormatFileName(options.NamingPattern, jobName, panel.Index);
             var finalPath = Path.Combine(outputDirectory, fileName);

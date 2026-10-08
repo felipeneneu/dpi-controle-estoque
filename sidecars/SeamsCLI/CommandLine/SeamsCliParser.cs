@@ -13,32 +13,16 @@ public static class SeamsCliParser
 
         var sourceArg = new Argument<string>("arquivo-origem", "Caminho para arquivo PDF, JPG ou TIFF");
 
-        var rollOption = new Option<double>(
-            aliases: ["--roll", "-r"],
-            description: "Largura total da bobina em mm (default: 1520)",
-            getDefaultValue: () => 1520.0);
-
-        var marginOption = new Option<double>(
-            aliases: ["--margin", "-m"],
-            description: "Margem lateral em mm (default: 15)",
-            getDefaultValue: () => 15.0);
-
-        var overlapOption = new Option<double>(
-            aliases: ["--overlap", "-o"],
-            description: "Sobreposição das emendas em mm (default: 10)",
-            getDefaultValue: () => 10.0);
+        var rollOption = CreateDoubleOption(["--roll", "-r"], "Largura total da bobina em mm (default: 1520)", 1520.0);
+        var marginOption = CreateDoubleOption(["--margin", "-m"], "Margem lateral em mm (default: 15)", 15.0);
+        var overlapOption = CreateDoubleOption(["--overlap", "-o"], "Sobreposição das emendas em mm (default: 10)", 10.0);
 
         var shrinkageOption = new Option<bool>(
             aliases: ["--shrinkage", "-s"],
             description: "Aplica compensação de encolhimento térmico");
 
-        var widthOption = new Option<double?>(
-            aliases: ["--width", "-w"],
-            description: "Sobrescreve largura do trabalho em mm (opcional)");
-
-        var heightOption = new Option<double?>(
-            aliases: ["--height"],
-            description: "Sobrescreve altura do trabalho em mm (opcional)");
+        var widthOption = CreateNullableDoubleOption(["--width", "-w"], "Sobrescreve largura do trabalho em mm (opcional)");
+        var heightOption = CreateNullableDoubleOption(["--height"], "Sobrescreve altura do trabalho em mm (opcional)");
 
         var jobOption = new Option<string?>(
             aliases: ["--job", "-j"],
@@ -66,6 +50,30 @@ public static class SeamsCliParser
             aliases: ["--dpi"],
             description: "Resolução DPI de saída (default: preserva o DPI original da imagem)");
 
+        var guideLineOption = new Option<bool>(
+            aliases: ["--guide-line"],
+            description: "Ativa linha-guia de emenda (default: true)",
+            getDefaultValue: () => true);
+
+        var noGuideLineOption = new Option<bool>(
+            aliases: ["--no-guide-line"],
+            description: "Desativa linha-guia de emenda");
+
+        var lineColorOption = new Option<string>(
+            aliases: ["--line-color", "-c"],
+            description: "Cor da linha-guia: k40, k100, magenta, cyan, yellow, white, red ou C,M,Y,K (default: k40)",
+            getDefaultValue: () => "k40");
+
+        var lineThicknessOption = CreateDoubleOption(["--line-thickness", "-t"], "Espessura da linha-guia em pontos (pt) (default: 1.0)", 1.0);
+
+        var noLogOption = new Option<bool>(
+            aliases: ["--no-log"],
+            description: "Desativa gravação de arquivo de log de diagnóstico");
+
+        var logDirOption = new Option<string?>(
+            aliases: ["--log-dir"],
+            description: "Diretório customizado para os arquivos de log (default: <exe-dir>/logs)");
+
         var jsonOption = new Option<bool>(
             aliases: ["--json"],
             description: "Emite RESULT_JSON no stdout");
@@ -87,6 +95,12 @@ public static class SeamsCliParser
         rootCommand.AddOption(formatOption);
         rootCommand.AddOption(outdirOption);
         rootCommand.AddOption(dpiOption);
+        rootCommand.AddOption(guideLineOption);
+        rootCommand.AddOption(noGuideLineOption);
+        rootCommand.AddOption(lineColorOption);
+        rootCommand.AddOption(lineThicknessOption);
+        rootCommand.AddOption(noLogOption);
+        rootCommand.AddOption(logDirOption);
         rootCommand.AddOption(jsonOption);
         rootCommand.AddOption(verboseOption);
 
@@ -116,6 +130,12 @@ Opções:
   --format <jpg|pdf>             Formato de saída: jpg ou pdf (default: inferido da extensão)
   -d, --outdir <diretório>       Diretório de saída (default: diretório do arquivo de origem)
   --dpi <dpi>                    Resolução DPI de saída (default: preserva DPI original)
+  --guide-line                   Desenha linha-guia na emenda (default: ativo)
+  --no-guide-line                Desativa o desenho da linha-guia
+  -c, --line-color <cor>         Cor da linha: k40, k100, magenta, cyan, yellow, white, red ou C,M,Y,K (default: k40)
+  -t, --line-thickness <pt>      Espessura da linha em pontos (pt) (default: 1.0)
+  --no-log                       Desativa a gravação de logs de diagnóstico
+  --log-dir <diretório>          Diretório para salvar os logs (default: <exe>/logs)
   --json                         Emite RESULT_JSON no stdout
   -v, --verbose                  Exibe logs e progresso detalhados em stderr
   --version                      Exibe versão
@@ -176,20 +196,33 @@ Opções:
                 ErrorMessage: $"O arquivo de origem '{sourcePath}' não foi encontrado.");
         }
 
-        var roll = parseResult.GetValueForOption(root.Options[0] as Option<double> ?? new Option<double>("--roll"));
-        var margin = parseResult.GetValueForOption(root.Options[1] as Option<double> ?? new Option<double>("--margin"));
-        var overlap = parseResult.GetValueForOption(root.Options[2] as Option<double> ?? new Option<double>("--overlap"));
-        var shrinkage = parseResult.GetValueForOption(root.Options[3] as Option<bool> ?? new Option<bool>("--shrinkage"));
-        var width = parseResult.GetValueForOption(root.Options[4] as Option<double?> ?? new Option<double?>("--width"));
-        var height = parseResult.GetValueForOption(root.Options[5] as Option<double?> ?? new Option<double?>("--height"));
-        var job = parseResult.GetValueForOption(root.Options[6] as Option<string?> ?? new Option<string?>("--job"));
-        var orientation = (parseResult.GetValueForOption(root.Options[7] as Option<string> ?? new Option<string>("--orientation")) ?? "vert").ToLowerInvariant();
-        var direction = (parseResult.GetValueForOption(root.Options[8] as Option<string> ?? new Option<string>("--direction")) ?? "ltr").ToLowerInvariant();
-        var formatExplicit = parseResult.GetValueForOption(root.Options[9] as Option<string?> ?? new Option<string?>("--format"));
-        var outdir = parseResult.GetValueForOption(root.Options[10] as Option<string?> ?? new Option<string?>("--outdir"));
-        var dpi = parseResult.GetValueForOption(root.Options[11] as Option<int?> ?? new Option<int?>("--dpi"));
-        var jsonOutput = parseResult.GetValueForOption(root.Options[12] as Option<bool> ?? new Option<bool>("--json"));
-        var verbose = parseResult.GetValueForOption(root.Options[13] as Option<bool> ?? new Option<bool>("--verbose"));
+        T GetOption<T>(string alias, T defaultValue = default!)
+        {
+            var opt = root.Options.OfType<Option<T>>().FirstOrDefault(o => o.HasAlias(alias));
+            return opt != null ? parseResult.GetValueForOption(opt) ?? defaultValue : defaultValue;
+        }
+
+        var roll = GetOption<double>("--roll", 1520.0);
+        var margin = GetOption<double>("--margin", 15.0);
+        var overlap = GetOption<double>("--overlap", 10.0);
+        var shrinkage = GetOption<bool>("--shrinkage", false);
+        var width = GetOption<double?>("--width", null);
+        var height = GetOption<double?>("--height", null);
+        var job = GetOption<string?>("--job", null);
+        var orientation = (GetOption<string>("--orientation", "vert") ?? "vert").ToLowerInvariant();
+        var direction = (GetOption<string>("--direction", "ltr") ?? "ltr").ToLowerInvariant();
+        var formatExplicit = GetOption<string?>("--format", null);
+        var outdir = GetOption<string?>("--outdir", null);
+        var dpi = GetOption<int?>("--dpi", null);
+        var jsonOutput = GetOption<bool>("--json", false);
+        var verbose = GetOption<bool>("--verbose", false);
+
+        bool noGuideLine = args.Any(a => a.Equals("--no-guide-line", StringComparison.OrdinalIgnoreCase));
+        bool guideLine = !noGuideLine;
+        var lineColor = GetOption<string>("--line-color", "k40") ?? "k40";
+        var lineThickness = GetOption<double>("--line-thickness", 1.0);
+        bool noLog = args.Any(a => a.Equals("--no-log", StringComparison.OrdinalIgnoreCase));
+        var logDir = GetOption<string?>("--log-dir", null);
 
         // Validações R-013 (IsFinite)
         if (!double.IsFinite(roll) || roll <= 0)
@@ -250,6 +283,30 @@ Opções:
                 ExitCode: 1,
                 ErrorCode: ErrorCodes.InvalidArgument,
                 ErrorMessage: "A resolução DPI (--dpi) deve ser um número inteiro estritamente positivo (máximo 4800).");
+        }
+
+        if (!double.IsFinite(lineThickness) || lineThickness <= 0)
+        {
+            return new CliParseResult(
+                Success: false,
+                Options: null,
+                ExitCode: 1,
+                ErrorCode: ErrorCodes.InvalidArgument,
+                ErrorMessage: "A espessura da linha-guia (--line-thickness) deve ser um número finito maior que zero.");
+        }
+
+        try
+        {
+            ColorParser.ParseCmyk(lineColor);
+        }
+        catch (ImpositionException ex)
+        {
+            return new CliParseResult(
+                Success: false,
+                Options: null,
+                ExitCode: 1,
+                ErrorCode: ex.Code,
+                ErrorMessage: ex.Message);
         }
 
         // Restrições Geométricas
@@ -329,8 +386,50 @@ Opções:
             OutputDir: outdir,
             Dpi: dpi,
             JsonOutput: jsonOutput,
-            Verbose: verbose);
+            Verbose: verbose,
+            GuideLine: guideLine,
+            LineColor: lineColor,
+            LineThicknessPt: lineThickness,
+            NoLog: noLog,
+            LogDir: logDir);
 
         return new CliParseResult(Success: true, Options: options, ExitCode: 0);
+    }
+
+    private static Option<double> CreateDoubleOption(string[] aliases, string description, double defaultValue)
+    {
+        return new Option<double>(
+            aliases: aliases,
+            parseArgument: result =>
+            {
+                if (result.Tokens.Count == 0) return defaultValue;
+                var token = result.Tokens[0].Value;
+                if (double.TryParse(token.Replace(',', '.'), NumberStyles.Float, CultureInfo.InvariantCulture, out var val))
+                {
+                    return val;
+                }
+                result.ErrorMessage = $"O valor '{token}' para {aliases[0]} não é um número válido.";
+                return defaultValue;
+            },
+            isDefault: true,
+            description: description);
+    }
+
+    private static Option<double?> CreateNullableDoubleOption(string[] aliases, string description)
+    {
+        return new Option<double?>(
+            aliases: aliases,
+            parseArgument: result =>
+            {
+                if (result.Tokens.Count == 0) return null;
+                var token = result.Tokens[0].Value;
+                if (double.TryParse(token.Replace(',', '.'), NumberStyles.Float, CultureInfo.InvariantCulture, out var val))
+                {
+                    return val;
+                }
+                result.ErrorMessage = $"O valor '{token}' para {aliases[0]} não é um número válido.";
+                return null;
+            },
+            description: description);
     }
 }

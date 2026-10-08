@@ -13,6 +13,7 @@ using Imposition.Pdf.Preflight;
 using Imposition.Pdf.Seams;
 using Imposition.Render.Export;
 using SeamsCLI.CommandLine;
+using SeamsCLI.Logging;
 
 namespace SeamsCLI.Execution;
 
@@ -22,9 +23,16 @@ public sealed class SeamsWorkflowExecutor
         @"/MediaBox\s*\[\s*([0-9\.\-]+)\s+([0-9\.\-]+)\s+([0-9\.\-]+)\s+([0-9\.\-]+)\s*\]",
         RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
+    public Task<SeamsWorkflowResult> ExecuteAsync(
+        SeamsCliOptions options,
+        IProgress<double>? progress,
+        CancellationToken cancellationToken)
+        => ExecuteAsync(options, progress, logger: null, cancellationToken);
+
     public async Task<SeamsWorkflowResult> ExecuteAsync(
         SeamsCliOptions options,
         IProgress<double>? progress = null,
+        RunLogger? logger = null,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(options);
@@ -39,8 +47,17 @@ public sealed class SeamsWorkflowExecutor
         {
             cancellationToken.ThrowIfCancellationRequested();
 
+            logger?.Section("Parâmetros do Trabalho");
+            logger?.Info($"Arquivo de entrada: {options.SourcePath}");
+            logger?.Info(FormattableString.Invariant($"Bobina: {options.RollWidthMm:F1} mm | Margem: {options.MarginMm:F1} mm | Sobreposição: {options.OverlapMm:F1} mm"));
+            logger?.Info($"Orientação: {options.Orientation} | Direção: {options.Direction} | Formato: {options.Format}");
+            logger?.Info($"Linha-guia: {(options.GuideLine ? $"Ativa (Cor: {options.LineColor}, Espessura: {options.LineThicknessPt.ToString("F1", CultureInfo.InvariantCulture)} pt)" : "Desativada")}");
+            logger?.Info($"Diretório de saída: {outDir}");
+            if (options.ShrinkageCompensation) logger?.Info("Compensação de encolhimento térmico: ATIVA");
+
             if (!File.Exists(options.SourcePath))
             {
+                logger?.Error($"Arquivo de origem '{options.SourcePath}' não foi encontrado.");
                 return new SeamsWorkflowResult(
                     Success: false,
                     PanelCount: 0,
@@ -58,10 +75,22 @@ public sealed class SeamsWorkflowExecutor
             }
 
             // 1. Extração / determinação de dimensões
+            logger?.Section("Análise do Arquivo de Entrada");
+            var fi = new FileInfo(options.SourcePath);
+            var ext = Path.GetExtension(options.SourcePath).ToLowerInvariant();
+            logger?.Info(FormattableString.Invariant($"Entrada: {options.SourcePath} ({fi.Length / 1024.0:F1} KB, extensão {ext})"));
+
             var (widthMm, heightMm, detectedDpi) = ExtractDimensions(options, warnings);
+            logger?.Info(FormattableString.Invariant($"Dimensões: {widthMm:F1} x {heightMm:F1} mm | DPI detectado/efetivo: {detectedDpi}"));
+
+            foreach (var warning in warnings)
+            {
+                logger?.Warn(warning);
+            }
 
             if (!double.IsFinite(widthMm) || widthMm <= 0 || !double.IsFinite(heightMm) || heightMm <= 0)
             {
+                logger?.Error("As dimensões do trabalho de entrada são inválidas ou não puderam ser determinadas.");
                 return new SeamsWorkflowResult(
                     Success: false,
                     PanelCount: 0,
@@ -94,15 +123,39 @@ public sealed class SeamsWorkflowExecutor
 
             var seamsResult = PanelCalculator.Calculate(seamsInput);
 
-            // 3. Roteamento por formato
+            logger?.Section("Cálculo Geométrico de Painéis");
             int panelCount = seamsResult.Panels.Count;
+            int seamCount = Math.Max(0, panelCount - 1);
+            logger?.Info($"Painéis calculados: {panelCount} painel(is) | {seamCount} emenda(s)");
+            logger?.Info(FormattableString.Invariant($"Comprimento linear total de mídia: {seamsResult.TotalLinearLengthMeters:F2} m"));
+            for (int i = 0; i < seamsResult.Panels.Count; i++)
+            {
+                var p = seamsResult.Panels[i];
+                logger?.Info(FormattableString.Invariant($"  Painel {p.Index:D2}: {p.OutputWidthMm:F1} x {p.OutputHeightMm:F1} mm (Origem X: {p.SourceXPositionMm:F1} a {p.SourceXPositionMm + p.SourceWidthMm:F1} mm) [Guia: {p.HasGuideLine}]"));
+            }
+
+            // 3. Configuração de linha-guia e roteamento por formato
+            var cmyk = ColorParser.ParseCmyk(options.LineColor);
+            var guideLineConfig = new GuideLineConfig(
+                Enabled: options.GuideLine,
+                ThicknessPt: options.LineThicknessPt,
+                Cyan: cmyk.Cyan,
+                Magenta: cmyk.Magenta,
+                Yellow: cmyk.Yellow,
+                Black: cmyk.Black);
+
             double totalLinearLength = seamsResult.TotalLinearLengthMeters;
+
+            logger?.Section($"Exportação ({options.Format.ToUpperInvariant()})");
+            logger?.Info($"Formato de saída: {options.Format.ToUpperInvariant()} | Total de painéis a exportar: {panelCount}");
+            logger?.Info($"Configuração da linha-guia: {(guideLineConfig.Enabled ? $"Ativa [CMYK: {cmyk.Cyan:P0},{cmyk.Magenta:P0},{cmyk.Yellow:P0},{cmyk.Black:P0}, Espessura: {guideLineConfig.ThicknessPt.ToString("F1", CultureInfo.InvariantCulture)} pt]" : "Desativada")}");
 
             if (options.Format.Equals("pdf", StringComparison.OrdinalIgnoreCase))
             {
                 var pdfxOptions = new PdfxExportOptions(
                     OutputIntent: GetDefaultOutputIntent(),
-                    NamingPattern: $"{jobName}_painel_{{index:D2}}.pdf");
+                    NamingPattern: $"{jobName}_painel_{{index:D2}}.pdf",
+                    GuideLine: guideLineConfig);
 
                 var pdfxExporter = new PdfxPanelExporter();
                 var exportResult = await pdfxExporter.ExportAsync(
@@ -114,6 +167,35 @@ public sealed class SeamsWorkflowExecutor
                     cancellationToken).ConfigureAwait(false);
 
                 generatedFiles.AddRange(exportResult.GeneratedFiles);
+                foreach (var file in exportResult.GeneratedFiles)
+                {
+                    var fileLen = File.Exists(file) ? new FileInfo(file).Length : 0;
+                    logger?.Info($"  Painel exportado: {Path.GetFileName(file)} ({fileLen / 1024.0:F1} KB)");
+                }
+
+                if (exportResult.Metadata != null)
+                {
+                    foreach (var w in exportResult.Metadata.Warnings)
+                    {
+                        if (!warnings.Contains(w))
+                            warnings.Add(w);
+                        logger?.Warn(w);
+                    }
+
+                    for (int i = 0; i < exportResult.Metadata.FileSizesBytes.Count; i++)
+                    {
+                        long size = exportResult.Metadata.FileSizesBytes[i];
+                        if (size > 524_288_000)
+                        {
+                            var mb = size / (1024.0 * 1024.0);
+                            var msg = $"Painel {i + 1} possui {mb:F1} MB, excedendo o limiar de 500 MB.";
+                            if (!warnings.Contains(msg))
+                                warnings.Add(msg);
+                            Console.Error.WriteLine($"[AVISO] {msg}");
+                            logger?.Warn(msg);
+                        }
+                    }
+                }
             }
             else
             {
@@ -122,7 +204,8 @@ public sealed class SeamsWorkflowExecutor
                     Quality: 100,
                     Dpi: effectiveDpi,
                     EmbedIccProfile: true,
-                    NamingPattern: $"{jobName}_painel_{{index:D2}}.jpg");
+                    NamingPattern: $"{jobName}_painel_{{index:D2}}.jpg",
+                    GuideLine: guideLineConfig);
 
                 var jpgResult = await JpgPanelExporter.Instance.ExportPanelsAsync(
                     options.SourcePath,
@@ -133,9 +216,18 @@ public sealed class SeamsWorkflowExecutor
                     cancellationToken).ConfigureAwait(false);
 
                 generatedFiles.AddRange(jpgResult.GeneratedFiles);
+                foreach (var file in jpgResult.GeneratedFiles)
+                {
+                    var fileLen = File.Exists(file) ? new FileInfo(file).Length : 0;
+                    logger?.Info($"  Painel exportado: {Path.GetFileName(file)} ({fileLen / 1024.0:F1} KB)");
+                }
             }
 
             stopwatch.Stop();
+            logger?.Section("Finalização");
+            logger?.Info($"Execução CONCLUÍDA COM SUCESSO (ExitCode: 0, Tempo total: {stopwatch.Elapsed.TotalSeconds:F2}s).");
+            logger?.Info($"Total de arquivos gerados: {generatedFiles.Count}");
+
             return new SeamsWorkflowResult(
                 Success: true,
                 PanelCount: panelCount,
@@ -144,9 +236,10 @@ public sealed class SeamsWorkflowExecutor
                 ElapsedTime: stopwatch.Elapsed,
                 Warnings: warnings);
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException ex)
         {
             stopwatch.Stop();
+            logger?.Error("Operação cancelada pelo usuário ou sinal de interrupção.", ex);
             CleanupPartialFiles(outDir, jobName, generatedFiles);
             return new SeamsWorkflowResult(
                 Success: false,
@@ -161,6 +254,7 @@ public sealed class SeamsWorkflowExecutor
         catch (ImpositionException ex)
         {
             stopwatch.Stop();
+            logger?.Error($"Erro de imposição ({ex.Code}): {ex.Message}", ex);
             return new SeamsWorkflowResult(
                 Success: false,
                 PanelCount: 0,
@@ -174,6 +268,7 @@ public sealed class SeamsWorkflowExecutor
         catch (UnauthorizedAccessException ex)
         {
             stopwatch.Stop();
+            logger?.Error($"Permissão negada ao acessar arquivos ({ErrorCodes.AccessDenied}): {ex.Message}", ex);
             return new SeamsWorkflowResult(
                 Success: false,
                 PanelCount: 0,
@@ -187,6 +282,7 @@ public sealed class SeamsWorkflowExecutor
         catch (IOException ex)
         {
             stopwatch.Stop();
+            logger?.Error($"Erro de I/O em disco ({ErrorCodes.IoError}): {ex.Message}", ex);
             return new SeamsWorkflowResult(
                 Success: false,
                 PanelCount: 0,
@@ -200,6 +296,7 @@ public sealed class SeamsWorkflowExecutor
         catch (Exception ex)
         {
             stopwatch.Stop();
+            logger?.Error($"Erro inesperado (E_UNEXPECTED): {ex.Message}", ex);
             return new SeamsWorkflowResult(
                 Success: false,
                 PanelCount: 0,

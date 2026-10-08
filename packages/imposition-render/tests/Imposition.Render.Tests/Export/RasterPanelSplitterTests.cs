@@ -122,6 +122,87 @@ public sealed class RasterPanelSplitterTests
     }
 
     [Fact]
+    public void BR_059_SplitPanel_WithGuideLineDisabled_DoesNotPaintGuideLine()
+    {
+        // Arrange
+        var seamsResult = CreateTwoPanelSeamsResult(2000.0, 1000.0, 1200.0, 20.0);
+        var dpi = 150;
+
+        var srcWidthPx = (int)Math.Round(2000.0 * dpi / 25.4);
+        var srcHeightPx = (int)Math.Round(1000.0 * dpi / 25.4);
+        var srcBuffer = new byte[srcWidthPx * srcHeightPx * 4];
+
+        var panelWithGuide = seamsResult.Panels.FirstOrDefault(p => p.HasGuideLine);
+        panelWithGuide.Should().NotBeNull();
+
+        // Act: Passa GuideLine desativado
+        var panelData = RasterPanelSplitter.SplitPanel(
+            srcBuffer,
+            srcWidthPx,
+            srcHeightPx,
+            panelWithGuide!,
+            seamsResult,
+            dpi,
+            new GuideLineConfig(Enabled: false));
+
+        // Assert: Garante que NENHUM pixel foi alterado
+        for (var i = 0; i < panelData.CmykBuffer.Length; i++)
+        {
+            panelData.CmykBuffer[i].Should().Be(0, "Nenhum pixel deve ser pintado quando a linha-guia estiver desativada.");
+        }
+    }
+
+    [Fact]
+    public void BR_059_SplitPanel_WithCustomMagentaGuideLine_PaintsMagentaLine()
+    {
+        // Arrange
+        var seamsResult = CreateTwoPanelSeamsResult(2000.0, 1000.0, 1200.0, 20.0);
+        var dpi = 150;
+
+        var srcWidthPx = (int)Math.Round(2000.0 * dpi / 25.4);
+        var srcHeightPx = (int)Math.Round(1000.0 * dpi / 25.4);
+        var srcBuffer = new byte[srcWidthPx * srcHeightPx * 4];
+
+        var panelWithGuide = seamsResult.Panels.FirstOrDefault(p => p.HasGuideLine);
+        panelWithGuide.Should().NotBeNull();
+
+        var magentaConfig = new GuideLineConfig(
+            Enabled: true,
+            ThicknessPt: 2.0,
+            Cyan: 0.0,
+            Magenta: 1.0,
+            Yellow: 0.0,
+            Black: 0.0);
+
+        // Act
+        var panelData = RasterPanelSplitter.SplitPanel(
+            srcBuffer,
+            srcWidthPx,
+            srcHeightPx,
+            panelWithGuide!,
+            seamsResult,
+            dpi,
+            magentaConfig);
+
+        // Assert: Procura a linha Magenta (M = 255) desenhada no buffer
+        var foundMagentaPixel = false;
+        for (var i = 0; i < panelData.CmykBuffer.Length; i += 4)
+        {
+            var m = panelData.CmykBuffer[i + 1];
+            if (m == 255)
+            {
+                foundMagentaPixel = true;
+                panelData.CmykBuffer[i].Should().Be(0);     // C = 0
+                panelData.CmykBuffer[i + 2].Should().Be(0); // Y = 0
+                panelData.CmykBuffer[i + 3].Should().Be(0); // K = 0
+                break;
+            }
+        }
+
+        foundMagentaPixel.Should().BeTrue("A linha-guia Magenta customizada deve ser desenhada no buffer CMYK.");
+    }
+
+    [Fact]
     public void BR_054_SplitFromFile_ThrowsExportSourceNotCmyk_WhenImageIsNot4Channels()
     {
         // Arrange: Cria JPEG simulado de 3 componentes (RGB)

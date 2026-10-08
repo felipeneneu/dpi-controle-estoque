@@ -31,7 +31,8 @@ public static class RasterPanelSplitter
         int srcWidthPx,
         int srcHeightPx,
         SeamsResult seamsResult,
-        double dpi = 150.0)
+        double dpi = 150.0,
+        GuideLineConfig? guideConfig = null)
     {
         ArgumentNullException.ThrowIfNull(seamsResult, nameof(seamsResult));
 
@@ -59,7 +60,7 @@ public static class RasterPanelSplitter
         var results = new List<PanelRasterData>(seamsResult.Panels.Count);
         foreach (var panel in seamsResult.Panels)
         {
-            results.Add(SplitPanel(sourceCmyk, srcWidthPx, srcHeightPx, panel, seamsResult, dpi));
+            results.Add(SplitPanel(sourceCmyk, srcWidthPx, srcHeightPx, panel, seamsResult, dpi, guideConfig));
         }
 
         return results;
@@ -74,7 +75,8 @@ public static class RasterPanelSplitter
         int srcHeightPx,
         PanelPlacement panel,
         SeamsResult seamsResult,
-        double dpi = 150.0)
+        double dpi = 150.0,
+        GuideLineConfig? guideConfig = null)
     {
         ArgumentNullException.ThrowIfNull(panel, nameof(panel));
         ArgumentNullException.ThrowIfNull(seamsResult, nameof(seamsResult));
@@ -124,10 +126,10 @@ public static class RasterPanelSplitter
             }
         }
 
-        // Pintura da linha-guia K40% se o painel for elegível (BR-053 / BR-054)
-        if (panel.HasGuideLine)
+        // Pintura da linha-guia se o painel for elegível e não estiver desabilitada (BR-053 / BR-054 / BR-059)
+        if (panel.HasGuideLine && (guideConfig == null || guideConfig.Enabled))
         {
-            PaintGuideLine(dstBuffer, outWidthPx, outHeightPx, panel, seamsResult, dpi);
+            PaintGuideLine(dstBuffer, outWidthPx, outHeightPx, panel, seamsResult, dpi, guideConfig);
         }
 
         return new PanelRasterData(panel.Index, dstBuffer, outWidthPx, outHeightPx, dpi);
@@ -141,7 +143,8 @@ public static class RasterPanelSplitter
     public static IReadOnlyList<PanelRasterData> SplitFromFile(
         string imagePath,
         SeamsResult seamsResult,
-        double? dpi = null)
+        double? dpi = null,
+        GuideLineConfig? guideConfig = null)
     {
         ArgumentNullException.ThrowIfNull(imagePath, nameof(imagePath));
         ArgumentNullException.ThrowIfNull(seamsResult, nameof(seamsResult));
@@ -165,7 +168,7 @@ public static class RasterPanelSplitter
 
         // Decodifica buffer CMYK usando leitor gerenciado BitMiracle
         var cmykBuffer = JpegCmykEncoder.DecodeCmyk(imagePath, out var decW, out var decH);
-        return Split(cmykBuffer, decW, decH, seamsResult, effectiveDpi);
+        return Split(cmykBuffer, decW, decH, seamsResult, effectiveDpi, guideConfig);
     }
 
     /// <summary>
@@ -239,9 +242,10 @@ public static class RasterPanelSplitter
         int outHeightPx,
         PanelPlacement panel,
         SeamsResult seamsResult,
-        double dpi)
+        double dpi,
+        GuideLineConfig? guideConfig)
     {
-        var guideLines = GuideLineCalculator.Calculate(seamsResult);
+        var guideLines = GuideLineCalculator.Calculate(seamsResult, guideConfig);
         var guide = guideLines.FirstOrDefault(g => g.TargetPanelIndex == panel.Index);
 
         if (guide == null)

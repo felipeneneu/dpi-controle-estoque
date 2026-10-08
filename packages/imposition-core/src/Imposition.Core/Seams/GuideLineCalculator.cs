@@ -11,6 +11,20 @@ public static class GuideLineCalculator
     /// </summary>
     public static IReadOnlyList<GuideLineDefinition> Calculate(SeamsResult result)
     {
+        return Calculate(result, config: null);
+    }
+
+    /// <summary>
+    /// Calcula as definições de linha-guia para todos os painéis elegíveis conforme a configuração especificada (ADR-059).
+    /// </summary>
+    public static IReadOnlyList<GuideLineDefinition> Calculate(SeamsResult result, GuideLineConfig? config)
+    {
+        var cfg = config ?? GuideLineConfig.Default;
+        if (!cfg.Enabled)
+        {
+            return Array.Empty<GuideLineDefinition>();
+        }
+
         if (result == null || result.Panels == null || result.Panels.Count <= 1)
         {
             return Array.Empty<GuideLineDefinition>();
@@ -55,7 +69,16 @@ public static class GuideLineCalculator
                     : panel.OutputHeightMm - panel.OverlapEndMm;
             }
 
-            list.Add(GuideLineDefinition.CreateStandard(panel.Index, xMm, yMm, lengthMm));
+            list.Add(new GuideLineDefinition(
+                TargetPanelIndex: panel.Index,
+                XPositionMm: xMm,
+                YPositionMm: yMm,
+                LengthMm: lengthMm,
+                ThicknessPt: cfg.ThicknessPt,
+                Cyan: cfg.Cyan,
+                Magenta: cfg.Magenta,
+                Yellow: cfg.Yellow,
+                Black: cfg.Black));
         }
 
         return list;

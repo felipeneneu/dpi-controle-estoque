@@ -62,6 +62,9 @@ set "OVERLAP=10"
 set "SHRINKAGE="
 set "ORIENTATION=vert"
 set "DIRECTION=ltr"
+set "GUIDE_OPT=--guide-line"
+set "LINE_COLOR=k40"
+set "LINE_THICKNESS=1.0"
 set "JOB="
 set "OUT_DIR="
 set "IN_DIR="
@@ -166,6 +169,78 @@ set "TMP="
 set /p "TMP=Ordem dos paineis (L=esq->dir / R=dir->esq) [L]: "
 if /i "!TMP!"=="r" set "DIRECTION=rtl"
 
+rem ------------------------------------------------------------
+rem Menu: Linha-guia de emenda (marca visual de solda)
+rem ------------------------------------------------------------
+echo.
+echo ------------------------------------------------------------
+echo  LINHA-GUIA DA EMENDA (Marca visual para alinhamento e solda)
+echo ------------------------------------------------------------
+set "TMP="
+set /p "TMP=Desenhar linha-guia na sobreposicao? (S/N) [S]: "
+if /i "!TMP!"=="n" (
+    set "GUIDE_OPT=--no-guide-line"
+    goto menu_job_info
+)
+if /i "!TMP!"=="nao" (
+    set "GUIDE_OPT=--no-guide-line"
+    goto menu_job_info
+)
+set "GUIDE_OPT=--guide-line"
+
+echo.
+echo  COR DA LINHA-GUIA:
+echo   [1] Cinza K40%%   [ENTER - Padrao recomendado para banners]
+echo   [2] Preto K100%%  (Para fundos claros)
+echo   [3] Magenta      (M100%% - Alto contraste)
+echo   [4] Branco       (Para fundos escuros/pretos)
+echo   [5] Ciano        (C100%%)
+echo   [6] Outra        (digitar nome ou C,M,Y,K)
+set "TMP=1"
+set /p "TMP=Escolha a cor [1]: "
+if not "!TMP!"=="" set "TMP=!TMP: =!"
+set "SEL=!TMP:~0,1!"
+if "!SEL!"=="2" set "LINE_COLOR=k100"
+if "!SEL!"=="3" set "LINE_COLOR=magenta"
+if "!SEL!"=="4" set "LINE_COLOR=white"
+if "!SEL!"=="5" set "LINE_COLOR=cyan"
+if "!SEL!"=="6" goto menu_cor_custom
+goto menu_espessura
+
+:menu_cor_custom
+echo.
+set "TMP="
+set /p "TMP=Digite a cor (ex: red, yellow, ou 0,100,100,0) [k40]: "
+if not "!TMP!"=="" set "LINE_COLOR=!TMP!"
+
+:menu_espessura
+echo.
+echo  ESPESSURA DO RISCO (GROSSURA):
+echo   [1] 1.0 pt  [ENTER - Padrao equilibrado]
+echo   [2] 1.5 pt  (Mais visivel para montador)
+echo   [3] 2.0 pt  (Grosso / paineis grandes)
+echo   [4] 0.5 pt  (Fino / discreto)
+echo   [5] Outra   (digitar em pontos pt)
+set "TMP=1"
+set /p "TMP=Escolha a espessura [1]: "
+if not "!TMP!"=="" set "TMP=!TMP: =!"
+set "SEL=!TMP:~0,1!"
+if "!SEL!"=="2" set "LINE_THICKNESS=1.5"
+if "!SEL!"=="3" set "LINE_THICKNESS=2.0"
+if "!SEL!"=="4" set "LINE_THICKNESS=0.5"
+if "!SEL!"=="5" goto menu_espessura_custom
+goto menu_job_info
+
+:menu_espessura_custom
+echo.
+set "TMP="
+set /p "TMP=Digite a espessura em pontos pt [1.0]: "
+if not "!TMP!"=="" (
+    set "TMP=!TMP:,=.!"
+    set "LINE_THICKNESS=!TMP!"
+)
+
+:menu_job_info
 echo.
 set "TMP="
 set /p "TMP=Nome do job (ENTER = nome do arquivo): "
@@ -194,6 +269,11 @@ echo Margem:      !MARGIN! mm/lado
 echo Overlap:     !OVERLAP! mm
 echo Orientacao:  !ORIENTATION!
 echo Ordem:       !DIRECTION!
+if "!GUIDE_OPT!"=="--no-guide-line" (
+    echo Linha-guia:  DESATIVADA
+) else (
+    echo Linha-guia:  ATIVA (Cor: !LINE_COLOR!, Espessura: !LINE_THICKNESS! pt)
+)
 echo Job:         !JOB!
 echo Saida:       "!OUT_DIR!"
 if defined SHRINKAGE echo Encolhimento: SIM
@@ -208,6 +288,9 @@ set "STDERR_FILE=%TEMP%\seamscli_stderr.txt"
     --overlap !OVERLAP! ^
     --orientation !ORIENTATION! ^
     --direction !DIRECTION! ^
+    !GUIDE_OPT! ^
+    --line-color "!LINE_COLOR!" ^
+    --line-thickness !LINE_THICKNESS! ^
     --job "!JOB!" ^
     --outdir "!OUT_DIR!" ^
     !SHRINKAGE! ^
@@ -231,15 +314,20 @@ if exist "!STDERR_FILE!" del "!STDERR_FILE!" 2>nul
 echo.
 echo ============================================================
 echo  [OK] Paineis e emenda(s) gerados com fidelidade 1:1!
-echo  Pasta: "!OUT_DIR!"
+echo  Pasta de saida: "!OUT_DIR!"
 echo ============================================================
 echo.
-echo Arquivos gerados:
+echo  Arquivos gerados:
 if exist "!OUT_DIR!\!JOB!_painel_*" (
     dir /b "!OUT_DIR!\!JOB!_painel_*" 2>nul
 ) else (
-    echo (nenhum arquivo correspondente encontrado)
+    echo  (nenhum arquivo correspondente encontrado)
 )
+echo.
+echo  ------------------------------------------------------------
+echo  Log de diagnostico gravado na pasta 'logs\' ao lado do executavel.
+echo  (Envie a pasta 'logs\' com feedback.txt para relatar observacoes)
+echo  ------------------------------------------------------------
 echo.
 goto proximo
 

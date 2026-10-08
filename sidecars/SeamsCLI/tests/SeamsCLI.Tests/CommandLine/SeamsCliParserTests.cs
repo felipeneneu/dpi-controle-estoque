@@ -166,4 +166,97 @@ public class SeamsCliParserTests
         result.ExitCode.Should().Be(0);
         result.Options.Should().BeNull();
     }
+
+    [Fact]
+    public void Parse_GuideLineAndLogging_DefaultValues()
+    {
+        string[] args = [_dummyJpg];
+
+        var result = SeamsCliParser.Parse(args);
+
+        result.Success.Should().BeTrue();
+        result.Options!.GuideLine.Should().BeTrue();
+        result.Options.LineColor.Should().Be("k40");
+        result.Options.LineThicknessPt.Should().Be(1.0);
+        result.Options.NoLog.Should().BeFalse();
+        result.Options.LogDir.Should().BeNull();
+    }
+
+    [Fact]
+    public void Parse_NoGuideLineFlag_DisablesGuideLine()
+    {
+        string[] args = [_dummyJpg, "--no-guide-line"];
+
+        var result = SeamsCliParser.Parse(args);
+
+        result.Success.Should().BeTrue();
+        result.Options!.GuideLine.Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData("magenta")]
+    [InlineData("cyan")]
+    [InlineData("k100")]
+    [InlineData("0,100,50,0")]
+    public void Parse_ValidLineColor_Accepted(string color)
+    {
+        string[] args = [_dummyJpg, "--line-color", color];
+
+        var result = SeamsCliParser.Parse(args);
+
+        result.Success.Should().BeTrue();
+        result.Options!.LineColor.Should().Be(color);
+    }
+
+    [Fact]
+    public void Parse_InvalidLineColor_FailsWithInvalidArgument()
+    {
+        string[] args = [_dummyJpg, "--line-color", "cor_inexistente_xyz"];
+
+        var result = SeamsCliParser.Parse(args);
+
+        result.Success.Should().BeFalse();
+        result.ExitCode.Should().Be(1);
+        result.ErrorCode.Should().Be("E_INVALID_ARGUMENT");
+    }
+
+    [Theory]
+    [InlineData("0.5")]
+    [InlineData("2.0")]
+    public void Parse_ValidLineThickness_Accepted(string thickness)
+    {
+        string[] args = [_dummyJpg, "--line-thickness", thickness];
+
+        var result = SeamsCliParser.Parse(args);
+
+        result.Success.Should().BeTrue();
+        result.Options!.LineThicknessPt.Should().Be(double.Parse(thickness, System.Globalization.CultureInfo.InvariantCulture));
+    }
+
+    [Theory]
+    [InlineData("-1.0")]
+    [InlineData("0")]
+    [InlineData("NaN")]
+    public void Parse_InvalidLineThickness_FailsWithInvalidArgument(string thickness)
+    {
+        string[] args = [_dummyJpg, "--line-thickness", thickness];
+
+        var result = SeamsCliParser.Parse(args);
+
+        result.Success.Should().BeFalse();
+        result.ExitCode.Should().Be(1);
+        result.ErrorCode.Should().Be("E_INVALID_ARGUMENT");
+    }
+
+    [Fact]
+    public void Parse_LoggingFlags_Accepted()
+    {
+        string[] args = [_dummyJpg, "--no-log", "--log-dir", "C:\\custom\\logs"];
+
+        var result = SeamsCliParser.Parse(args);
+
+        result.Success.Should().BeTrue();
+        result.Options!.NoLog.Should().BeTrue();
+        result.Options.LogDir.Should().Be("C:\\custom\\logs");
+    }
 }
