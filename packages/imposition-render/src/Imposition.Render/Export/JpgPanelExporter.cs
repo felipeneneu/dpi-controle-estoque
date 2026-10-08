@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using Imposition.Core.Errors;
 using Imposition.Core.Seams;
-using Imposition.Render.Native;
 
 namespace Imposition.Render.Export;
 
@@ -79,8 +78,13 @@ public sealed class JpgPanelExporter : IJpgPanelExporter
 
         var jobName = Path.GetFileNameWithoutExtension(sourceImagePath);
 
+        // Lê metadados de cabeçalho para obter o DPI nativo da imagem original
+        var (_, _, sourceDpi, _) = JpegCmykEncoder.ReadImageInfo(sourceImagePath);
+        var effectiveDpi = options.Dpi ?? sourceDpi;
+        var resolvedOptions = options with { Dpi = effectiveDpi };
+
         // Decodifica buffer CMYK
-        var cmykBuffer = LibJpegTurboNative.DecodeCmyk(sourceImagePath, out var decW, out var decH);
+        var cmykBuffer = JpegCmykEncoder.DecodeCmyk(sourceImagePath, out var decW, out var decH);
 
         return await ExportPanelsFromBufferAsync(
             cmykBuffer,
@@ -89,7 +93,7 @@ public sealed class JpgPanelExporter : IJpgPanelExporter
             jobName,
             seamsResult,
             outputDirectory,
-            options,
+            resolvedOptions,
             progress,
             cancellationToken).ConfigureAwait(false);
     }
@@ -135,6 +139,7 @@ public sealed class JpgPanelExporter : IJpgPanelExporter
 
         Directory.CreateDirectory(outputDirectory);
 
+        var effectiveDpi = options.Dpi ?? 300;
         var sw = Stopwatch.StartNew();
         var generatedFiles = new List<string>(seamsResult.Panels.Count);
         var totalPanels = seamsResult.Panels.Count;
@@ -151,7 +156,7 @@ public sealed class JpgPanelExporter : IJpgPanelExporter
                 srcHeightPx,
                 panel,
                 seamsResult,
-                options.Dpi);
+                effectiveDpi);
 
             var fileName = FormatFileName(options.NamingPattern, jobName, panel.Index);
             var finalPath = Path.Combine(outputDirectory, fileName);
@@ -159,16 +164,19 @@ public sealed class JpgPanelExporter : IJpgPanelExporter
 
             try
             {
+                byte[]? iccBytes = options.EmbedIccProfile ? JpegCmykEncoder.GetDefaultFogra39Profile() : null;
+
                 // Escrita atômica em arquivo temporário com flush síncrono
                 await using (var fs = new FileStream(tempPath, FileMode.Create, FileAccess.Write, FileShare.None, 65536, useAsync: true))
                 {
-                    LibJpegTurboNative.EncodeCmyk(
+                    JpegCmykEncoder.Encode(
                         panelData.CmykBuffer,
                         panelData.WidthPx,
                         panelData.HeightPx,
                         options.Quality,
-                        fs,
-                        (int)Math.Round(panelData.Dpi));
+                        (int)Math.Round(panelData.Dpi),
+                        iccBytes,
+                        fs);
 
                     await fs.FlushAsync(cancellationToken).ConfigureAwait(false);
                 }
@@ -213,7 +221,7 @@ public sealed class JpgPanelExporter : IJpgPanelExporter
             throw new ImpositionException(ErrorCodes.InvalidExportInput, $"Qualidade de compressão inválida ({options.Quality}). Deve estar entre 1 e 100.");
         }
 
-        if (!double.IsFinite(options.Dpi) || options.Dpi <= 0 || options.Dpi > 4800)
+        if (options.Dpi.HasValue && (!double.IsFinite(options.Dpi.Value) || options.Dpi.Value <= 0 || options.Dpi.Value > 4800))
         {
             throw new ImpositionException(ErrorCodes.InvalidExportInput, $"DPI de exportação inválido ({options.Dpi}). Deve ser finito e entre 1 e 4800.");
         }

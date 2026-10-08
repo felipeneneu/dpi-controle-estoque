@@ -13,6 +13,7 @@ public sealed record SeamsCliOptions(
     string Direction = "ltr",
     string Format = "jpg",
     string? OutputDir = null,
+    int? Dpi = null,
     bool JsonOutput = false,
     bool Verbose = false);
 

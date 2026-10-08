@@ -3,7 +3,6 @@ using FluentAssertions;
 using Imposition.Core.Errors;
 using Imposition.Core.Seams;
 using Imposition.Render.Export;
-using Imposition.Render.Native;
 using Xunit;
 
 namespace Imposition.Render.Tests.Export;

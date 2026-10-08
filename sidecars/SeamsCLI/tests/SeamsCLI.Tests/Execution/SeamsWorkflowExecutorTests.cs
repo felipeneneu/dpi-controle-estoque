@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Imposition.Core.Errors;
-using Imposition.Render.Native;
 using SeamsCLI.CommandLine;
 using SeamsCLI.Execution;
 using Xunit;

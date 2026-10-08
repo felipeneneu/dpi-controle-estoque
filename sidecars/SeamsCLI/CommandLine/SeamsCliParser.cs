@@ -62,6 +62,10 @@ public static class SeamsCliParser
             aliases: ["--outdir", "-d"],
             description: "Diretório de saída (default: diretório do arquivo de origem)");
 
+        var dpiOption = new Option<int?>(
+            aliases: ["--dpi"],
+            description: "Resolução DPI de saída (default: preserva o DPI original da imagem)");
+
         var jsonOption = new Option<bool>(
             aliases: ["--json"],
             description: "Emite RESULT_JSON no stdout");
@@ -82,6 +86,7 @@ public static class SeamsCliParser
         rootCommand.AddOption(directionOption);
         rootCommand.AddOption(formatOption);
         rootCommand.AddOption(outdirOption);
+        rootCommand.AddOption(dpiOption);
         rootCommand.AddOption(jsonOption);
         rootCommand.AddOption(verboseOption);
 
@@ -110,6 +115,7 @@ Opções:
   --direction <ltr|rtl>          Direção dos painéis: ltr ou rtl (default: ltr)
   --format <jpg|pdf>             Formato de saída: jpg ou pdf (default: inferido da extensão)
   -d, --outdir <diretório>       Diretório de saída (default: diretório do arquivo de origem)
+  --dpi <dpi>                    Resolução DPI de saída (default: preserva DPI original)
   --json                         Emite RESULT_JSON no stdout
   -v, --verbose                  Exibe logs e progresso detalhados em stderr
   --version                      Exibe versão
@@ -181,8 +187,9 @@ Opções:
         var direction = (parseResult.GetValueForOption(root.Options[8] as Option<string> ?? new Option<string>("--direction")) ?? "ltr").ToLowerInvariant();
         var formatExplicit = parseResult.GetValueForOption(root.Options[9] as Option<string?> ?? new Option<string?>("--format"));
         var outdir = parseResult.GetValueForOption(root.Options[10] as Option<string?> ?? new Option<string?>("--outdir"));
-        var jsonOutput = parseResult.GetValueForOption(root.Options[11] as Option<bool> ?? new Option<bool>("--json"));
-        var verbose = parseResult.GetValueForOption(root.Options[12] as Option<bool> ?? new Option<bool>("--verbose"));
+        var dpi = parseResult.GetValueForOption(root.Options[11] as Option<int?> ?? new Option<int?>("--dpi"));
+        var jsonOutput = parseResult.GetValueForOption(root.Options[12] as Option<bool> ?? new Option<bool>("--json"));
+        var verbose = parseResult.GetValueForOption(root.Options[13] as Option<bool> ?? new Option<bool>("--verbose"));
 
         // Validações R-013 (IsFinite)
         if (!double.IsFinite(roll) || roll <= 0)
@@ -233,6 +240,16 @@ Opções:
                 ExitCode: 1,
                 ErrorCode: ErrorCodes.InvalidDimension,
                 ErrorMessage: "A altura sobrescrita (--height) deve ser um número finito maior que zero.");
+        }
+
+        if (dpi.HasValue && (dpi.Value <= 0 || dpi.Value > 4800))
+        {
+            return new CliParseResult(
+                Success: false,
+                Options: null,
+                ExitCode: 1,
+                ErrorCode: ErrorCodes.InvalidArgument,
+                ErrorMessage: "A resolução DPI (--dpi) deve ser um número inteiro estritamente positivo (máximo 4800).");
         }
 
         // Restrições Geométricas
@@ -310,6 +327,7 @@ Opções:
             Direction: direction,
             Format: formatResolved,
             OutputDir: outdir,
+            Dpi: dpi,
             JsonOutput: jsonOutput,
             Verbose: verbose);
 

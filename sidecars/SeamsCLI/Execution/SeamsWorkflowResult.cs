@@ -8,4 +8,7 @@ public sealed record SeamsWorkflowResult(
     TimeSpan ElapsedTime,
     IReadOnlyList<string> Warnings,
     string? ErrorCode = null,
-    string? ErrorMessage = null);
+    string? ErrorMessage = null)
+{
+    public int SeamCount => Math.Max(0, PanelCount - 1);
+}

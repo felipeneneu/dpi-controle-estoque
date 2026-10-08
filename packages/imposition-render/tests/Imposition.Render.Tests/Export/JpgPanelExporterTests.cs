@@ -1,9 +1,9 @@
 using System.Buffers.Binary;
 using FluentAssertions;
+using ImageMagick;
 using Imposition.Core.Errors;
 using Imposition.Core.Seams;
 using Imposition.Render.Export;
-using Imposition.Render.Native;
 using Xunit;
 
 namespace Imposition.Render.Tests.Export;
@@ -99,6 +99,15 @@ public sealed class JpgPanelExporterTests : IDisposable
 
         var header2 = RasterPanelSplitter.ReadJpegHeaderInfo(file2);
         header2.Components.Should().Be(4, "O arquivo exportado deve ter 4 canais CMYK (Regra R-020)");
+
+        // Regra R-021: Validação cruzada com decodificador externo (Magick.NET)
+        using var magick1 = new MagickImage(file1);
+        magick1.ColorSpace.Should().Be(ColorSpace.CMYK, "Painel 1 deve ser reconhecido como CMYK por biblioteca externa");
+        magick1.ChannelCount.Should().Be(4, "Painel 1 deve ter 4 canais");
+
+        using var magick2 = new MagickImage(file2);
+        magick2.ColorSpace.Should().Be(ColorSpace.CMYK, "Painel 2 deve ser reconhecido como CMYK por biblioteca externa");
+        magick2.ChannelCount.Should().Be(4, "Painel 2 deve ter 4 canais");
     }
 
     [Fact]
@@ -213,5 +222,39 @@ public sealed class JpgPanelExporterTests : IDisposable
 
         await act.Should().ThrowAsync<ImpositionException>()
             .Where(ex => ex.Code == ErrorCodes.InvalidExportInput);
+    }
+
+    [Fact]
+    public void BR_054_FactoryFile_Teste02_SlicesExactPixelsAtNativeDpi_R021()
+    {
+        var factoryFile = @"C:\Users\impressao\Desktop\Emenda Teste\Teste 02.jpg";
+        if (!File.Exists(factoryFile))
+            return; // Skip se executado em ambiente sem o arquivo de fábrica
+
+        // 1. Validação de leitura ultrarrápida do cabeçalho da arte original
+        var (w, h, dpi, hasDpi) = JpegCmykEncoder.ReadImageInfo(factoryFile);
+        w.Should().Be(29528);
+        h.Should().Be(10630);
+        dpi.Should().Be(353);
+        hasDpi.Should().BeTrue();
+
+        // 2. Validação dos painéis gerados pelo hotfix
+        var p1Path = @"C:\Users\impressao\Desktop\Emenda Teste\saida_hotfix_jpg\Teste 02_painel_01.jpg";
+        var p2Path = @"C:\Users\impressao\Desktop\Emenda Teste\saida_hotfix_jpg\Teste 02_painel_02.jpg";
+
+        if (File.Exists(p1Path) && File.Exists(p2Path))
+        {
+            using var m1 = new MagickImage(p1Path);
+            m1.ColorSpace.Should().Be(ColorSpace.CMYK);
+            m1.ChannelCount.Should().Be(4);
+            m1.Height.Should().Be(10630);
+            ((int)Math.Round(m1.Density.X)).Should().Be(353);
+
+            using var m2 = new MagickImage(p2Path);
+            m2.ColorSpace.Should().Be(ColorSpace.CMYK);
+            m2.ChannelCount.Should().Be(4);
+            m2.Height.Should().Be(10630);
+            ((int)Math.Round(m2.Density.X)).Should().Be(353);
+        }
     }
 }

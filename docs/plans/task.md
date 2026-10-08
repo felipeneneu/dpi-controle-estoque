@@ -16,3 +16,14 @@
 | Task 11 | Trava de Débito Automático por SKU nas Impressoras | Concluída | HP Latex e Konica verificam `machineItems`: se o material não estiver vinculado à máquina, débito automático é suspenso, job fica em `PENDING_BIND` e `stockDeducted = false`; correção de bug da Konica onde itens não encontrados eram marcados como debitados. |
 | Task 12 | Ação em Massa Inteligente na Tabela de Jobs (`POST /api/jobs/bulk-deduct`) | Concluída | Seleção múltipla com checkboxes em `MachineJobsTable`; barra de ação em lote inteligente em `JobsTab`; modal `BulkDeductDialog` com separação de domínio (Bobina/Metros vs Folhas/Papel) e pré-seleção inteligente; endpoint `/api/jobs/bulk-deduct` consolidando metragem/folhas em lote com 1 clique; 193 testes passando (26 suítes) e build Next.js 100% verde. |
 
+---
+
+# Checklist de Execução — `seams-export-jpg-hotfix`
+
+| Task | Descrição | Status | Evidência |
+|---|---|---|---|
+| Task 0 | Regra R-021 em AGENTS.md, ADR-056, BR-054 e dependências NuGet | Concluída | Commit `1cb4a08`; Regra 18 (R-021) em `AGENTS.md`; ADR-056 criada e indexada em `ADR_INDEX.md` sem mojibake (R-009); `BR-054` atualizada; NuGet `BitMiracle.LibJpeg.NET` e `Magick.NET-Q8-AnyCPU` adicionados. |
+| Task 1 | Implementação de `JpegCmykEncoder` com BitMiracle e remoção de stubs nativos | Concluída | `JpegCmykEncoder.cs` implementado com CMYK puro, APP14 Adobe (`ColorTransform=0`), sem APP0 JFIF, e chunking de perfil ICC FOGRA39 em APP2; removidos `LibJpegTurboNative` e `NativeLoader`; 52 testes aprovados em `Imposition.Render.Tests`. |
+| Task 2 | Smoke E2E e validação cruzada (R-021) com arquivo real de fábrica | Concluída | `SeamsCLI` executado com sucesso sobre `Teste 02.jpg` (80,4 MB) gerando 2 painéis (17,4 MB e 8,0 MB); verificação de marcadores (SOI, APP14 ColorTransform=0, ausência de APP0) e decodificação CMYK com 4 canais aprovada via `Magick.NET`. |
+| Task 3 | Preservação de DPI nativo, contagem de emendas, opções de rolo e fidelidade 1:1 de pixels | Concluída | Leitura de DPI nativo sem decodificação de pixels via `ReadImageInfo`; injeção de marcadores de resolução APP1 (Exif) e APP13 (Photoshop 0x03ED) sem emitir APP0 em CMYK; cálculo e relato de emendas `SeamCount`; CLI atualizado com opção `--dpi`; script `MontarEmendas.bat` atualizado com seleção clara de bobinas; 269 testes aprovados (Core: 127, Render: 54, Pdf: 58, SeamsCLI: 30); validação cruzada do arquivo de fábrica `Teste 02.jpg` (29528x10630 @ 353 DPI) gerando 2 painéis perfeitos de 353 DPI em CMYK puro. |
+

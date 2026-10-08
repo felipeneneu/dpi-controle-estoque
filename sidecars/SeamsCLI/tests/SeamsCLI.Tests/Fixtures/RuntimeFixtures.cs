@@ -1,5 +1,5 @@
 using System.IO;
-using Imposition.Render.Native;
+using Imposition.Render.Export;
 
 namespace SeamsCLI.Tests.Fixtures;
 
@@ -17,7 +17,7 @@ public static class RuntimeFixtures
         }
 
         using var fs = File.Create(filePath);
-        LibJpegTurboNative.EncodeCmyk(buffer, widthPx, heightPx, quality: 100, output: fs, dpi: dpi);
+        JpegCmykEncoder.EncodeCmyk(buffer, widthPx, heightPx, quality: 100, output: fs, dpi: dpi);
     }
 
     public static void CreatePdfCmyk(string filePath, double widthPt = 5669.29, double heightPt = 2834.65)
