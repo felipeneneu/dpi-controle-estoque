@@ -25,8 +25,8 @@ internal static class PdfSeamGuideInjector
         if (guide == null)
             return string.Empty;
 
-        // Determina se a linha é horizontal (quando X == 0 e Y > 0) ou vertical (caso padrão)
-        var isHorizontal = Math.Abs(guide.XPositionMm) < 1e-6 && guide.YPositionMm > 0.0;
+        // Determina se a linha é horizontal (quando Y > 0 e X == 0) ou vertical (caso padrão)
+        var isHorizontal = guide.YPositionMm > 1e-4;
 
         double x1Pt = pageLeftPt + (guide.XPositionMm * MmToPt);
         double y1Pt = pageBottomPt + (guide.YPositionMm * MmToPt);
@@ -46,7 +46,8 @@ internal static class PdfSeamGuideInjector
 
         var sb = new StringBuilder();
         sb.AppendLine("q");
-        sb.AppendLine($"{N(guide.Cyan)} {N(guide.Magenta)} {N(guide.Yellow)} {guide.Black.ToString("0.00", CultureInfo.InvariantCulture)} k");
+        sb.AppendLine($"{N(guide.Cyan)} {N(guide.Magenta)} {N(guide.Yellow)} {N(guide.Black)} K");
+        sb.AppendLine($"{N(guide.Cyan)} {N(guide.Magenta)} {N(guide.Yellow)} {N(guide.Black)} k");
         sb.AppendLine($"{N(guide.ThicknessPt)} w");
         sb.AppendLine($"{N(x1Pt)} {N(y1Pt)} m");
         sb.AppendLine($"{N(x2Pt)} {N(y2Pt)} l");

@@ -251,14 +251,15 @@ public static class RasterPanelSplitter
         if (guide == null)
             return;
 
-        var thicknessPx = Math.Max(1, (int)Math.Round(guide.ThicknessPt * dpi / PointsPerInch));
-        var cByte = (byte)Math.Clamp((int)Math.Round(guide.Cyan * 255), 0, 255);
-        var mByte = (byte)Math.Clamp((int)Math.Round(guide.Magenta * 255), 0, 255);
-        var yByte = (byte)Math.Clamp((int)Math.Round(guide.Yellow * 255), 0, 255);
-        var kByte = (byte)Math.Clamp((int)Math.Round(guide.Black * 255), 0, 255); // K40% -> 102
+        var thicknessPx = Math.Max(2, (int)Math.Round(guide.ThicknessPt * dpi / PointsPerInch));
+        // Padrão Adobe LibJpeg CMYK (ISO 10918-5 / ADR-056): 255 = 0% tinta, 0 = 100% tinta
+        var cByte = (byte)Math.Clamp((int)Math.Round((1.0 - guide.Cyan) * 255), 0, 255);
+        var mByte = (byte)Math.Clamp((int)Math.Round((1.0 - guide.Magenta) * 255), 0, 255);
+        var yByte = (byte)Math.Clamp((int)Math.Round((1.0 - guide.Yellow) * 255), 0, 255);
+        var kByte = (byte)Math.Clamp((int)Math.Round((1.0 - guide.Black) * 255), 0, 255);
 
-        // Determina se a linha é vertical ou horizontal
-        var isVertical = guide.LengthMm >= panel.OutputHeightMm * 0.9;
+        // Determina se a linha é vertical (linha ao longo de Y em XPositionMm) ou horizontal (ao longo de X em YPositionMm)
+        var isVertical = guide.XPositionMm > 1e-4 || (Math.Abs(guide.YPositionMm) < 1e-4 && Math.Abs(guide.LengthMm - panel.OutputHeightMm) < 1.0);
 
         if (isVertical)
         {
@@ -269,12 +270,14 @@ public static class RasterPanelSplitter
             lineYStartPx = Math.Clamp(lineYStartPx, 0, outHeightPx - 1);
             lineYEndPx = Math.Clamp(lineYEndPx, 0, outHeightPx);
 
+            var startX = lineXPx - (thicknessPx / 2);
+            var endX = startX + thicknessPx;
+
             for (var y = lineYStartPx; y < lineYEndPx; y++)
             {
                 var rowOffset = y * outWidthPx * 4;
-                for (var t = 0; t < thicknessPx; t++)
+                for (var x = startX; x < endX; x++)
                 {
-                    var x = lineXPx + t;
                     if (x < 0 || x >= outWidthPx) continue;
 
                     var pixelOffset = rowOffset + (x * 4);
@@ -294,11 +297,13 @@ public static class RasterPanelSplitter
             lineXStartPx = Math.Clamp(lineXStartPx, 0, outWidthPx - 1);
             lineXEndPx = Math.Clamp(lineXEndPx, 0, outWidthPx);
 
+            var startY = lineYPx - (thicknessPx / 2);
+            var endY = startY + thicknessPx;
+
             for (var x = lineXStartPx; x < lineXEndPx; x++)
             {
-                for (var t = 0; t < thicknessPx; t++)
+                for (var y = startY; y < endY; y++)
                 {
-                    var y = lineYPx + t;
                     if (y < 0 || y >= outHeightPx) continue;
 
                     var pixelOffset = (y * outWidthPx + x) * 4;

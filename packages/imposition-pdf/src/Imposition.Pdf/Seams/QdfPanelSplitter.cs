@@ -307,6 +307,8 @@ public sealed class QdfPanelSplitter
         // 3. Content stream da página do painel
         var pageOps = new StringBuilder();
         pageOps.AppendLine("q");
+        // Recorte vetorial estrito para Illustrator/CorelDRAW/RIPs (ISO 32000 §8.5.4)
+        pageOps.AppendLine($"0 0 {N(panelWPt)} {N(panelHPt)} re W n");
         // Translação: desloca arte para alinhar a janela deste painel na origem (0, 0)
         pageOps.AppendLine($"1 0 0 1 {N(-cropXPt)} {N(-cropYPt)} cm");
         pageOps.AppendLine("/Fm0 Do");

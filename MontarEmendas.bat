@@ -32,15 +32,18 @@ rem ------------------------------------------------------------
 set "RAW_ARGS=%*"
 if defined RAW_ARGS (
     if exist "%~1" (
+        set "ARG1=%~1"
         call :resetar_config
-        set "INPUT=%~1"
+        set "INPUT=!ARG1!"
+        shift
         goto menu_principal
     )
     rem Caminho com espacos sem aspas
     set "CLEAN_ALL=%RAW_ARGS:"=%"
     if exist "!CLEAN_ALL!" (
+        set "ARG1=!CLEAN_ALL!"
         call :resetar_config
-        set "INPUT=!CLEAN_ALL!"
+        set "INPUT=!ARG1!"
         goto menu_principal
     )
 )
@@ -200,6 +203,7 @@ set "TMP=1"
 set /p "TMP=Escolha a cor [1]: "
 if not "!TMP!"=="" set "TMP=!TMP: =!"
 set "SEL=!TMP:~0,1!"
+if "!SEL!"=="1" set "LINE_COLOR=k40"
 if "!SEL!"=="2" set "LINE_COLOR=k100"
 if "!SEL!"=="3" set "LINE_COLOR=magenta"
 if "!SEL!"=="4" set "LINE_COLOR=white"
@@ -225,6 +229,7 @@ set "TMP=1"
 set /p "TMP=Escolha a espessura [1]: "
 if not "!TMP!"=="" set "TMP=!TMP: =!"
 set "SEL=!TMP:~0,1!"
+if "!SEL!"=="1" set "LINE_THICKNESS=1.0"
 if "!SEL!"=="2" set "LINE_THICKNESS=1.5"
 if "!SEL!"=="3" set "LINE_THICKNESS=2.0"
 if "!SEL!"=="4" set "LINE_THICKNESS=0.5"
@@ -414,6 +419,23 @@ rem ------------------------------------------------------------
 rem Proximo arquivo
 rem ------------------------------------------------------------
 :proximo
+rem Se ainda houver arquivos na fila de argumentos (arrastados juntos)
+if not "%~1"=="" (
+    if exist "%~1" (
+        set "ARG1=%~1"
+        call :resetar_config
+        set "INPUT=!ARG1!"
+        shift
+        echo.
+        echo ============================================================
+        echo  PROCESSANDO PROXIMO ARQUIVO DA FILA:
+        echo  "!INPUT!"
+        echo ============================================================
+        echo.
+        goto menu_principal
+    )
+)
+
 echo.
 echo ============================================================
 echo  Deseja processar outro arquivo?
@@ -430,7 +452,7 @@ if "!NEXT:~-1!"==" " (
     goto trim_next
 )
 if not exist "!NEXT!" (
-    echo [ERRO] Arquivo nao encontrado.
+    echo [ERRO] Arquivo nao encontrado: "!NEXT!"
     goto proximo
 )
 call :resetar_config

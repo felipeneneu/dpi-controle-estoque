@@ -375,31 +375,48 @@ public sealed class SeamsWorkflowExecutor
     {
         try
         {
-            using var fs = File.OpenRead(pdfPath);
-            int bytesToRead = (int)Math.Min(65536, fs.Length);
-            var buffer = new byte[bytesToRead];
-            int read = fs.Read(buffer, 0, bytesToRead);
-            var content = System.Text.Encoding.ASCII.GetString(buffer, 0, read);
+            var fileBytes = File.ReadAllBytes(pdfPath);
+            var content = System.Text.Encoding.GetEncoding(28591).GetString(fileBytes);
+            var objects = PdfStructureResolver.ParseObjects(content);
+            var pageStruct = PdfStructureResolver.ResolveSinglePage(content, objects);
 
-            var match = MediaBoxRegex.Match(content);
-            if (match.Success)
+            double widthMm = pageStruct.CropWidthPt * 25.4 / 72.0;
+            double heightMm = pageStruct.CropHeightPt * 25.4 / 72.0;
+            if (double.IsFinite(widthMm) && widthMm > 0 && double.IsFinite(heightMm) && heightMm > 0)
             {
-                double x0 = double.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
-                double y0 = double.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture);
-                double x1 = double.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture);
-                double y1 = double.Parse(match.Groups[4].Value, CultureInfo.InvariantCulture);
-
-                double widthPt = Math.Abs(x1 - x0);
-                double heightPt = Math.Abs(y1 - y0);
-
-                double widthMm = widthPt * 25.4 / 72.0;
-                double heightMm = heightPt * 25.4 / 72.0;
                 return (widthMm, heightMm);
             }
         }
         catch
         {
-            // Ignorar e fallback
+            try
+            {
+                using var fs = File.OpenRead(pdfPath);
+                int bytesToRead = (int)Math.Min(65536, fs.Length);
+                var buffer = new byte[bytesToRead];
+                int read = fs.Read(buffer, 0, bytesToRead);
+                var content = System.Text.Encoding.ASCII.GetString(buffer, 0, read);
+
+                var match = MediaBoxRegex.Match(content);
+                if (match.Success)
+                {
+                    double x0 = double.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
+                    double y0 = double.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture);
+                    double x1 = double.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture);
+                    double y1 = double.Parse(match.Groups[4].Value, CultureInfo.InvariantCulture);
+
+                    double widthPt = Math.Abs(x1 - x0);
+                    double heightPt = Math.Abs(y1 - y0);
+
+                    double widthMm = widthPt * 25.4 / 72.0;
+                    double heightMm = heightPt * 25.4 / 72.0;
+                    return (widthMm, heightMm);
+                }
+            }
+            catch
+            {
+                // Ignorar e fallback
+            }
         }
 
         return (1000.0, 1000.0);
