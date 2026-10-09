@@ -13,12 +13,18 @@ import {
   RiAddLine,
   RiPrinterLine,
   RiExchangeLine,
+  RiDeleteBinLine,
+  RiPencilLine,
 } from "@remixicon/react";
 
 export interface StockTableActions {
   onViewLots: (item: StockItem) => void;
   onQuickTransaction?: (item: StockItem, type: "IN" | "OUT") => void;
   onAddLot?: (item: StockItem) => void;
+  onEditItem?: (item: StockItem) => void;
+  onDeleteItem?: (item: StockItem) => void;
+  onConsumeInk?: (item: StockItem) => void;
+  userRole?: string;
 }
 
 export function statusBadge(status: StockItem["status"]) {
@@ -29,6 +35,41 @@ export function statusBadge(status: StockItem["status"]) {
     return <Badge className="bg-amber-500 hover:bg-amber-600 text-white font-medium">Baixo</Badge>;
   }
   return <Badge className="bg-red-500 hover:bg-red-600 text-white font-medium">Zerado</Badge>;
+}
+
+export function breakdownBadge(item: StockItem) {
+  const individual = item.individualItems ?? [];
+  const inUse = individual.filter(i => i.state === 'IN_USE').length;
+  const available = individual.filter(i => i.state === 'NEW').length;
+  const used = individual.filter(i => i.state === 'USED' || i.state === 'SCRAPPED' || i.state === 'FINISHED').length;
+
+  const parts: React.ReactNode[] = [];
+  if (inUse > 0) {
+    parts.push(
+      <span key="inuse" className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full px-2 py-0.5 text-xs font-medium">
+        <span className="size-1.5 rounded-full bg-emerald-500" />
+        {inUse} em uso
+      </span>
+    );
+  }
+  if (available > 0) {
+    parts.push(
+      <span key="avail" className="inline-flex items-center gap-1 bg-sky-50 text-sky-700 border border-sky-200 rounded-full px-2 py-0.5 text-xs font-medium">
+        {available} disponível{available > 1 ? 's' : ''}
+      </span>
+    );
+  }
+  if (used > 0) {
+    parts.push(
+      <span key="used" className="inline-flex items-center gap-1 bg-gray-50 text-gray-700 border border-gray-200 rounded-full px-2 py-0.5 text-xs font-medium">
+        {used} usado{used > 1 ? 's' : ''}
+      </span>
+    );
+  }
+  if (parts.length === 0) {
+    return <span className="text-xs text-muted-foreground italic">—</span>;
+  }
+  return <div className="flex flex-wrap gap-1.5">{parts}</div>;
 }
 
 // Ordem de criticidade para status: OUT_OF_STOCK (1º), LOW_STOCK (2º), AVAILABLE (3º)
@@ -186,7 +227,7 @@ export function getStockColumns(actions: StockTableActions): StockColumns {
           </div>
         );
       },
-      sortFn: (rowA: any, rowB: any) => {
+      sortFn: (rowA: { original: StockItem }, rowB: { original: StockItem }) => {
         const aHas = !!rowA.original.activeLot;
         const bHas = !!rowB.original.activeLot;
         if (aHas && !bHas) return -1;
@@ -360,12 +401,22 @@ export function getStockColumns(actions: StockTableActions): StockColumns {
         );
       },
       cell: (info) => statusBadge(info.getValue()),
-      sortFn: (rowA: any, rowB: any) => {
+      sortFn: (rowA: { original: StockItem }, rowB: { original: StockItem }) => {
         const pA = STATUS_PRIORITY[rowA.original.status] ?? 99;
         const pB = STATUS_PRIORITY[rowB.original.status] ?? 99;
         return pA - pB;
       },
     }),
+
+    columnHelper.accessor(
+      (row) => row,
+      {
+        id: "breakdown",
+        header: "Unidades",
+        cell: (info) => breakdownBadge(info.getValue()),
+        size: 160,
+      }
+    ),
 
     columnHelper.display({
       id: "actions",
@@ -374,6 +425,11 @@ export function getStockColumns(actions: StockTableActions): StockColumns {
         const item = row.original;
         const isInk = item.category === "INK_SUPPLY";
         const isMedia = item.category === "PAPER_MEDIA";
+        // Bobina = mídia em rolo (unidade "m"). Folha (fls) e demais unidades
+        // são itens unitários e nunca passam pelo fluxo de bobina.
+        const isRoll = isMedia && item.unit === "m";
+        const isSheet = isMedia && item.unit !== "m";
+        const canDelete = actions.userRole === "DEV_MASTER" || actions.userRole === "ADMIN";
 
         return (
           <div className="flex items-center justify-end gap-1.5 pr-2">
@@ -384,7 +440,7 @@ export function getStockColumns(actions: StockTableActions): StockColumns {
               onClick={() => actions.onViewLots(item)}
             >
               <RiEyeLine className="size-3.5 text-gray-600" />
-              {isInk ? "Ver Frascos" : isMedia ? "Ver Bobinas" : "Ver Lotes"}
+              {isInk ? "Ver Frascos" : isRoll ? "Ver Bobinas" : isSheet ? "Ver Folhas" : "Ver Lotes"}
             </Button>
 
             {actions.onAddLot && (isInk || isMedia) ? (
@@ -393,9 +449,33 @@ export function getStockColumns(actions: StockTableActions): StockColumns {
                 size="sm"
                 className="h-8 px-2 rounded-lg text-xs font-semibold text-muted-foreground hover:text-gray-900"
                 onClick={() => actions.onAddLot?.(item)}
-                title={isInk ? "Adicionar frasco de tinta" : "Adicionar bobina"}
+                title={isInk ? "Adicionar frasco de tinta" : isRoll ? "Adicionar bobina" : "Adicionar folhas (entrada de estoque)"}
               >
                 <RiAddLine className="size-4" />
+              </Button>
+            ) : null}
+
+            {actions.onEditItem ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2 rounded-lg text-xs font-semibold text-muted-foreground hover:text-gray-900"
+                onClick={() => actions.onEditItem?.(item)}
+                title="Editar item (nome, quantidade, mínimo)"
+              >
+                <RiPencilLine className="size-4" />
+              </Button>
+            ) : null}
+
+            {actions.onConsumeInk && isInk ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2 rounded-lg text-xs font-semibold text-purple-600 hover:text-purple-900"
+                onClick={() => actions.onConsumeInk?.(item)}
+                title="Dar baixa manual em tinta/toner"
+              >
+                <RiExchangeLine className="size-4" />
               </Button>
             ) : null}
 
@@ -410,10 +490,22 @@ export function getStockColumns(actions: StockTableActions): StockColumns {
                 <RiExchangeLine className="size-4" />
               </Button>
             ) : null}
+
+            {canDelete && actions.onDeleteItem ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2 rounded-lg text-xs font-semibold text-red-600 hover:text-red-900"
+                onClick={() => actions.onDeleteItem?.(item)}
+                title="Excluir material (apenas DEV_MASTER/ADMIN)"
+              >
+                <RiDeleteBinLine className="size-4" />
+              </Button>
+            ) : null}
           </div>
         );
       },
-      size: 140,
+      size: 180,
     }),
   ] as unknown as StockColumns;
 }

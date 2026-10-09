@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
   useLegacyTable,
   getCoreRowModel,
@@ -51,7 +51,8 @@ export function StockDataTable({
     defaultCategoryFilter
   );
 
-  React.useEffect(() => {
+  // Reset category filter when defaultCategoryFilter changes
+  useEffect(() => {
     setCategoryFilter(defaultCategoryFilter);
   }, [defaultCategoryFilter]);
 
@@ -115,7 +116,7 @@ export function StockDataTable({
   }, [items, categoryFilter, statusFilter, machineFilter, search]);
 
   // Instância de TanStack Table via useLegacyTable
-  const table = useLegacyTable({
+  const table = useLegacyTable<StockItem>({
     data: filteredData,
     columns: columns as any,
     state: {

@@ -33,7 +33,7 @@ export const stockItems = sqliteTable('stock_items', {
   subType: text('sub_type'),
   unit: text('unit').notNull(),
   width: real('width'),
-  code: text('code'),
+  code: text('code').unique(),
   currentQuantity: real('current_quantity').notNull().default(0),
   minQuantity: real('min_quantity').notNull().default(0),
   imageUrl: text('image_url'),
@@ -41,15 +41,7 @@ export const stockItems = sqliteTable('stock_items', {
   status: text('status', { enum: ['AVAILABLE', 'LOW_STOCK', 'OUT_OF_STOCK'] }).default('AVAILABLE'),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 }, (t) => [
-  /**
-   * Indice **nao unico** de proposito. `code` e o atalho que o operador digita, e o
-   * seed de midia HP ja grava codigos repetidos entre larguras (`011983` em RP420
-   * 0,76m e 1,52m; `0229` em DE530 0,76m e 1,52m). Um UNIQUE aqui reprovaria a
-   * migration em qualquer banco semeado, entao a ambiguidade e tratada em codigo
-   * (`resolveItemByCode` em `lib/ink-units.ts`): codigo que casa com mais de um
-   * item vira erro explicito, nunca um palpite silencioso (mesmo principio da BR-010).
-   */
-  index('stock_items_code_idx').on(t.code),
+  uniqueIndex('stock_items_code_uq').on(t.code),
 ]);
 
 export const bobinas = sqliteTable('bobinas', {
@@ -388,7 +380,7 @@ export const printJobs = sqliteTable('print_jobs', {
   inkProfile: text('ink_profile'),
 
   status: text('status').default('completed'),
-  materialStatus: text('material_status', { enum: ['BOUND', 'PENDING_BIND'] }).default('PENDING_BIND'),
+  materialStatus: text('material_status', { enum: ['BOUND', 'PENDING_BIND', 'DEDUCTED'] }).default('PENDING_BIND'),
   printEndDate: text('print_end_date'),
 
   stockDeducted: integer('stock_deducted', { mode: 'boolean' }).default(false),
@@ -448,7 +440,7 @@ export const mimakiJobs = sqliteTable('mimaki_jobs', {
   passCount: integer('pass_count'),
   resolutionDpi: integer('resolution_dpi'),
   printDirection: text('print_direction'),
-  materialStatus: text('material_status', { enum: ['BOUND', 'PENDING_BIND'] }).default('PENDING_BIND'),
+  materialStatus: text('material_status', { enum: ['BOUND', 'PENDING_BIND', 'DEDUCTED'] }).default('PENDING_BIND'),
   stockItemId: text('stock_item_id').references(() => stockItems.id),
   stockDeducted: integer('stock_deducted', { mode: 'boolean' }).default(false),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),

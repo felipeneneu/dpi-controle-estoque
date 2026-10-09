@@ -1,12 +1,10 @@
 import { eq, count } from 'drizzle-orm';
 import { db } from '../../db/index.js';
-import { stockItems, stockTransactions, notifications, printJobs, users, machineItems } from '../../db/schema.js';
+import { stockItems, stockTransactions, printJobs, users, machineItems } from '../../db/schema.js';
 import type { StockItem } from '../../db/schema.js';
 import { newId } from '../../lib/ids.js';
-import { sendToRecipients } from '../../lib/whatsapp.js';
-import { getSetting } from '../../lib/settings.js';
 import type { NewKonicaJob } from './job-detector.js';
-import { incrementPagesPrinted, resetTonerPageCounter } from './telemetry-store.js';
+import { incrementPagesPrinted } from './telemetry-store.js';
 
 const SYSTEM_ACTOR_ID = 'konica-agent-system';
 
@@ -33,23 +31,12 @@ async function ensureSystemUser(): Promise<string> {
   return ensureUserPromise;
 }
 
-const KONICA_TONER_COLOR_MAP: Record<string, keyof NonNullable<NewKonicaJob['tonerByColor']>> = {
-  'konica_toner-cyan': 'cyan',
-  'konica_toner-magenta': 'magenta',
-  'konica_toner-yellow': 'yellow',
-  'konica_toner-black': 'black',
-};
-
 const CONVERSION_FACTOR_BY_UNIT = {
   fls: 1,
   rms: 500,
   'pk': 50,
   'bl': 2500,
 } as const;
-
-// Toner do C3070 não é exposto por job no PrintManager (descoberta T1).
-// Usa contagem de páginas para estimar consumo de toner.
-const TONER_EXPOSED = false;
 
 function computeStatus(current: number, min: number): 'AVAILABLE' | 'LOW_STOCK' | 'OUT_OF_STOCK' {
   if (current <= 0) return 'OUT_OF_STOCK';
@@ -203,40 +190,14 @@ export async function deductStockForJob(
     }
   }
 
-  const toner = job.tonerByColor;
-  if (TONER_EXPOSED && toner) {
-    for (const [sku, colorKey] of Object.entries(KONICA_TONER_COLOR_MAP)) {
-      const quantity = toner[colorKey];
-      if (!quantity || quantity <= 0) continue;
-
-      const items = await db.select().from(stockItems).where(eq(stockItems.name, sku)).all();
-      const item = items[0];
-      if (!item) continue;
-
-      const newQty = Math.max(0, item.currentQuantity - quantity);
-      const status = computeStatus(newQty, item.minQuantity);
-
-      await db.update(stockItems).set({ currentQuantity: newQty, status }).where(eq(stockItems.id, item.id));
-
-      await db.insert(stockTransactions).values({
-        id: newId(),
-        itemId: item.id,
-        type: 'OUT',
-        quantity,
-        reason: `Konica Agent: job ${job.jobName}`,
-        userId: actorId,
-        userName: 'Konica Agent',
-      });
-
-      if (status === 'LOW_STOCK' || status === 'OUT_OF_STOCK') {
-        await notifyStock(item, newQty, status, actorId, io);
-      }
-    }
-  } else if (job.paperName) {
-    console.log('[Konica Agent] Toner não exposto pelo PrintManager — usando contagem de páginas para estimativa.');
+  // Toner do C3070 nao e exposto por job no PrintManager (descoberta T1).
+  // O nivel e monitorado via telemetria (%) e alertado pelo Brain (checkLowInkCartridges).
+  // Nao ha debito automatico de toner por job (BR-013 / BR-054).
+  if (job.paperName) {
+    console.log('[Konica Agent] Toner monitorado por telemetria — sem debito automatico por job.');
   }
 
-  // Incrementa contador de páginas para cálculo de toner
+  // Incrementa contador de páginas para estimativa de toner (historico)
   if (job.pages && job.pages > 0) {
     await incrementPagesPrinted(job.pages);
   }

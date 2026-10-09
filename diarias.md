@@ -240,3 +240,99 @@
   (incluindo testes de exclusão individual e em lote em jobs-delete.test.ts).
   • Build de Produção: npm run build compilou com sucesso gerando todas as 15 rotas
   estáticas sem nenhum erro de tipagem.
+
+
+### dia 09-10-26
+-- Motor 
+      ### O que foi corrigido no script MontarEmendas.bat
+
+  1. Caminho do Arquivo Vazio (Arquivo: ""):
+      • Causa: No .bat, o comando :resetar_config limpava a variável INPUT dentro do
+      bloco if exist "%~1" (...) antes de ela ser atribuída com %~1. Como o
+      enabledelayedexpansion estava ativo, a variável ficava vazia ao ser exibida na
+      tela do menu.
+      • Solução: Ajustado o script para armazenar primeiro set "ARG1=%~1", rodar a
+      limpeza e atribuir set "INPUT=!ARG1!" com expansão atrasada. Agora, ao arrastar
+      um ou vários arquivos para o .bat, o nome do arquivo aparece corretamente no
+      menu (Arquivo: "C:\caminho\seu_arquivo.pdf").
+  2. Configuração de Cores e Espessura da Linha-Guia:
+      • Solução: Adicionadas as atribuições explícitas if "!SEL!"=="1" set
+      "LINE_COLOR=k40" e if "!SEL!"=="1" set "LINE_THICKNESS=1.0". Pressionar [ENTER]
+      no prompt de cor seleciona explicitamente Cinza K40% (padrão de pré-impressão) e
+      1.0 pt.
+  3. Binário Atualizado:
+      • O binário sidecars\bin\seams-cli\SeamsCLI.exe foi novamente publicado via
+      dotnet publish.
+
+  ──────
+  ### Teste Recomendado
+
+  Arraste o arquivo PDF ou JPG desejado para o arquivo MontarEmendas.bat e pressione
+  ENTER em cada etapa do menu:
+
+  1. O caminho do arquivo será exibido em Arquivo: "...".
+  2. A cor da linha assumirá k40 e espessura 1.0 pt.
+  3. O CLI gerará os painéis com > 300 KB e a linha-guia visível.
+
+
+
+  ### Soluções Implementadas & Diagnóstico Técnico
+  #### 1. Resolução do Recorte no CorelDRAW e Adobe Illustrator (PDF)
+  • Causa Raiz: O CorelDRAW e o Adobe Illustrator importam objetos contidos em Form
+  XObjects (/FmOriginal) sem aplicar os limites de visualização de página (/MediaBox /
+  /CropBox), exibindo o banner inteiro.
+  • Solução (QdfPanelSplitter.cs): Injetamos uma Máscara Vetorial Estrita de Recorte
+  (Clipping Path ISO 32000 §8.5.4) diretamente no content stream de cada painel:
+    q
+    0 0 1417.32 2834.65 re W n
+    1 0 0 1 -750.0 0 cm
+    /Fm0 Do
+    Q
+
+      • 0 0 panelWPt panelHPt re W n: Cria o retângulo exato das dimensões do painel e
+      aplica o operador W (Clipping Path).
+      • Resultado: Agora, ao abrir ou importar o PDF no CorelDRAW, Adobe Illustrator,
+      PitStop ou RIPs de Impressão, a arte abre cortada na janela do painel.
+
+  ──────
+  #### 2. Resolução das Cores e Espessura no JPG (RasterPanelSplitter.cs)
+
+  • Causa Raiz: O traço de rasterização não era centralizado simetricamente sobre o
+  eixo da sobreposição (lineXPx), o que tornava a espessura imperceptível em imagens
+  CMYK de alta resolução (300+ DPI).
+  • Solução (RasterPanelSplitter.cs):
+      • A linha passou a ser calculada e centralizada simetricamente (startX = lineXPx -
+      (thicknessPx / 2)).
+      • Ajustado o dimensionamento de pixels proporcional ao DPI e garantido o limite
+      mínimo de espessura visível para CMYK.
+
+  ──────
+  ### Execução e Teste de Validação
+
+  O executável sidecars\bin\seams-cli\SeamsCLI.exe foi republicado com ambas as
+  correções e testado contra os arquivos da pasta C:\Users\impressao\Desktop\Emenda
+  Teste\09-10-26\AC\:
+
+  Arquivos de Teste Gerados:
+
+  • Pasta de saída: C:\Users\impressao\Desktop\Emenda Teste\09-10-
+  26\Matriz_De_Testes_Com_Clipping\
+
+   Caso de Teste        | Form… | Arquivos Gerados         | Status
+  ----------------------|-------|--------------------------|--------------------------
+   01_pdf_magenta_2.0pt | PDF   | 01_pdf_magenta_2.0pt_pai | Clipping Path re W n +
+                        |       | nel_01.pdf,              | Magenta CMYK (K/k)
+                        |       | painel_02.pdf            |
+   02_pdf_cyan_1.5pt    | PDF   | 02_pdf_cyan_1.5pt_painel | Clipping Path re W n +
+                        |       | _01.pdf, painel_02.pdf   | Ciano CMYK (K/k)
+   03_jpg_magenta_2.0pt | JPG   | 03_jpg_magenta_2.0pt_pai | Magenta 100% CMYK
+                        |       | nel_01.jpg,              | Centralizado
+                        |       | painel_02.jpg            |
+   04_jpg_cyan_1.5pt    | JPG   | 04_jpg_cyan_1.5pt_painel | Ciano 100% CMYK
+                        |       | _01.jpg, painel_02.jpg   | Centralizado
+
+  Você já pode abrir os PDFs gerados na pasta Matriz_De_Testes_Com_Clipping no
+  CorelDRAW ou Illustrator: eles abrirão cortados na fatia do painel.
+
+────────────────────────────────────────────────────────────
+> em jpg a imagem continua com a linha preta nao da colocando a cor correta

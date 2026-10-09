@@ -7,7 +7,7 @@ import { newId } from '../lib/ids.js';
 import { authenticate, authorize } from '../middleware/auth.js';
 import { formatLevel, levelPct, parseCartridgeUnit } from '../lib/ink-units.js';
 import { DEFAULT_INK_CAPACITY_ML } from '../agents/hp-latex/constants.js';
-import { CodigoAmbíguoError, candidatosPorCodigo, resolveItemByCode, saldoDerivado } from '../lib/ink-balance.js';
+import { CodigoNaoEncontradoError, candidatosPorCodigo, resolveItemByCode, saldoDerivado } from '../lib/ink-balance.js';
 
 /**
  * Rotas de cartucho de tinta/toner (ADR-052 / BR-052).
@@ -387,13 +387,8 @@ export async function cartuchoRoutes(app: FastifyInstance) {
       try {
         itemId = await resolveItemByCode(body.byCode);
       } catch (err) {
-        if (err instanceof CodigoAmbíguoError) {
-          const candidatos = await candidatosPorCodigo(err.codigo);
-          return reply.code(409).send({
-            error: err.message,
-            codigo: err.codigo,
-            candidatos,
-          });
+        if (err instanceof CodigoNaoEncontradoError) {
+          return reply.code(404).send({ error: err.message, codigo: err.codigo });
         }
         const message = err instanceof Error ? err.message : 'Falha ao resolver o código.';
         return badRequest(reply, message);

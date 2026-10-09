@@ -4,12 +4,15 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { getUser, type StockItem, type StockCategory } from "@/lib/api";
-import { useStockItems, useStockTransaction, useAddRoll } from "@/lib/queries/stock";
+import { useStockItems, useStockTransaction, useAddRoll, useDeleteStockItem } from "@/lib/queries/stock";
 import { useMachines } from "@/lib/queries/machines";
 import { useStockSocket } from "@/hooks/use-stock-socket";
 import { LoadingState } from "@/components/ui/spinner";
 import { StockDataTable } from "@/components/stock/stock-data-table";
+import { StockSearch } from "@/components/stock/stock-search";
 import { StockItemDrilldownDialog } from "@/components/stock/stock-item-drilldown-dialog";
+import { StockInkConsumptionDialog } from "@/components/stock/stock-ink-consumption-dialog";
+import EditStockItemDialog from "@/components/edit-stock-item-dialog";
 import { LabelImpositionDialog } from "@/components/label-imposition-dialog";
 import {
   Dialog,
@@ -19,9 +22,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getUser as getUserApi } from "@/lib/api";
 
 function EstoqueContent() {
   const router = useRouter();
@@ -42,9 +56,16 @@ function EstoqueContent() {
   const itemsQuery = useStockItems();
   const items = itemsQuery.data ?? [];
   const machines = useMachines().data ?? [];
+  const user = getUserApi();
+  const userRole = user?.role ?? "OPERATOR";
+
+  const deleteMutation = useDeleteStockItem();
 
   // Drilldown dialog
   const [selectedItem, setSelectedItem] = useState<StockItem | null>(null);
+
+  // Modal de exclusão
+  const [deleteTarget, setDeleteTarget] = useState<StockItem | null>(null);
 
   // Modal de movimentação manual (IN / OUT)
   const [transactionTarget, setTransactionTarget] = useState<StockItem | null>(null);
@@ -57,8 +78,14 @@ function EstoqueContent() {
   const [rollTarget, setRollTarget] = useState<StockItem | null>(null);
   const addRoll = useAddRoll();
 
+  // Modal de edição do item (nome, quantidade, mínimo)
+  const [editTarget, setEditTarget] = useState<StockItem | null>(null);
+
   // Modal de imposição de etiquetas Konica
   const [labelImpositionOpen, setLabelImpositionOpen] = useState(false);
+
+  // Modal de consumo de tinta
+  const [inkConsumptionTarget, setInkConsumptionTarget] = useState<StockItem | null>(null);
 
   useEffect(() => {
     if (!getUser()) {
@@ -97,23 +124,67 @@ function EstoqueContent() {
     }
   }
 
-  function handleOpenAddLot(item: StockItem) {
-    if (item.category === "PAPER_MEDIA") {
-      setRollTarget(item);
-    } else {
-      setSelectedItem(item);
+  async function confirmDelete() {
+    if (!deleteTarget) return;
+    try {
+      await deleteMutation.mutateAsync(deleteTarget.id);
+      toast.success("Material excluído com sucesso!");
+      setDeleteTarget(null);
+    } catch {
+      toast.error("Erro ao excluir material");
     }
+  }
+
+  function handleOpenAddLot(item: StockItem) {
+    // Só mídia em rolo (unidade "m") cria bobina. Folha (fls) e demais
+    // unidades somam quantidade na mesma linha via entrada de estoque (IN).
+    if (item.category === "PAPER_MEDIA" && item.unit === "m") {
+      setRollTarget(item);
+    } else if (item.category === "INK_SUPPLY") {
+      setSelectedItem(item);
+    } else {
+      setQty("");
+      setReason("");
+      setTransactionTarget(item);
+      setTransactionType("IN");
+    }
+  }
+
+  function handleDeleteItem(item: StockItem) {
+    setDeleteTarget(item);
+  }
+
+  function handleConsumeInk(item: StockItem) {
+    setInkConsumptionTarget(item);
   }
 
   const loading = itemsQuery.isLoading;
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900">Estoque de Materiais & Insumos</h2>
-        <p className="text-sm text-muted-foreground">
-          Gestão centralizada de bobinas, papéis, tintas por unidade e químicos
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Estoque de Materiais & Insumos</h2>
+          <p className="text-sm text-muted-foreground">
+            Gestão centralizada de bobinas, papéis, tintas por unidade e químicos
+          </p>
+        </div>
+        <div className="w-full sm:w-auto">
+          <StockSearch
+            onSelectItem={(item) => {
+              const catParam =
+                item.category === "PAPER_MEDIA"
+                  ? "bobinas"
+                  : item.category === "INK_SUPPLY"
+                  ? "tintas"
+                  : "TODOS";
+              router.push(`/estoque?cat=${catParam}`);
+              setSelectedItem(item);
+            }}
+            placeholder="Buscar por SKU (exato) ou nome..."
+            autoFocus
+          />
+        </div>
       </div>
 
       {loading ? (
@@ -130,6 +201,10 @@ function EstoqueContent() {
               setTransactionType(type);
             },
             onAddLot: handleOpenAddLot,
+            onEditItem: (item) => setEditTarget(item),
+            onDeleteItem: handleDeleteItem,
+            onConsumeInk: handleConsumeInk,
+            userRole,
           }}
           onPrintLabels={() => setLabelImpositionOpen(true)}
         />
@@ -139,6 +214,19 @@ function EstoqueContent() {
       <StockItemDrilldownDialog
         item={selectedItem}
         onClose={() => setSelectedItem(null)}
+      />
+
+      {/* Modal de Consumo de Tinta/Toner */}
+      <StockInkConsumptionDialog
+        open={!!inkConsumptionTarget}
+        onOpenChange={(open) => !open && setInkConsumptionTarget(null)}
+        item={inkConsumptionTarget}
+      />
+
+      {/* Modal de Edição do Item (nome, quantidade, mínimo) */}
+      <EditStockItemDialog
+        item={editTarget}
+        onClose={() => setEditTarget(null)}
       />
 
       {/* Modal de Adicionar Rolo (Bobina) */}
@@ -212,6 +300,27 @@ function EstoqueContent() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Modal de Confirmação de Exclusão */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={(open: boolean) => !open && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir material?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir <strong>{deleteTarget?.name}</strong> (SKU: {deleteTarget?.code})?
+              Esta ação removerá o item, todas as suas bobinas, cartuchos, lotes de tinta e histórico de transações.
+              <br /><br />
+              <strong className="text-red-600">Esta ação não pode ser desfeita.</strong>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
+              Excluir permanentemente
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Modal de Imposição de Etiquetas Konica */}
       <LabelImpositionDialog

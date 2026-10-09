@@ -306,7 +306,7 @@ export async function stockRoutes(app: FastifyInstance) {
       subType: data.subType,
       unit: data.unit,
       width: data.width,
-      code: data.code,
+      code: data.code ?? null,
       label: data.label,
       currentQuantity: current,
       minQuantity: min,

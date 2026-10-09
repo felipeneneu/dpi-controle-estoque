@@ -101,20 +101,6 @@ export async function itemTemCartuchos(stockItemId: string): Promise<boolean> {
   return !!row;
 }
 
-export class CodigoAmbíguoError extends Error {
-  readonly codigo: string;
-  readonly itemIds: string[];
-  constructor(codigo: string, itemIds: string[]) {
-    super(
-      `Codigo "${codigo}" e ambiguo: ${itemIds.length} itens do estoque usam esse mesmo codigo. ` +
-        `Desambigue no cadastro antes de lancar.`,
-    );
-    this.name = 'CodigoAmbíguoError';
-    this.codigo = codigo;
-    this.itemIds = itemIds;
-  }
-}
-
 export class CodigoNaoEncontradoError extends Error {
   readonly codigo: string;
   constructor(codigo: string) {
@@ -127,32 +113,24 @@ export class CodigoNaoEncontradoError extends Error {
 /**
  * Resolve o item a partir do codigo que o operador digitou.
  *
- * **Recusa adivinhar.** O seed de midia HP ja grava codigo repetido entre larguras
- * (`011983` em RP420 0,76m e 1,52m; `0229` em DE530 0,76m e 1,52m), entao um
- * `LIMIT 1` aqui levaria o operador a dar baixa no item errado - e o principio da
- * BR-010: matcher nao pode falhar em silencio. Codigo com mais de um candidato
- * vira `CodigoAmbíguoError`, e o dialogo mostra os candidatos para o operador
- * escolher. Nao ha indice UNIQUE em `stock_items.code` pelo mesmo motivo: ele
- * reprovaria a migration em qualquer banco semeado.
+ * Com indice UNIQUE em `stock_items.code`, a busca e deterministica.
+ * Codigo nao encontrado vira `CodigoNaoEncontradoError`.
  */
 export async function resolveItemByCode(codigo: string): Promise<string> {
   const trimmed = codigo.trim();
   if (!trimmed) throw new CodigoNaoEncontradoError(codigo);
 
-  const rows = await db
+  const row = await db
     .select({ id: stockItems.id, name: stockItems.name })
     .from(stockItems)
     .where(eq(stockItems.code, trimmed))
-    .all();
+    .get();
 
-  if (rows.length === 0) throw new CodigoNaoEncontradoError(trimmed);
-  if (rows.length > 1) {
-    throw new CodigoAmbíguoError(trimmed, rows.map((r) => r.id));
-  }
-  return rows[0]!.id;
+  if (!row) throw new CodigoNaoEncontradoError(trimmed);
+  return row.id;
 }
 
-/** Candidatos de um codigo ambiguo, para o dialogo pedir desambiguacao ao operador. */
+/** Candidatos de um codigo (retorna array vazio se nao encontrado, 1 se unico). */
 export async function candidatosPorCodigo(
   codigo: string,
 ): Promise<{ id: string; name: string }[]> {

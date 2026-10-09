@@ -202,6 +202,23 @@ export interface StockItem {
     machineName?: string | null;
   } | null;
   origemSaldo?: string | null;
+  // Itens individuais (bobinas, cartuchos, tinta_lotes) para breakdown
+  individualItems?: IndividualStockItem[];
+}
+
+export interface IndividualStockItem {
+  id: string;
+  serial: string;
+  state: 'NEW' | 'IN_USE' | 'USED' | 'BLOCKED' | 'SCRAPPED' | 'FINISHED';
+  location: string;
+  machineId?: string | null;
+  machineName?: string | null;
+  channel?: string | null;
+  levelCurrent?: number | null;
+  levelCapacity?: number | null;
+  unit?: string | null;
+  metersRemaining?: number | null;
+  cartridgeCode?: string | null;
 }
 
 export interface StockTransaction {

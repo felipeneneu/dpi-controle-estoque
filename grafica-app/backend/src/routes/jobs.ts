@@ -636,7 +636,7 @@ export async function jobRoutes(app: FastifyInstance) {
       }
 
       if (targetBobina) {
-        const remaining = Math.max(0, toPrecision(targetBobina.metersRemaining - totalLinearM, 3));
+        const remaining = Math.max(0, toPrecision((targetBobina.metersRemaining ?? 0) - totalLinearM, 3));
         await db
           .update(bobinas)
           .set({

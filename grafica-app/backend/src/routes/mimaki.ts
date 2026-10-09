@@ -173,7 +173,8 @@ export async function deductMimakiStockForJob(
       };
     }
 
-    const isFolhaOuUnidade = item.unit !== 'm' || item.unit === 'fls' || item.unit === 'rms' || item.unit === 'pk' || item.unit === 'un';
+    const unidadesNaoMetro = ['fls', 'rms', 'pk', 'un'] as const;
+    const isFolhaOuUnidade = item.unit !== 'm' || unidadesNaoMetro.includes(item.unit as any);
 
     if (!isFolhaOuUnidade && job.bobinaId) {
       activeBobina =

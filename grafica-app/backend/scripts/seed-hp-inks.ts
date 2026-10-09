@@ -1,21 +1,24 @@
 import { eq, and } from 'drizzle-orm';
 import { db } from '../src/db/index.js';
-import { stockItems, machines, machineItems } from '../src/db/schema.js';
+import { stockItems, machines, machineItems, cartuchos } from '../src/db/schema.js';
 import { newId } from '../src/lib/ids.js';
 
-const HP_INKS: { sku: string; label: string; color: string }[] = [
-  { sku: 'hp_tinta-cyan', label: 'Cyan', color: 'Cyan' },
-  { sku: 'hp_tinta-light-cyan', label: 'Light Cyan', color: 'Light Cyan' },
-  { sku: 'hp_tinta-magenta', label: 'Magenta', color: 'Magenta' },
-  { sku: 'hp_tinta-light-magenta', label: 'Light Magenta', color: 'Light Magenta' },
-  { sku: 'hp_tinta-yellow', label: 'Yellow', color: 'Yellow' },
-  { sku: 'hp_tinta-black', label: 'Black', color: 'Black' },
-  { sku: 'hp_tinta-optimizer', label: 'Latex Optimizer', color: 'Optimizer' },
+/**
+ * HP Latex 330 - Part numbers reais (CZ###A)
+ * Cada tinta tem 775 ml de capacidade nominal.
+ */
+const HP_INKS: { sku: string; code: string; label: string; color: string; channel: string }[] = [
+  { sku: 'hp_tinta-black', code: 'CZ682A', label: 'Black', color: 'Preto', channel: 'K' },
+  { sku: 'hp_tinta-cyan', code: 'CZ683A', label: 'Cyan', color: 'Ciano', channel: 'C' },
+  { sku: 'hp_tinta-magenta', code: 'CZ684A', label: 'Magenta', color: 'Magenta', channel: 'M' },
+  { sku: 'hp_tinta-yellow', code: 'CZ685A', label: 'Yellow', color: 'Amarelo', channel: 'Y' },
+  { sku: 'hp_tinta-light-cyan', code: 'CZ686A', label: 'Light Cyan', color: 'Ciano Claro', channel: 'LC' },
+  { sku: 'hp_tinta-light-magenta', code: 'CZ687A', label: 'Light Magenta', color: 'Magenta Claro', channel: 'LM' },
+  { sku: 'hp_tinta-optimizer', code: 'CZ706A', label: 'Latex Optimizer', color: 'Otimizador', channel: 'OP' },
 ];
 
 const CAPACITY_ML = 775;
-const SIMULATED_CARTRIDGES = 2;
-const INITIAL_ML = CAPACITY_ML * SIMULATED_CARTRIDGES;
+const CARTRIDGES_PER_COLOR = 2; // 2 cartuchos por cor em estoque inicial
 const MIN_ML = CAPACITY_ML; // alerta quando cair abaixo de 1 cartucho
 
 async function run() {
@@ -32,58 +35,91 @@ async function run() {
 
   let inserted = 0;
   let updated = 0;
-  let skipped = 0;
+  let cartuchosCreated = 0;
 
   for (const ink of HP_INKS) {
     const existing = await db.select().from(stockItems).where(eq(stockItems.name, ink.sku)).all();
 
+    let itemId: string;
+
     if (existing.length === 0) {
+      itemId = newId();
       await db.insert(stockItems).values({
-        id: newId(),
+        id: itemId,
         name: ink.sku,
+        code: ink.code,
         category: 'INK_SUPPLY',
-        subType: 'Cartucho',
+        subType: 'Cartucho HP Latex 831',
         unit: 'ml',
-        currentQuantity: INITIAL_ML,
+        width: null,
+        currentQuantity: 0, // Saldo derivado dos cartuchos (BR-052)
         minQuantity: MIN_ML,
-        label: `HP 831 ${ink.label} (simulado ${SIMULATED_CARTRIDGES} cartuchos)`,
+        label: `HP 831 ${ink.label} (${ink.code}) - ${CAPACITY_ML}ml`,
         status: 'AVAILABLE',
       });
       inserted++;
     } else {
-      const item = existing[0]!;
+      itemId = existing[0]!.id;
       await db.update(stockItems)
         .set({
-          currentQuantity: INITIAL_ML,
+          code: ink.code,
+          currentQuantity: 0, // Saldo derivado dos cartuchos
           minQuantity: MIN_ML,
-          label: `HP 831 ${ink.label} (simulado ${SIMULATED_CARTRIDGES} cartuchos)`,
+          label: `HP 831 ${ink.label} (${ink.code}) - ${CAPACITY_ML}ml`,
           status: 'AVAILABLE',
         })
-        .where(eq(stockItems.id, item.id));
+        .where(eq(stockItems.id, itemId));
       updated++;
     }
 
-    const itemRows = await db.select().from(stockItems).where(eq(stockItems.name, ink.sku)).all();
-    const item = itemRows[0]!;
-
+    // Vincular à máquina HP
     const link = await db
       .select()
       .from(machineItems)
-      .where(and(eq(machineItems.machineId, hp.id), eq(machineItems.stockItemId, item.id)))
+      .where(and(eq(machineItems.machineId, hp.id), eq(machineItems.stockItemId, itemId)))
       .get();
 
     if (!link) {
       await db.insert(machineItems).values({
         id: newId(),
         machineId: hp.id,
-        stockItemId: item.id,
+        stockItemId: itemId,
       });
-      skipped++;
+    }
+
+    // Criar cartuchos (NOVOS em deposito) - BR-052
+    const existingCartuchos = await db
+      .select()
+      .from(cartuchos)
+      .where(and(eq(cartuchos.stockItemId, itemId), eq(cartuchos.state, 'NEW')))
+      .all();
+
+    if (existingCartuchos.length === 0) {
+      for (let i = 1; i <= CARTRIDGES_PER_COLOR; i++) {
+        const cartuchoId = newId();
+        const serial = `CTN-${ink.code}-${String(i).padStart(2, '0')}`;
+        await db.insert(cartuchos).values({
+          id: cartuchoId,
+          stockItemId: itemId,
+          serial,
+          channel: ink.channel,
+          unit: 'ml',
+          levelInitial: CAPACITY_ML,
+          levelCurrent: CAPACITY_ML,
+          levelCapacity: CAPACITY_ML,
+          state: 'NEW',
+          location: 'deposito',
+          cartridgeCode: serial,
+          telemetrySku: ink.code,
+          createdAt: Date.now(),
+        });
+        cartuchosCreated++;
+      }
     }
   }
 
   console.log(
-    `[seed-hp-inks] ${inserted} tintas criadas, ${updated} atualizadas, ${skipped} vínculos com HP adicionados.`,
+    `[seed-hp-inks] ${inserted} tintas criadas, ${updated} atualizadas, ${cartuchosCreated} cartuchos criados.`,
   );
 }
 
