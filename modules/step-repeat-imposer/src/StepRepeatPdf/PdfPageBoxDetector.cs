@@ -10,7 +10,9 @@ public record PdfBoxInfo(
     Rect2D? BleedBox,
     double EffectiveWidthMm,
     double EffectiveHeightMm,
-    bool HasTrimBox
+    bool HasTrimBox,
+    double LeftCropMm = 0.0,
+    double TopCropMm = 0.0
 );
 
 /// <summary>
@@ -37,33 +39,46 @@ public static class PdfPageBoxDetector
         var page = doc.Pages[0];
 
         // 1. Obter MediaBox (obrigatório em PDF ISO 32000)
-        double mediaW = page.Width * PointsToMm;
-        double mediaH = page.Height * PointsToMm;
-        var mediaBox = new Rect2D(0, 0, mediaW, mediaH);
+        double mediaX1 = page.MediaBox.X1 * PointsToMm;
+        double mediaY1 = page.MediaBox.Y1 * PointsToMm;
+        double mediaX2 = page.MediaBox.X2 * PointsToMm;
+        double mediaY2 = page.MediaBox.Y2 * PointsToMm;
+        double mediaW = (mediaX2 - mediaX1);
+        double mediaH = (mediaY2 - mediaY1);
+        var mediaBox = new Rect2D(mediaX1, mediaY1, mediaW, mediaH);
 
         Rect2D? trimBox = null;
         Rect2D? bleedBox = null;
+        double leftCropMm = 0.0;
+        double topCropMm = 0.0;
 
         // 2. Verificar TrimBox do PDF se declarada
         var trimRect = page.TrimBox;
         if (trimRect != null && trimRect.Width > 0 && trimRect.Height > 0)
         {
-            double tw = trimRect.Width * PointsToMm;
-            double th = trimRect.Height * PointsToMm;
-            double tx = trimRect.X1 * PointsToMm;
-            double ty = trimRect.Y1 * PointsToMm;
-            trimBox = new Rect2D(tx, ty, tw, th);
+            double tx1 = trimRect.X1 * PointsToMm;
+            double ty1 = trimRect.Y1 * PointsToMm;
+            double tx2 = trimRect.X2 * PointsToMm;
+            double ty2 = trimRect.Y2 * PointsToMm;
+            double tw = tx2 - tx1;
+            double th = ty2 - ty1;
+
+            trimBox = new Rect2D(tx1, ty1, tw, th);
+            leftCropMm = Math.Max(0.0, tx1 - mediaX1);
+            topCropMm = Math.Max(0.0, mediaY2 - ty2);
         }
 
         // 3. Verificar BleedBox do PDF se declarada
         var bleedRect = page.BleedBox;
         if (bleedRect != null && bleedRect.Width > 0 && bleedRect.Height > 0)
         {
-            double bw = bleedRect.Width * PointsToMm;
-            double bh = bleedRect.Height * PointsToMm;
-            double bx = bleedRect.X1 * PointsToMm;
-            double by = bleedRect.Y1 * PointsToMm;
-            bleedBox = new Rect2D(bx, by, bw, bh);
+            double bx1 = bleedRect.X1 * PointsToMm;
+            double by1 = bleedRect.Y1 * PointsToMm;
+            double bx2 = bleedRect.X2 * PointsToMm;
+            double by2 = bleedRect.Y2 * PointsToMm;
+            double bw = bx2 - bx1;
+            double bh = by2 - by1;
+            bleedBox = new Rect2D(bx1, by1, bw, bh);
         }
 
         // Se TrimBox existir, as dimensões efetivas do produto são o TrimBox
@@ -76,7 +91,9 @@ public static class PdfPageBoxDetector
             BleedBox: bleedBox,
             EffectiveWidthMm: effW,
             EffectiveHeightMm: effH,
-            HasTrimBox: trimBox.HasValue
+            HasTrimBox: trimBox.HasValue,
+            LeftCropMm: leftCropMm,
+            TopCropMm: topCropMm
         );
     }
 }

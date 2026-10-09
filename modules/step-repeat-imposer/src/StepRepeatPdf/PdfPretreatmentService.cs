@@ -42,18 +42,21 @@ public static class PdfPretreatmentService
         using var gfx = XGraphics.FromPdfPage(page);
         using var inputForm = XPdfForm.FromFile(inputPdfPath);
 
-        // Se o PDF do cliente tiver TrimBox, alinhar o TrimBox do cliente com o centro da página pré-tratada
-        double cropX = boxInfo.TrimBox?.X ?? 0.0;
-        double cropY = boxInfo.TrimBox?.Y ?? 0.0;
+        // Clipping estrito no retângulo da página pré-tratada (TrimBox + sangria)
+        gfx.IntersectClip(new XRect(0, 0, page.Width.Point, page.Height.Point));
 
-        // Posição de desenho da Form XObject com offset de recorte para remover marcas externas do cliente
-        double drawXPt = (requestedBleedMm - cropX) * MmToPoints;
-        double drawYPt = (requestedBleedMm - cropY) * MmToPoints;
+        // Offsets do TrimBox do cliente em relação ao canto superior esquerdo do MediaBox
+        double leftCrop = boxInfo.LeftCropMm;
+        double topCrop = boxInfo.TopCropMm;
+
+        // Posição de desenho da Form XObject para alinhar o TrimBox do cliente com (requestedBleedMm, requestedBleedMm)
+        double drawXPt = (requestedBleedMm - leftCrop) * MmToPoints;
+        double drawYPt = (requestedBleedMm - topCrop) * MmToPoints;
 
         double origWPt = boxInfo.MediaBox.Width * MmToPoints;
         double origHPt = boxInfo.MediaBox.Height * MmToPoints;
 
-        // Inserir a arte recortada no TrimBox
+        // Inserir a arte recortada no TrimBox exato
         gfx.DrawImage(inputForm, drawXPt, drawYPt, origWPt, origHPt);
 
         // Salvar PDF limpo pré-tratado

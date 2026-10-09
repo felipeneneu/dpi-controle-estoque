@@ -90,5 +90,8 @@ S/
 .sdd/
 
 # Testes locais e PDFs de cliente
-arquivos-testes/
+# JOB_*/
+# saida_teste_*.pdf
+# arquivos-testes/
+
 
