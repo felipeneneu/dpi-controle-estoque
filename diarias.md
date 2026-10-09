@@ -336,3 +336,63 @@
 
 ────────────────────────────────────────────────────────────
 > em jpg a imagem continua com a linha preta nao da colocando a cor correta
+
+
+
+  🤖 Applying knowledge of @[csharp-testing] + @[pdf-manipulation]...
+  📚 Using skills: @prepress-domain + @csharp-testing...
+
+  ### 🐛 Causa Raiz Identificada e Corrigida
+
+  O erro de recortar parte da própria arte (TrimBox) ocorria no cálculo de coordenadas
+  verticais durante o pré-tratamento do PDF:
+  1. Inversão de Origem de Coordenadas (Y): No padrão PDF ISO 32000, a origem (0,0)
+  fica no canto inferior esquerdo do MediaBox, enquanto no motor de desenho (XGraphics
+  do PDFSharp) a origem fica no canto superior esquerdo.
+  2. Cálculo da Margem Superior (TopCropMm): O detector estava passando trimRect.Y1
+  (que mede a distância em relação à margem inferior) diretamente como offset vertical.
+  Com isso, se a margem superior tinha marcas maiores do que a margem inferior, a arte
+  era deslocada verticalmente para fora do papel pré-tratado, cortando parte da
+  própria imagem (TrimBox) e deixando espaço em branco/marcas no topo.
+  3. Clipping Estrito (IntersectClip): Aplicamos o recorte explícito (gfx.
+  IntersectClip) no retângulo da página pré-tratada (TrimBox + 3mm de sangria).
+  ──────
+  ### 🔨 Alterações Realizadas
+
+  1. **PdfPageBoxDetector.cs:50-67**:
+      • Adicionamos o cálculo exato dos offsets LeftCropMm e TopCropMm levando em
+      conta a conversão de origem:
+        leftCropMm = Math.Max(0.0, tx1 - mediaX1);
+        topCropMm = Math.Max(0.0, mediaY2 - ty2); // Distância do topo do MediaBox até
+      o topo do TrimBox
+
+  2. **PdfPretreatmentService.cs:45-58**:
+      • Aplicamos gfx.IntersectClip(new XRect(0, 0, targetWidth, targetHeight)) para
+      eliminar 100% de marcas antigas externas ao TrimBox.
+      • Posicionamos a arte com drawXPt = (requestedBleedMm - leftCrop) * MmToPoints e
+      drawYPt = (requestedBleedMm - topCrop) * MmToPoints.
+      • Garantimos que o TrimBox da arte do cliente fique 100% preservado e
+      perfeitamente posicionado no retângulo final.
+  3. **PretreatmentTests.cs**:
+      • Criamos teste unitário automatizado validando a preservação exata do TrimBox.
+      • Executados 12 testes unitários (dotnet test) com 100% de aprovação.
+
+  ──────
+  ### 📊 Resultado da Verificação no Arquivo do Cliente
+
+  No teste com REN_TRADE_FOLHETO_BISCOITOS_JAU_SERVE - 19-Ago.pdf:
+
+  • TrimBox Detectado: 210,0 x 148,0 mm (Folheto A5 líquido).
+  • PDF Pré-Tratado em Desenvolvimento/: 216,0 x 154,0 mm (A5 líquido + 3mm de sangria
+  em cada borda), sem nenhuma marca antiga do cliente.
+  • Folha de Imposição 330 x 483 mm: Renderizado em 4-UP (2 colunas x 2 linhas) com
+  rotação automática de 90°. (Nota: 210x148 mm é A5; 2 peças de 216 mm somam 432 mm na
+  altura de 483 mm, de modo que fisicamente cabem 4 peças A5 por folha 330x483 mm).
+  ──────
+  ### 📦 Commit Realizado
+
+  Fix commitado com sucesso no Git:
+
+  • Commit: dd5cbba — fix(step-repeat): corrigir alinhamento do TrimBox e recorte de
+  marcas no pre-tratamento
+  • Sem inclusão de binários ou PDFs de cliente no repositório.
