@@ -2,11 +2,11 @@
 <ExtensionManifest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     Version="7.0"
     ExtensionBundleId="com.graficaos.imposer"
-    ExtensionBundleVersion="0.1.0"
+    ExtensionBundleVersion="1.0.0"
     ExtensionBundleName="Prepress Automation">
 
     <ExtensionList>
-        <Extension Id="com.graficaos.imposer.panel" Version="0.1.0" />
+        <Extension Id="com.graficaos.imposer.panel" Version="1.0.0" />
     </ExtensionList>
 
     <ExecutionEnvironment>

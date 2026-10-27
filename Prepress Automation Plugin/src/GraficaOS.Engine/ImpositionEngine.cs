@@ -30,7 +30,7 @@ public sealed class ImpositionEngine : IGraficaOSEngine
     {
         try
         {
-            return "0.1.0";
+            return "1.0.0";
         }
         catch (Exception ex)
         {

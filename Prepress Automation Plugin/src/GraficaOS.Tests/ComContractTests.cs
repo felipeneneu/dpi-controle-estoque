@@ -189,12 +189,12 @@ public class ComContractTests
     // ── GetVersion ────────────────────────────────────────────────────
 
     [Fact]
-    public void BR010_ImpositionEngine_GetVersion_Retorna010()
+    public void BR010_ImpositionEngine_GetVersion_Retorna100()
     {
         var engine = new GraficaOS.Engine.ImpositionEngine();
         var version = engine.GetVersion();
 
-        version.Should().Be("0.1.0");
+        version.Should().Be("1.0.0");
     }
 
     // ── FlushTelemetry ────────────────────────────────────────────────

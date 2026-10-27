@@ -2,7 +2,7 @@
 ; Instalador para o plugin CEP + motor COM
 
 #define MyAppName "Prepress Automation"
-#define MyAppVersion "0.1.0"
+#define MyAppVersion "1.0.0"
 #define MyAppPublisher "GraficaOS"
 #define MyAppURL "https://graficaos.com"
 

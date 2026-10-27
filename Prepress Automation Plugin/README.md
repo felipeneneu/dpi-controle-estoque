@@ -1,4 +1,4 @@
-# GraficaOS Plugin — Extensão Illustrator
+# Prepress Automation Plugin — Extensão Illustrator
 
 Extensão CEP (Common Extensibility Platform) para Adobe Illustrator que expõe
 o motor de imposição do GraficaOS diretamente dentro do Illustrator, via COM.
@@ -31,7 +31,7 @@ o motor de imposição do GraficaOS diretamente dentro do Illustrator, via COM.
 ## Estrutura de Pastas
 
 ```
-GraficaOS.Plugin/
+Prepress Automation Plugin/
 ├── GraficaOS.Plugin.sln
 ├── lib/                               ← DLLs pré-compiladas do motor
 │   ├── Imposition.Core.dll
@@ -147,7 +147,7 @@ $engine = [Activator]::CreateInstance($type)
 
 # Versão do motor
 $type.InvokeMember("GetVersion", [System.Reflection.BindingFlags]::InvokeMethod, $null, $engine, $null)
-# Esperado: "0.1.0"
+# Esperado: "1.0.0"
 
 # Tenant ativo
 $type.InvokeMember("GetActiveTenant", [System.Reflection.BindingFlags]::InvokeMethod, $null, $engine, $null)
@@ -202,7 +202,7 @@ Copy-Item -Recurse -Force plugin\com.graficaos.imposer $dest
 ```powershell
 # Requer Inno Setup 6.x (iscc.exe no PATH)
 iscc installer\graficaos.iss
-# Saída: installer\output\GraficaOS-Imposer-0.1.0-x64.exe
+# Saída: installer\output\GraficaOS-Imposer-1.0.0-x64.exe
 ```
 
 ## Checklist de Teste por Máquina
@@ -211,7 +211,7 @@ iscc installer\graficaos.iss
 |---|-------|--------------|
 | 1 | ✅ Build compila | `dotnet build -c Release -r win-x64` |
 | 2 | ✅ regsvr32 sem erro | `regsvr32 /s GraficaOS.Engine.comhost.dll` (admin) |
-| 3 | ✅ GetVersion retorna 0.1.0 | `(New-Object -ComObject GraficaOS.Engine).GetVersion()` |
+| 3 | ✅ GetVersion retorna 1.0.0 | `(New-Object -ComObject GraficaOS.Engine).GetVersion()` |
 | 4 | ✅ Painel abre no Illustrator | Janela → Extensões → Press Automation |
 | 5 | ✅ Faixa de logo com fallback | Verificar visualmente "G GraficaOS" |
 | 6 | ✅ Modal info | Clicar no botão "i" |

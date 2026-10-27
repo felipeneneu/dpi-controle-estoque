@@ -179,8 +179,61 @@ body {
 }
 .form-group.half { flex: 1; }
 
+/* ── Cadeado de Tamanho da Arte ── */
+.art-size-row {
+  display: flex;
+  align-items: flex-end;
+}
+.art-size-row > * + * { margin-left: 6px; }
+@supports (gap: 6px) {
+  .art-size-row { gap: 6px; }
+  .art-size-row > * + * { margin-left: 0; }
+}
+.art-size-row .form-group.half { flex: 1; }
+
+.lock-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1px;
+}
+
+.btn-lock {
+  width: 28px;
+  height: 28px;
+  background: var(--bg-tertiary);
+  border: 1px solid #555;
+  border-radius: var(--radius);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  line-height: 1;
+  transition: all 0.2s ease;
+  user-select: none;
+  color: var(--text-secondary);
+}
+.btn-lock:hover {
+  background: #4a4a4a;
+  border-color: #777;
+  transform: scale(1.05);
+}
+.btn-lock.locked {
+  background: #2a1f0a;
+  border-color: #f59e0b;
+  color: #fbbf24;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+}
+input.input-locked {
+  border-color: #f59e0b !important;
+  background-color: #241d11 !important;
+  color: #fef3c7 !important;
+}
+
 input[type="number"],
-input[type="text"] {
+input[type="text"],
+select {
   width: 100%;
   height: 28px;
   padding: 0 8px;
@@ -192,7 +245,11 @@ input[type="text"] {
   outline: none;
   transition: border-color 0.15s;
 }
-input:focus { border-color: var(--brand-bg); }
+select {
+  cursor: pointer;
+}
+input:focus,
+select:focus { border-color: var(--brand-bg); }
 input[readonly] { opacity: 0.7; cursor: default; }
 
 .file-row {
@@ -383,3 +440,48 @@ input[readonly] { opacity: 0.7; cursor: default; }
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover { background: #777; }
+
+/* ── Seletor de Unidades e Avançados ── */
+.unit-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding: 4px 8px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  border: 1px solid #333;
+}
+.unit-bar label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+.unit-bar select {
+  width: 90px;
+  height: 24px;
+  font-size: 11px;
+  padding: 0 4px;
+}
+
+.advanced-section {
+  margin-top: 8px;
+  margin-bottom: 8px;
+  border: 1px solid #333;
+  border-radius: var(--radius);
+  padding: 6px 8px;
+  background: var(--bg-secondary);
+}
+.advanced-section summary {
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  color: #ff7043;
+  outline: none;
+  user-select: none;
+}
+.advanced-section[open] summary {
+  margin-bottom: 8px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 4px;
+}

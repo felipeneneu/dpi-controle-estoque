@@ -7,6 +7,123 @@
   const csInterface = new CSInterface();
   let engineOnline = false;
   let tenantData = null;
+  let currentUnit = 'mm';
+
+  const SHEET_PRESETS = {
+    sra3: { w: 320, h: 450 },
+    konica_super: { w: 330, h: 487 },
+    a3: { w: 297, h: 420 },
+    a4: { w: 210, h: 297 },
+    a2: { w: 420, h: 594 },
+    offset_inteira: { w: 710, h: 1000 },
+    offset_meia: { w: 500, h: 710 },
+    offset_66x96: { w: 660, h: 960 },
+    offset_48x66: { w: 480, h: 660 },
+  };
+
+  function toMm(val, unit) {
+    const num = Number(val) || 0;
+    if (unit === 'cm') return num * 10;
+    if (unit === 'pt') return (num * 25.4) / 72.0;
+    return num;
+  }
+
+  function fromMm(mmVal, unit) {
+    const num = Number(mmVal) || 0;
+    if (unit === 'cm') return num / 10;
+    if (unit === 'pt') return (num * 72.0) / 25.4;
+    return num;
+  }
+
+  function roundUnit(val, unit) {
+    if (unit === 'pt') return Math.round(val * 100) / 100;
+    if (unit === 'cm') return Math.round(val * 100) / 100;
+    return Math.round(val * 10) / 10;
+  }
+
+  function handleUnitChange(newUnit) {
+    if (newUnit === currentUnit) return;
+    const oldUnit = currentUnit;
+    currentUnit = newUnit;
+
+    const fields = ['sheetW', 'sheetH', 'artW', 'artH', 'gapMm', 'bleedMm', 'marginMm', 'markOffset', 'markLength'];
+    fields.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const oldVal = parseFloat(el.value);
+      if (!Number.isFinite(oldVal)) return;
+      const mm = toMm(oldVal, oldUnit);
+      const converted = fromMm(mm, newUnit);
+      el.value = roundUnit(converted, newUnit);
+    });
+
+    updateUnitLabels(newUnit);
+    logInfo(`Unidade alterada para: ${newUnit}`);
+  }
+
+  function updateUnitLabels(unit) {
+    const labels = {
+      lblSheetW: `Formato L (${unit})`,
+      lblSheetH: `Formato A (${unit})`,
+      lblArtW: `Arte L (${unit})`,
+      lblArtH: `Arte A (${unit})`,
+      lblGap: `Gap (${unit})`,
+      lblBleed: `Sangria (${unit})`,
+      lblMargin: `Margem (${unit})`,
+      lblMarkOffset: `Offset (${unit}) [9 pt]`,
+      lblMarkLength: `Comp. (${unit}) [18 pt]`,
+    };
+    Object.keys(labels).forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = labels[id];
+    });
+  }
+
+  function handleArtboardBoundsResult(res) {
+    try {
+      const parsed = JSON.parse(res);
+      if (parsed && parsed.success) {
+        const w = fromMm(parsed.widthMm, currentUnit);
+        const h = fromMm(parsed.heightMm, currentUnit);
+        document.getElementById('sheetW').value = roundUnit(w, currentUnit);
+        document.getElementById('sheetH').value = roundUnit(h, currentUnit);
+        logInfo(`Prancheta ativa [${parsed.index + 1} - ${parsed.name}]: ${roundUnit(w, currentUnit)}×${roundUnit(h, currentUnit)}${currentUnit}`);
+      } else {
+        logWarn(parsed.message || 'Falha ao ler prancheta ativa.');
+      }
+    } catch (e) {
+      logWarn('Não foi possível obter a prancheta ativa' + (res && !res.startsWith('EvalScript') ? ': ' + res : '. Abra um documento no Illustrator.'));
+    }
+  }
+
+  function handleSheetPresetChange() {
+    const preset = document.getElementById('sheetPreset').value;
+    if (preset === 'custom') return;
+
+    if (preset === 'active_artboard') {
+      ensureExtendScriptLoaded(() => {
+        evalJsx('getActiveArtboardBounds', [], (res) => {
+          handleArtboardBoundsResult(res);
+        });
+      });
+      return;
+    }
+
+    const dims = SHEET_PRESETS[preset];
+    if (dims) {
+      const w = fromMm(dims.w, currentUnit);
+      const h = fromMm(dims.h, currentUnit);
+      document.getElementById('sheetW').value = roundUnit(w, currentUnit);
+      document.getElementById('sheetH').value = roundUnit(h, currentUnit);
+    }
+  }
+
+  function onSheetInputManual() {
+    const presetSel = document.getElementById('sheetPreset');
+    if (presetSel && presetSel.value !== 'custom') {
+      presetSel.value = 'custom';
+    }
+  }
 
   // ── Ponte Motor via WSH (cscript) ─────────────────────────────────
   // O ExtendScript do Illustrator (engine 4.5.x) não expõe ActiveXObject,
@@ -117,21 +234,84 @@
 
   // ── Inicialização ─────────────────────────────────────────────────
 
+  let _extendScriptLoading = false;
+  let _extendScriptCallbacks = [];
+
+  function ensureExtendScriptLoaded(callback) {
+    csInterface.evalScript('(typeof getActiveArtboardBounds === "function" && typeof applyComputedPlan === "function")', (isLoaded) => {
+      if (isLoaded === 'true') {
+        if (callback) callback(true);
+        return;
+      }
+
+      if (_extendScriptLoading) {
+        if (callback) _extendScriptCallbacks.push(callback);
+        return;
+      }
+      _extendScriptLoading = true;
+      if (callback) _extendScriptCallbacks.push(callback);
+
+      const notifyAll = (success) => {
+        _extendScriptLoading = false;
+        const cbs = _extendScriptCallbacks.slice();
+        _extendScriptCallbacks = [];
+        cbs.forEach(cb => { try { cb(success); } catch (e) {} });
+      };
+
+      // 1. Tenta carregar lendo o arquivo via Node.js fs (método nativo CEP 100% confiável)
+      const req = getNodeRequire();
+      if (req) {
+        try {
+          const fs = req('fs');
+          const path = req('path');
+          const extensionRoot = csInterface.getSystemPath(SystemPath.EXTENSION);
+          const fullPath = path.join(extensionRoot, 'jsx', 'impose.jsx');
+          if (fs.existsSync(fullPath)) {
+            let code = fs.readFileSync(fullPath, 'utf8');
+            code = code.replace(/^#.*/gm, '');
+            csInterface.evalScript(code, (evalRes) => {
+              csInterface.evalScript('typeof getActiveArtboardBounds === "function"', (checkRes) => {
+                notifyAll(checkRes === 'true');
+              });
+            });
+            return;
+          }
+        } catch (eNode) {
+          console.warn('Falha ao ler impose.jsx via Node fs:', eNode);
+        }
+      }
+
+      // 2. Fallback via $.evalFile com new File() (sintaxe nativa ExtendScript)
+      const extensionRoot = csInterface.getSystemPath(SystemPath.EXTENSION);
+      const jsxPath = (extensionRoot + '/jsx/impose.jsx').replace(/\\/g, '/');
+      const loadScript = `try { $.evalFile(new File("${jsxPath}")); (typeof getActiveArtboardBounds === "function") ? "true" : "false"; } catch(e) { "ERR: " + e.message; }`;
+      csInterface.evalScript(loadScript, (evalRes) => {
+        notifyAll(evalRes === 'true');
+      });
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', init);
 
   function init() {
     setupButtons();
     checkEngine();
-    refreshSelectionMeasurements();
+    ensureExtendScriptLoaded(() => {
+      handleSheetPresetChange();
+      if (!isArtSizeLocked) {
+        refreshSelectionMeasurements();
+      }
+    });
     // Poll para atualizar medidas ao redimensionar (sem disparar selectionChanged)
     setInterval(refreshSelectionMeasurements, 1000);
     csInterface.addEventListener('com.graficaos.imposer.selection', (event) => {
+      if (isArtSizeLocked) return;
       try { fillArtFromSelection(JSON.parse(event.data)); } catch (e) { /* ignora */ }
     });
     trackEvent('plugin.opened', { illustratorVersion: getAiVersion() });
   }
 
-  // ── Botões ────────────────────────────────────────────────────────
+  // ── Botões e Controles ────────────────────────────────────────────
 
   function setupButtons() {
     document.getElementById('btnPlan').addEventListener('click', handlePlan);
@@ -142,6 +322,50 @@
     document.getElementById('btnCloseOverflow').addEventListener('click', closeModals);
     document.getElementById('btnFlush').addEventListener('click', handleFlush);
     document.getElementById('modalBackdrop').addEventListener('click', closeModals);
+
+    const unitSel = document.getElementById('unitSelector');
+    if (unitSel) unitSel.addEventListener('change', (e) => handleUnitChange(e.target.value));
+
+    const sheetSel = document.getElementById('sheetPreset');
+    if (sheetSel) sheetSel.addEventListener('change', handleSheetPresetChange);
+
+    const sheetW = document.getElementById('sheetW');
+    if (sheetW) sheetW.addEventListener('input', onSheetInputManual);
+    const sheetH = document.getElementById('sheetH');
+    if (sheetH) sheetH.addEventListener('input', onSheetInputManual);
+
+    const btnLock = document.getElementById('btnLockArtSize');
+    if (btnLock) {
+      btnLock.addEventListener('click', () => {
+        setArtSizeLocked(!isArtSizeLocked, true);
+        if (!isArtSizeLocked) {
+          lastSeenBounds = null;
+          refreshSelectionMeasurements();
+        }
+      });
+    }
+
+    const artW = document.getElementById('artW');
+    if (artW) {
+      artW.addEventListener('input', () => {
+        if (!isArtSizeLocked) {
+          setArtSizeLocked(true, false);
+          logInfo('🔒 Tamanho da arte fixado manualmente.');
+        }
+      });
+    }
+
+    const artH = document.getElementById('artH');
+    if (artH) {
+      artH.addEventListener('input', () => {
+        if (!isArtSizeLocked) {
+          setArtSizeLocked(true, false);
+          logInfo('🔒 Tamanho da arte fixado manualmente.');
+        }
+      });
+    }
+
+    updateArtLockUI();
   }
 
   // ── Motor COM (via probe) ─────────────────────────────────────────
@@ -160,7 +384,7 @@
         }
         if (typeof parsed !== 'string') raw = result; // resposta não é versão bruta
       } catch (e) {
-        // "0.1.0" não é JSON válido → versão bruta
+        // "1.0.0" não é JSON válido → versão bruta
       }
 
       engineOnline = true;
@@ -202,14 +426,15 @@
   }
 
   function buildRequest() {
-    const sheetW = parseFloat(document.getElementById('sheetW').value) || 710;
-    const sheetH = parseFloat(document.getElementById('sheetH').value) || 1000;
-    const artW = parseFloat(document.getElementById('artW').value) || 49;
-    const artH = parseFloat(document.getElementById('artH').value) || 74;
+    const sheetW = toMm(parseFloat(document.getElementById('sheetW').value) || 710, currentUnit);
+    const sheetH = toMm(parseFloat(document.getElementById('sheetH').value) || 1000, currentUnit);
+    const artW = toMm(parseFloat(document.getElementById('artW').value) || 49, currentUnit);
+    const artH = toMm(parseFloat(document.getElementById('artH').value) || 74, currentUnit);
     const target = parseInt(document.getElementById('targetCopies').value, 10) || 1;
-    const gap = parseFloat(document.getElementById('gapMm').value) || 0;
-    const margin = parseFloat(document.getElementById('marginMm').value) || 0;
-    const marks = document.getElementById('chkMarks').checked;
+    const gap = toMm(parseFloat(document.getElementById('gapMm').value) || 0, currentUnit);
+    const margin = toMm(parseFloat(document.getElementById('marginMm').value) || 0, currentUnit);
+    const marksType = document.getElementById('marksSelector').value;
+    const marksEnabled = (marksType === 'moldura' || marksType === 'preps_sample_group');
 
     return {
       schemaVersion: '1.0',
@@ -225,7 +450,7 @@
       surplusPolicy: 'fill_row',
       substrateKind: 'sheet',
       maxLengthMm: null,
-      marks: marks ? { enabled: true, type: 'mimaki-fcrm', sizeMm: 20, offsetMm: 3 } : null,
+      marks: marksEnabled ? { enabled: true, type: 'mimaki-fcrm', sizeMm: 20, offsetMm: 3 } : null,
     };
   }
 
@@ -236,7 +461,7 @@
 
     ensureSelectionMeasurements(() => {
       const request = buildRequest();
-      logInfo(`Calculando grade ${request.artWMm}×${request.artHMm}mm em ${request.sheetWMm}×${request.sheetHMm}mm (margem ${request.margins.top}mm)...`);
+      logInfo(`Calculando grade ${request.artWMm.toFixed(1)}×${request.artHMm.toFixed(1)}mm${isArtSizeLocked ? ' [🔒 Bloqueado]' : ''} em ${request.sheetWMm.toFixed(1)}×${request.sheetHMm.toFixed(1)}mm (margem ${request.margins.top.toFixed(1)}mm)...`);
       trackEvent('imposition.requested', { mode: 'plan' });
 
       callEngine('plan', JSON.stringify(request), (result) => {
@@ -250,7 +475,7 @@
 
     ensureSelectionMeasurements(() => {
       const request = buildRequest();
-      logInfo('Aplicando imposição na bancada...');
+      logInfo(`Aplicando imposição na bancada (${request.artWMm.toFixed(1)}×${request.artHMm.toFixed(1)}mm${isArtSizeLocked ? ' [🔒 Bloqueado]' : ''})...`);
       trackEvent('imposition.requested', { mode: 'bancada' });
 
       callEngine('plan', JSON.stringify(request), (result) => {
@@ -264,8 +489,35 @@
         if (!parsed || !parsed.success) { handleResponse(result, 'bancada'); return; }
 
         handleResponse(result, 'bancada');
-        evalJsx('applyComputedPlan', [result], (applyResult) => {
-          if (!applyResult || applyResult.startsWith('EvalScript Error')) {
+
+        const marksType = document.getElementById('marksSelector').value;
+        const keepArtboard = document.getElementById('chkKeepArtboard').checked;
+        const drawTrimBoxGuides = document.getElementById('chkTrimBoxGuides').checked;
+        const markOffsetMm = toMm(parseFloat(document.getElementById('markOffset').value) || 3.175, currentUnit);
+        const markLengthMm = toMm(parseFloat(document.getElementById('markLength').value) || 6.35, currentUnit);
+        const strokeWidthPt = parseFloat(document.getElementById('strokeWidthPt').value) || 0.25;
+        const outsideOnly = document.getElementById('chkOutsideOnly').checked;
+        const bleedMm = toMm(parseFloat(document.getElementById('bleedMm').value) || 0, currentUnit);
+        const marginMm = toMm(parseFloat(document.getElementById('marginMm').value) || 0, currentUnit);
+
+        const headFoot = document.getElementById('headFootSelector') ? document.getElementById('headFootSelector').value : 'head_to_foot';
+
+        const options = {
+          keepArtboard: keepArtboard,
+          headFoot: headFoot,
+          marksType: marksType,
+          drawTrimBoxGuides: drawTrimBoxGuides,
+          marginMm: marginMm,
+          markOffsetPt: markOffsetMm * (72.0 / 25.4),
+          markLengthPt: markLengthMm * (72.0 / 25.4),
+          strokeWidthPt: strokeWidthPt,
+          outsideOnly: outsideOnly,
+          bleedMm: bleedMm,
+          shouldDrawFrame: marksType === 'moldura'
+        };
+
+        function processApplyResult(applyResult) {
+          if (!applyResult || applyResult.indexOf('EvalScript error') !== -1 || applyResult.indexOf('EvalScript Error') !== -1 || applyResult.indexOf('Error ') !== -1 || applyResult.indexOf('não é uma função') !== -1) {
             logErr(`Falha ao aplicar na bancada: ${applyResult || '(vazio)'}`);
             return;
           }
@@ -274,8 +526,12 @@
             if (!r.success) { logErr(`${r.errorCode || 'ERRO'}: ${r.message}`); return; }
             logOk(`Bancada aplicada (${r.placementCount} posições).`);
           } catch (e) {
-            logOk('Bancada aplicada.');
+            logErr(`Falha ao interpretar resposta da bancada: ${applyResult}`);
           }
+        }
+
+        evalJsx('applyComputedPlan', [result, JSON.stringify(options)], (applyResult) => {
+          processApplyResult(applyResult);
         });
       });
     });
@@ -440,7 +696,20 @@
       return String(a);
     });
     const script = `${fnName}(${escapedArgs.join(', ')})`;
-    csInterface.evalScript(script, callback || (() => {}));
+    csInterface.evalScript(script, (result) => {
+      if (result && (result.indexOf('Error 24:') !== -1 || result.indexOf('não é uma função') !== -1 || result.indexOf('is not a function') !== -1)) {
+        console.warn(`Função ${fnName} não disponível no ExtendScript. Recarregando impose.jsx...`);
+        ensureExtendScriptLoaded((loaded) => {
+          if (loaded) {
+            csInterface.evalScript(script, callback || (() => {}));
+          } else if (callback) {
+            callback(result);
+          }
+        });
+        return;
+      }
+      if (callback) callback(result);
+    });
   }
 
   // ── Telemetria ────────────────────────────────────────────────────
@@ -456,22 +725,71 @@
     } catch (e) { /* best-effort */ }
   }
 
+  // ── Controle de Bloqueio de Tamanho da Arte (Cadeado) ──────────────
+  let isArtSizeLocked = false;
+  try {
+    isArtSizeLocked = localStorage.getItem('graficaos_art_size_locked') === '1';
+  } catch (e) {}
+
+  function updateArtLockUI() {
+    const btn = document.getElementById('btnLockArtSize');
+    const icon = document.getElementById('lockIcon');
+    const artW = document.getElementById('artW');
+    const artH = document.getElementById('artH');
+    if (!btn || !icon) return;
+
+    if (isArtSizeLocked) {
+      btn.classList.add('locked');
+      icon.textContent = '🔒';
+      btn.title = 'Tamanho BLOQUEADO: usando medidas manuais fixas (a seleção do Illustrator NÃO irá alterar estes valores). Clique para desbloquear.';
+      if (artW) artW.classList.add('input-locked');
+      if (artH) artH.classList.add('input-locked');
+    } else {
+      btn.classList.remove('locked');
+      icon.textContent = '🔓';
+      btn.title = 'Tamanho DINÂMICO: medindo automaticamente da seleção. Clique para travar estas medidas.';
+      if (artW) artW.classList.remove('input-locked');
+      if (artH) artH.classList.remove('input-locked');
+    }
+  }
+
+  function setArtSizeLocked(locked, logMessage) {
+    isArtSizeLocked = locked;
+    try {
+      localStorage.setItem('graficaos_art_size_locked', isArtSizeLocked ? '1' : '0');
+    } catch (e) {}
+    updateArtLockUI();
+    if (logMessage) {
+      const artWVal = document.getElementById('artW') ? document.getElementById('artW').value : '';
+      const artHVal = document.getElementById('artH') ? document.getElementById('artH').value : '';
+      if (isArtSizeLocked) {
+        logInfo(`🔒 Tamanho da arte bloqueado: ${artWVal}×${artHVal}${currentUnit}. A seleção NÃO irá alterar estes valores.`);
+      } else {
+        logInfo('🔓 Tamanho da arte desbloqueado (medindo automaticamente da seleção).');
+      }
+    }
+  }
+
   // ── Medidas da seleção ────────────────────────────────────────────
 
   let lastSeenBounds = null;
 
   function fillArtFromSelection(bounds) {
+    if (isArtSizeLocked) return;
     if (!bounds || !bounds.selection) return;
 
-    const w = Number(bounds.widthMm);
-    const h = Number(bounds.heightMm);
-    if (!Number.isFinite(w) || !Number.isFinite(h) || w <= 0 || h <= 0) return;
+    const wMm = Number(bounds.widthMm);
+    const hMm = Number(bounds.heightMm);
+    if (!Number.isFinite(wMm) || !Number.isFinite(hMm) || wMm <= 0 || hMm <= 0) return;
 
-    const currentBoundsStr = w.toFixed(2) + 'x' + h.toFixed(2);
+    const currentBoundsStr = wMm.toFixed(2) + 'x' + hMm.toFixed(2);
     if (lastSeenBounds === currentBoundsStr) {
         return; // As dimensões reais no Illustrator não mudaram, não sobrescreve o input
     }
     lastSeenBounds = currentBoundsStr;
+
+    const w = roundUnit(fromMm(wMm, currentUnit), currentUnit);
+    const h = roundUnit(fromMm(hMm, currentUnit), currentUnit);
 
     const artW = document.getElementById('artW');
     const artH = document.getElementById('artH');
@@ -479,11 +797,12 @@
     if (String(artW.value) !== String(w) || String(artH.value) !== String(h)) {
         artW.value = w;
         artH.value = h;
-        logInfo(`Arte atualizada da seleção: ${w}×${h}mm`);
+        logInfo(`Arte atualizada da seleção: ${w}×${h}${currentUnit}`);
     }
   }
 
   function refreshSelectionMeasurements() {
+    if (isArtSizeLocked) return;
     evalJsx('getSelectionBounds', [], (result) => {
       try {
         const b = JSON.parse(result);
@@ -493,6 +812,10 @@
   }
 
   function ensureSelectionMeasurements(cb) {
+    if (isArtSizeLocked) {
+      cb();
+      return;
+    }
     evalJsx('getSelectionBounds', [], (result) => {
       try {
         const b = JSON.parse(result);

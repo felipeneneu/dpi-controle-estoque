@@ -8,7 +8,7 @@ namespace GraficaOS.Engine;
 [InterfaceType(ComInterfaceType.InterfaceIsDual)]
 public interface IGraficaOSEngine
 {
-    /// <summary>Retorna a versão do motor (ex: "0.1.0").</summary>
+    /// <summary>Retorna a versão do motor (ex: "1.0.0").</summary>
     string GetVersion();
 
     /// <summary>Retorna JSON com informações do tenant ativo.</summary>

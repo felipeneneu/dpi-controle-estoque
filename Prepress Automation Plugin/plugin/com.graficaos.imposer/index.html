@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <title>Prepress Automation</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <!-- Faixa de Logo -->
+    <header class="logo-banner">
+        <div class="logo-area">
+            <img id="logoImg" alt="Prepress Automation" class="logo-img"
+                 src="icons/logo.svg"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='inline'" />
+            <span class="logo-fallback" style="display:none">Prepress Automation</span>
+        </div>
+        <button class="info-btn" id="btnInfo" title="Informações">i</button>
+    </header>
+
+    <!-- Barra de Status -->
+    <div class="status-bar">
+        <div class="status-left">
+            <span class="badge loading" id="badge"></span>
+            <span class="status-text" id="statusText">Carregando...</span>
+        </div>
+        <span class="tenant-id" id="tenantId">—</span>
+    </div>
+
+    <!-- Barra de Unidades -->
+    <div class="unit-bar">
+        <label for="unitSelector">Unidade:</label>
+        <select id="unitSelector">
+            <option value="mm" selected>mm</option>
+            <option value="cm">cm</option>
+            <option value="pt">pt</option>
+        </select>
+    </div>
+
+    <!-- Bancada -->
+    <section class="tab-content" id="content">
+        <div class="form-group">
+            <label for="sheetPreset">Prancheta / Formato</label>
+            <select id="sheetPreset">
+                <option value="active_artboard" selected>Prancheta Atual do Illustrator</option>
+                <option value="sra3">SRA3 (320 × 450 mm)</option>
+                <option value="konica_super">Super A3 / Konica (330 × 487 mm)</option>
+                <option value="a3">A3 (297 × 420 mm)</option>
+                <option value="a4">A4 (210 × 297 mm)</option>
+                <option value="a2">A2 (420 × 594 mm)</option>
+                <option value="offset_inteira">Folha Inteira (710 × 1000 mm)</option>
+                <option value="offset_meia">Meia Folha (500 × 710 mm)</option>
+                <option value="offset_66x96">660 × 960 mm</option>
+                <option value="offset_48x66">480 × 660 mm</option>
+                <option value="custom">Personalizado</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <div class="form-group half">
+                <label id="lblSheetW">Formato L (mm)</label>
+                <input type="number" id="sheetW" value="710" step="0.1" />
+            </div>
+            <div class="form-group half">
+                <label id="lblSheetH">Formato A (mm)</label>
+                <input type="number" id="sheetH" value="1000" step="0.1" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="checkbox-label">
+                <input type="checkbox" id="chkKeepArtboard" checked />
+                Manter tamanho da prancheta
+            </label>
+        </div>
+        <div class="form-row art-size-row">
+            <div class="form-group half">
+                <label id="lblArtW">Arte L (mm)</label>
+                <input type="number" id="artW" value="49" step="0.1" />
+            </div>
+            <div class="lock-col">
+                <button type="button" id="btnLockArtSize" class="btn-lock" title="Bloquear tamanho manual da arte (impede que a seleção do Illustrator altere)">
+                    <span id="lockIcon">🔓</span>
+                </button>
+            </div>
+            <div class="form-group half">
+                <label id="lblArtH">Arte A (mm)</label>
+                <input type="number" id="artH" value="74" step="0.1" />
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group half">
+                <label>Tiragem</label>
+                <input type="number" id="targetCopies" value="112" min="1" />
+            </div>
+            <div class="form-group half">
+                <label id="lblGap">Gap (mm)</label>
+                <input type="number" id="gapMm" value="0" step="0.1" min="0" />
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group half">
+                <label id="lblBleed">Sangria (mm)</label>
+                <input type="number" id="bleedMm" value="0" step="0.1" min="0" />
+            </div>
+            <div class="form-group half">
+                <label id="lblMargin">Margem (mm)</label>
+                <input type="number" id="marginMm" value="0" step="0.1" min="0" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="marksSelector">Marcas</label>
+            <select id="marksSelector">
+                <option value="preps_sample_group" selected>Preps — Sample Group (Corte+Slug+Barra)</option>
+                <option value="preps_cropmarks">Preps — Marcas de Corte (9pt/18pt)</option>
+                <option value="mimaki_finecut">Mimaki FineCut — Tipo 1 (4 Cantoneiras)</option>
+                <option value="mimaki_fcrm">Mimaki FineCut — FCRM (Fundo Branco/Sensor)</option>
+                <option value="moldura">Moldura de Registro</option>
+                <option value="none">Nenhuma</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="headFootSelector">Orientação de Linhas (Preps)</label>
+            <select id="headFootSelector">
+                <option value="head_to_foot" selected>Cabeça com Pé (Head to Foot - Padrão)</option>
+                <option value="head_to_head">Cabeça com Cabeça (Head to Head - Alternado)</option>
+                <option value="foot_to_foot">Pé com Pé (Foot to Foot - Alternado)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="checkbox-label">
+                <input type="checkbox" id="chkTrimBoxGuides" checked />
+                Gerar Guias de TrimBox (Refile)
+            </label>
+        </div>
+
+        <!-- Ajustes Avançados de Marcas Preps -->
+        <details id="detailsMarks" class="advanced-section">
+            <summary>⚙️ Ajustes de Marcas Preps</summary>
+            <div class="form-row" style="margin-top: 6px;">
+                <div class="form-group half">
+                    <label id="lblMarkOffset">Offset (mm) [9 pt]</label>
+                    <input type="number" id="markOffset" value="3.18" step="0.1" />
+                </div>
+                <div class="form-group half">
+                    <label id="lblMarkLength">Comp. (mm) [18 pt]</label>
+                    <input type="number" id="markLength" value="6.35" step="0.1" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group half">
+                    <label>Traço (pt)</label>
+                    <input type="number" id="strokeWidthPt" value="0.25" step="0.05" min="0.05" />
+                </div>
+                <div class="form-group half" style="display:flex; align-items:center; margin-top:14px;">
+                    <label class="checkbox-label" style="font-size:11px !important;">
+                        <input type="checkbox" id="chkOutsideOnly" checked />
+                        Apenas cortes externos
+                    </label>
+                </div>
+            </div>
+        </details>
+    </section>
+
+    <!-- Ações -->
+    <div class="actions">
+        <button class="btn-secondary" id="btnPlan">Só calcular</button>
+        <button class="btn-primary" id="btnImpose">Impor</button>
+    </div>
+
+    <!-- Log -->
+    <div class="log-section">
+        <div class="log-header">
+            <span>Log</span>
+            <button class="btn-link" id="btnClearLog">limpar</button>
+        </div>
+        <pre class="log-area" id="logArea"></pre>
+    </div>
+
+    <!-- Modal Info -->
+    <div class="modal-backdrop hidden" id="modalBackdrop"></div>
+    <div class="modal hidden" id="modalInfo">
+        <h3>Press Automation</h3>
+        <table class="info-table">
+            <tr><td>Produto</td><td>PrePress Automation</td></tr>
+            <tr><td>Versão painel</td><td>1.0.0</td></tr>
+            <tr><td>Versão motor</td><td id="infoMotorVersion">—</td></tr>
+            <tr><td>Tenant</td><td id="infoTenant">—</td></tr>
+            <tr><td>Machine ID</td><td id="infoMachineId">—</td></tr>
+            <tr><td>Illustrator</td><td id="infoAiVersion">—</td></tr>
+        </table>
+        <div class="modal-footer">
+            <button class="btn-secondary" id="btnFlush">Enviar telemetria pendente</button>
+            <button class="btn-primary" id="btnCloseInfo">Fechar</button>
+        </div>
+    </div>
+
+    <!-- Modal Overflow -->
+    <div class="modal hidden" id="modalOverflow">
+        <h3>⚠️ Grade insuficiente</h3>
+        <p id="overflowMsg"></p>
+        <ul class="overflow-options" id="overflowOptions"></ul>
+        <div class="modal-footer">
+            <button class="btn-secondary" id="btnCloseOverflow">Cancelar</button>
+        </div>
+    </div>
+
+    <script>
+      function setLogoSrc() {
+        try {
+          const extPath = window.CSInterface ? window.CSInterface.getSystemPath('extension') : '';
+          if (extPath && extPath.length > 0) {
+            const logoPath = extPath.replace(/\//g, '\\') + '\\icons\\logo.svg';
+            document.getElementById('logoImg').src = logoPath;
+          }
+        } catch (e) {
+          // Ignored - keeps original src="icons/logo.svg"
+        }
+      }
+
+      const csInterface = window.CSInterface;
+      if (csInterface) {
+        setLogoSrc();
+      } else {
+        // Modo browser/development: tenta src relativo, onerror cuida do resto
+        document.getElementById('logoImg').src = 'icons/logo.svg';
+      }
+    </script>
+    <script src="lib/CSInterface.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
